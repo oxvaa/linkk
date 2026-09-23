@@ -1,6 +1,6 @@
 {
   "name": "link-social-core",
-  "version": "1.0.2-backend-beta",
+  "version": "1.0.4-backend-beta",
   "private": true,
   "main": "index.js",
   "scripts": {
@@ -28,7 +28,6 @@
     "expo-blur": "~57.0.3",
     "expo-crypto": "~57.0.3",
     "expo-linear-gradient": "~57.0.2",
-    "@supabase/supabase-js": "2.117.0",
-    "react-native-url-polyfill": "3.0.0"
+    "@supabase/supabase-js": "2.49.8"
   }
 }

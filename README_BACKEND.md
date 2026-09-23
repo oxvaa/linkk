@@ -1,4 +1,4 @@
-# LINK 1.0.3 — Backend Beta
+# LINK 1.0.4 — Backend Beta
 
 This project is based directly on LINK 0.9.3. The existing UI is retained while the local-only social data layer is connected to the live `LINK Production` Supabase project.
 
@@ -50,8 +50,13 @@ Create two accounts with different email addresses. If email confirmation is ena
 
 ## iPhone / Snack
 
-`App.snack.js` is an all-in-one equivalent of the backend build. If the Snack editor only lets you replace `App.js`, use the contents of `App.snack.js` as `App.js`. The Snack dependencies still need to include the packages in `package.json`, especially `@supabase/supabase-js` and `react-native-url-polyfill`.
+`App.snack.js` is an all-in-one equivalent of the backend build. If the Snack editor only lets you replace `App.js`, use the contents of `App.snack.js` as `App.js`. The Snack dependencies still need to include the packages in `package.json`, especially `@supabase/supabase-js`.
 
 
 ## Snack 1.0.3 compatibility
 For Expo Snack, `index.html` pins `@supabase/supabase-js@2.49.8` and loads `App.snack.js`. This avoids the newer URL-constructor validation issue observed in Expo Snack while leaving the Supabase backend unchanged.
+
+
+## Snack compatibility note
+
+The Snack build intentionally does not use `react-native-url-polyfill`. Expo Snack/Expo Go already provides the URL APIs needed by this compatibility build, and removing the external polyfill avoids a Hermes/Metro runtime crash seen in Snack. The Snack launcher pins `@supabase/supabase-js` to 2.49.8.

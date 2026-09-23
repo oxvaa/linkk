@@ -1,4 +1,3 @@
-import { setupURLPolyfill } from 'react-native-url-polyfill';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import {
@@ -34,11 +33,10 @@ import { AESEncryptionKey, AESSealedData, aesDecryptAsync, aesEncryptAsync } fro
 import { Ionicons } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
 
-setupURLPolyfill();
 const STORAGE_KEY = '@link_social_core_v2';
 const ACCENT = '#6C5CE7';
 const EMPTY_MESSAGES = Object.freeze([]);
-const BUILD = 'LINK 1.0.3 · Backend Beta';
+const BUILD = 'LINK 1.0.4 · Backend Beta';
 const LINK_PLUS_PLANS = {
   monthly: { id: 'monthly', label: 'Monthly', price: 79, periodLabel: 'month', bonusCoins: 400, days: 30 },
   annual: { id: 'annual', label: 'Annual', price: 649, periodLabel: 'year', bonusCoins: 1500, days: 365 },
