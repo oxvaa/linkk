@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
 import {
+  ActivityIndicator,
   Alert,
   AppState,
   Animated,
@@ -30,23 +32,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { AESEncryptionKey, AESSealedData, aesDecryptAsync, aesEncryptAsync } from 'expo-crypto';
 import { Ionicons } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
-import BackendGate from './components/BackendGate';
-import {
-  loadLinkSnapshot, subscribeLink, signOutLink, updateProfileRemote, updateSettingsRemote,
-  requestLinkRemote, respondLinkRemote, ensureDirectChat, createGroupRemote, renameGroupRemote,
-  setGroupEveryoneRemote, saveChatSettingsRemote, sendMessageRemote, reactMessageRemote,
-  editMessageRemote, hideMessageRemote, deleteMessageForEveryoneRemote, setMessagePinnedRemote,
-  saveChatUserSettingsRemote, markChatDeliveredRemote, subscribeChatSignals, markChatReadRemote, toggleFavoriteRemote, postMomentRemote,
-  saveNoteRemote, deleteOwnNoteRemote, sendWaveRemote, markNotificationsReadRemote,
-  setModerationRemote, activatePrototypePlanRemote, cancelPrototypePlanRemote, purchaseEffectRemote,
-  recordProfileViewRemote, setPresenceModeRemote, touchPresenceRemote,
-} from './services/linkBackend';
 
 const STORAGE_KEY = '@link_live_backend_v16';
-const DRAFT_PREFIX = '@link_chat_draft_v1';
 const ACCENT = '#6C5CE7';
 const EMPTY_MESSAGES = Object.freeze([]);
-const BUILD = 'LINK 1.2.0 · Real Messaging';
+const BUILD = 'LINK 1.2.0 · Messaging Upgrade';
 const LINK_PLUS_PLANS = {
   monthly: { id: 'monthly', label: 'Monthly', price: 79, periodLabel: 'month', bonusCoins: 400, days: 30 },
   annual: { id: 'annual', label: 'Annual', price: 649, periodLabel: 'year', bonusCoins: 1500, days: 365 },
@@ -182,7 +172,6 @@ const decryptMessageContent = async (cipher, keyBase64) => {
   return JSON.parse(bytesToUtf8(bytes));
 };
 const decryptConversation = async (messages = [], keyBase64) => Promise.all(messages.map(async message => {
-  if (message?.deletedAt) return { ...message, text: 'Message deleted', uri: null, duration: null, encrypted: true };
   if (!message?.cipher) return message;
   try {
     const content = await decryptMessageContent(message.cipher, keyBase64);
@@ -240,6 +229,16 @@ const presenceIsLive = (person = {}) => {
   if (person.presenceMode === 'ghost' || person.presenceVisible === false) return false;
   if (!person.lastActiveAt) return false;
   return Date.now() - Number(person.lastActiveAt) < 95 * 1000;
+};
+const presenceLabel = (person = {}) => {
+  if (person.presenceMode === 'ghost' || person.presenceVisible === false) return 'Offline';
+  const meta = presenceMeta(person);
+  if (presenceIsLive(person)) return meta.id === 'online' ? 'Active now' : meta.label;
+  if (!person.lastActiveAt) return 'Offline';
+  const mins = Math.max(1, Math.round((Date.now() - Number(person.lastActiveAt)) / 60000));
+  if (mins < 60) return `Active ${mins}m ago`;
+  const hours = Math.round(mins / 60);
+  return hours < 24 ? `Active ${hours}h ago` : 'Offline';
 };
 
 const STATUS_COLORS = ['#34C759', '#0A84FF', '#AF52DE', '#FF9F0A', '#FF453A', '#FF2D55', '#30B0C7', '#8E8E93'];
@@ -317,7 +316,9 @@ function initialData(userId = null) {
     silentChats: {},
     chatThemes: {},
     chatThemeScopes: {},
+    messagePins: {},
     chatUserSettings: {},
+    typingByChat: {},
     profileViews: userId ? { [userId]: 0 } : {},
   };
 }
@@ -586,7 +587,7 @@ function PersonRow({ person, theme, onPress, onChat, unread = 0, favorite = fals
 function HomeScreen({ theme, activeProfile, connectedProfiles, conversations, activeId, requests, notifications, moments, notes, profiles, favorites, favoriteIds, openOwnCard, openScanner, openChat, openAccountSwitcher, openNotifications, onAccept, onDecline, onCreateMoment, onOpenMoment, onOwnNote, onOpenNote, setTab }) {
   const unreadNotifs = (notifications[activeId] || []).filter(n => !n.read).length;
   const visibleMomentOwners = [activeId, ...connectedProfiles.map(p => p.id)];
-  const unreadFor = (personId) => (conversations[threadKey(activeId, personId)] || []).filter(m => !(m.readBy || []).includes(activeId) && m.senderId !== activeId).length;
+  const unreadFor = (personId) => (conversations[threadKey(activeId, personId)] || []).filter(m => !(m.seenBy || m.readBy || []).includes(activeId) && m.senderId !== activeId).length;
 
   return (
     <ScrollView contentContainerStyle={styles.screenScroll} showsVerticalScrollIndicator={false}>
@@ -745,40 +746,55 @@ function GroupAvatar({ group, profiles, theme, size = 52 }) {
   return <View style={[styles.groupAvatarStack, { width: size, height: size }]}>{members.map((person, i) => <View key={person.id} style={[styles.groupAvatarMini, offsets[i], { borderColor: theme.bg }]}><Avatar person={person} size={mini} theme={theme} /></View>)}</View>;
 }
 
-function ChatsScreen({ theme, activeId, profiles, connectedIds, conversations, favoriteIds, groups = {}, chatUserSettings = {}, openChat, openGroup, onCreateGroup }) {
-  const [showArchived,setShowArchived]=useState(false);
+function ChatsScreen({ theme, activeId, profiles, connectedIds, conversations, favoriteIds, groups = {}, chatUserSettings = {}, openChat, openGroup, onCreateGroup, onUpdateChatState }) {
+  const [showArchived, setShowArchived] = useState(false);
   const directRows = connectedIds.map(id => {
     const person = profiles[id];
-    const convo = conversations[threadKey(activeId, id)] || [];
+    const key = threadKey(activeId, id);
+    const convo = conversations[key] || [];
     const last = convo[convo.length - 1];
-    const unread = convo.filter(m => !(m.readBy || []).includes(activeId) && m.senderId !== activeId).length;
-    const key=threadKey(activeId,id);
-    return { type: 'direct', id, person, last, unread, favorite: favoriteIds.includes(id), archived:!!chatUserSettings[key]?.archived, muted:chatUserSettings[key]?.mutedUntil>Date.now() };
+    const settings = chatUserSettings[key] || {};
+    const unreadBase = convo.filter(m => !(m.seenBy || m.readBy || []).includes(activeId) && m.senderId !== activeId).length;
+    const unread = Math.max(unreadBase, settings.markedUnread ? 1 : 0);
+    return { type: 'direct', id, person, key, last, unread, favorite: favoriteIds.includes(id), settings };
   }).filter(x => x.person);
   const groupRows = Object.values(groups || {}).filter(group => (group.memberIds || []).includes(activeId)).map(group => {
-    const convo = conversations[groupThreadKey(group.id)] || [];
+    const key = groupThreadKey(group.id);
+    const convo = conversations[key] || [];
     const last = convo[convo.length - 1];
-    const unread = convo.filter(m => !(m.readBy || []).includes(activeId) && m.senderId !== activeId).length;
-    const key=groupThreadKey(group.id);
-    return { type: 'group', id: group.id, group, last, unread, favorite: false, archived:!!chatUserSettings[key]?.archived, muted:chatUserSettings[key]?.mutedUntil>Date.now() };
+    const settings = chatUserSettings[key] || {};
+    const unreadBase = convo.filter(m => !(m.seenBy || m.readBy || []).includes(activeId) && m.senderId !== activeId).length;
+    const unread = Math.max(unreadBase, settings.markedUnread ? 1 : 0);
+    return { type: 'group', id: group.id, group, key, last, unread, favorite: false, settings };
   });
   const allRows = [...groupRows, ...directRows];
-  const archivedCount=allRows.filter(row=>row.archived).length;
-  const rows = allRows.filter(row=>showArchived?row.archived:!row.archived).sort((a, b) => Number(b.favorite) - Number(a.favorite) || (b.last?.id || b.group?.createdAt || '').toString().localeCompare((a.last?.id || a.group?.createdAt || '').toString()));
-  const preview = (item) => item.last ? `${item.last.senderId === activeId ? 'You: ' : item.type === 'group' ? `${profiles[item.last.senderId]?.name?.split(' ')[0] || 'Member'}: ` : ''}${item.last.type === 'text' ? (item.last.text || (item.last.cipher ? '🔒 Encrypted message' : 'Message')) : item.last.type === 'photo' ? '📷 Encrypted photo' : '🎙 Encrypted voice message'}` : (item.type === 'group' ? 'Start the group conversation' : 'Start the conversation');
+  const archivedCount = allRows.filter(r => r.settings?.archived).length;
+  const rows = allRows.filter(r => showArchived ? !!r.settings?.archived : !r.settings?.archived).sort((a, b) => Number(!!b.settings?.pinnedChat) - Number(!!a.settings?.pinnedChat) || Number(b.favorite) - Number(a.favorite) || (b.last?.createdAt || b.group?.createdAt || 0) - (a.last?.createdAt || a.group?.createdAt || 0));
+  const preview = (item) => item.last ? `${item.last.senderId === activeId ? 'You: ' : item.type === 'group' ? `${profiles[item.last.senderId]?.name?.split(' ')[0] || 'Member'}: ` : ''}${item.last.deletedAt ? 'Message unsent' : item.last.type === 'text' ? (item.last.text || (item.last.cipher ? '🔒 Encrypted message' : 'Message')) : item.last.type === 'photo' ? '📷 Encrypted photo' : '🎙 Encrypted voice message'}` : (item.type === 'group' ? 'Start the group conversation' : 'Start the conversation');
+  const openRowMenu = item => {
+    const muted = !!item.settings?.mutedUntil && item.settings.mutedUntil > Date.now();
+    Alert.alert(item.type === 'group' ? item.group.name : item.person.name, 'Chat options', [
+      { text: item.settings?.pinnedChat ? 'Unpin chat' : 'Pin chat', onPress: () => onUpdateChatState?.(item.key,{pinnedChat:!item.settings?.pinnedChat}) },
+      { text: item.settings?.markedUnread ? 'Mark as read' : 'Mark as unread', onPress: () => onUpdateChatState?.(item.key,{markedUnread:!item.settings?.markedUnread}) },
+      { text: muted ? 'Unmute' : 'Mute for 1 hour', onPress: () => onUpdateChatState?.(item.key,{mutedUntil:muted?null:Date.now()+60*60*1000}) },
+      { text: item.settings?.archived ? 'Unarchive' : 'Archive', onPress: () => onUpdateChatState?.(item.key,{archived:!item.settings?.archived}) },
+      { text:'Cancel', style:'cancel' },
+    ]);
+  };
 
   return (
     <View style={styles.flexOne}>
-      <View style={styles.simpleHeader}><View style={{ flex: 1 }}><Text style={[styles.bigTitle, { color: theme.text }]}>{showArchived?'Archived':'Chats'}</Text><Text style={[styles.headerSub, { color: theme.sub }]}>Direct + group chats · encrypted by default.</Text></View>{archivedCount?<Pressable onPress={()=>setShowArchived(v=>!v)} style={[styles.newGroupButton,{backgroundColor:theme.soft,marginRight:7}]}><Ionicons name={showArchived?'chatbubbles':'archive'} size={15} color={theme.text}/><Text style={{color:theme.text,fontWeight:'900',fontSize:11}}>{showArchived?'Inbox':archivedCount}</Text></Pressable>:null}<Pressable onPress={onCreateGroup} style={[styles.newGroupButton, { backgroundColor: theme.inverse }]}><Ionicons name="people" size={16} color={theme.inverseText} /><Text style={{ color: theme.inverseText, fontWeight: '900', fontSize: 11 }}>New group</Text></Pressable></View>
+      <View style={styles.simpleHeader}><View style={{ flex: 1 }}><Text style={[styles.bigTitle, { color: theme.text }]}>Chats</Text><Text style={[styles.headerSub, { color: theme.sub }]}>Messaging Upgrade · realtime, edited, pinned & delivered.</Text></View><Pressable onPress={onCreateGroup} style={[styles.newGroupButton, { backgroundColor: theme.inverse }]}><Ionicons name="people" size={16} color={theme.inverseText} /><Text style={{ color: theme.inverseText, fontWeight: '900', fontSize: 11 }}>New group</Text></Pressable></View>
+      {archivedCount ? <Pressable onPress={()=>setShowArchived(v=>!v)} style={[styles.settingsEntryCard,{marginHorizontal:16,marginBottom:4,backgroundColor:theme.card,borderColor:theme.border}]}><View style={[styles.settingsIcon,{backgroundColor:theme.soft}]}><Ionicons name="archive-outline" size={18} color={theme.text}/></View><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{showArchived?'Back to chats':'Archived chats'}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{archivedCount} archived</Text></View><Ionicons name="chevron-forward" size={18} color={theme.sub}/></Pressable>:null}
       <FlatList data={rows} keyExtractor={x => `${x.type}_${x.id}`} contentContainerStyle={styles.listPad} showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
-          <Pressable onPress={() => item.type === 'group' ? openGroup(item.group) : openChat(item.person)} style={({ pressed }) => [styles.chatRow, { borderBottomColor: theme.border, opacity: pressed ? .72 : 1 }]}>
+          <Pressable onPress={() => item.type === 'group' ? openGroup(item.group) : openChat(item.person)} onLongPress={()=>openRowMenu(item)} delayLongPress={380} style={({ pressed }) => [styles.chatRow, { borderBottomColor: theme.border, opacity: pressed ? .72 : 1 }]}>
             <View>{item.type === 'group' ? <GroupAvatar group={item.group} profiles={profiles} theme={theme} size={52} /> : <Avatar person={item.person} size={52} theme={theme} />}{item.unread ? <View style={styles.unreadDot} /> : null}</View>
-            <View style={{ flex: 1, minWidth: 0 }}><View style={styles.rowBetween}><View style={styles.inlineNameRow}><Text style={[styles.personName, { color: theme.text }]}>{item.type === 'group' ? item.group.name : item.person.name}</Text>{item.muted?<Ionicons name="notifications-off" size={12} color={theme.sub}/>:null}{item.type === 'group' ? <View style={[styles.groupPill, { backgroundColor: theme.soft }]}><Text style={[styles.groupPillText, { color: theme.sub }]}>{item.group.memberIds?.length || 0}</Text></View> : item.favorite ? <Ionicons name="star" size={13} color={ACCENT} /> : null}</View><Text style={[styles.metaText, { color: theme.sub }]}>{item.last?.time || ''}</Text></View><Text numberOfLines={1} style={[styles.chatPreview, { color: item.unread ? theme.text : theme.sub, fontWeight: item.unread ? '700' : '400' }]}>{preview(item)}</Text></View>
+            <View style={{ flex: 1, minWidth: 0 }}><View style={styles.rowBetween}><View style={styles.inlineNameRow}><Text style={[styles.personName, { color: theme.text }]}>{item.type === 'group' ? item.group.name : item.person.name}</Text>{item.settings?.pinnedChat ? <Ionicons name="pin" size={12} color={theme.sub}/>:null}{item.settings?.mutedUntil && item.settings.mutedUntil>Date.now()?<Ionicons name="volume-mute" size={12} color={theme.sub}/>:null}{item.type === 'group' ? <View style={[styles.groupPill, { backgroundColor: theme.soft }]}><Text style={[styles.groupPillText, { color: theme.sub }]}>{item.group.memberIds?.length || 0}</Text></View> : item.favorite ? <Ionicons name="star" size={13} color={ACCENT} /> : null}</View><Text style={[styles.metaText, { color: theme.sub }]}>{item.last?.time || ''}</Text></View><Text numberOfLines={1} style={[styles.chatPreview, { color: item.unread ? theme.text : theme.sub, fontWeight: item.unread ? '700' : '400' }]}>{preview(item)}</Text></View>
             {item.unread ? <View style={styles.unreadCount}><Text style={styles.unreadCountText}>{item.unread}</Text></View> : null}
           </Pressable>
         )}
-        ListEmptyComponent={<View style={styles.emptyState}><Ionicons name="chatbubble-ellipses-outline" size={40} color={theme.sub} /><Text style={[styles.emptyTitle, { color: theme.text }]}>No chats yet</Text><Text style={[styles.emptyBody, { color: theme.sub }]}>LINK with someone or create a group.</Text></View>}
+        ListEmptyComponent={<View style={styles.emptyState}><Ionicons name={showArchived?'archive-outline':'chatbubble-ellipses-outline'} size={40} color={theme.sub} /><Text style={[styles.emptyTitle, { color: theme.text }]}>{showArchived?'No archived chats':'No chats yet'}</Text><Text style={[styles.emptyBody, { color: theme.sub }]}>{showArchived?'Archived conversations will appear here.':'LINK with someone or create a group.'}</Text></View>}
       />
     </View>
   );
@@ -976,7 +992,7 @@ function SettingsHubModal({ visible, onClose, theme, profile, accountEmail, priv
 
         <SectionTitle theme={theme}>Account</SectionTitle>
         <Pressable onPress={onSignOut} style={[styles.settingsDangerCard,{backgroundColor:theme.card,borderColor:theme.border}]}><Ionicons name="log-out-outline" size={20} color={theme.danger}/><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.danger}]}>Sign out</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Use another LINK account on this device.</Text></View></Pressable>
-        <Text style={[styles.settingHint,{color:theme.sub,textAlign:'center',marginTop:14}]}>LINK 1.2 · messaging and privacy preferences sync through LINK Production.</Text>
+        <Text style={[styles.settingHint,{color:theme.sub,textAlign:'center',marginTop:14}]}>LINK 1.1 · privacy preferences sync through LINK Production.</Text>
       </ScrollView>
     </SafeAreaView>
   </Modal>;
@@ -1135,20 +1151,14 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
 
   const content = (
     <>
-      {message.forwardedFrom ? <View style={styles.forwardedLabel}><Ionicons name="arrow-redo-outline" size={11} color={mine ? outgoingText : theme.sub} /><Text style={{ color: mine ? outgoingText : theme.sub, fontSize: 10, fontWeight: '800', opacity: .72 }}>Forwarded</Text></View> : null}
-      {quoted ? <View style={[styles.replyQuote, { borderLeftColor: mine ? (outgoingText === '#FFFFFF' ? 'rgba(255,255,255,.72)' : 'rgba(0,0,0,.32)') : outgoingTheme.colors[0] }]}><Text numberOfLines={1} style={{ color: mine ? (outgoingText === '#FFFFFF' ? 'rgba(255,255,255,.82)' : 'rgba(0,0,0,.62)') : theme.sub, fontSize: 11, fontWeight: '700' }}>{quoted.type === 'text' ? quoted.text : quoted.type === 'photo' ? '📷 Photo' : '🎙 Voice message'}</Text></View> : null}
-      {message.deletedAt
-        ? <View style={styles.deletedMessage}><Ionicons name="ban-outline" size={15} color={mine ? outgoingText : theme.sub} /><Text style={[styles.bubbleText, { color: mine ? outgoingText : theme.sub, fontStyle:'italic' }]}>Message deleted</Text></View>
-        : message.type === 'photo' || message.type === 'gif'
+      {message.forwardedFrom ? <Text style={{ color: mine ? (outgoingText === '#FFFFFF' ? 'rgba(255,255,255,.7)' : 'rgba(0,0,0,.55)') : theme.sub, fontSize: 10, fontWeight: '800', marginBottom: 5 }}>↪ Forwarded</Text> : null}
+      {quoted ? <View style={[styles.replyQuote, { borderLeftColor: mine ? (outgoingText === '#FFFFFF' ? 'rgba(255,255,255,.72)' : 'rgba(0,0,0,.32)') : outgoingTheme.colors[0] }]}><Text numberOfLines={1} style={{ color: mine ? (outgoingText === '#FFFFFF' ? 'rgba(255,255,255,.82)' : 'rgba(0,0,0,.62)') : theme.sub, fontSize: 11, fontWeight: '700' }}>{quoted?.deletedAt ? 'Message unsent' : quoted.type === 'text' ? quoted.text : quoted.type === 'photo' ? '📷 Photo' : '🎙 Voice message'}</Text></View> : null}
+      {message.deletedAt || message.type === 'deleted'
+        ? <Text style={[styles.bubbleText, { color: mine ? outgoingText : theme.sub, fontStyle: 'italic', opacity: .72 }]}>Message unsent</Text>
+        : message.type === 'photo'
         ? <View style={[styles.photoMessage, { backgroundColor: mine ? overlayColor : theme.soft }]}>{message.uri ? <Image source={{ uri: message.uri }} style={styles.photoMessageImage} /> : <><Ionicons name="image-outline" size={28} color={mine ? outgoingText : theme.text} /><Text style={{ color: mine ? outgoingText : theme.text, fontWeight: '800', marginTop: 7 }}>Photo</Text></>}</View>
-        : message.type === 'video'
-          ? <View style={[styles.richMessageCard, { backgroundColor: mine ? overlayColor : theme.soft }]}><Ionicons name="videocam" size={22} color={mine ? outgoingText : theme.text} /><View><Text style={{ color: mine ? outgoingText : theme.text, fontWeight:'900' }}>Video</Text><Text style={{ color: mine ? outgoingText : theme.sub, opacity:.72, fontSize:11 }}>Tap to open</Text></View></View>
-        : message.type === 'location'
-          ? <View style={[styles.richMessageCard, { backgroundColor: mine ? overlayColor : theme.soft }]}><Ionicons name="location" size={22} color={mine ? outgoingText : outgoingTheme.colors[0]} /><View><Text style={{ color: mine ? outgoingText : theme.text, fontWeight:'900' }}>Shared location</Text><Text numberOfLines={1} style={{ color: mine ? outgoingText : theme.sub, opacity:.72, fontSize:11 }}>{message.text || 'Open location'}</Text></View></View>
-        : message.type === 'contact'
-          ? <View style={[styles.richMessageCard, { backgroundColor: mine ? overlayColor : theme.soft }]}><Ionicons name="person-circle" size={24} color={mine ? outgoingText : outgoingTheme.colors[0]} /><View><Text style={{ color: mine ? outgoingText : theme.text, fontWeight:'900' }}>Contact</Text><Text numberOfLines={1} style={{ color: mine ? outgoingText : theme.sub, opacity:.72, fontSize:11 }}>{message.text || 'LINK contact'}</Text></View></View>
         : message.type === 'voice'
-          ? <View style={styles.voiceMessage}><View style={[styles.voicePlay, { backgroundColor: mine ? overlayColor : theme.soft }]}><Ionicons name="play" size={16} color={mine ? outgoingText : theme.text} /></View><View style={styles.voiceWave}>{[7,14,10,18,12,20,8,16,11,19,9,14].map((height,i)=><View key={i} style={{width:2,height,borderRadius:2,backgroundColor:mine?outgoingText:outgoingTheme.colors[0],opacity:.72}} />)}</View><Text style={{ color: mine ? outgoingText : theme.text, fontSize: 11, fontWeight: '700' }}>{message.duration || '0:08'}</Text></View>
+          ? <View style={styles.voiceMessage}><View style={[styles.voicePlay, { backgroundColor: mine ? overlayColor : theme.soft }]}><Ionicons name="play" size={16} color={mine ? outgoingText : theme.text} /></View><View style={{ flex: 1, height: 3, borderRadius: 2, backgroundColor: mine ? (outgoingText === '#FFFFFF' ? 'rgba(255,255,255,.48)' : 'rgba(0,0,0,.25)') : theme.border }} /><Text style={{ color: mine ? outgoingText : theme.text, fontSize: 11, fontWeight: '700' }}>{message.duration || '0:08'}</Text></View>
           : <Text style={[styles.bubbleText, { color: mine ? outgoingText : theme.text }]}>{message.text}</Text>}
     </>
   );
@@ -1179,11 +1189,9 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
           </View>
         </Pressable>
         {showMeta ? <View style={[styles.messageMetaOutside, { justifyContent: mine ? 'flex-end' : 'flex-start' }]}>
-          {message.pinned ? <Ionicons name="pin" size={10} color={theme.sub} /> : null}
           {message.expiresAt ? <Ionicons name="timer-outline" size={10} color={theme.sub} /> : null}
-          {message.editedAt ? <Text style={[styles.bubbleTime, { color: theme.sub }]}>Edited</Text> : null}
-          <Text style={[styles.bubbleTime, { color: theme.sub }]}>{message.time}</Text>
-          {mine ? <><Ionicons name={(message.readBy?.length > 1 || message.deliveredBy?.length > 1) ? 'checkmark-done' : 'checkmark'} size={12} color={message.readBy?.length > 1 ? outgoingTheme.colors[0] : theme.sub} /><Text style={[styles.bubbleTime,{color:message.readBy?.length > 1 ? outgoingTheme.colors[0] : theme.sub}]}>{message.readBy?.length > 1 ? 'Read' : message.deliveredBy?.length > 1 ? 'Delivered' : 'Sent'}</Text></> : null}
+          <Text style={[styles.bubbleTime, { color: theme.sub }]}>{message.time}{message.editedAt ? ' · Edited' : ''}</Text>
+          {mine ? <><Ionicons name={(message.readBy?.length || 0) > 1 ? 'checkmark-done' : (message.deliveredBy?.length || 0) > 1 ? 'checkmark-done' : 'checkmark'} size={12} color={(message.readBy?.length || 0) > 1 ? outgoingTheme.colors[0] : theme.sub} />{(message.readBy?.length || 0) > 1 ? <Text style={[styles.bubbleTime,{color:theme.sub}]}>Seen{groupMode ? ` · ${message.readBy.length - 1}` : ''}</Text> : (message.deliveredBy?.length || 0) > 1 ? <Text style={[styles.bubbleTime,{color:theme.sub}]}>Delivered</Text> : null}</> : null}
         </View> : <View style={styles.groupMessageTightSpacer} />}
       </View>
       {groupMode && mine ? avatarSlot : null}
@@ -1191,79 +1199,99 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
   );
 }
 
-function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, typingEnabled = true, onBack, onSend, onReact, onEdit, onDeleteForMe, onDeleteEveryone, onPin, onForward, onOpenProfile, markRead, silentConfig, onOpenSilent, onOpenEncryptionInfo, chatThemeId = 'default', chatThemeScope = 'messages', onOpenTheme, chatPrefs = {}, onSavePrefs, isGroup = false, group = null, groupMembers = [], onRenameGroup, onToggleGroupEveryone, doubleTapEmoji = '❤️' }) {
+function ChatScreen({ theme, activeProfile, person, messages, profiles, onBack, onSend, onReact, onEdit, onUnsend, onDeleteForMe, onTogglePin, pinnedMessageIds = [], typingUserIds = [], onTypingChange, onForward, forwardTargets = [], onOpenProfile, markRead, silentConfig, onOpenSilent, onOpenEncryptionInfo, chatThemeId = 'default', chatThemeScope = 'messages', onOpenTheme, chatUserState = {}, onUpdateChatUserState, isGroup = false, group = null, groupMembers = [], onRenameGroup, onToggleGroupEveryone, doubleTapEmoji = '❤️' }) {
   const [text, setText] = useState('');
   const [replyTo, setReplyTo] = useState(null);
-  const [editTarget, setEditTarget] = useState(null);
-  const [typingUsers, setTypingUsers] = useState({});
-  const [draftLoaded,setDraftLoaded]=useState(false);
   const [groupInfoOpen, setGroupInfoOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [pinsOpen, setPinsOpen] = useState(false);
+  const [mediaOpen, setMediaOpen] = useState(false);
+  const [editTarget, setEditTarget] = useState(null);
+  const [editDraft, setEditDraft] = useState('');
+  const [forwardTargetMessage, setForwardTargetMessage] = useState(null);
   const listRef = useRef(null);
-  const signalRef = useRef(null);
-  const typingTimerRef = useRef(null);
-  const remoteTypingTimersRef = useRef({});
+  const typingStopRef = useRef(null);
+  const typingLastSignalRef = useRef(0);
   const chatTheme = chatThemeById(chatThemeId);
   const chatAccent = chatTheme.colors[0];
-  const draftKey = `${DRAFT_PREFIX}:${activeProfile.id}:${chatId || person.id}`;
-  const pinnedMessages = messages.filter(message => message.pinned && !message.deletedAt);
 
   useEffect(() => {
     markRead();
-    if (chatId) markChatDeliveredRemote(chatId).catch(() => {});
-  }, [person.id, chatId]);
-  useEffect(() => {
-    let disposed = false;
-    let localSignal = null;
-    if (chatId && typingEnabled) subscribeChatSignals(chatId, signal => {
-      if (disposed || signal.type !== 'typing' || !signal.userId || signal.userId === activeProfile.id) return;
-      setTypingUsers(prev => ({...prev,[signal.userId]:!!signal.typing}));
-      clearTimeout(remoteTypingTimersRef.current[signal.userId]);
-      if (signal.typing) remoteTypingTimersRef.current[signal.userId] = setTimeout(() => setTypingUsers(prev => ({...prev,[signal.userId]:false})), 2600);
-    }).then(signal => { if (disposed) signal?.close?.(); else { localSignal=signal; signalRef.current=signal; } }).catch(() => {});
-    return () => { disposed=true; localSignal?.sendTyping?.(false); localSignal?.close?.(); signalRef.current=null; Object.values(remoteTypingTimersRef.current).forEach(clearTimeout); };
-  }, [chatId, activeProfile.id, typingEnabled]);
-  useEffect(() => { let alive=true; setDraftLoaded(false); setText(''); AsyncStorage.getItem(draftKey).then(value => { if (alive && value) setText(value); }).catch(() => {}).finally(()=>{if(alive)setDraftLoaded(true);}); return()=>{alive=false;}; }, [draftKey]);
-  useEffect(() => { if(!draftLoaded)return undefined; const timer=setTimeout(() => AsyncStorage.setItem(draftKey,text).catch(()=>{}),180); return()=>clearTimeout(timer); }, [draftKey,text,draftLoaded]);
-  const changeText = (value) => {
+    return () => { clearTimeout(typingStopRef.current); onTypingChange?.(false); };
+  }, [person.id]);
+
+  const signalTyping = (value) => {
     setText(value);
-    if (!typingEnabled || !signalRef.current) return;
-    signalRef.current.sendTyping?.(!!value.trim());
-    clearTimeout(typingTimerRef.current);
-    typingTimerRef.current=setTimeout(()=>signalRef.current?.sendTyping?.(false),1400);
+    if (!value.trim()) { clearTimeout(typingStopRef.current); onTypingChange?.(false); return; }
+    const now = Date.now();
+    if (now - typingLastSignalRef.current > 1800) {
+      typingLastSignalRef.current = now;
+      onTypingChange?.(true);
+    }
+    clearTimeout(typingStopRef.current);
+    typingStopRef.current = setTimeout(() => onTypingChange?.(false), 1600);
   };
+
   const send = (extra = {}) => {
     const clean = text.trim();
-    if (editTarget) {
-      if (!clean) return;
-      onEdit(person.id, editTarget, clean);
-      setText(''); setEditTarget(null); setReplyTo(null); AsyncStorage.removeItem(draftKey).catch(()=>{}); signalRef.current?.sendTyping?.(false);
-      return;
-    }
     if (!clean && !extra.type) return;
+    onTypingChange?.(false);
     onSend(person.id, { type: extra.type || 'text', text: clean, replyTo: replyTo?.id || null, ...extra });
-    setText(''); setReplyTo(null); AsyncStorage.removeItem(draftKey).catch(()=>{}); signalRef.current?.sendTyping?.(false);
+    setText(''); setReplyTo(null);
     setTimeout(() => listRef.current?.scrollToEnd?.({ animated: true }), 50);
   };
+
   const pickChatPhoto = async () => {
     try {
       const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!permission.granted) return Alert.alert('Photos permission', 'Allow photo access to send images in chat.');
-      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images','videos'], quality: 0.72, videoMaxDuration:60 });
-      if (!result.canceled && result.assets?.[0]?.uri) { const asset=result.assets[0]; send({ type:asset.type==='video'?'video':'photo', text:'', uri:asset.uri, duration:asset.duration?Math.round(asset.duration/1000):null }); }
+      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.72 });
+      if (!result.canceled && result.assets?.[0]?.uri) send({ type: 'photo', text: '', uri: result.assets[0].uri });
     } catch { Alert.alert('Photo', 'Could not open your photo library.'); }
+  };
+
+  const pinnedSet = new Set(pinnedMessageIds || []);
+  const pinnedMessages = messages.filter(m => pinnedSet.has(m.id) && !m.deletedAt);
+  const latestPinned = pinnedMessages[pinnedMessages.length - 1];
+  const searchable = messages.filter(m => !m.deletedAt && m.type === 'text' && (m.text || '').trim());
+  const searchResults = !searchQuery.trim() ? searchable.slice().reverse().slice(0, 30) : searchable.filter(m => (m.text || '').toLowerCase().includes(searchQuery.trim().toLowerCase())).reverse();
+  const mediaMessages = messages.filter(m => !m.deletedAt && (m.type === 'photo' || m.type === 'voice'));
+  const typingNames = typingUserIds.map(id => profiles[id]?.name?.split(' ')[0]).filter(Boolean);
+  const typingLabel = typingNames.length === 1 ? `${typingNames[0]} is typing…` : typingNames.length === 2 ? `${typingNames[0]} and ${typingNames[1]} are typing…` : typingNames.length > 2 ? `${typingNames.length} people are typing…` : '';
+
+  const jumpToMessage = (messageId) => {
+    const index = messages.findIndex(m => m.id === messageId);
+    if (index >= 0) setTimeout(() => listRef.current?.scrollToIndex?.({ index, animated: true, viewPosition: .5 }), 120);
+  };
+
+  const openTools = () => {
+    const muted = !!chatUserState?.mutedUntil && chatUserState.mutedUntil > Date.now();
+    Alert.alert('Chat tools', person.name, [
+      { text: 'Search', onPress: () => setSearchOpen(true) },
+      { text: `Pinned messages${pinnedMessages.length ? ` (${pinnedMessages.length})` : ''}`, onPress: () => setPinsOpen(true) },
+      { text: 'Media & voice', onPress: () => setMediaOpen(true) },
+      { text: 'Chat theme', onPress: onOpenTheme },
+      { text: silentConfig?.enabled ? 'Disappearing messages' : 'Turn on disappearing messages', onPress: onOpenSilent },
+      { text: muted ? 'Unmute chat' : 'Mute for 1 hour', onPress: () => onUpdateChatUserState?.({ mutedUntil: muted ? null : Date.now() + 60 * 60 * 1000 }) },
+      { text: chatUserState?.archived ? 'Unarchive chat' : 'Archive chat', onPress: () => onUpdateChatUserState?.({ archived: !chatUserState?.archived }) },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
   };
 
   const longPress = (m) => {
     const mine = m.senderId === activeProfile.id;
+    const pinned = pinnedSet.has(m.id);
     const buttons = [
       { text: 'Reply', onPress: () => setReplyTo(m) },
-      { text: m.pinned ? 'Unpin' : 'Pin', onPress: () => onPin(person.id,m,!m.pinned) },
-      { text: 'Forward', onPress: () => onForward(person.id,m) },
-      { text: 'React', onPress: () => Alert.alert('React', 'Choose a reaction', ['❤️','😂','🔥','😮','😢','👏'].map(emoji=>({text:emoji,onPress:()=>onReact(person.id,m.id,emoji)})).concat({text:'Cancel',style:'cancel'})) },
+      { text: pinned ? 'Unpin' : 'Pin message', onPress: () => onTogglePin?.(m.id, pinned) },
+      { text: '❤️ React', onPress: () => onReact(person.id, m.id, '❤️') },
+      { text: '😂 React', onPress: () => onReact(person.id, m.id, '😂') },
     ];
-    if (mine && m.type === 'text' && !m.deletedAt) buttons.push({ text: 'Edit', onPress: () => { setEditTarget(m); setReplyTo(null); setText(m.text || ''); } });
-    buttons.push({ text: 'Delete for me', style: 'destructive', onPress: () => onDeleteForMe(person.id,m.id) });
-    if (mine && !m.deletedAt) buttons.push({ text: 'Delete for everyone', style: 'destructive', onPress: () => onDeleteEveryone(person.id,m.id) });
+    if (m.type === 'text' && !m.deletedAt) buttons.push({ text: 'Forward', onPress: () => setForwardTargetMessage(m) });
+    if (mine && m.type === 'text' && !m.deletedAt) buttons.push({ text: 'Edit', onPress: () => { setEditTarget(m); setEditDraft(m.text || ''); } });
+    buttons.push({ text: 'Delete for me', style: 'destructive', onPress: () => onDeleteForMe?.(m.id) });
+    if (mine && !m.deletedAt) buttons.push({ text: 'Unsend for everyone', style: 'destructive', onPress: () => onUnsend?.(m.id) });
     buttons.push({ text: 'Cancel', style: 'cancel' });
     Alert.alert('Message', 'Choose an action', buttons);
   };
@@ -1272,40 +1300,46 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
     <EdgeSwipeBack onBack={onBack}>
     <KeyboardAvoidingView style={[styles.flexOne, { backgroundColor: theme.bg }]} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <SafeAreaView style={styles.flexOne}>
-        <View style={[styles.chatHeader, { borderBottomColor: theme.border }]}>
+        <View style={[styles.chatHeader, { borderBottomColor: theme.border }]}> 
           <BlurView intensity={Platform.OS === 'ios' ? 42 : 28} tint={theme.bg === dark.bg ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
           <View style={styles.chatHeaderSide}><IconButton icon="chevron-back" onPress={onBack} theme={theme} /></View>
           <Pressable onPress={() => isGroup ? setGroupInfoOpen(true) : onOpenProfile(person)} style={styles.chatHeaderPersonCenter}>
             {isGroup ? <GroupAvatar group={{ memberIds: groupMembers.map(p => p.id) }} profiles={profiles} theme={theme} size={34} /> : <Avatar person={person} size={34} theme={theme} />}
-            <View style={styles.chatHeaderIdentity}><Text numberOfLines={1} style={[styles.chatHeaderName, { color: theme.text }]}>{person.name}</Text><Ionicons name="chevron-down" size={12} color={theme.sub} /></View>
+            <View style={styles.chatHeaderIdentity}><Text numberOfLines={1} style={[styles.chatHeaderName, { color: theme.text }]}>{person.name}</Text><Text numberOfLines={1} style={{ color: theme.sub, fontSize: 9, marginTop: 1 }}>{typingLabel || (!isGroup && presenceLabel(person)) || (isGroup ? `${groupMembers.length} members` : '')}</Text></View>
           </Pressable>
-          <View style={[styles.chatHeaderSide, styles.chatHeaderRight]}><IconButton icon="color-palette-outline" onPress={onOpenTheme} theme={theme} /><IconButton icon={silentConfig?.enabled ? "timer" : "timer-outline"} onPress={onOpenSilent} theme={theme} filled={!!silentConfig?.enabled} /><IconButton icon="ellipsis-horizontal" onPress={() => Alert.alert('Chat controls', chatPrefs.mutedUntil>Date.now()?'Notifications muted':'Notifications on', [
-            {text:chatPrefs.mutedUntil>Date.now()?'Unmute':'Mute for 8 hours',onPress:()=>onSavePrefs?.({...chatPrefs,mutedUntil:chatPrefs.mutedUntil>Date.now()?null:Date.now()+8*60*60*1000})},
-            {text:chatPrefs.archived?'Move to inbox':'Archive chat',onPress:()=>onSavePrefs?.({...chatPrefs,archived:!chatPrefs.archived})},
-            {text:'Cancel',style:'cancel'},
-          ])} theme={theme} /></View>
+          <View style={[styles.chatHeaderSide, styles.chatHeaderRight]}><IconButton icon="search-outline" onPress={() => setSearchOpen(true)} theme={theme} /><IconButton icon="ellipsis-horizontal" onPress={openTools} theme={theme} /></View>
         </View>
-        <Pressable onPress={onOpenEncryptionInfo} style={[styles.metContext, { backgroundColor: theme.soft }]}><Ionicons name="lock-closed" size={13} color={theme.success} /><Text style={[styles.metContextText, { color: theme.sub }]}>Encrypted chat</Text><Ionicons name="information-circle-outline" size={13} color={theme.sub} /></Pressable>
-        {silentConfig?.enabled ? <Pressable onPress={onOpenSilent} style={[styles.silentBanner, { backgroundColor: `${chatAccent}14` }]}><Ionicons name="timer" size={14} color={chatAccent} /><Text style={[styles.silentBannerText, { color: chatAccent }]}>Silent Chat · new messages disappear after {formatSilentTimer(silentConfig.timerSeconds)}</Text><Ionicons name="chevron-forward" size={13} color={chatAccent} /></Pressable> : null}
-        {pinnedMessages.length ? <Pressable onPress={() => { const pin=pinnedMessages[pinnedMessages.length-1]; setReplyTo(pin); }} style={[styles.pinnedBanner,{backgroundColor:theme.card,borderBottomColor:theme.border}]}><Ionicons name="pin" size={14} color={chatAccent}/><View style={{flex:1}}><Text style={{color:theme.text,fontWeight:'900',fontSize:11}}>Pinned message</Text><Text numberOfLines={1} style={{color:theme.sub,fontSize:11}}>{pinnedMessages[pinnedMessages.length-1].text || pinnedMessages[pinnedMessages.length-1].type}</Text></View><Text style={{color:theme.sub,fontSize:10}}>{pinnedMessages.length}</Text></Pressable> : null}
+        <Pressable onPress={onOpenEncryptionInfo} style={[styles.metContext, { backgroundColor: theme.soft }]}><Ionicons name="lock-closed" size={13} color={theme.success} /><Text style={[styles.metContextText, { color: theme.sub }]}>Encrypted LINK chat</Text><Ionicons name="information-circle-outline" size={13} color={theme.sub} /></Pressable>
+        {latestPinned ? <Pressable onPress={() => setPinsOpen(true)} style={[styles.silentBanner, { backgroundColor: `${chatAccent}12` }]}><Ionicons name="pin" size={14} color={chatAccent} /><Text numberOfLines={1} style={[styles.silentBannerText, { color: chatAccent, flex: 1 }]}>Pinned · {latestPinned.type === 'text' ? latestPinned.text : latestPinned.type === 'photo' ? 'Photo' : 'Voice message'}</Text><Ionicons name="chevron-forward" size={13} color={chatAccent} /></Pressable> : null}
+        {silentConfig?.enabled ? <Pressable onPress={onOpenSilent} style={[styles.silentBanner, { backgroundColor: `${chatAccent}14` }]}><Ionicons name="timer" size={14} color={chatAccent} /><Text style={[styles.silentBannerText, { color: chatAccent }]}>Disappearing messages · {formatSilentTimer(silentConfig.timerSeconds)}</Text><Ionicons name="chevron-forward" size={13} color={chatAccent} /></Pressable> : null}
         <View style={styles.chatBody}>
           {chatThemeScope === 'full' ? <LinearGradient pointerEvents="none" colors={[theme.bg, `${chatAccent}08`, theme.bg]} locations={[0, .56, 1]} style={StyleSheet.absoluteFill} /> : null}
-          <FlatList ref={listRef} data={messages} keyExtractor={m => m.id} contentContainerStyle={styles.messageList} showsVerticalScrollIndicator={false} onContentSizeChange={() => listRef.current?.scrollToEnd?.({ animated: false })}
+          <FlatList ref={listRef} data={messages} keyExtractor={m => m.id} contentContainerStyle={styles.messageList} showsVerticalScrollIndicator={false} onContentSizeChange={() => listRef.current?.scrollToEnd?.({ animated: false })} onScrollToIndexFailed={({ index }) => setTimeout(() => listRef.current?.scrollToOffset?.({ offset: Math.max(0,index * 72), animated:true }), 80)}
             renderItem={({ item, index }) => {
               const prev = messages[index - 1];
               const next = messages[index + 1];
               const sameAsPrev = !!prev && prev.senderId === item.senderId;
               const sameAsNext = !!next && next.senderId === item.senderId;
-              return <ChatMessage message={item} mine={item.senderId === activeProfile.id} theme={theme} profiles={profiles} chatTheme={chatTheme} quoted={messages.find(x => x.id === item.replyTo)} onSwipeReply={() => setReplyTo(item)} onDoubleTap={() => onReact(person.id, item.id, doubleTapEmoji)} onLongPress={() => longPress(item)} groupMode={isGroup} showSender={isGroup && !sameAsPrev} showAvatar={isGroup && !sameAsNext} showMeta={!isGroup || !sameAsNext} />;
+              return <ChatMessage message={item} mine={item.senderId === activeProfile.id} theme={theme} profiles={profiles} chatTheme={chatTheme} quoted={messages.find(x => x.id === item.replyTo)} onSwipeReply={() => setReplyTo(item)} onDoubleTap={() => !item.deletedAt && onReact(person.id, item.id, doubleTapEmoji)} onLongPress={() => longPress(item)} groupMode={isGroup} showSender={isGroup && !sameAsPrev} showAvatar={isGroup && !sameAsNext} showMeta={!isGroup || !sameAsNext} />;
             }}
             ListEmptyComponent={<View style={styles.emptyChat}><View style={[styles.emptyChatIcon, { backgroundColor: `${chatAccent}18` }]}><Ionicons name={isGroup ? 'people' : 'chatbubble-ellipses'} size={28} color={chatAccent} /></View><Text style={[styles.emptyTitle, { color: theme.text }]}>{isGroup ? 'New Group' : 'New LINK'}</Text><Text style={[styles.emptyBody, { color: theme.sub }]}>{isGroup ? 'Send the first message to the group.' : `Say hi to ${person.name.split(' ')[0]}.`}</Text></View>}
           />
-          {Object.entries(typingUsers).some(([,typing])=>typing) ? <View style={styles.typingLine}><View style={[styles.typingBubble, { backgroundColor: theme.soft }]}><Text style={{ color: theme.sub, letterSpacing: 2 }}>•••</Text></View><Text style={{ color: theme.sub, fontSize: 10 }}>{Object.entries(typingUsers).filter(([,typing])=>typing).map(([id])=>profiles[id]?.name?.split(' ')[0]||'Someone').join(', ')} {Object.values(typingUsers).filter(Boolean).length>1?'are':'is'} typing</Text></View> : null}
+          {typingLabel ? <View style={styles.typingLine}><View style={[styles.typingBubble, { backgroundColor: theme.soft }]}><Text style={{ color: theme.sub, letterSpacing: 2 }}>•••</Text></View><Text style={{ color: theme.sub, fontSize: 10 }}>{typingLabel}</Text></View> : null}
         </View>
-        {editTarget ? <View style={[styles.replyComposerBar,{backgroundColor:theme.soft}]}><Ionicons name="create-outline" size={17} color={chatAccent}/><View style={{flex:1}}><Text style={{color:chatAccent,fontWeight:'900',fontSize:11}}>Editing message</Text><Text numberOfLines={1} style={{color:theme.sub,fontSize:12}}>{editTarget.text}</Text></View><Pressable onPress={()=>{setEditTarget(null);setText('');}}><Ionicons name="close" size={19} color={theme.sub}/></Pressable></View> : null}
         {replyTo ? <View style={[styles.replyComposerBar, { backgroundColor: theme.soft }]}><View style={{ flex: 1 }}><Text style={{ color: chatAccent, fontWeight: '800', fontSize: 11 }}>Replying to {replyTo.senderId === activeProfile.id ? 'yourself' : profiles[replyTo.senderId]?.name}</Text><Text numberOfLines={1} style={{ color: theme.sub, fontSize: 12 }}>{replyTo.type === 'text' ? replyTo.text : replyTo.type}</Text></View><Pressable onPress={() => setReplyTo(null)}><Ionicons name="close" size={19} color={theme.sub} /></Pressable></View> : null}
-        <View style={[styles.composerWrap, { backgroundColor: theme.bg }]}><Pressable style={[styles.plusButton, { backgroundColor: theme.soft, borderColor: theme.border }]} onPress={() => Alert.alert('Send', 'Choose an attachment.', [{ text: 'Photo or video', onPress: pickChatPhoto }, { text: 'Voice message', onPress: () => send({ type: 'voice', text: '', duration: '0:08' }) }, {text:'Location card',onPress:()=>send({type:'location',text:'Current location'})},{text:'Contact card',onPress:()=>send({type:'contact',text:activeProfile.name})},{ text: 'Cancel', style: 'cancel' }])}><Ionicons name="add" size={24} color={theme.text} /></Pressable><View style={[styles.composer, { backgroundColor: theme.card, borderColor: theme.border }]}><TextInput value={text} onChangeText={changeText} placeholder={editTarget?'Edit message':silentConfig?.enabled ? `Silent message · ${formatSilentTimer(silentConfig.timerSeconds)}` : 'Message'} placeholderTextColor={theme.sub} style={[styles.composerInput, { color: theme.text }]} multiline maxLength={1000} /><Pressable onPress={() => send()} style={[styles.sendButton, { backgroundColor: text.trim() ? chatAccent : theme.soft }]}><Ionicons name={editTarget?'checkmark':'arrow-up'} size={19} color={text.trim() ? (chatTheme.textColor || '#fff') : theme.sub} /></Pressable></View></View>
+        <View style={[styles.composerWrap, { backgroundColor: theme.bg }]}><Pressable style={[styles.plusButton, { backgroundColor: theme.soft, borderColor: theme.border }]} onPress={() => Alert.alert('Send', 'Choose an attachment.', [{ text: 'Photo', onPress: pickChatPhoto }, { text: 'Voice message · coming next', onPress: () => Alert.alert('Voice messages', 'Real microphone recording is the next messaging patch. Existing voice messages stay supported.') }, { text: 'Cancel', style: 'cancel' }])}><Ionicons name="add" size={24} color={theme.text} /></Pressable><View style={[styles.composer, { backgroundColor: theme.card, borderColor: theme.border }]}><TextInput value={text} onChangeText={signalTyping} placeholder={silentConfig?.enabled ? `Disappears in ${formatSilentTimer(silentConfig.timerSeconds)}` : 'Message'} placeholderTextColor={theme.sub} style={[styles.composerInput, { color: theme.text }]} multiline maxLength={1000} /><Pressable onPress={() => send()} style={[styles.sendButton, { backgroundColor: text.trim() ? chatAccent : theme.soft }]}><Ionicons name="arrow-up" size={19} color={text.trim() ? (chatTheme.textColor || '#fff') : theme.sub} /></Pressable></View></View>
       </SafeAreaView>
+
+      <Modal visible={searchOpen} transparent animationType="fade" onRequestClose={() => setSearchOpen(false)}><Pressable style={styles.modalBackdrop} onPress={() => setSearchOpen(false)}><Pressable style={[styles.securityCard,{backgroundColor:theme.card,maxHeight:'78%'}]} onPress={()=>{}}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle,{color:theme.text}]}>Search chat</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>{searchResults.length} matching messages</Text></View><IconButton icon="close" onPress={()=>setSearchOpen(false)} theme={theme}/></View><View style={[styles.groupNameInputWrap,{backgroundColor:theme.input,borderColor:theme.border,marginTop:14}]}><Ionicons name="search" size={17} color={theme.sub}/><TextInput autoFocus value={searchQuery} onChangeText={setSearchQuery} placeholder="Search messages" placeholderTextColor={theme.sub} style={[styles.groupNameInput,{color:theme.text}]}/></View><ScrollView showsVerticalScrollIndicator={false} style={{marginTop:10}}>{searchResults.map(m=><Pressable key={m.id} onPress={()=>{setSearchOpen(false);jumpToMessage(m.id);}} style={[styles.settingsRow,{borderBottomWidth:StyleSheet.hairlineWidth,borderBottomColor:theme.border}]}><View style={[styles.settingsIcon,{backgroundColor:theme.soft}]}><Ionicons name="chatbubble-outline" size={17} color={theme.text}/></View><View style={{flex:1}}><Text numberOfLines={2} style={[styles.settingsTitle,{color:theme.text}]}>{m.text}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{profiles[m.senderId]?.name || 'LINK member'} · {m.time}{m.editedAt ? ' · Edited' : ''}</Text></View></Pressable>)}</ScrollView></Pressable></Pressable></Modal>
+
+      <Modal visible={pinsOpen} transparent animationType="fade" onRequestClose={() => setPinsOpen(false)}><Pressable style={styles.modalBackdrop} onPress={() => setPinsOpen(false)}><Pressable style={[styles.securityCard,{backgroundColor:theme.card,maxHeight:'75%'}]} onPress={()=>{}}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle,{color:theme.text}]}>Pinned messages</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>{pinnedMessages.length} pinned in this chat</Text></View><IconButton icon="close" onPress={()=>setPinsOpen(false)} theme={theme}/></View><ScrollView showsVerticalScrollIndicator={false} style={{marginTop:10}}>{pinnedMessages.map(m=><Pressable key={m.id} onPress={()=>{setPinsOpen(false);jumpToMessage(m.id);}} style={[styles.settingsRow,{borderBottomWidth:StyleSheet.hairlineWidth,borderBottomColor:theme.border}]}><View style={[styles.settingsIcon,{backgroundColor:theme.soft}]}><Ionicons name="pin" size={17} color={chatAccent}/></View><View style={{flex:1}}><Text numberOfLines={2} style={[styles.settingsTitle,{color:theme.text}]}>{m.type==='text'?m.text:m.type==='photo'?'📷 Photo':'🎙 Voice message'}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{profiles[m.senderId]?.name || 'LINK member'} · {m.time}</Text></View></Pressable>)}{!pinnedMessages.length?<Text style={[styles.emptyBody,{color:theme.sub,marginTop:22}]}>Long-press any message and choose Pin message.</Text>:null}</ScrollView></Pressable></Pressable></Modal>
+
+      <Modal visible={mediaOpen} transparent animationType="fade" onRequestClose={() => setMediaOpen(false)}><Pressable style={styles.modalBackdrop} onPress={() => setMediaOpen(false)}><Pressable style={[styles.securityCard,{backgroundColor:theme.card,maxHeight:'80%'}]} onPress={()=>{}}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle,{color:theme.text}]}>Media & voice</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>{mediaMessages.length} shared items</Text></View><IconButton icon="close" onPress={()=>setMediaOpen(false)} theme={theme}/></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingTop:12,gap:10}}>{mediaMessages.map(m=><Pressable key={m.id} onPress={()=>{setMediaOpen(false);jumpToMessage(m.id);}} style={[styles.settingsRow,{borderWidth:StyleSheet.hairlineWidth,borderColor:theme.border,borderRadius:16,paddingHorizontal:10}]}>{m.type==='photo'&&m.uri?<Image source={{uri:m.uri}} style={{width:54,height:54,borderRadius:12}}/>:<View style={[styles.settingsIcon,{backgroundColor:theme.soft}]}><Ionicons name="mic-outline" size={18} color={theme.text}/></View>}<View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{m.type==='photo'?'Photo':'Voice message'}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{profiles[m.senderId]?.name || 'LINK member'} · {m.time}</Text></View></Pressable>)}</ScrollView></Pressable></Pressable></Modal>
+
+      <Modal visible={!!editTarget} transparent animationType="fade" onRequestClose={()=>setEditTarget(null)}><Pressable style={styles.modalBackdrop} onPress={()=>setEditTarget(null)}><Pressable style={[styles.securityCard,{backgroundColor:theme.card}]} onPress={()=>{}}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle,{color:theme.text}]}>Edit message</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>Everyone in the chat will see Edited.</Text></View><IconButton icon="close" onPress={()=>setEditTarget(null)} theme={theme}/></View><TextInput autoFocus multiline value={editDraft} onChangeText={setEditDraft} placeholder="Message" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text,minHeight:90,textAlignVertical:'top',marginTop:14}]} maxLength={1000}/><Pressable onPress={()=>{const clean=editDraft.trim();if(!clean)return;onEdit?.(editTarget.id,clean);setEditTarget(null);}} style={[styles.createAccountButton,{backgroundColor:theme.inverse}]}><Ionicons name="checkmark" size={17} color={theme.inverseText}/><Text style={{color:theme.inverseText,fontWeight:'900'}}>Save edit</Text></Pressable></Pressable></Pressable></Modal>
+
+      <Modal visible={!!forwardTargetMessage} transparent animationType="fade" onRequestClose={()=>setForwardTargetMessage(null)}><Pressable style={styles.modalBackdrop} onPress={()=>setForwardTargetMessage(null)}><Pressable style={[styles.securityCard,{backgroundColor:theme.card,maxHeight:'75%'}]} onPress={()=>{}}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle,{color:theme.text}]}>Forward message</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>Choose a LINK</Text></View><IconButton icon="close" onPress={()=>setForwardTargetMessage(null)} theme={theme}/></View><ScrollView showsVerticalScrollIndicator={false} style={{marginTop:10}}>{forwardTargets.filter(p=>p.id!==person.id).map(target=><Pressable key={target.id} onPress={()=>{onForward?.(target.id,forwardTargetMessage);setForwardTargetMessage(null);}} style={[styles.groupMemberRow,{borderBottomColor:theme.border}]}><Avatar person={target} size={42} theme={theme}/><View style={{flex:1}}><Text style={[styles.personName,{color:theme.text}]}>{target.name}</Text><Text style={[styles.personSub,{color:theme.sub}]}>{target.username}</Text></View><Ionicons name="arrow-redo-outline" size={18} color={theme.sub}/></Pressable>)}</ScrollView></Pressable></Pressable></Modal>
+
       {isGroup ? <GroupInfoModal visible={groupInfoOpen} onClose={() => setGroupInfoOpen(false)} theme={theme} group={group} profiles={profiles} activeId={activeProfile.id} onRename={onRenameGroup} onToggleEveryone={onToggleGroupEveryone} /> : null}
     </KeyboardAvoidingView>
     </EdgeSwipeBack>
@@ -1770,6 +1804,710 @@ function TabBar({ tab, setTab, theme, darkMode }) {
   </View>;
 }
 
+
+
+// --- LINK live backend (single-file Snack build) ---
+
+
+const SUPABASE_URL = 'https://sbszhchbhlvyftdrimjv.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_HG49rojoBc1BLA-b9VTNzw_iTo5GQaf';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  auth: {
+    ...(Platform.OS !== 'web' ? { storage: AsyncStorage } : {}),
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: false,
+  },
+});
+
+if (Platform.OS !== 'web') {
+  AppState.addEventListener('change', state => {
+    if (state === 'active') supabase.auth.startAutoRefresh();
+    else supabase.auth.stopAutoRefresh();
+  });
+}
+
+const toMs = value => value ? new Date(value).getTime() : null;
+const timeLabel = value => value ? new Date(value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+const cleanUsername = value => {
+  const core = String(value || '').trim().replace(/^@/, '').replace(/\s+/g, '').replace(/[^a-zA-Z0-9_.]/g, '').toLowerCase();
+  return `@${core || 'linkuser'}`;
+};
+
+async function signOutLink() {
+  return supabase.auth.signOut();
+}
+
+async function uploadAvatar(userId, uri) {
+  if (!uri || /^https?:/i.test(uri)) return uri || null;
+  const body = await fetch(uri).then(r => r.arrayBuffer());
+  const ext = (uri.split('.').pop() || 'jpg').split('?')[0].toLowerCase();
+  const safeExt = ['jpg','jpeg','png','webp'].includes(ext) ? ext : 'jpg';
+  const path = `${userId}/avatar-${Date.now()}.${safeExt}`;
+  const { error } = await supabase.storage.from('avatars').upload(path, body, { contentType: safeExt === 'png' ? 'image/png' : safeExt === 'webp' ? 'image/webp' : 'image/jpeg', upsert: true });
+  if (error) throw error;
+  return supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl;
+}
+
+async function uploadMomentMedia(userId, uri) {
+  if (!uri || /^https?:/i.test(uri)) return uri || null;
+  const body = await fetch(uri).then(r => r.arrayBuffer());
+  const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.jpg`;
+  const { error } = await supabase.storage.from('moments-media').upload(path, body, { contentType: 'image/jpeg' });
+  if (error) throw error;
+  return path;
+}
+
+async function signedMomentUrl(path) {
+  if (!path) return null;
+  if (/^https?:/i.test(path)) return path;
+  const { data, error } = await supabase.storage.from('moments-media').createSignedUrl(path, 3600);
+  if (error) return null;
+  return data.signedUrl;
+}
+
+async function uploadChatMedia(chatId, uri, type = 'image') {
+  if (!uri || /^https?:/i.test(uri)) return null;
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) throw new Error('Not signed in');
+  const body = await fetch(uri).then(r => r.arrayBuffer());
+  const extMap = { image: 'jpg', video: 'mp4', voice: 'm4a', file: 'bin', gif: 'gif' };
+  const ext = extMap[type] || 'bin';
+  const contentType = type === 'image' ? 'image/jpeg' : type === 'video' ? 'video/mp4' : type === 'voice' ? 'audio/mp4' : type === 'gif' ? 'image/gif' : 'application/octet-stream';
+  const path = `${chatId}/${userId}/${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+  const { error } = await supabase.storage.from('chat-media').upload(path, body, { contentType });
+  if (error) throw error;
+  return path;
+}
+
+async function signedChatUrl(path) {
+  if (!path) return null;
+  if (/^https?:/i.test(path)) return path;
+  const { data, error } = await supabase.storage.from('chat-media').createSignedUrl(path, 3600);
+  if (error) return null;
+  return data.signedUrl;
+}
+
+async function loadLinkSnapshot(base, userId) {
+  const [profilesQ, settingsQ, entitlementsQ, tiersQ, moderationQ, connectionsQ, chatsQ, membersQ, keysQ, messagesQ, reactionsQ, receiptsQ, deletionsQ, pinsQ, chatUserQ, typingQ, momentsQ, notesQ, favoritesQ, notificationsQ, profileViewsQ] = await Promise.all([
+    supabase.from('profiles').select('*'),
+    supabase.from('user_settings').select('*').eq('user_id', userId).maybeSingle(),
+    supabase.from('entitlements').select('*').eq('user_id', userId).maybeSingle(),
+    supabase.from('profile_tiers').select('*'),
+    supabase.from('moderation').select('*'),
+    supabase.from('connections').select('*'),
+    supabase.from('chats').select('*').order('created_at'),
+    supabase.from('chat_members').select('*'),
+    supabase.from('chat_keys').select('*').eq('user_id', userId),
+    supabase.from('messages').select('*').or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`).order('created_at'),
+    supabase.from('message_reactions').select('*'),
+    supabase.from('message_receipts').select('*'),
+    supabase.from('message_deletions').select('*').eq('user_id', userId),
+    supabase.from('message_pins').select('*').order('created_at'),
+    supabase.from('chat_user_settings').select('*').eq('user_id', userId),
+    supabase.from('typing_status').select('*').eq('is_typing', true),
+    supabase.from('moments').select('*').gt('expires_at', new Date().toISOString()).order('created_at', { ascending: false }),
+    supabase.from('notes').select('*').gt('expires_at', new Date().toISOString()).order('created_at', { ascending: false }),
+    supabase.from('favorites').select('*').eq('user_id', userId),
+    supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(80),
+    supabase.from('profile_views').select('id').eq('viewed_user_id', userId),
+  ]);
+  if (profilesQ.error) throw profilesQ.error;
+  const optionalQueries = { settingsQ, entitlementsQ, tiersQ, moderationQ, connectionsQ, chatsQ, membersQ, keysQ, messagesQ, reactionsQ, receiptsQ, deletionsQ, pinsQ, chatUserQ, typingQ, momentsQ, notesQ, favoritesQ, notificationsQ, profileViewsQ };
+  Object.entries(optionalQueries).forEach(([name, q]) => { if (q?.error) console.warn(`LINK optional backend query failed: ${name}`, q.error.message); });
+
+  const profiles = {};
+  for (const row of profilesQ.data || []) {
+    profiles[row.id] = {
+      id: row.id,
+      isLocal: false,
+      isSelf: row.id === userId,
+      isAdmin: ['admin','ceo'].includes(row.role),
+      role: row.role,
+      verified: !!row.verified,
+      name: row.name,
+      username: row.username,
+      bio: row.bio || '',
+      photoUri: row.avatar_url || null,
+      status: row.status,
+      statusIcon: row.status_icon,
+      statusColor: row.status_color,
+      statusGradient: row.status_gradient,
+      profileEffectId: row.profile_effect_id,
+      nameEffectId: row.name_effect_id,
+      socials: row.socials || {},
+      presenceMode: row.presence_mode || 'online',
+      presenceVisible: row.presence_visible !== false,
+      lastActiveAt: toMs(row.last_active_at),
+      createdAt: toMs(row.created_at),
+      profileVisibility: row.profile_visibility || 'links',
+      discoverableByUsername: row.discoverable_by_username !== false,
+      messagesFrom: row.messages_from || 'links',
+      linkRequestsFrom: row.link_requests_from || 'everyone',
+      profileViewsEnabled: row.profile_views_enabled !== false,
+    };
+  }
+
+  const relationships = { [userId]: [] };
+  const requests = [];
+  for (const row of connectionsQ.data || []) {
+    const other = row.user_a === userId ? row.user_b : row.user_a;
+    if (row.status === 'accepted') relationships[userId].push(other);
+    if (row.status === 'pending') requests.push({ id: row.id, fromId: row.requested_by, toId: row.requested_by === row.user_a ? row.user_b : row.user_a, createdAt: timeLabel(row.created_at) });
+  }
+  relationships[userId] = Array.from(new Set(relationships[userId]));
+
+  const membersByChat = {};
+  for (const row of membersQ.data || []) {
+    if (!membersByChat[row.chat_id]) membersByChat[row.chat_id] = [];
+    membersByChat[row.chat_id].push(row);
+  }
+
+  const backendChatIds = {};
+  const groups = {};
+  const threadForChat = {};
+  for (const chat of chatsQ.data || []) {
+    const members = (membersByChat[chat.id] || []).map(x => x.user_id);
+    if (chat.kind === 'direct') {
+      const other = members.find(id => id !== userId);
+      if (other) {
+        const key = threadKey(userId, other);
+        backendChatIds[key] = chat.id;
+        threadForChat[chat.id] = key;
+      }
+    } else {
+      const key = groupThreadKey(chat.id);
+      backendChatIds[key] = chat.id;
+      threadForChat[chat.id] = key;
+      groups[chat.id] = {
+        id: chat.id,
+        name: chat.name || 'New Group',
+        ownerId: chat.created_by,
+        memberIds: members,
+        everyoneCanEditName: !!chat.everyone_can_edit_name,
+        createdAt: toMs(chat.created_at),
+      };
+    }
+  }
+
+  const chatKeys = {};
+  const keyByChat = {};
+  for (const row of keysQ.data || []) keyByChat[row.chat_id] = row.wrapped_key;
+  for (const [chatId,key] of Object.entries(threadForChat)) if (keyByChat[chatId]) chatKeys[key] = keyByChat[chatId];
+
+  const reactionsByMessage = {};
+  for (const r of reactionsQ.data || []) {
+    if (!reactionsByMessage[r.message_id]) reactionsByMessage[r.message_id] = [];
+    reactionsByMessage[r.message_id].push({ userId:r.user_id, emoji:r.emoji });
+  }
+  const seenBy = {}, readBy = {}, deliveredBy = {};
+  for (const r of receiptsQ.data || []) {
+    if (!seenBy[r.message_id]) seenBy[r.message_id] = [];
+    if (r.seen_at) seenBy[r.message_id].push(r.user_id);
+    if (r.delivered_at) {
+      if (!deliveredBy[r.message_id]) deliveredBy[r.message_id] = [];
+      deliveredBy[r.message_id].push(r.user_id);
+    }
+    if (r.read_at) {
+      if (!readBy[r.message_id]) readBy[r.message_id] = [];
+      readBy[r.message_id].push(r.user_id);
+    }
+  }
+
+  const hiddenMessageIds = new Set((deletionsQ.data || []).map(row => row.message_id));
+  const conversations = {};
+  const mediaSigned = await Promise.all((messagesQ.data || []).map(m => signedChatUrl(m.media_url)));
+  (messagesQ.data || []).forEach((m,index) => {
+    if (hiddenMessageIds.has(m.id)) return;
+    const key = threadForChat[m.chat_id];
+    if (!key) return;
+    if (!conversations[key]) conversations[key] = [];
+    conversations[key].push({
+      id:m.id, senderId:m.sender_id, type:m.type, cipher:m.cipher, encrypted:!!m.cipher,
+      replyTo:m.reply_to, time:timeLabel(m.created_at), readBy:readBy[m.id] || [m.sender_id], seenBy:seenBy[m.id] || [m.sender_id], deliveredBy:deliveredBy[m.id] || [m.sender_id],
+      reactions:reactionsByMessage[m.id] || [], expiresAt:toMs(m.expires_at), uri:mediaSigned[index] || null, duration:m.duration == null ? null : Number(m.duration),
+      createdAt:toMs(m.created_at), editedAt:toMs(m.edited_at), deletedAt:toMs(m.deleted_at), forwardedFrom:m.forwarded_from || null, viewOnce:!!m.view_once,
+    });
+  });
+  for (const key of Object.values(threadForChat)) if (!conversations[key]) conversations[key] = [];
+
+  const chatThemes = {}, chatThemeScopes = {}, silentChats = {}, messagePins = {}, chatUserSettings = {}, typingByChat = {};
+  for (const chat of chatsQ.data || []) {
+    const key = threadForChat[chat.id];
+    if (!key) continue;
+    chatThemes[key] = chat.theme_id || 'default';
+    chatThemeScopes[key] = chat.theme_scope || 'messages';
+    silentChats[key] = { enabled:!!chat.silent_enabled, timerSeconds:chat.silent_timer_seconds || 300 };
+  }
+  for (const row of pinsQ.data || []) {
+    const key = threadForChat[row.chat_id];
+    if (!key) continue;
+    if (!messagePins[key]) messagePins[key] = [];
+    messagePins[key].push(row.message_id);
+  }
+  for (const row of chatUserQ.data || []) {
+    const key = threadForChat[row.chat_id];
+    if (!key) continue;
+    chatUserSettings[key] = { archived:!!row.archived, pinnedChat:!!row.pinned_chat, markedUnread:!!row.marked_unread, mutedUntil:toMs(row.muted_until) };
+  }
+  const typingFreshAfter = Date.now() - 6500;
+  for (const row of typingQ.data || []) {
+    const key = threadForChat[row.chat_id];
+    if (!key || row.user_id === userId || toMs(row.updated_at) < typingFreshAfter) continue;
+    if (!typingByChat[key]) typingByChat[key] = [];
+    typingByChat[key].push(row.user_id);
+  }
+
+  const signedMoments = await Promise.all((momentsQ.data || []).map(m => signedMomentUrl(m.image_url)));
+  const moments = (momentsQ.data || []).map((m,i) => ({ id:m.id, ownerId:m.owner_id, imageUri:signedMoments[i], caption:m.caption || '', emoji:m.emoji, createdAt:toMs(m.created_at), expiresAt:toMs(m.expires_at) }));
+  const notes = (notesQ.data || []).map(n => ({ id:n.id, ownerId:n.owner_id, text:n.text, emoji:n.emoji, audience:n.audience, createdAt:toMs(n.created_at), expiresAt:toMs(n.expires_at) }));
+  const settings = settingsQ.data || {};
+  const ent = entitlementsQ.data || {};
+  const moderation = {};
+  for (const row of moderationQ.data || []) moderation[row.user_id] = { banned:!!row.banned, mutedUntil:row.muted_until ? toMs(row.muted_until) : null, reason:row.reason || null };
+  const plusUntil = toMs(ent.plus_until), proUntil = toMs(ent.pro_until), trialUntil = toMs(ent.pro_trial_until);
+  const subscriptions = {}, proSubscriptions = {};
+  for (const row of tiersQ.data || []) {
+    const publicPlusUntil = toMs(row.plus_until);
+    const publicProUntil = toMs(row.pro_until);
+    if (publicPlusUntil) subscriptions[row.user_id] = { active:publicPlusUntil>Date.now(), expiresAt:publicPlusUntil, plan:'monthly' };
+    if (publicProUntil) proSubscriptions[row.user_id] = { active:publicProUntil>Date.now(), expiresAt:publicProUntil, plan:'monthly' };
+  }
+  subscriptions[userId] = plusUntil ? {active:plusUntil>Date.now(),expiresAt:plusUntil,plan:ent.plus_plan || 'monthly'} : null;
+  proSubscriptions[userId] = proUntil ? {active:proUntil>Date.now(),expiresAt:proUntil,plan:ent.pro_plan || 'monthly',trial:!!(trialUntil && trialUntil>Date.now()),trialEndsAt:trialUntil} : null;
+  const notifications = (notificationsQ.data || []).map(n => ({ id:n.id, type:n.type, title:n.title, body:n.body, time:timeLabel(n.created_at), read:!!n.read, actorId:n.actor_id, chatId:n.chat_id, createdAt:toMs(n.created_at) }));
+
+  return {
+    ...base,
+    version: 16,
+    activeAccountId:userId,
+    localAccountIds:[userId],
+    profiles,
+    relationships,
+    requests,
+    groups,
+    conversations,
+    backendChatIds,
+    doubleTapReactions:{ [userId]:settings.double_tap_emoji || '❤️' },
+    moments,
+    notes,
+    notifications:{ [userId]:notifications },
+    favorites:{ [userId]:(favoritesQ.data || []).map(x => x.favorite_user_id) },
+    privacy:{ [userId]:{ showStatus:settings.show_status ?? true, showSocials:settings.show_socials ?? true, momentsToLinks:settings.moments_to_links ?? true, ghostMode:settings.ghost_mode ?? false, showActivityStatus:settings.show_activity_status ?? true, profileVisibility:settings.profile_visibility || 'links', messagesFrom:settings.messages_from || 'links', linkRequestsFrom:settings.link_requests_from || 'everyone', readReceipts:settings.read_receipts ?? true, typingIndicators:settings.typing_indicators ?? true, profileViewsEnabled:settings.profile_views_enabled ?? true, discoverableByUsername:settings.discoverable_by_username ?? true, discoverableByEmail:settings.discoverable_by_email ?? false, notificationsMessages:settings.notifications_messages ?? true, notificationsRequests:settings.notifications_requests ?? true, notificationsMoments:settings.notifications_moments ?? true, notificationsProduct:settings.notifications_product ?? false, loginAlerts:settings.login_alerts ?? true } },
+    wallets:{ [userId]:ent.coins ?? 2200 },
+    ownedEffects:{ [userId]:ent.owned_effects || [] },
+    subscriptions,
+    proSubscriptions,
+    moderation,
+    chatKeys,
+    silentChats,
+    chatThemes,
+    chatThemeScopes,
+    messagePins,
+    chatUserSettings,
+    typingByChat,
+    profileViews:{ [userId]:(profileViewsQ.data || []).length },
+    themeSetting:settings.theme_setting || base.themeSetting || 'system',
+  };
+}
+
+function subscribeLink(userId, onChange) {
+  let timer = null;
+  const kick = () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => onChange?.(), 120);
+  };
+  const channel = supabase.channel(`link-live-${userId}`)
+    .on('postgres_changes',{event:'*',schema:'public',table:'profiles'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'connections'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'chats'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'chat_members'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'messages'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'message_reactions'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'message_receipts'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'typing_status'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'message_pins'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'chat_user_settings'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'moments'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'notes'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'notifications'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'moderation'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'entitlements'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'profile_tiers'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'profile_views'},kick)
+    .subscribe();
+  return () => { clearTimeout(timer); supabase.removeChannel(channel); };
+}
+
+
+async function recordProfileViewRemote(personId) {
+  const { data: auth } = await supabase.auth.getUser();
+  const viewerId = auth.user?.id;
+  if (!viewerId || !personId || viewerId === personId) return;
+  const { error } = await supabase.from('profile_views').insert({ viewed_user_id:personId, viewer_id:viewerId });
+  if (error) throw error;
+}
+
+async function updateProfileRemote(profile) {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) throw new Error('Not signed in');
+  let avatar = profile.photoUri || null;
+  if (avatar && !/^https?:/i.test(avatar)) avatar = await uploadAvatar(userId, avatar);
+  const row = {
+    username:cleanUsername(profile.username), name:String(profile.name || 'LINK user').trim().slice(0,60), bio:String(profile.bio || '').slice(0,180), avatar_url:avatar,
+    status:profile.status || 'Available', status_icon:profile.statusIcon || 'checkmark-circle', status_color:profile.statusColor || '#34C759', status_gradient:profile.statusGradient || null,
+    profile_effect_id:profile.profileEffectId || null, name_effect_id:profile.nameEffectId || null, socials:profile.socials || {}, updated_at:new Date().toISOString(),
+  };
+  const { error } = await supabase.from('profiles').update(row).eq('id',userId);
+  if (error) throw error;
+}
+
+async function updateSettingsRemote(patch) {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) throw new Error('Not signed in');
+  const row = { user_id:userId, updated_at:new Date().toISOString() };
+  if ('themeSetting' in patch) row.theme_setting = patch.themeSetting;
+  if ('showStatus' in patch) row.show_status = !!patch.showStatus;
+  if ('showSocials' in patch) row.show_socials = !!patch.showSocials;
+  if ('momentsToLinks' in patch) row.moments_to_links = !!patch.momentsToLinks;
+  if ('ghostMode' in patch) row.ghost_mode = !!patch.ghostMode;
+  if ('doubleTapEmoji' in patch) row.double_tap_emoji = patch.doubleTapEmoji || '❤️';
+  if ('showActivityStatus' in patch) row.show_activity_status = !!patch.showActivityStatus;
+  if ('profileVisibility' in patch) row.profile_visibility = patch.profileVisibility || 'links';
+  if ('messagesFrom' in patch) row.messages_from = patch.messagesFrom || 'links';
+  if ('linkRequestsFrom' in patch) row.link_requests_from = patch.linkRequestsFrom || 'everyone';
+  if ('readReceipts' in patch) row.read_receipts = !!patch.readReceipts;
+  if ('typingIndicators' in patch) row.typing_indicators = !!patch.typingIndicators;
+  if ('profileViewsEnabled' in patch) row.profile_views_enabled = !!patch.profileViewsEnabled;
+  if ('discoverableByUsername' in patch) row.discoverable_by_username = !!patch.discoverableByUsername;
+  if ('discoverableByEmail' in patch) row.discoverable_by_email = !!patch.discoverableByEmail;
+  if ('notificationsMessages' in patch) row.notifications_messages = !!patch.notificationsMessages;
+  if ('notificationsRequests' in patch) row.notifications_requests = !!patch.notificationsRequests;
+  if ('notificationsMoments' in patch) row.notifications_moments = !!patch.notificationsMoments;
+  if ('notificationsProduct' in patch) row.notifications_product = !!patch.notificationsProduct;
+  if ('loginAlerts' in patch) row.login_alerts = !!patch.loginAlerts;
+  const { error } = await supabase.from('user_settings').upsert(row,{onConflict:'user_id'});
+  if (error) throw error;
+}
+
+async function setPresenceModeRemote(mode) {
+  const { error } = await supabase.rpc('set_presence_mode',{ p_mode:mode });
+  if (error) throw error;
+}
+
+async function touchPresenceRemote(active=true) {
+  const { error } = await supabase.rpc('touch_presence',{ p_active:!!active });
+  if (error) throw error;
+}
+
+async function requestLinkRemote(toId) {
+  if (!toId) return null;
+  const { data, error } = await supabase.rpc('request_link',{ other_user:toId });
+  if (error) throw error;
+  return data;
+}
+
+async function respondLinkRemote(requestId, action) {
+  const status = action === 'accept' ? 'accepted' : 'declined';
+  const { error } = await supabase.from('connections').update({status,updated_at:new Date().toISOString()}).eq('id',requestId);
+  if (error) throw error;
+}
+
+async function ensureDirectChat(otherUserId) {
+  const { data,error } = await supabase.rpc('create_direct_chat',{other_user:otherUserId});
+  if (error) throw error;
+  return data;
+}
+
+async function createGroupRemote(name, memberIds) {
+  const { data,error } = await supabase.rpc('create_group_chat',{group_name:name,member_ids:memberIds});
+  if (error) throw error;
+  return data;
+}
+
+async function renameGroupRemote(chatId, name) {
+  const { error } = await supabase.rpc('rename_group_chat',{p_chat_id:chatId,next_name:name});
+  if (error) throw error;
+}
+
+async function setGroupEveryoneRemote(chatId, enabled) {
+  const { error } = await supabase.rpc('set_group_everyone_can_edit',{p_chat_id:chatId,enabled:!!enabled});
+  if (error) throw error;
+}
+
+async function saveChatSettingsRemote(chatId, patch) {
+  const row = { updated_at:new Date().toISOString() };
+  if ('silentEnabled' in patch) row.silent_enabled=!!patch.silentEnabled;
+  if ('silentTimerSeconds' in patch) row.silent_timer_seconds=patch.silentTimerSeconds;
+  if ('themeId' in patch) row.theme_id=patch.themeId;
+  if ('themeScope' in patch) row.theme_scope=patch.themeScope;
+  const { error } = await supabase.from('chats').update(row).eq('id',chatId);
+  if (error) throw error;
+}
+
+async function sendMessageRemote(chatId, payload) {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) throw new Error('Not signed in');
+  let mediaPath = null;
+  if (payload.uri) mediaPath = await uploadChatMedia(chatId,payload.uri,payload.type);
+  const row = {
+    chat_id:chatId, sender_id:userId, type:payload.type || 'text', cipher:payload.cipher || null, media_url:mediaPath,
+    duration:payload.duration ?? null, reply_to:payload.replyTo || null, forwarded_from:payload.forwardedFrom || null, view_once:!!payload.viewOnce, expires_at:payload.expiresAt ? new Date(payload.expiresAt).toISOString() : null,
+  };
+  const { data,error } = await supabase.from('messages').insert(row).select().single();
+  if (error) throw error;
+  await supabase.from('message_receipts').upsert({message_id:data.id,user_id:userId,seen_at:new Date().toISOString(),read_at:new Date().toISOString()},{onConflict:'message_id,user_id'});
+  return data;
+}
+
+async function reactMessageRemote(messageId, emoji) {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) throw new Error('Not signed in');
+  const { error } = await supabase.from('message_reactions').upsert({message_id:messageId,user_id:userId,emoji},{onConflict:'message_id,user_id'});
+  if (error) throw error;
+}
+
+async function deleteMessageRemote(messageId) {
+  const { error } = await supabase.from('messages').delete().eq('id',messageId);
+  if (error) throw error;
+}
+
+async function editMessageRemote(messageId, cipher) {
+  const { error } = await supabase.rpc('edit_message',{ p_message_id:messageId, p_cipher:cipher });
+  if (error) throw error;
+}
+
+async function unsendMessageRemote(messageId) {
+  const { error } = await supabase.rpc('unsend_message',{ p_message_id:messageId });
+  if (error) throw error;
+}
+
+async function deleteMessageForMeRemote(messageId) {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) throw new Error('Not signed in');
+  const { error } = await supabase.from('message_deletions').upsert({message_id:messageId,user_id:userId},{onConflict:'message_id,user_id'});
+  if (error) throw error;
+}
+
+async function toggleMessagePinRemote(chatId, messageId, pinned) {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) throw new Error('Not signed in');
+  if (pinned) {
+    const { error } = await supabase.from('message_pins').delete().eq('chat_id',chatId).eq('message_id',messageId);
+    if (error) throw error;
+  } else {
+    const { error } = await supabase.from('message_pins').insert({chat_id:chatId,message_id:messageId,pinned_by:userId});
+    if (error) throw error;
+  }
+}
+
+async function setTypingRemote(chatId, isTyping) {
+  if (!chatId) return;
+  const { error } = await supabase.rpc('set_typing',{ p_chat_id:chatId, p_is_typing:!!isTyping });
+  if (error) throw error;
+}
+
+async function markChatDeliveredRemote(chatId) {
+  if (!chatId) return;
+  const { error } = await supabase.rpc('mark_chat_delivered',{ p_chat_id:chatId });
+  if (error) throw error;
+}
+
+async function saveChatUserSettingsRemote(chatId, patch) {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) throw new Error('Not signed in');
+  const row = { chat_id:chatId, user_id:userId, updated_at:new Date().toISOString() };
+  if ('archived' in patch) row.archived=!!patch.archived;
+  if ('pinnedChat' in patch) row.pinned_chat=!!patch.pinnedChat;
+  if ('markedUnread' in patch) row.marked_unread=!!patch.markedUnread;
+  if ('mutedUntil' in patch) row.muted_until=patch.mutedUntil ? new Date(patch.mutedUntil).toISOString() : null;
+  const { error } = await supabase.from('chat_user_settings').upsert(row,{onConflict:'chat_id,user_id'});
+  if (error) throw error;
+}
+
+async function markChatReadRemote(chatId, ghostMode=false) {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return;
+  const { data: messages,error } = await supabase.from('messages').select('id,sender_id').eq('chat_id',chatId).neq('sender_id',userId);
+  if (error) throw error;
+  if (!messages?.length) return;
+  const now = new Date().toISOString();
+  const rows = messages.map(m => ({message_id:m.id,user_id:userId,seen_at:now,read_at:ghostMode?null:now}));
+  const { error:upsertError } = await supabase.from('message_receipts').upsert(rows,{onConflict:'message_id,user_id'});
+  if (upsertError) throw upsertError;
+}
+
+async function toggleFavoriteRemote(personId, isFavorite) {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return;
+  if (isFavorite) {
+    const { error } = await supabase.from('favorites').delete().eq('user_id',userId).eq('favorite_user_id',personId);
+    if (error) throw error;
+  } else {
+    const { error } = await supabase.from('favorites').insert({user_id:userId,favorite_user_id:personId});
+    if (error) throw error;
+  }
+}
+
+async function postMomentRemote({ imageUri, caption, emoji, expiresAt }) {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) throw new Error('Not signed in');
+  const imagePath = imageUri ? await uploadMomentMedia(userId,imageUri) : null;
+  const { error } = await supabase.from('moments').insert({owner_id:userId,image_url:imagePath,caption:caption || '',emoji:emoji || null,expires_at:new Date(expiresAt || Date.now()+86400000).toISOString()});
+  if (error) throw error;
+}
+
+async function saveNoteRemote({ text, emoji, audience, expiresAt }) {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) throw new Error('Not signed in');
+  await supabase.from('notes').delete().eq('owner_id',userId);
+  const { error } = await supabase.from('notes').insert({owner_id:userId,text,emoji:emoji || null,audience:audience || 'links',expires_at:new Date(expiresAt).toISOString()});
+  if (error) throw error;
+}
+
+async function deleteOwnNoteRemote() {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return;
+  const { error } = await supabase.from('notes').delete().eq('owner_id',userId);
+  if (error) throw error;
+}
+
+
+async function sendWaveRemote(personId, senderName = 'Someone') {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) throw new Error('Not signed in');
+  const { error } = await supabase.from('notifications').insert({
+    user_id:personId, actor_id:userId, type:'wave', title:'👋 New wave', body:`${senderName} waved at you.`
+  });
+  if (error) throw error;
+}
+
+async function markNotificationsReadRemote() {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return;
+  const { error } = await supabase.from('notifications').update({read:true}).eq('user_id',userId).eq('read',false);
+  if (error) throw error;
+}
+
+async function setModerationRemote(targetId, patch) {
+  const row = { updated_at:new Date().toISOString() };
+  if ('banned' in patch) row.banned=!!patch.banned;
+  if ('mutedUntil' in patch) row.muted_until=patch.mutedUntil === -1 ? '9999-12-31T23:59:59Z' : patch.mutedUntil ? new Date(patch.mutedUntil).toISOString() : null;
+  if ('reason' in patch) row.reason=patch.reason || null;
+  const { error } = await supabase.from('moderation').update(row).eq('user_id',targetId);
+  if (error) throw error;
+}
+
+async function activatePrototypePlanRemote(tier, plan, trial=false) {
+  const { error } = await supabase.rpc('activate_prototype_plan',{p_tier:tier,p_plan:plan,p_trial:!!trial});
+  if (error) throw error;
+}
+
+async function cancelPrototypePlanRemote(tier) {
+  const { error } = await supabase.rpc('cancel_prototype_plan',{p_tier:tier});
+  if (error) throw error;
+}
+
+async function purchaseEffectRemote(effectId) {
+  const { data,error } = await supabase.rpc('purchase_profile_effect',{p_effect_id:effectId});
+  if (error) throw error;
+  return data;
+}
+
+
+
+function BackendGate({ children }) {
+  const [session, setSession] = useState(null);
+  const [ready, setReady] = useState(false);
+  const [mode, setMode] = useState('login');
+  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (alive) { setSession(data.session || null); setReady(true); }
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, next) => setSession(next || null));
+    return () => { alive = false; listener.subscription.unsubscribe(); };
+  }, []);
+
+  const submit = async () => {
+    const cleanEmail = email.trim().toLowerCase();
+    if (!cleanEmail || password.length < 6) return Alert.alert('Check your details', 'Enter a valid email and a password with at least 6 characters.');
+    if (mode === 'register' && (!name.trim() || username.trim().replace(/^@/, '').length < 3)) return Alert.alert('Complete your profile', 'Add your name and a username with at least 3 characters.');
+    setLoading(true);
+    try {
+      if (mode === 'register') {
+        const cleanUsername = username.trim().replace(/^@/, '').toLowerCase();
+        const { data, error } = await supabase.auth.signUp({
+          email: cleanEmail,
+          password,
+          options: { data: { name: name.trim(), username: cleanUsername } },
+        });
+        if (error) throw error;
+        if (!data.session) Alert.alert('Verify your email', 'Your LINK account was created. Verify the email, then return here and sign in.');
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
+        if (error) throw error;
+      }
+    } catch (error) {
+      Alert.alert(mode === 'register' ? 'Could not create account' : 'Could not sign in', error?.message || 'Try again.');
+    } finally { setLoading(false); }
+  };
+
+  if (!ready) return <View style={backendStyles.loading}><ActivityIndicator size="large" color={ACCENT} /><Text style={backendStyles.loadingText}>Connecting to LINK…</Text></View>;
+  if (session) return children(session);
+
+  return (
+    <SafeAreaView style={backendStyles.page}>
+      <KeyboardAvoidingView style={backendStyles.center} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <View style={backendStyles.logo}><Ionicons name="link" size={27} color="#fff" /></View>
+        <Text style={backendStyles.title}>LINK</Text>
+        <Text style={backendStyles.sub}>{mode === 'login' ? 'Sign in to your real LINK account.' : 'Create an account that works across devices.'}</Text>
+        <View style={backendStyles.card}>
+          {mode === 'register' ? <>
+            <TextInput style={backendStyles.input} placeholder="Name" placeholderTextColor="#8C919D" value={name} onChangeText={setName} />
+            <TextInput style={backendStyles.input} placeholder="@username" placeholderTextColor="#8C919D" autoCapitalize="none" value={username} onChangeText={setUsername} />
+          </> : null}
+          <TextInput style={backendStyles.input} placeholder="Email" placeholderTextColor="#8C919D" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
+          <TextInput style={backendStyles.input} placeholder="Password" placeholderTextColor="#8C919D" secureTextEntry autoCapitalize="none" value={password} onChangeText={setPassword} />
+          <Pressable disabled={loading} onPress={submit} style={[backendStyles.primary, loading && { opacity: .6 }]}>
+            {loading ? <ActivityIndicator color="#fff" /> : <Text style={backendStyles.primaryText}>{mode === 'login' ? 'Sign in' : 'Create account'}</Text>}
+          </Pressable>
+          <Pressable onPress={() => setMode(mode === 'login' ? 'register' : 'login')} style={backendStyles.switchBtn}>
+            <Text style={backendStyles.switchText}>{mode === 'login' ? 'New to LINK? Create account' : 'Already have LINK? Sign in'}</Text>
+          </Pressable>
+        </View>
+        <Text style={backendStyles.foot}>LINK Production · Supabase backend</Text>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}
+
+const backendStyles = StyleSheet.create({
+  page:{flex:1,backgroundColor:'#F6F7FB'},center:{flex:1,justifyContent:'center',padding:22},logo:{width:58,height:58,borderRadius:20,alignSelf:'center',alignItems:'center',justifyContent:'center',backgroundColor:ACCENT,shadowColor:'#000',shadowOpacity:.12,shadowRadius:20,shadowOffset:{width:0,height:10}},title:{fontSize:38,fontWeight:'950',letterSpacing:-1.4,textAlign:'center',color:'#111318',marginTop:16},sub:{fontSize:15,lineHeight:21,textAlign:'center',color:'#737987',marginTop:5,marginBottom:22},card:{backgroundColor:'#fff',padding:14,borderRadius:28,borderWidth:StyleSheet.hairlineWidth,borderColor:'#E8EAF0',gap:10},input:{height:54,borderRadius:17,backgroundColor:'#F2F3F7',paddingHorizontal:16,fontSize:16,color:'#111318'},primary:{height:54,borderRadius:17,backgroundColor:ACCENT,alignItems:'center',justifyContent:'center',marginTop:3},primaryText:{color:'#fff',fontSize:16,fontWeight:'900'},switchBtn:{height:44,alignItems:'center',justifyContent:'center'},switchText:{color:ACCENT,fontWeight:'800'},foot:{textAlign:'center',fontSize:11,color:'#9AA0AB',marginTop:18},loading:{flex:1,alignItems:'center',justifyContent:'center',backgroundColor:'#F6F7FB'},loadingText:{marginTop:12,color:'#737987',fontWeight:'700'}
+});
+
 function LinkApp({ session }) {
   const systemScheme = useColorScheme();
   const liveUserId = session?.user?.id || null;
@@ -1828,7 +2566,9 @@ function LinkApp({ session }) {
   const activeSilentConfig = activeThreadKey ? (data.silentChats?.[activeThreadKey] || { enabled: false, timerSeconds: 5 * 60 }) : { enabled: false, timerSeconds: 5 * 60 };
   const activeChatThemeId = activeThreadKey ? (data.chatThemes?.[activeThreadKey] || 'default') : 'default';
   const activeChatThemeScope = activeThreadKey ? (data.chatThemeScopes?.[activeThreadKey] || 'messages') : 'messages';
-  const activeChatPrefs = activeThreadKey ? (data.chatUserSettings?.[activeThreadKey] || { archived:false, locked:false, mutedUntil:null }) : { archived:false, locked:false, mutedUntil:null };
+  const activePinnedMessageIds = activeThreadKey ? (data.messagePins?.[activeThreadKey] || []) : [];
+  const activeTypingUserIds = activeThreadKey ? (data.typingByChat?.[activeThreadKey] || []) : [];
+  const activeChatUserState = activeThreadKey ? (data.chatUserSettings?.[activeThreadKey] || {}) : {};
   const profileModalPerson = profileModalId ? data.profiles[profileModalId] : null;
   const profileModalProActive = !!profileModalPerson?.isAdmin || subscriptionIsActive(data.proSubscriptions?.[profileModalId]);
   const profileModalPlusActive = !!profileModalPerson?.isAdmin || subscriptionIsActive(data.subscriptions?.[profileModalId]) || profileModalProActive;
@@ -1858,7 +2598,6 @@ function LinkApp({ session }) {
     try {
       const fresh = await loadLinkSnapshot(initialData(liveUserId), liveUserId);
       setData(fresh);
-      Promise.all(Object.values(fresh.backendChatIds || {}).map(chatId => markChatDeliveredRemote(chatId).catch(() => {}))).catch(() => {});
       return fresh;
     } catch (error) {
       console.warn('LINK backend refresh failed', error);
@@ -1883,10 +2622,7 @@ function LinkApp({ session }) {
           } catch {}
         }
         const remote = await loadLinkSnapshot(base, liveUserId);
-        if (!cancelled) {
-          setData(remote);
-          Promise.all(Object.values(remote.backendChatIds || {}).map(chatId => markChatDeliveredRemote(chatId).catch(() => {}))).catch(() => {});
-        }
+        if (!cancelled) setData(remote);
       } catch (e) {
         console.warn('LINK backend load failed', e);
       } finally {
@@ -2132,7 +2868,10 @@ function LinkApp({ session }) {
       });
       return { ...prev, conversations: { ...prev.conversations, [key]: list } };
     });
-    if (chatId) markChatReadRemote(chatId, suppressReceipts).then(refreshRemote).catch(() => {});
+    if (chatId) {
+      markChatDeliveredRemote(chatId).catch(() => {});
+      markChatReadRemote(chatId, suppressReceipts).then(() => saveChatUserSettingsRemote(chatId,{markedUnread:false}).catch(()=>{})).then(refreshRemote).catch(() => {});
+    }
   };
 
   const sendMessage = async (personId, payload) => {
@@ -2171,10 +2910,10 @@ function LinkApp({ session }) {
     mutate(prev => ({ ...prev, conversations: { ...prev.conversations, [key]: (prev.conversations[key] || []).map(m => m.id === messageId ? { ...m, reactions: [...(m.reactions || []).filter(r => r.userId !== prev.activeAccountId), { userId: prev.activeAccountId, emoji }] } : m) } }));
     reactMessageRemote(messageId, emoji).then(refreshRemote).catch(error => Alert.alert('Reaction not saved', error?.message || 'Try again.'));
   };
-  const deleteMessageForMe = (personId, messageId) => {
+  const deleteMessage = (personId, messageId) => {
     const key = threadKey(data.activeAccountId, personId);
-    mutate(prev => ({ ...prev, conversations: { ...prev.conversations, [key]: (prev.conversations[key] || []).filter(m => m.id !== messageId) } }));
-    hideMessageRemote(messageId).then(refreshRemote).catch(error => { refreshRemote(); Alert.alert('Message not hidden', error?.message || 'Try again.'); });
+    mutate(prev => ({ ...prev, conversations: { ...prev.conversations, [key]: (prev.conversations[key] || []).filter(m => !(m.id === messageId && m.senderId === prev.activeAccountId)) } }));
+    deleteMessageRemote(messageId).then(refreshRemote).catch(error => { refreshRemote(); Alert.alert('Message not deleted', error?.message || 'Try again.'); });
   };
   const sendGroupMessage = async (groupId, payload) => {
     if (!activeCanPost('send messages')) return;
@@ -2207,46 +2946,59 @@ function LinkApp({ session }) {
     mutate(prev => ({ ...prev, conversations: { ...prev.conversations, [key]: (prev.conversations[key] || []).map(m => m.id === messageId ? { ...m, reactions: [...(m.reactions || []).filter(r => r.userId !== prev.activeAccountId), { userId: prev.activeAccountId, emoji }] } : m) } }));
     reactMessageRemote(messageId, emoji).then(refreshRemote).catch(error => Alert.alert('Reaction not saved', error?.message || 'Try again.'));
   };
-  const deleteGroupMessageForMe = (groupId, messageId) => {
+  const deleteGroupMessage = (groupId, messageId) => {
     const key = groupThreadKey(groupId);
-    mutate(prev => ({ ...prev, conversations: { ...prev.conversations, [key]: (prev.conversations[key] || []).filter(m => m.id !== messageId) } }));
-    hideMessageRemote(messageId).then(refreshRemote).catch(error => { refreshRemote(); Alert.alert('Message not hidden', error?.message || 'Try again.'); });
+    mutate(prev => ({ ...prev, conversations: { ...prev.conversations, [key]: (prev.conversations[key] || []).filter(m => !(m.id === messageId && m.senderId === prev.activeAccountId)) } }));
+    deleteMessageRemote(messageId).then(refreshRemote).catch(error => { refreshRemote(); Alert.alert('Message not deleted', error?.message || 'Try again.'); });
   };
-  const editActiveMessage = async (_targetId, message, nextText) => {
-    if (!activeThreadKey || !message?.id) return;
+  const editActiveMessage = async (messageId, nextText) => {
+    if (!activeThreadKey) return;
     try {
-      const keyBase64=data.chatKeys?.[activeThreadKey] || chatKeyCacheRef.current[activeThreadKey];
+      const keyBase64 = data.chatKeys?.[activeThreadKey] || chatKeyCacheRef.current[activeThreadKey];
       if (!keyBase64) throw new Error('Chat encryption key is not available.');
-      const cipher=await encryptMessageContent({text:nextText,uri:null,duration:null},keyBase64);
-      mutate(prev=>({...prev,conversations:{...prev.conversations,[activeThreadKey]:(prev.conversations[activeThreadKey]||[]).map(m=>m.id===message.id?{...m,text:nextText,cipher,editedAt:Date.now()}:m)}}));
-      await editMessageRemote(message.id,cipher);
+      const cipher = await encryptMessageContent({ text: nextText, duration: null }, keyBase64);
+      await editMessageRemote(messageId, cipher);
       await refreshRemote();
-    } catch(error) { refreshRemote(); Alert.alert('Message not edited',error?.message||'Try again.'); }
+    } catch (error) { Alert.alert('Message not edited', error?.message || 'Try again.'); }
   };
-  const deleteActiveMessageForEveryone = (_targetId, messageId) => {
+
+  const unsendActiveMessage = async (messageId) => {
+    try { await unsendMessageRemote(messageId); await refreshRemote(); }
+    catch (error) { Alert.alert('Message not unsent', error?.message || 'Try again.'); }
+  };
+
+  const deleteActiveMessageForMe = async (messageId) => {
+    try { await deleteMessageForMeRemote(messageId); await refreshRemote(); }
+    catch (error) { Alert.alert('Message not deleted', error?.message || 'Try again.'); }
+  };
+
+  const toggleActiveMessagePin = async (messageId, pinned) => {
     if (!activeThreadKey) return;
-    mutate(prev=>({...prev,conversations:{...prev.conversations,[activeThreadKey]:(prev.conversations[activeThreadKey]||[]).map(m=>m.id===messageId?{...m,text:'Message deleted',uri:null,duration:null,deletedAt:Date.now()}:m)}}));
-    deleteMessageForEveryoneRemote(messageId).then(refreshRemote).catch(error=>{refreshRemote();Alert.alert('Message not deleted',error?.message||'Try again.');});
+    const chatId = data.backendChatIds?.[activeThreadKey];
+    if (!chatId) return;
+    try { await toggleMessagePinRemote(chatId,messageId,pinned); await refreshRemote(); }
+    catch (error) { Alert.alert('Pin not changed', error?.message || 'Try again.'); }
   };
-  const pinActiveMessage = (_targetId, message, pinned) => {
-    const chatId=activeThreadKey?data.backendChatIds?.[activeThreadKey]:null;
-    if (!chatId || !message?.id) return;
-    mutate(prev=>({...prev,conversations:{...prev.conversations,[activeThreadKey]:(prev.conversations[activeThreadKey]||[]).map(m=>m.id===message.id?{...m,pinned}:m)}}));
-    setMessagePinnedRemote(chatId,message.id,pinned).then(refreshRemote).catch(error=>{refreshRemote();Alert.alert('Pin not changed',error?.message||'Try again.');});
+
+  const setActiveTyping = (isTyping) => {
+    if (!activeThreadKey || privacy.typingIndicators === false) return;
+    const chatId = data.backendChatIds?.[activeThreadKey];
+    if (chatId) setTypingRemote(chatId,isTyping).catch(()=>{});
   };
-  const forwardActiveMessage = (_targetId, message) => {
-    if (!message || message.deletedAt) return;
-    if (['photo','video','voice','gif'].includes(message.type)) return Alert.alert('Forward media', 'Media forwarding will arrive with the native recorder update. Text and cards can be forwarded now.');
-    const targets=[...connectedProfiles.filter(p=>p.id!==activeChatId).map(p=>({label:p.name,run:()=>sendMessage(p.id,{type:message.type,text:message.text||'',forwardedFrom:message.id})})),...Object.values(data.groups||{}).filter(g=>g.id!==activeGroupId&&(g.memberIds||[]).includes(data.activeAccountId)).map(g=>({label:g.name,run:()=>sendGroupMessage(g.id,{type:message.type,text:message.text||'',forwardedFrom:message.id})}))].slice(0,5);
-    if (!targets.length) return Alert.alert('No other chat', 'Open another LINK or group first.');
-    Alert.alert('Forward to', 'Choose a conversation', targets.map(target=>({text:target.label,onPress:target.run})).concat({text:'Cancel',style:'cancel'}));
+
+  const updateChatUserState = async (thread, patch) => {
+    const chatId = data.backendChatIds?.[thread];
+    if (!chatId) return;
+    mutate(prev => ({...prev,chatUserSettings:{...(prev.chatUserSettings||{}),[thread]:{...(prev.chatUserSettings?.[thread]||{}),...patch}}}));
+    try { await saveChatUserSettingsRemote(chatId,patch); await refreshRemote(); }
+    catch (error) { refreshRemote(); Alert.alert('Chat setting not saved', error?.message || 'Try again.'); }
   };
-  const saveActiveChatPrefs = (next) => {
-    if (!activeThreadKey) return;
-    const chatId=data.backendChatIds?.[activeThreadKey];
-    mutate(prev=>({...prev,chatUserSettings:{...(prev.chatUserSettings||{}),[activeThreadKey]:next}}));
-    if (chatId) saveChatUserSettingsRemote(chatId,next).then(refreshRemote).catch(error=>{refreshRemote();Alert.alert('Chat setting not saved',error?.message||'Try again.');});
+
+  const forwardMessageTo = async (targetId, message) => {
+    if (!message || message.type !== 'text' || message.deletedAt) return;
+    await sendMessage(targetId,{type:'text',text:message.text || '',forwardedFrom:message.id});
   };
+
   const saveDoubleTapReaction = (emoji) => {
     const nextEmoji = emoji || '❤️';
     mutate(prev => ({ ...prev, doubleTapReactions: { ...(prev.doubleTapReactions || {}), [prev.activeAccountId]: nextEmoji } }));
@@ -2409,7 +3161,7 @@ ${text}` });
 
   if (activeChatTarget) return <>
     <RNStatusBar barStyle={activeMode === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={theme.bg} />
-    <ChatScreen theme={theme} activeProfile={activeProfile} person={activeChatTarget} messages={activeMessages} profiles={data.profiles} chatId={activeThreadKey ? data.backendChatIds?.[activeThreadKey] : null} typingEnabled={privacy.typingIndicators !== false} onBack={() => { setActiveChatId(null); setActiveGroupId(null); }} onSend={activeGroup ? sendGroupMessage : sendMessage} onReact={activeGroup ? reactGroupMessage : reactMessage} onEdit={editActiveMessage} onDeleteForMe={activeGroup ? deleteGroupMessageForMe : deleteMessageForMe} onDeleteEveryone={deleteActiveMessageForEveryone} onPin={pinActiveMessage} onForward={forwardActiveMessage} onOpenProfile={openProfileModal} markRead={markRead} silentConfig={activeSilentConfig} onOpenSilent={() => setSilentChatOpen(true)} onOpenEncryptionInfo={() => setEncryptionInfoOpen(true)} chatThemeId={activeChatThemeId} chatThemeScope={activeChatThemeScope} onOpenTheme={() => setChatThemeOpen(true)} chatPrefs={activeChatPrefs} onSavePrefs={saveActiveChatPrefs} isGroup={!!activeGroup} group={activeGroup} groupMembers={activeGroupMembers} onRenameGroup={(name) => activeGroup && renameGroup(activeGroup.id, name)} onToggleGroupEveryone={(enabled) => activeGroup && toggleGroupEveryone(activeGroup.id, enabled)} doubleTapEmoji={activeDoubleTapEmoji} />
+    <ChatScreen theme={theme} activeProfile={activeProfile} person={activeChatTarget} messages={activeMessages} profiles={data.profiles} onBack={() => { setActiveTyping(false); setActiveChatId(null); setActiveGroupId(null); }} onSend={activeGroup ? sendGroupMessage : sendMessage} onReact={activeGroup ? reactGroupMessage : reactMessage} onEdit={editActiveMessage} onUnsend={unsendActiveMessage} onDeleteForMe={deleteActiveMessageForMe} onTogglePin={toggleActiveMessagePin} pinnedMessageIds={activePinnedMessageIds} typingUserIds={activeTypingUserIds} onTypingChange={setActiveTyping} onForward={forwardMessageTo} forwardTargets={connectedProfiles} onOpenProfile={openProfileModal} markRead={markRead} silentConfig={activeSilentConfig} onOpenSilent={() => setSilentChatOpen(true)} onOpenEncryptionInfo={() => setEncryptionInfoOpen(true)} chatThemeId={activeChatThemeId} chatThemeScope={activeChatThemeScope} onOpenTheme={() => setChatThemeOpen(true)} chatUserState={activeChatUserState} onUpdateChatUserState={(patch)=>activeThreadKey&&updateChatUserState(activeThreadKey,patch)} isGroup={!!activeGroup} group={activeGroup} groupMembers={activeGroupMembers} onRenameGroup={(name) => activeGroup && renameGroup(activeGroup.id, name)} onToggleGroupEveryone={(enabled) => activeGroup && toggleGroupEveryone(activeGroup.id, enabled)} doubleTapEmoji={activeDoubleTapEmoji} />
     {!activeGroup ? <PersonProfileModal visible={!!profileModalId} onClose={() => setProfileModalId(null)} theme={theme} person={profileModalPerson} connected={(data.relationships[data.activeAccountId] || []).includes(profileModalId)} privacy={profileModalPrivacy} plusActive={profileModalPlusActive} proActive={profileModalProActive} favorite={favoriteIds.includes(profileModalId)} onToggleFavorite={() => profileModalId && toggleFavorite(profileModalId)} onWave={() => profileModalId && sendWave(profileModalId)} onChat={() => profileModalPerson && openChat(profileModalPerson)} viewerIsAdmin={!!activeProfile.isAdmin} moderationState={profileModalModeration} onAdminBan={() => profileModalId && adminBan(profileModalId)} onAdminUnban={() => profileModalId && adminUnban(profileModalId)} onAdminMute={() => profileModalPerson && Alert.alert('Mute ' + profileModalPerson.name, 'Choose duration.', [{ text: '15 minutes', onPress: () => adminMute(profileModalId, 15 * 60 * 1000) }, { text: '1 hour', onPress: () => adminMute(profileModalId, 60 * 60 * 1000) }, { text: '24 hours', onPress: () => adminMute(profileModalId, 24 * 60 * 60 * 1000) }, { text: 'Indefinitely', style: 'destructive', onPress: () => adminMute(profileModalId, -1) }, { text: 'Cancel', style: 'cancel' }])} onAdminUnmute={() => profileModalId && adminUnmute(profileModalId)} /> : null}
     <SilentChatModal visible={silentChatOpen} onClose={() => setSilentChatOpen(false)} theme={theme} config={activeSilentConfig} proActive={activePro} onSave={saveSilentConfig} />
     <EncryptionInfoModal visible={encryptionInfoOpen} onClose={() => setEncryptionInfoOpen(false)} theme={theme} />
@@ -2423,7 +3175,7 @@ ${text}` });
         {tab === 'home' && <HomeScreen theme={theme} activeProfile={activeProfile} connectedProfiles={connectedProfiles} conversations={data.conversations} activeId={data.activeAccountId} requests={incomingRequests} notifications={data.notifications} moments={data.moments} notes={data.notes || []} profiles={data.profiles} favorites={data.favorites || {}} favoriteIds={favoriteIds} openOwnCard={() => setCardOpen(true)} openScanner={() => setScannerOpen(true)} openChat={openChat} openAccountSwitcher={() => setAccountsOpen(true)} openNotifications={() => setNotificationsOpen(true)} onAccept={acceptRequest} onDecline={declineRequest} onCreateMoment={() => setMomentComposerOpen(true)} onOpenMoment={m => setMomentViewId(m.id)} onOwnNote={() => setNoteComposerOpen(true)} onOpenNote={(n) => setNoteReplyId(n.id)} setTab={setTab} />}
         {tab === 'people' && <PeopleScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} localAccountIds={data.localAccountIds} requests={data.requests} favoriteIds={favoriteIds} openProfile={openProfileModal} openChat={openChat} sendRequest={sendRequest} onAccept={acceptRequest} onDecline={declineRequest} />}
         {tab === 'link' && <LinkScreen theme={theme} activeProfile={activeProfile} payload={payload} localProfiles={localProfiles} relationships={data.relationships} requests={data.requests} openScanner={() => setScannerOpen(true)} openOwnCard={() => setCardOpen(true)} sendRequest={sendRequest} onAccept={acceptRequest} onDecline={declineRequest} />}
-        {tab === 'chats' && <ChatsScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} conversations={data.conversations} favoriteIds={favoriteIds} groups={data.groups || {}} chatUserSettings={data.chatUserSettings || {}} openChat={openChat} openGroup={openGroup} onCreateGroup={() => setGroupCreateOpen(true)} />}
+        {tab === 'chats' && <ChatsScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} conversations={data.conversations} favoriteIds={favoriteIds} groups={data.groups || {}} chatUserSettings={data.chatUserSettings || {}} openChat={openChat} openGroup={openGroup} onCreateGroup={() => setGroupCreateOpen(true)} onUpdateChatState={updateChatUserState} />}
         {tab === 'profile' && <ProfileScreen theme={theme} activeProfile={activeProfile} updateProfile={updateActiveProfile} themeSetting={data.themeSetting} setThemeSetting={setThemeSetting} privacy={privacy} setPrivacy={setPrivacy} openAccountSwitcher={() => setAccountsOpen(true)} openCustomStatus={() => setCustomStatusOpen(true)} openShop={() => setShopOpen(true)} openPlus={activePro ? () => setProOpen(true) : () => setPlusOpen(true)} plusSubscription={activeSubscription} openPro={() => setProOpen(true)} proSubscription={activeProSubscription} insights={proInsights} openAdminConsole={() => setAdminConsoleOpen(true)} doubleTapEmoji={activeDoubleTapEmoji} openDoubleTapReaction={() => setDoubleTapReactionOpen(true)} resetDemo={resetDemo} accountEmail={session?.user?.email || ''} setPresenceMode={setActivePresenceMode} onSignOut={signOutLink} />}
       </View><TabBar tab={tab} setTab={setTab} theme={theme} darkMode={activeMode === 'dark'} /></SafeAreaView>
 
@@ -2514,8 +3266,7 @@ const styles = StyleSheet.create({
   tabBarShell: { height: Platform.OS === 'ios' ? 88 : 80, paddingHorizontal: 13, paddingTop: 5, paddingBottom: Platform.OS === 'ios' ? 8 : 6, backgroundColor: 'transparent' }, tabGlass: { flex: 1, borderRadius: 27, borderWidth: StyleSheet.hairlineWidth, overflow: 'hidden', shadowOpacity: .14, shadowRadius: 22, shadowOffset: { width: 0, height: 10 }, elevation: 12 }, tabInner: { flex: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 5 }, tabItem: { flex: 1, height: 58, alignItems: 'center', justifyContent: 'center' }, tabActiveCapsule: { minWidth: 54, minHeight: 48, borderRadius: 18, borderWidth: StyleSheet.hairlineWidth, borderColor: 'transparent', alignItems: 'center', justifyContent: 'center', gap: 2, paddingHorizontal: 6 }, tabLabel: { fontSize: 8.5, fontWeight: '800', letterSpacing: -.1 }, centerTabGlass: { width: 48, height: 48, borderRadius: 18, borderWidth: 1, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: .18, shadowRadius: 12, shadowOffset: { width: 0, height: 5 } }, glassHighlight: { position: 'absolute', left: 18, right: 18, top: 1, height: 1, borderRadius: 999, opacity: .8 },
   chatHeader: { height: 78, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, borderBottomWidth: StyleSheet.hairlineWidth, overflow: 'hidden' }, chatHeaderSide: { width: 88, flexDirection: 'row', alignItems: 'center' }, chatHeaderRight: { justifyContent: 'flex-end', gap: 3 }, chatHeaderPersonCenter: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4 }, chatHeaderIdentity: { flexDirection: 'row', alignItems: 'center', gap: 3, maxWidth: 150 }, chatHeaderName: { fontWeight: '800', fontSize: 12.5, letterSpacing: -.2 }, chatHeaderStatus: { fontSize: 10.5, marginTop: 2, fontWeight: '800' }, metContext: { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 7, marginTop: 8 }, metContextText: { fontSize: 10.5, fontWeight: '700' },
   chatBody: { flex: 1, overflow: 'hidden' }, messageList: { paddingHorizontal: 14, paddingTop: 18, paddingBottom: 20, flexGrow: 1 }, messageLine: { flexDirection: 'row', marginVertical: 2.5 }, groupMessageLine: { alignItems: 'flex-end', marginVertical: 1.2 }, messageStack: { maxWidth: '84%' }, groupMessageStack: { maxWidth: '78%' }, groupMessageAvatarSlot: { width: 32, minHeight: 28, justifyContent: 'flex-end' }, groupMessageAvatarLeft: { alignItems: 'flex-start', marginRight: 5 }, groupMessageAvatarRight: { alignItems: 'flex-end', marginLeft: 5 }, groupMessageTightSpacer: { height: 1 }, bubblePressable: { position: 'relative' }, incomingPressable: { paddingLeft: 4 }, outgoingPressable: { paddingRight: 4 }, bubbleShell: { position: 'relative' }, bubble: { borderRadius: 22, paddingHorizontal: 16, paddingTop: 10.5, paddingBottom: 10.5, overflow: 'hidden', minHeight: 42, justifyContent: 'center' }, outgoingBubble: { borderRadius: 22 }, incomingBubble: { borderRadius: 22 }, outgoingTail: { display: 'none' }, incomingTail: { display: 'none' }, bubbleText: { fontSize: 17, lineHeight: 22.5, letterSpacing: -.2 }, messageMetaOutside: { minHeight: 16, flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 3, paddingHorizontal: 10 }, bubbleTime: { fontSize: 10, fontWeight: '600' }, replyQuote: { borderLeftWidth: 2, paddingLeft: 7, marginBottom: 7, maxWidth: 220 }, groupSenderName: { fontSize: 11, fontWeight: '800', marginLeft: 10, marginBottom: 4, marginTop: 8 }, groupSenderNameMine: { marginLeft: 0, marginRight: 10 }, reactionBadge: { position: 'absolute', bottom: -12, right: 7, borderRadius: 999, paddingHorizontal: 7, paddingVertical: 3, borderWidth: StyleSheet.hairlineWidth, shadowColor: '#000', shadowOpacity: .08, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
-  photoMessage: { width: 205, height: 154, borderRadius: 17, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }, photoMessageImage: { width: '100%', height: '100%' }, voiceMessage: { width: 205, flexDirection: 'row', alignItems: 'center', gap: 9, paddingVertical: 3 }, voicePlay: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' }, voiceWave:{flex:1,height:24,flexDirection:'row',alignItems:'center',justifyContent:'space-between'},
-  richMessageCard:{minWidth:190,maxWidth:225,flexDirection:'row',alignItems:'center',gap:10,padding:11,borderRadius:15}, forwardedLabel:{flexDirection:'row',alignItems:'center',gap:4,marginBottom:4}, deletedMessage:{flexDirection:'row',alignItems:'center',gap:7}, pinnedBanner:{minHeight:44,paddingHorizontal:14,paddingVertical:7,flexDirection:'row',alignItems:'center',gap:9,borderBottomWidth:StyleSheet.hairlineWidth},
+  photoMessage: { width: 205, height: 154, borderRadius: 17, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }, photoMessageImage: { width: '100%', height: '100%' }, voiceMessage: { width: 205, flexDirection: 'row', alignItems: 'center', gap: 9, paddingVertical: 3 }, voicePlay: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
   emptyChat: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 120 }, emptyChatIcon: { width: 58, height: 58, borderRadius: 20, alignItems: 'center', justifyContent: 'center' }, typingLine: { paddingHorizontal: 16, paddingBottom: 6, flexDirection: 'row', alignItems: 'center', gap: 7 }, typingBubble: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 16 }, replyComposerBar: { marginHorizontal: 10, marginBottom: 4, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 8, flexDirection: 'row', alignItems: 'center', gap: 10 },
   composerWrap: { flexDirection: 'row', gap: 8, alignItems: 'flex-end', paddingHorizontal: 10, paddingTop: 7, paddingBottom: Platform.OS === 'ios' ? 7 : 10 }, plusButton: { width: 40, height: 40, borderRadius: 20, borderWidth: StyleSheet.hairlineWidth, alignItems: 'center', justifyContent: 'center', marginBottom: 1 }, composer: { flex: 1, minHeight: 42, maxHeight: 120, borderRadius: 22, borderWidth: StyleSheet.hairlineWidth, flexDirection: 'row', alignItems: 'flex-end', paddingLeft: 14, paddingRight: 5, paddingVertical: 4 }, composerInput: { flex: 1, fontSize: 15.5, maxHeight: 100, paddingTop: 7, paddingBottom: 7, letterSpacing: -.1 }, sendButton: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', marginLeft: 5, marginBottom: 1 },
   chatThemeSheet: { width: '100%', maxWidth: 460, maxHeight: '86%', borderRadius: 30, padding: 18 }, chatThemeModeBox: { borderWidth: StyleSheet.hairlineWidth, borderRadius: 22, padding: 14, marginTop: 16 }, chatThemeModeTitle: { fontSize: 14.5, fontWeight: '900' }, chatThemeModeSub: { fontSize: 11.5, lineHeight: 16, marginTop: 4 }, chatThemeModeRow: { flexDirection: 'row', gap: 8, marginTop: 12 }, chatThemeModeChip: { flex: 1, minHeight: 42, borderRadius: 14, borderWidth: StyleSheet.hairlineWidth, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 }, chatThemeSectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 }, chatThemeSectionTitle: { fontSize: 15, fontWeight: '900' }, chatThemeSectionSub: { fontSize: 10.5, lineHeight: 14, marginTop: 2 }, themeTierPill: { minHeight: 24, paddingHorizontal: 9, borderRadius: 999, alignItems: 'center', justifyContent: 'center' }, themeTierText: { color: '#fff', fontSize: 9, fontWeight: '900', letterSpacing: .7 }, chatThemeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9 }, chatThemeCard: { width: '48.5%', minHeight: 112, borderRadius: 20, borderWidth: StyleSheet.hairlineWidth, padding: 10 }, chatThemePreview: { height: 58, position: 'relative', justifyContent: 'center' }, chatThemeIncomingPreview: { width: '58%', height: 20, borderRadius: 12, borderBottomLeftRadius: 5, alignSelf: 'flex-start' }, chatThemeOutgoingPreview: { width: '68%', height: 24, borderRadius: 14, borderBottomRightRadius: 5, alignSelf: 'flex-end', marginTop: 6 }, chatThemeCardBottom: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 }, chatThemeName: { flex: 1, fontSize: 11.5, fontWeight: '800' },

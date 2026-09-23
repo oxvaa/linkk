@@ -1,87 +1,39 @@
-# LINK 1.2.0 — Real Messaging Update
+# LINK 1.2.0 — Messaging Upgrade
 
-This project is based directly on LINK 0.9.3. The existing UI is retained while the local-only social data layer is connected to the live `LINK Production` Supabase project.
+This build keeps LINK 1.1 presence/privacy and upgrades the real Supabase messaging layer.
 
-## Live backend
+## Added in 1.2.0
+- Realtime typing indicators for DMs and groups
+- Delivered / Seen message state
+- Edit text messages with `Edited` marker
+- Unsend for everyone
+- Delete for me
+- Pin / unpin messages and pinned-message viewer
+- Search inside decrypted active chat history
+- Media & voice gallery for shared chat items
+- Forward text messages to another LINK
+- Pin chat, mark unread, mute and archive controls
+- Archived chat view
+- Per-chat mute suppresses backend message notifications
+- Forwarded message indicator
+- Existing photo upload remains backed by Supabase Storage
 
-- Supabase project: `LINK Production`
-- Region: `eu-central-1`
-- Project ref: `sbszhchbhlvyftdrimjv`
-- Client uses the project's publishable key only. No secret/service-role key is bundled in the app.
+## Backend
+The Supabase project has already been migrated for 1.2.0 with:
+- `typing_status`
+- `message_deletions`
+- `message_pins`
+- `chat_user_settings`
+- `messages.view_once`
+- `edit_message`, `unsend_message`, `set_typing`, `mark_chat_delivered` RPCs
+- Realtime enabled for the new messaging tables
+- RLS enabled for all new public tables
 
-## Backend-connected features
+## Security note
+LINK encrypts text before storing it in Supabase, but the current beta stores shared chat keys server-side behind RLS. Do not market the current beta as full device-only end-to-end encryption.
 
-- Email/password registration and login
-- Profiles / @usernames / avatar uploads
-- LINK requests + acceptance
-- Direct chats and group chats
-- Realtime messages
-- AES-256-GCM encrypted message text with a per-chat key
-- Media uploads to private chat storage
-- Reactions and custom Double Tap reaction
-- Seen/read receipts + Pro Ghost Mode behavior
-- Group owner / Everyone rename permission
-- Silent Chat timers
-- Chat themes
-- Moments + private media storage
-- Notes
-- Favorites
-- Waves and in-app notifications
-- Admin moderation state (ban/mute) when the signed-in profile has a server-side admin/CEO role
-- LINK Coins, owned Profile Effects, and prototype Plus/Pro entitlements synced to the account
-- Plus/Pro badges for other profiles via a safe public tier projection (without exposing Coins or private entitlement data)
-- Pro Profile Views / Insights count stored on the backend
+## Not yet in this build
+Real microphone recording/playback is intentionally not faked. Existing voice-message rendering remains supported, while actual recording is reserved for the next messaging patch.
 
-## Security model
-
-All exposed application tables use Row Level Security. Admin/verified/role values are not client-writable. Secret/service-role keys are not included in the app. Supabase security advisor reports no security lints after the final migration.
-
-Message text is encrypted before storage, but this beta must **not** be marketed as full E2EE: chat keys are currently stored server-side behind RLS to support multi-device access. True device-only E2EE key exchange is a separate production step.
-
-## Testing
-
-Create two accounts with different email addresses. If email confirmation is enabled in Supabase Auth, verify each email before signing in. Send a LINK request between the two accounts, accept it, and open the chat. Messages/reactions/read receipts are stored in Supabase and Realtime refreshes the other device.
-
-## Production items not included yet
-
-- APNs/FCM push delivery requires an Expo EAS development/production build and push credentials; this is separate from the in-app Realtime notification feed.
-- App Store / Google Play billing is not connected. Plus/Pro buttons still represent prototype entitlements and charge no real money.
-- Full device-only E2EE key exchange / key backup has not been implemented or audited.
-
-## iPhone / Snack
-
-`App.snack.js` is an all-in-one equivalent of the backend build. If the Snack editor only lets you replace `App.js`, use the contents of `App.snack.js` as `App.js`. The Snack dependencies still need to include the packages in `package.json`, especially `@supabase/supabase-js`.
-
-
-## Snack 1.0.3 compatibility
-For Expo Snack, `index.html` pins `@supabase/supabase-js@2.49.8` and loads `App.snack.js`. This avoids the newer URL-constructor validation issue observed in Expo Snack while leaving the Supabase backend unchanged.
-
-
-## Snack compatibility note
-
-The Snack build intentionally does not use `react-native-url-polyfill`. Expo Snack/Expo Go already provides the URL APIs needed by this compatibility build, and removing the external polyfill avoids a Hermes/Metro runtime crash seen in Snack. The Snack launcher pins `@supabase/supabase-js` to 2.49.8.
-
-
-## 1.0.5 live accounts
-The live client no longer contains demo/local identities. The authenticated Supabase profile is always the active account. Optional backend query failures fail soft instead of restoring demo state.
-
-
-## LINK 1.1 additions
-- Realtime active presence: Online, Do Not Disturb, Busy, Offline (Ghost)
-- Ghost presence is server-gated to LINK Pro / staff
-- Expanded synced settings: privacy, discoverability, messaging permissions, notifications, security, appearance
-- GitHub → Snack launcher resolves the exact current commit SHA to bypass stale raw cache
-
-## LINK 1.2 additions
-- Private Realtime Broadcast typing indicators for direct and group chats
-- Sent, Delivered and Read states backed by message receipts
-- Edit text messages with an Edited label
-- Delete for me and soft Delete for everyone
-- Forward encrypted text, location and contact cards to another conversation
-- Pin and unpin messages with a pinned-message banner
-- Per-account chat archive and notification mute settings
-- Draft restoration per account and chat
-- Multi-emoji reactions from the message action menu
-- Photo/video picker and richer voice, video, location and contact message cards
-
-The included `supabase/1.2.0_real_messaging.sql` mirrors the schema and RLS changes already applied to LINK Production. Native background push delivery and real microphone recording still require an EAS development/production build and platform permissions; they are not simulated as production-ready features in this Snack build.
+## Snack
+Upload this repo to GitHub, open the included GitHub Pages `index.html`, then create a new Snack. The launcher resolves the latest commit SHA first to avoid stale `raw.githubusercontent.com/main` cache.
