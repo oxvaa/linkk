@@ -126,7 +126,7 @@
       <div class="meta">
         <div class="row"><span id="repoDot" class="dot wait"></span><span class="label">Repository</span><span class="value" id="repoValue">Zjišťuji…</span></div>
         <div class="row"><span class="dot"></span><span class="label">Expo SDK</span><span class="value">57</span></div>
-        <div class="row"><span class="dot"></span><span class="label">Build</span><span class="value">LINK 1.2.0 · Messaging Upgrade</span></div>
+        <div class="row"><span class="dot"></span><span class="label">Build</span><span class="value">LINK 1.2.1 · Glass Messaging</span></div>
       </div>
 
       <div class="actions">
@@ -141,7 +141,7 @@
 
   <script>
     (() => {
-      const BUILD = 'LINK 1.2.0 · Messaging Upgrade';
+      const BUILD = 'LINK 1.2.1 · Glass Messaging';
       const SDK_VERSION = '57.0.0';
       const DEFAULT_BRANCH = 'main';
       const DEPENDENCIES = [
@@ -152,7 +152,7 @@
         'expo-blur@~57.0.3',
         'expo-crypto@~57.0.3',
         'expo-linear-gradient@~57.0.2',
-        'react-native-qrcode-svg@^6.3.25',
+        'qrcode-generator@^1.4.4',
         'react-native-svg@15.15.4',
         '@supabase/supabase-js@2.49.8'
       ];
@@ -219,7 +219,7 @@
           if (!r.ok) throw new Error(`HTTP ${r.status}`);
           const text = await r.text();
           if (!text.includes('export default')) throw new Error('App.js nevypadá jako Expo entry soubor');
-          if (!text.includes("const STORAGE_KEY = '@link_live_backend_v16'")) throw new Error('Načtený App.snack.js není LINK 1.2 live build');
+          if (!text.includes("LINK 1.2.1 · Glass Messaging")) throw new Error('Načtený App.snack.js není LINK 1.2.1 build');
           if (text.includes('processLock')) throw new Error('GitHub stále vrací starý Supabase client build');
           if (text.includes('react-native-url-polyfill') || text.includes('setupURLPolyfill')) throw new Error('GitHub stále vrací starý URL polyfill build');
           if (!text.includes("@supabase/supabase-js")) throw new Error('App.snack.js nemá Supabase klienta');
@@ -234,7 +234,7 @@
       createBtn.addEventListener('click', async () => {
         createBtn.disabled = true;
         createBtn.textContent = 'Kontroluji App.snack.js…';
-        status.textContent = 'Ověřuji LINK 1.2.0 na GitHubu…';
+        status.textContent = 'Ověřuji LINK 1.2.1 na GitHubu…';
 
         const ok = await verifySource();
         if (!ok) {
@@ -248,7 +248,7 @@
 
         const params = new URLSearchParams();
         params.set('name', BUILD);
-        params.set('description', 'LINK 1.2.0 · Messaging Upgrade — realtime typing, delivered/seen, edit, unsend, delete for me, pinned messages, in-chat search, media gallery, forwarding, archive/mute/pin chat controls, presence, privacy, real Supabase accounts, encrypted chats, Group Chats and Moments. Generated from GitHub.');
+        params.set('description', 'LINK 1.2.1 · Glass Messaging — floating Liquid Glass navbar, Chats unread badge, fixed seen/read state, keyboard-aware chat scrolling, non-overlapping typing indicator, realtime messaging, edit/unsend, pins, presence, privacy and encrypted chats. Generated from GitHub.');
         params.set('sdkVersion', SDK_VERSION);
         params.set('platform', 'mydevice');
         params.set('supportedPlatforms', 'ios,android,web');
