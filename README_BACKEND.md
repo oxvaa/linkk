@@ -1,4 +1,4 @@
-# LINK 1.0.4 — Backend Beta
+# LINK 1.0.5 — Backend Beta
 
 This project is based directly on LINK 0.9.3. The existing UI is retained while the local-only social data layer is connected to the live `LINK Production` Supabase project.
 
@@ -60,3 +60,7 @@ For Expo Snack, `index.html` pins `@supabase/supabase-js@2.49.8` and loads `App.
 ## Snack compatibility note
 
 The Snack build intentionally does not use `react-native-url-polyfill`. Expo Snack/Expo Go already provides the URL APIs needed by this compatibility build, and removing the external polyfill avoids a Hermes/Metro runtime crash seen in Snack. The Snack launcher pins `@supabase/supabase-js` to 2.49.8.
+
+
+## 1.0.5 live accounts
+The live client no longer contains demo/local identities. The authenticated Supabase profile is always the active account. Optional backend query failures fail soft instead of restoring demo state.
