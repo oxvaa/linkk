@@ -1,4 +1,4 @@
-# LINK 1.0.0 — Backend Beta
+# LINK 1.0.2 — Backend Beta
 
 This project is based directly on LINK 0.9.3. The existing UI is retained while the local-only social data layer is connected to the live `LINK Production` Supabase project.
 

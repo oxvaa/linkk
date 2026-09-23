@@ -1,6 +1,6 @@
 {
   "name": "link-social-core",
-  "version": "1.0.0-backend-beta",
+  "version": "1.0.2-backend-beta",
   "private": true,
   "main": "index.js",
   "scripts": {
