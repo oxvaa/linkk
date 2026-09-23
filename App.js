@@ -40,7 +40,7 @@ import {
   recordProfileViewRemote,
 } from './services/linkBackend';
 
-const STORAGE_KEY = '@link_social_core_v2';
+const STORAGE_KEY = '@link_live_backend_v14';
 const ACCENT = '#6C5CE7';
 const EMPTY_MESSAGES = Object.freeze([]);
 const BUILD = 'LINK 1.0.2 · Backend Beta';
@@ -272,136 +272,34 @@ const normalizeUsername = (value = '') => {
   return `@${clean || 'linkuser'}`;
 };
 
-function initialData() {
-  const profiles = {
-    local_simi: {
-      id: 'local_simi', isLocal: true, name: 'Šimi', username: '@simi', bio: 'music • nights • LINK',
-      status: 'Outside', statusIcon: 'walk', statusColor: '#0A84FF', socials: { instagram: '@simi', spotify: 'Šimi' },
-    },
-    local_nela: {
-      id: 'local_nela', isLocal: true, name: 'Nela K.', username: '@nelak', bio: 'music • prague • late nights',
-      status: 'Available', statusIcon: 'checkmark-circle', statusColor: '#34C759', profileEffectId: 'fx_widow', socials: { instagram: '@nelak', spotify: 'nela k' },
-    },
-    local_alex: {
-      id: 'local_alex', isLocal: true, name: 'Alex V.', username: '@alexv', bio: 'design / streetwear / coffee',
-      status: 'At work', statusIcon: 'briefcase', statusColor: '#FF9F0A', socials: { instagram: '@alexv', spotify: 'alex v' },
-    },
-    local_geezuz: {
-      id: 'local_geezuz', isLocal: true, isAdmin: true, role: 'ceo', verified: true, name: 'geezuz', username: '@link', bio: 'Founder & CEO of LINK',
-      status: 'LINK HQ', statusIcon: 'shield-checkmark', statusColor: '#0A84FF', profileEffectId: 'admin_orbit', nameEffectId: 'prism',
-      socials: { instagram: '<hidden>', spotify: '<hidden>', web: 'link.app/', support: 'support.link.app/' },
-    },
-    demo_david: {
-      id: 'demo_david', isLocal: false, name: 'David M.', username: '@davidm', bio: 'design / streetwear',
-      status: 'Night mode', statusIcon: 'moon', statusColor: '#AF52DE', profileEffectId: 'fx_crow', socials: { instagram: '@davidm', spotify: 'David M' },
-    },
-  };
-
-  const keySN = threadKey('local_simi', 'local_nela');
-  const keySD = threadKey('local_simi', 'demo_david');
-
+function initialData(userId = null) {
   return {
-    version: 12,
+    version: 14,
     themeSetting: 'light',
-    activeAccountId: 'local_simi',
-    localAccountIds: ['local_simi', 'local_nela', 'local_alex', 'local_geezuz'],
-    profiles,
-    relationships: {
-      local_simi: ['local_nela', 'demo_david', 'local_geezuz'],
-      local_nela: ['local_simi', 'local_geezuz'],
-      local_alex: ['local_geezuz'],
-      local_geezuz: ['local_simi', 'local_nela', 'local_alex', 'demo_david'],
-      demo_david: ['local_simi', 'local_geezuz'],
-    },
-    requests: [
-      { id: 'req_alex_simi', fromId: 'local_alex', toId: 'local_simi', createdAt: 'Today, 11:12' },
-    ],
+    activeAccountId: userId,
+    localAccountIds: userId ? [userId] : [],
+    profiles: {},
+    relationships: userId ? { [userId]: [] } : {},
+    requests: [],
     groups: {},
-    doubleTapReactions: {
-      local_simi: '❤️',
-      local_nela: '❤️',
-      local_alex: '❤️',
-      local_geezuz: '❤️',
-    },
-    conversations: {
-      [keySN]: [
-        { id: 'm1', senderId: 'local_nela', type: 'text', text: 'yo, nice meeting u 👋', time: '10:44', readBy: ['local_nela', 'local_simi'], reactions: [] },
-        { id: 'm2', senderId: 'local_simi', type: 'text', text: 'same haha, LINK actually worked 😭', time: '10:45', readBy: ['local_simi'], reactions: [{ userId: 'local_nela', emoji: '❤️' }] },
-      ],
-      [keySD]: [
-        { id: 'm3', senderId: 'demo_david', type: 'text', text: 'send me that brand name later', time: 'Yesterday', readBy: ['demo_david', 'local_simi'], reactions: [] },
-      ],
-    },
-    moments: [
-      { id: 'mom_nela', ownerId: 'local_nela', emoji: '🎧', caption: 'late night playlist', createdAt: Date.now() - 1000 * 60 * 25 },
-      { id: 'mom_david', ownerId: 'demo_david', emoji: '🧢', caption: 'new pieces soon', createdAt: Date.now() - 1000 * 60 * 72 },
-    ],
-    notes: [
-      { id: 'note_nela', ownerId: 'local_nela', text: 'who’s outside later?', emoji: '🌙', audience: 'links', createdAt: Date.now() - 1000 * 60 * 18, expiresAt: Date.now() + 1000 * 60 * 60 * 22 },
-      { id: 'note_david', ownerId: 'demo_david', text: 'new drop looking crazy', emoji: '🧢', audience: 'links', createdAt: Date.now() - 1000 * 60 * 52, expiresAt: Date.now() + 1000 * 60 * 60 * 20 },
-    ],
-    notifications: {
-      local_simi: [
-        { id: 'n_req', type: 'request', title: 'New LINK request', body: 'Alex V. wants to LINK with you.', time: '11:12', read: false },
-      ],
-      local_nela: [],
-      local_alex: [],
-      local_geezuz: [],
-    },
-    favorites: {
-      local_simi: ['local_nela'],
-      local_nela: ['local_simi'],
-      local_alex: [],
-      local_geezuz: [],
-      demo_david: [],
-    },
-    privacy: {
-      local_simi: { showStatus: true, showSocials: true, momentsToLinks: true, ghostMode: false },
-      local_nela: { showStatus: true, showSocials: true, momentsToLinks: true, ghostMode: false },
-      local_alex: { showStatus: true, showSocials: false, momentsToLinks: true, ghostMode: false },
-      local_geezuz: { showStatus: true, showSocials: true, momentsToLinks: true, ghostMode: true },
-    },
-    wallets: {
-      local_simi: 2200,
-      local_nela: 2200,
-      local_alex: 2200,
-      local_geezuz: 999999,
-    },
-    ownedEffects: {
-      local_simi: [],
-      local_nela: ['fx_widow'],
-      local_alex: [],
-      local_geezuz: [],
-    },
-    subscriptions: {
-      local_simi: null,
-      local_nela: null,
-      local_alex: null,
-      local_geezuz: null,
-    },
-    proSubscriptions: {
-      local_simi: null,
-      local_nela: null,
-      local_alex: null,
-      local_geezuz: null,
-    },
-    moderation: {
-      local_simi: { banned: false, mutedUntil: null },
-      local_nela: { banned: false, mutedUntil: null },
-      local_alex: { banned: false, mutedUntil: null },
-      local_geezuz: { banned: false, mutedUntil: null },
-      demo_david: { banned: false, mutedUntil: null },
-    },
+    doubleTapReactions: userId ? { [userId]: '❤️' } : {},
+    conversations: {},
+    backendChatIds: {},
+    moments: [],
+    notes: [],
+    notifications: userId ? { [userId]: [] } : {},
+    favorites: userId ? { [userId]: [] } : {},
+    privacy: userId ? { [userId]: { showStatus: true, showSocials: true, momentsToLinks: true, ghostMode: false } } : {},
+    wallets: userId ? { [userId]: 0 } : {},
+    ownedEffects: userId ? { [userId]: [] } : {},
+    subscriptions: {},
+    proSubscriptions: {},
+    moderation: {},
     chatKeys: {},
     silentChats: {},
-    chatThemes: { [keySN]: 'default', [keySD]: 'red' },
-    chatThemeScopes: { [keySN]: 'messages', [keySD]: 'full' },
-    profileViews: {
-      local_simi: 12,
-      local_nela: 8,
-      local_alex: 3,
-      local_geezuz: 999,
-    },
+    chatThemes: {},
+    chatThemeScopes: {},
+    profileViews: userId ? { [userId]: 0 } : {},
   };
 }
 
@@ -423,11 +321,11 @@ function EdgeSwipeBack({ onBack, children, enabled = true, style }) {
 }
 
 function Avatar({ person, size = 48, theme, accent = ACCENT }) {
-  const isLocal = person?.isLocal;
+  const isOwn = !!(person?.isSelf || person?.isLocal);
   const radius = size / 2;
   return (
-    <View style={[styles.avatar, { width: size, height: size, borderRadius: radius, backgroundColor: isLocal ? accent : theme.soft, overflow: 'hidden' }]}>
-      {person?.photoUri ? <Image source={{ uri: person.photoUri }} style={{ width: size, height: size }} resizeMode="cover" /> : <Text style={{ color: isLocal ? '#fff' : theme.text, fontWeight: '900', fontSize: size * 0.31 }}>{initialsFor(person?.name)}</Text>}
+    <View style={[styles.avatar, { width: size, height: size, borderRadius: radius, backgroundColor: isOwn ? accent : theme.soft, overflow: 'hidden' }]}>
+      {person?.photoUri ? <Image source={{ uri: person.photoUri }} style={{ width: size, height: size }} resizeMode="cover" /> : <Text style={{ color: isOwn ? '#fff' : theme.text, fontWeight: '900', fontSize: size * 0.31 }}>{initialsFor(person?.name)}</Text>}
     </View>
   );
 }
@@ -702,10 +600,7 @@ function HomeScreen({ theme, activeProfile, connectedProfiles, conversations, ac
       <SectionTitle theme={theme} action="See all" onAction={() => setTab('people')}>Recently linked</SectionTitle>
       {[...connectedProfiles].sort((a, b) => Number(favoriteIds.includes(b.id)) - Number(favoriteIds.includes(a.id))).slice(0, 3).map(person => <PersonRow key={person.id} person={person} theme={theme} favorite={favoriteIds.includes(person.id)} unread={unreadFor(person.id)} onPress={() => openChat(person)} onChat={() => openChat(person)} />)}
 
-      <View style={[styles.localLabCard, { backgroundColor: theme.inverse }]}> 
-        <View style={{ flex: 1 }}><Text style={[styles.eyebrow, { color: theme.inverseText, opacity: .58 }]}>LOCAL ACCOUNTS LAB</Text><Text style={[styles.eventTitle, { color: theme.inverseText }]}>Test both sides.</Text><Text style={[styles.eventBody, { color: theme.inverseText, opacity: .7 }]}>Switch profiles, accept LINK requests and chat between accounts on this device.</Text></View>
-        <Pressable onPress={openAccountSwitcher} style={[styles.eventIcon, { backgroundColor: theme.inverseText }]}><Ionicons name="swap-horizontal" size={24} color={theme.inverse} /></Pressable>
-      </View>
+
     </ScrollView>
   );
 }
@@ -763,21 +658,21 @@ function PeopleScreen({ theme, activeId, profiles, connectedIds, localAccountIds
       <ScrollView contentContainerStyle={styles.listPad} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
         {cleanQuery ? <>
           <View style={styles.usernameSearchHeader}>
-            <View><Text style={[styles.sectionTitle, { color: theme.text }]}>Search results</Text><Text style={[styles.usernameSearchHint, { color: theme.sub }]}>Local test accounts can be found by their @username too.</Text></View>
+            <View><Text style={[styles.sectionTitle, { color: theme.text }]}>Search results</Text><Text style={[styles.usernameSearchHint, { color: theme.sub }]}>Search registered LINK accounts by @username or name.</Text></View>
             <View style={[styles.searchCountBadge, { backgroundColor: theme.soft }]}><Text style={[styles.searchCountText, { color: theme.sub }]}>{searchResults.length}</Text></View>
           </View>
           {searchResults.map(person => (
             <Pressable key={person.id} onPress={() => openProfile(person)} style={[styles.discoverRow, { backgroundColor: theme.card, borderColor: theme.border }]}> 
               <Avatar person={person} size={48} theme={theme} />
               <View style={{ flex: 1, minWidth: 0 }}>
-                <View style={styles.searchNameRow}><Text numberOfLines={1} style={[styles.personName, { color: theme.text }]}>{person.name}</Text>{person.isLocal ? <View style={[styles.localBadge, { backgroundColor: theme.soft }]}><Text style={[styles.localBadgeText, { color: theme.sub }]}>LOCAL</Text></View> : null}</View>
+                <View style={styles.searchNameRow}><Text numberOfLines={1} style={[styles.personName, { color: theme.text }]}>{person.name}</Text></View>
                 <Text numberOfLines={1} style={[styles.usernameResult, { color: ACCENT }]}>{person.username}</Text>
                 <View style={styles.personSubLine}><StatusBadge person={person} theme={theme} compact />{isConnected(person.id) ? <Pill theme={theme} tone="success">LINKED</Pill> : null}</View>
               </View>
               {resultAction(person)}
             </Pressable>
           ))}
-          {!searchResults.length ? <View style={[styles.noSearchCard, { backgroundColor: theme.card, borderColor: theme.border }]}><Ionicons name="at" size={24} color={theme.sub} /><Text style={[styles.noSearchTitle, { color: theme.text }]}>No @username found</Text><Text style={[styles.noSearchBody, { color: theme.sub }]}>Try the exact username. Local accounts on this device are searchable here.</Text></View> : null}
+          {!searchResults.length ? <View style={[styles.noSearchCard, { backgroundColor: theme.card, borderColor: theme.border }]}><Ionicons name="at" size={24} color={theme.sub} /><Text style={[styles.noSearchTitle, { color: theme.text }]}>No @username found</Text><Text style={[styles.noSearchBody, { color: theme.sub }]}>Try the exact @username or display name.</Text></View> : null}
         </> : <>
           {requests.some(r => r.toId === activeId) ? <>
             <SectionTitle theme={theme}>Incoming requests</SectionTitle>
@@ -787,14 +682,7 @@ function PeopleScreen({ theme, activeId, profiles, connectedIds, localAccountIds
           {connected.map(person => <PersonRow key={person.id} person={person} theme={theme} favorite={favoriteIds.includes(person.id)} onPress={() => openProfile(person)} onChat={() => openChat(person)} />)}
           {!connected.length ? <Text style={[styles.emptyInline, { color: theme.sub }]}>You have no LINKs yet.</Text> : null}
 
-          <SectionTitle theme={theme}>Discover local test accounts</SectionTitle>
-          {discover.map(person => (
-            <Pressable key={person.id} onPress={() => openProfile(person)} style={[styles.discoverRow, { backgroundColor: theme.card, borderColor: theme.border }]}> 
-              <Avatar person={person} size={48} theme={theme} />
-              <View style={{ flex: 1 }}><View style={styles.searchNameRow}><Text style={[styles.personName, { color: theme.text }]}>{person.name}</Text><View style={[styles.localBadge, { backgroundColor: theme.soft }]}><Text style={[styles.localBadgeText, { color: theme.sub }]}>LOCAL</Text></View></View><View style={styles.personSubLine}><Text style={[styles.personSub, { color: theme.sub, marginTop: 0 }]}>{person.username}</Text><StatusBadge person={person} theme={theme} compact /></View></View>
-              {(() => { const incomingRequest = requests.find(r => r.fromId === person.id && r.toId === activeId); if (incomingRequest) return <View style={styles.inlineRequestActions}><Pressable onPress={() => onAccept(incomingRequest)} style={[styles.inlineAccept, { backgroundColor: theme.inverse }]}><Ionicons name="checkmark" size={15} color={theme.inverseText} /></Pressable><Pressable onPress={() => onDecline(incomingRequest.id)} style={[styles.inlineDecline, { backgroundColor: theme.soft }]}><Ionicons name="close" size={15} color={theme.text} /></Pressable></View>; return <Pressable disabled={pendingTo(person.id)} onPress={() => sendRequest(person.id)} style={[styles.linkRequestButton, { backgroundColor: pendingTo(person.id) ? theme.soft : theme.inverse }]}><Text style={{ color: pendingTo(person.id) ? theme.sub : theme.inverseText, fontWeight: '800', fontSize: 12 }}>{pendingTo(person.id) ? 'Sent' : 'LINK'}</Text></Pressable>; })()}
-            </Pressable>
-          ))}
+
         </>}
       </ScrollView>
     </View>
@@ -817,16 +705,7 @@ function LinkScreen({ theme, activeProfile, payload, localProfiles, relationship
       </Pressable>
       <Pressable onPress={openScanner} style={[styles.widePrimary, { backgroundColor: theme.inverse }]}><Ionicons name="scan" size={20} color={theme.inverseText} /><Text style={[styles.primaryButtonText, { color: theme.inverseText }]}>Scan a LINK</Text></Pressable>
 
-      <SectionTitle theme={theme}>Local Accounts Lab</SectionTitle>
-      <Text style={[styles.labHint, { color: theme.sub }]}>Send a request, switch account, accept it, then chat from both sides.</Text>
-      <View style={{ width: '100%' }}>
-        {localProfiles.filter(p => p.id !== activeProfile.id).map(p => (
-          <View key={p.id} style={[styles.labAccountRow, { backgroundColor: theme.card, borderColor: theme.border }]}>
-            <Avatar person={p} size={44} theme={theme} /><View style={{ flex: 1 }}><Text style={[styles.personName, { color: theme.text }]}>{p.name}</Text><Text style={[styles.personSub, { color: theme.sub }]}>{p.username}</Text></View>
-            {connected(p.id) ? <Pill theme={theme} tone="success">LINKED</Pill> : incoming(p.id) ? (() => { const req = requests.find(r => r.fromId === p.id && r.toId === activeProfile.id); return <View style={styles.inlineRequestActions}><Pressable onPress={() => onAccept(req)} style={[styles.inlineAccept, { backgroundColor: theme.inverse }]}><Ionicons name="checkmark" size={15} color={theme.inverseText} /></Pressable><Pressable onPress={() => onDecline(req.id)} style={[styles.inlineDecline, { backgroundColor: theme.soft }]}><Ionicons name="close" size={15} color={theme.text} /></Pressable></View>; })() : <Pressable disabled={sent(p.id)} onPress={() => sendRequest(p.id)} style={[styles.smallAction, { backgroundColor: sent(p.id) ? theme.soft : theme.inverse }]}><Text style={{ color: sent(p.id) ? theme.sub : theme.inverseText, fontWeight: '800', fontSize: 11 }}>{sent(p.id) ? 'SENT' : 'SEND LINK'}</Text></Pressable>}
-          </View>
-        ))}
-      </View>
+
     </ScrollView>
   );
 }
@@ -1106,8 +985,8 @@ function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setT
       })}<Pressable onPress={openCustomStatus} style={[styles.statusChoice, { backgroundColor: theme.soft, borderColor: theme.border }]}><Ionicons name="color-palette-outline" size={14} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '800', fontSize: 12 }}>Custom</Text></Pressable></ScrollView>
       <View style={[styles.customStatusPreview, { backgroundColor: theme.card, borderColor: theme.border }]}><View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>Your status</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>Pick any text, icon and color. LINKs see it across the app.</Text></View><StatusBadge person={activeProfile} theme={theme} /></View>
 
-      <SectionTitle theme={theme}>Local accounts</SectionTitle>
-      <Pressable onPress={openAccountSwitcher} style={[styles.accountManagerButton, { backgroundColor: theme.card, borderColor: theme.border }]}><View style={[styles.settingsIcon, { backgroundColor: theme.soft }]}><Ionicons name="people-circle-outline" size={20} color={theme.text} /></View><View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>Switch / create account</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>Test chats and LINK requests from both sides</Text></View><Ionicons name="chevron-forward" size={20} color={theme.sub} /></Pressable>
+      <SectionTitle theme={theme}>Account</SectionTitle>
+      <Pressable onPress={openAccountSwitcher} style={[styles.accountManagerButton, { backgroundColor: theme.card, borderColor: theme.border }]}><View style={[styles.settingsIcon, { backgroundColor: theme.soft }]}><Ionicons name="people-circle-outline" size={20} color={theme.text} /></View><View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>Account & sign out</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>Use another LINK account or sign out</Text></View><Ionicons name="chevron-forward" size={20} color={theme.sub} /></Pressable>
 
       <SectionTitle theme={theme}>Appearance</SectionTitle>
       <View style={styles.themeRow}><ThemeOption mode="system" active={themeSetting === 'system'} label="System" icon="phone-portrait-outline" onPress={setThemeSetting} theme={theme} /><ThemeOption mode="light" active={themeSetting === 'light'} label="Light" icon="sunny-outline" onPress={setThemeSetting} theme={theme} /><ThemeOption mode="dark" active={themeSetting === 'dark'} label="Dark" icon="moon-outline" onPress={setThemeSetting} theme={theme} /></View>
@@ -1121,7 +1000,7 @@ function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setT
         <SettingsRow theme={theme} icon="eye-off-outline" title="Ghost Mode" subtitle={proActive ? 'Read messages without sending Seen receipts' : 'LINK Pro feature · upgrade to unlock'} right={<Switch disabled={!proActive} value={!!privacy.ghostMode && proActive} onValueChange={v => setPrivacy({ ...privacy, ghostMode: v })} trackColor={{ false: theme.soft, true: '#7C5CFC' }} />} last />
       </View>
       <View style={[styles.gestureTip, { backgroundColor: theme.card, borderColor: theme.border }]}><Ionicons name="return-up-back-outline" size={20} color={ACCENT} /><View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>Swipe to go back</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>On detail pages, swipe right from the left edge to go back. In chat, swipe a message right to reply.</Text></View></View>
-      <Pressable onPress={resetDemo} style={[styles.resetButton, { borderColor: theme.border }]}><Ionicons name="refresh" size={18} color={theme.danger} /><Text style={{ color: theme.danger, fontWeight: '800' }}>Reset LINK 0.9.3 demo</Text></Pressable>
+      <Pressable onPress={resetDemo} style={[styles.resetButton, { borderColor: theme.border }]}><Ionicons name="refresh" size={18} color={theme.danger} /><Text style={{ color: theme.danger, fontWeight: '800' }}>Refresh LINK data</Text></Pressable>
     </ScrollView>
     <AdminCustomizationModal visible={adminCustomizeOpen} onClose={() => setAdminCustomizeOpen(false)} theme={theme} profile={activeProfile} onUpdate={updateProfile} onPickGif={pickProfileGif} />
   </>);
@@ -1345,11 +1224,11 @@ function AdminConsoleModal({ visible, onClose, theme, profiles, moderation, onBa
   const openMute = (person) => Alert.alert('Mute ' + person.name, 'Choose how long they cannot send messages, Notes, Moments, waves or LINK requests.', [
     { text: '15 minutes', onPress: () => onMute(person.id, 15 * 60 * 1000) }, { text: '1 hour', onPress: () => onMute(person.id, 60 * 60 * 1000) }, { text: '24 hours', onPress: () => onMute(person.id, 24 * 60 * 60 * 1000) }, { text: 'Indefinitely', style: 'destructive', onPress: () => onMute(person.id, -1) }, { text: 'Cancel', style: 'cancel' },
   ]);
-  return <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}><View style={[styles.adminConsolePage, { backgroundColor: theme.bg }]}><SafeAreaView style={styles.flexOne}><View style={styles.adminConsoleHeader}><View><Text style={[styles.bigTitle, { color: theme.text }]}>Admin Console</Text><Text style={[styles.headerSub, { color: theme.sub }]}>LINK moderation · local prototype</Text></View><IconButton icon="close" onPress={onClose} theme={theme} /></View><ScrollView contentContainerStyle={styles.adminConsoleList} showsVerticalScrollIndicator={false}><View style={[styles.adminConsoleHero, { backgroundColor: '#111318' }]}><View style={styles.adminConsoleHeroIcon}><Ionicons name="shield-checkmark" size={28} color="#fff" /></View><View style={{ flex: 1 }}><Text style={styles.adminConsoleHeroTitle}>Administrator access</Text><Text style={styles.adminConsoleHeroSub}>Ban accounts or mute posting and messaging. Changes persist between local account switches.</Text></View></View>{users.map(person => { const state = moderation?.[person.id] || { banned: false, mutedUntil: null }; const muted = state.mutedUntil === -1 || (state.mutedUntil || 0) > Date.now(); return <View key={person.id} style={[styles.adminUserCard, { backgroundColor: theme.card, borderColor: theme.border }]}><Avatar person={person} size={48} theme={theme} /><View style={{ flex: 1, minWidth: 0 }}><View style={styles.inlineNameRow}><Text numberOfLines={1} style={[styles.personName, { color: theme.text }]}>{person.name}</Text>{person.verified ? <VerifiedBadge compact /> : null}</View><Text style={[styles.personSub, { color: theme.sub }]}>{person.username}</Text><View style={styles.adminStateRow}>{state.banned ? <View style={[styles.adminStatePill, { backgroundColor: 'rgba(255,59,48,.12)' }]}><Text style={{ color: '#FF3B30', fontWeight: '900', fontSize: 9 }}>BANNED</Text></View> : null}{muted ? <View style={[styles.adminStatePill, { backgroundColor: 'rgba(255,159,10,.14)' }]}><Text style={{ color: '#FF9F0A', fontWeight: '900', fontSize: 9 }}>MUTED</Text></View> : null}{!state.banned && !muted ? <View style={[styles.adminStatePill, { backgroundColor: 'rgba(52,199,89,.12)' }]}><Text style={{ color: '#34C759', fontWeight: '900', fontSize: 9 }}>ACTIVE</Text></View> : null}</View></View><View style={styles.adminUserActions}>{state.banned ? <Pressable onPress={() => onUnban(person.id)} style={[styles.adminIconAction, { backgroundColor: theme.soft }]}><Ionicons name="lock-open-outline" size={18} color={theme.text} /></Pressable> : <Pressable onPress={() => onBan(person.id)} style={[styles.adminIconAction, { backgroundColor: 'rgba(255,59,48,.12)' }]}><Ionicons name="ban" size={18} color="#FF3B30" /></Pressable>}{muted ? <Pressable onPress={() => onUnmute(person.id)} style={[styles.adminIconAction, { backgroundColor: theme.soft }]}><Ionicons name="volume-high-outline" size={18} color={theme.text} /></Pressable> : <Pressable onPress={() => openMute(person)} style={[styles.adminIconAction, { backgroundColor: 'rgba(255,159,10,.14)' }]}><Ionicons name="volume-mute-outline" size={18} color="#FF9F0A" /></Pressable>}</View></View>; })}</ScrollView></SafeAreaView></View></Modal>;
+  return <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}><View style={[styles.adminConsolePage, { backgroundColor: theme.bg }]}><SafeAreaView style={styles.flexOne}><View style={styles.adminConsoleHeader}><View><Text style={[styles.bigTitle, { color: theme.text }]}>Admin Console</Text><Text style={[styles.headerSub, { color: theme.sub }]}>LINK moderation · live backend</Text></View><IconButton icon="close" onPress={onClose} theme={theme} /></View><ScrollView contentContainerStyle={styles.adminConsoleList} showsVerticalScrollIndicator={false}><View style={[styles.adminConsoleHero, { backgroundColor: '#111318' }]}><View style={styles.adminConsoleHeroIcon}><Ionicons name="shield-checkmark" size={28} color="#fff" /></View><View style={{ flex: 1 }}><Text style={styles.adminConsoleHeroTitle}>Administrator access</Text><Text style={styles.adminConsoleHeroSub}>Ban accounts or mute posting and messaging. Changes sync through LINK Production.</Text></View></View>{users.map(person => { const state = moderation?.[person.id] || { banned: false, mutedUntil: null }; const muted = state.mutedUntil === -1 || (state.mutedUntil || 0) > Date.now(); return <View key={person.id} style={[styles.adminUserCard, { backgroundColor: theme.card, borderColor: theme.border }]}><Avatar person={person} size={48} theme={theme} /><View style={{ flex: 1, minWidth: 0 }}><View style={styles.inlineNameRow}><Text numberOfLines={1} style={[styles.personName, { color: theme.text }]}>{person.name}</Text>{person.verified ? <VerifiedBadge compact /> : null}</View><Text style={[styles.personSub, { color: theme.sub }]}>{person.username}</Text><View style={styles.adminStateRow}>{state.banned ? <View style={[styles.adminStatePill, { backgroundColor: 'rgba(255,59,48,.12)' }]}><Text style={{ color: '#FF3B30', fontWeight: '900', fontSize: 9 }}>BANNED</Text></View> : null}{muted ? <View style={[styles.adminStatePill, { backgroundColor: 'rgba(255,159,10,.14)' }]}><Text style={{ color: '#FF9F0A', fontWeight: '900', fontSize: 9 }}>MUTED</Text></View> : null}{!state.banned && !muted ? <View style={[styles.adminStatePill, { backgroundColor: 'rgba(52,199,89,.12)' }]}><Text style={{ color: '#34C759', fontWeight: '900', fontSize: 9 }}>ACTIVE</Text></View> : null}</View></View><View style={styles.adminUserActions}>{state.banned ? <Pressable onPress={() => onUnban(person.id)} style={[styles.adminIconAction, { backgroundColor: theme.soft }]}><Ionicons name="lock-open-outline" size={18} color={theme.text} /></Pressable> : <Pressable onPress={() => onBan(person.id)} style={[styles.adminIconAction, { backgroundColor: 'rgba(255,59,48,.12)' }]}><Ionicons name="ban" size={18} color="#FF3B30" /></Pressable>}{muted ? <Pressable onPress={() => onUnmute(person.id)} style={[styles.adminIconAction, { backgroundColor: theme.soft }]}><Ionicons name="volume-high-outline" size={18} color={theme.text} /></Pressable> : <Pressable onPress={() => openMute(person)} style={[styles.adminIconAction, { backgroundColor: 'rgba(255,159,10,.14)' }]}><Ionicons name="volume-mute-outline" size={18} color="#FF9F0A" /></Pressable>}</View></View>; })}</ScrollView></SafeAreaView></View></Modal>;
 }
 
 function RestrictedAccountScreen({ theme, person, onSwitch }) {
-  return <View style={[styles.restrictedPage, { backgroundColor: theme.bg }]}><SafeAreaView style={styles.flexOne}><View style={styles.restrictedContent}><View style={[styles.restrictedIcon, { backgroundColor: 'rgba(255,59,48,.12)' }]}><Ionicons name="ban" size={34} color="#FF3B30" /></View><Text style={[styles.restrictedTitle, { color: theme.text }]}>Account suspended</Text><Text style={[styles.restrictedBody, { color: theme.sub }]}>{person?.username} is currently banned by LINK moderation. This local account cannot use LINK until an administrator removes the restriction.</Text><Pressable onPress={onSwitch} style={[styles.restrictedSwitch, { backgroundColor: theme.inverse }]}><Ionicons name="swap-horizontal" size={18} color={theme.inverseText} /><Text style={{ color: theme.inverseText, fontWeight: '900' }}>Switch local account</Text></Pressable></View></SafeAreaView></View>;
+  return <View style={[styles.restrictedPage, { backgroundColor: theme.bg }]}><SafeAreaView style={styles.flexOne}><View style={styles.restrictedContent}><View style={[styles.restrictedIcon, { backgroundColor: 'rgba(255,59,48,.12)' }]}><Ionicons name="ban" size={34} color="#FF3B30" /></View><Text style={[styles.restrictedTitle, { color: theme.text }]}>Account suspended</Text><Text style={[styles.restrictedBody, { color: theme.sub }]}>{person?.username} is currently banned by LINK moderation. This account cannot use LINK until an administrator removes the restriction.</Text><Pressable onPress={onSwitch} style={[styles.restrictedSwitch, { backgroundColor: theme.inverse }]}><Ionicons name="swap-horizontal" size={18} color={theme.inverseText} /><Text style={{ color: theme.inverseText, fontWeight: '900' }}>Use another account</Text></Pressable></View></SafeAreaView></View>;
 }
 
 function PersonProfileModal({ visible, onClose, theme, person, connected, privacy, plusActive = false, proActive = false, favorite = false, onToggleFavorite, onChat, onSendRequest, onWave, viewerIsAdmin = false, moderationState, onAdminBan, onAdminUnban, onAdminMute, onAdminUnmute }) {
@@ -1726,7 +1605,7 @@ function LinkApp({ session }) {
   const systemScheme = useColorScheme();
   const liveUserId = session?.user?.id || null;
   const [hydrated, setHydrated] = useState(false);
-  const [data, setData] = useState(initialData());
+  const [data, setData] = useState(() => initialData(liveUserId));
   const [tab, setTab] = useState('home');
   const [activeChatId, setActiveChatId] = useState(null);
   const [activeGroupId, setActiveGroupId] = useState(null);
@@ -1805,7 +1684,7 @@ function LinkApp({ session }) {
   const refreshRemote = async () => {
     if (!liveUserId) return;
     try {
-      const fresh = await loadLinkSnapshot(initialData(), liveUserId);
+      const fresh = await loadLinkSnapshot(initialData(liveUserId), liveUserId);
       setData(fresh);
       return fresh;
     } catch (error) {
@@ -1819,10 +1698,16 @@ function LinkApp({ session }) {
     setHydrated(false);
     (async () => {
       try {
-        const base = initialData();
+        const base = initialData(liveUserId);
+        if (!cancelled) setData(base);
         const cached = await AsyncStorage.getItem(`${STORAGE_KEY}:${liveUserId}`);
         if (cached && !cancelled) {
-          try { setData(JSON.parse(cached)); } catch {}
+          try {
+            const parsed = JSON.parse(cached);
+            const ids = Object.keys(parsed?.profiles || {});
+            const isLiveOnly = parsed?.activeAccountId === liveUserId && parsed?.profiles?.[liveUserId] && !ids.some(id => id.startsWith('local_') || id.startsWith('demo_'));
+            if (isLiveOnly) setData(parsed);
+          } catch {}
         }
         const remote = await loadLinkSnapshot(base, liveUserId);
         if (!cancelled) setData(remote);
@@ -1923,7 +1808,7 @@ function LinkApp({ session }) {
 
 
   const updateActiveProfile = (next) => {
-    mutate(prev => ({ ...prev, profiles: { ...prev.profiles, [prev.activeAccountId]: { ...next, id: prev.activeAccountId, isLocal: true } } }));
+    mutate(prev => ({ ...prev, profiles: { ...prev.profiles, [prev.activeAccountId]: { ...next, id: prev.activeAccountId, isLocal: false, isSelf: true } } }));
     updateProfileRemote(next).then(refreshRemote).catch(error => Alert.alert('Profile not saved', error?.message || 'Try again.'));
   };
   const setThemeSetting = (themeSetting) => {
@@ -2064,12 +1949,12 @@ function LinkApp({ session }) {
       let chatId = fresh.backendChatIds?.[key];
       if (!chatId) {
         chatId = await ensureDirectChat(personId);
-        fresh = await loadLinkSnapshot(initialData(), liveUserId);
+        fresh = await loadLinkSnapshot(initialData(liveUserId), liveUserId);
         setData(fresh);
       }
       let keyBase64 = fresh.chatKeys?.[key] || chatKeyCacheRef.current[key];
       if (!keyBase64) {
-        fresh = await loadLinkSnapshot(initialData(), liveUserId);
+        fresh = await loadLinkSnapshot(initialData(liveUserId), liveUserId);
         setData(fresh);
         keyBase64 = fresh.chatKeys?.[key];
       }
@@ -2106,7 +1991,7 @@ function LinkApp({ session }) {
       const chatId = fresh.backendChatIds?.[key] || groupId;
       let keyBase64 = fresh.chatKeys?.[key] || chatKeyCacheRef.current[key];
       if (!keyBase64) {
-        fresh = await loadLinkSnapshot(initialData(), liveUserId);
+        fresh = await loadLinkSnapshot(initialData(liveUserId), liveUserId);
         setData(fresh);
         keyBase64 = fresh.chatKeys?.[key];
       }
