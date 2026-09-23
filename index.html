@@ -126,7 +126,7 @@
       <div class="meta">
         <div class="row"><span id="repoDot" class="dot wait"></span><span class="label">Repository</span><span class="value" id="repoValue">Zjišťuji…</span></div>
         <div class="row"><span class="dot"></span><span class="label">Expo SDK</span><span class="value">57</span></div>
-        <div class="row"><span class="dot"></span><span class="label">Build</span><span class="value">LINK 1.0.2 · Backend Beta</span></div>
+        <div class="row"><span class="dot"></span><span class="label">Build</span><span class="value">LINK 1.0.3 · Backend Beta</span></div>
       </div>
 
       <div class="actions">
@@ -141,7 +141,7 @@
 
   <script>
     (() => {
-      const BUILD = 'LINK 1.0.2 · Backend Beta';
+      const BUILD = 'LINK 1.0.3 · Backend Beta';
       const SDK_VERSION = '57.0.0';
       const DEFAULT_BRANCH = 'main';
       const DEPENDENCIES = [
@@ -154,7 +154,7 @@
         'expo-linear-gradient@~57.0.2',
         'react-native-qrcode-svg@^6.3.25',
         'react-native-svg@15.15.4',
-        '@supabase/supabase-js@2.117.0',
+        '@supabase/supabase-js@2.49.8',
         'react-native-url-polyfill@3.0.0'
       ];
 
@@ -191,7 +191,7 @@
         return;
       }
 
-      const rawAppUrl = `https://raw.githubusercontent.com/${encodeURIComponent(repo.owner)}/${encodeURIComponent(repo.repo)}/${encodeURIComponent(repo.branch)}/App.snack.js?v=102`;
+      const rawAppUrl = `https://raw.githubusercontent.com/${encodeURIComponent(repo.owner)}/${encodeURIComponent(repo.repo)}/${encodeURIComponent(repo.branch)}/App.snack.js?v=103`;
       repoDot.className = 'dot';
       repoValue.textContent = `${repo.owner}/${repo.repo} · ${repo.branch}`;
       rawBtn.href = rawAppUrl;
@@ -203,6 +203,8 @@
           if (!r.ok) throw new Error(`HTTP ${r.status}`);
           const text = await r.text();
           if (!text.includes('export default')) throw new Error('App.js nevypadá jako Expo entry soubor');
+          if (text.includes('processLock')) throw new Error('GitHub stále vrací starý Supabase client build');
+          if (text.includes("react-native-url-polyfill/auto")) throw new Error('GitHub stále vrací starý URL polyfill build');
           if (text.includes('react-native-url-polyfill/auto')) throw new Error('GitHub stále vrací starý App.snack.js — nahraj verzi 1.0.2 a obnov stránku');
           if (!text.includes('setupURLPolyfill')) throw new Error('App.snack.js není opravená verze 1.0.2');
           return true;
@@ -216,7 +218,7 @@
       createBtn.addEventListener('click', async () => {
         createBtn.disabled = true;
         createBtn.textContent = 'Kontroluji App.snack.js…';
-        status.textContent = 'Ověřuji LINK 1.0.2 Backend Beta na GitHubu…';
+        status.textContent = 'Ověřuji LINK 1.0.3 Backend Beta na GitHubu…';
 
         const ok = await verifySource();
         if (!ok) {
@@ -230,7 +232,7 @@
 
         const params = new URLSearchParams();
         params.set('name', BUILD);
-        params.set('description', 'LINK 1.0.2 · Backend Beta — upgraded Group Chats with creator-controlled group renaming, optional Everyone name editing, Instagram-style grouped message runs with sender names and profile photos, encrypted group messaging, double-tap reactions, LINK Plus custom Double Tap emoji, Silent Chat, themes, moderation, local accounts, Liquid Glass navigation and Moments. Generated from GitHub.');
+        params.set('description', 'LINK 1.0.3 · Backend Beta — upgraded Group Chats with creator-controlled group renaming, optional Everyone name editing, Instagram-style grouped message runs with sender names and profile photos, encrypted group messaging, double-tap reactions, LINK Plus custom Double Tap emoji, Silent Chat, themes, moderation, local accounts, Liquid Glass navigation and Moments. Generated from GitHub.');
         params.set('sdkVersion', SDK_VERSION);
         params.set('platform', 'mydevice');
         params.set('supportedPlatforms', 'ios,android,web');
