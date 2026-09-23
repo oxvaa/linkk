@@ -126,7 +126,7 @@
       <div class="meta">
         <div class="row"><span id="repoDot" class="dot wait"></span><span class="label">Repository</span><span class="value" id="repoValue">Zjišťuji…</span></div>
         <div class="row"><span class="dot"></span><span class="label">Expo SDK</span><span class="value">57</span></div>
-        <div class="row"><span class="dot"></span><span class="label">Build</span><span class="value">LINK 1.0.0 · Backend Beta</span></div>
+        <div class="row"><span class="dot"></span><span class="label">Build</span><span class="value">LINK 1.0.1 · Backend Beta</span></div>
       </div>
 
       <div class="actions">
@@ -141,7 +141,7 @@
 
   <script>
     (() => {
-      const BUILD = 'LINK 1.0.0 · Backend Beta';
+      const BUILD = 'LINK 1.0.1 · Backend Beta';
       const SDK_VERSION = '57.0.0';
       const DEFAULT_BRANCH = 'main';
       const DEPENDENCIES = [
@@ -155,7 +155,7 @@
         'react-native-qrcode-svg@^6.3.25',
         'react-native-svg@15.15.4',
         '@supabase/supabase-js@2.117.0',
-        'react-native-url-polyfill@4.0.0'
+        'react-native-url-polyfill@3.0.0'
       ];
 
       const repoValue = document.getElementById('repoValue');
@@ -214,7 +214,7 @@
       createBtn.addEventListener('click', async () => {
         createBtn.disabled = true;
         createBtn.textContent = 'Kontroluji App.snack.js…';
-        status.textContent = 'Ověřuji LINK 1.0.0 Backend Beta na GitHubu…';
+        status.textContent = 'Ověřuji LINK 1.0.1 Backend Beta na GitHubu…';
 
         const ok = await verifySource();
         if (!ok) {
@@ -228,7 +228,7 @@
 
         const params = new URLSearchParams();
         params.set('name', BUILD);
-        params.set('description', 'LINK 1.0.0 · Backend Beta — upgraded Group Chats with creator-controlled group renaming, optional Everyone name editing, Instagram-style grouped message runs with sender names and profile photos, encrypted group messaging, double-tap reactions, LINK Plus custom Double Tap emoji, Silent Chat, themes, moderation, local accounts, Liquid Glass navigation and Moments. Generated from GitHub.');
+        params.set('description', 'LINK 1.0.1 · Backend Beta — upgraded Group Chats with creator-controlled group renaming, optional Everyone name editing, Instagram-style grouped message runs with sender names and profile photos, encrypted group messaging, double-tap reactions, LINK Plus custom Double Tap emoji, Silent Chat, themes, moderation, local accounts, Liquid Glass navigation and Moments. Generated from GitHub.');
         params.set('sdkVersion', SDK_VERSION);
         params.set('platform', 'mydevice');
         params.set('supportedPlatforms', 'ios,android,web');
