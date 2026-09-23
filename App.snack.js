@@ -33,10 +33,10 @@ import { AESEncryptionKey, AESSealedData, aesDecryptAsync, aesEncryptAsync } fro
 import { Ionicons } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
 
-const STORAGE_KEY = '@link_live_backend_v14';
+const STORAGE_KEY = '@link_live_backend_v15';
 const ACCENT = '#6C5CE7';
 const EMPTY_MESSAGES = Object.freeze([]);
-const BUILD = 'LINK 1.0.5 · Backend Beta';
+const BUILD = 'LINK 1.1.0 · Presence & Settings';
 const LINK_PLUS_PLANS = {
   monthly: { id: 'monthly', label: 'Monthly', price: 79, periodLabel: 'month', bonusCoins: 400, days: 30 },
   annual: { id: 'annual', label: 'Annual', price: 649, periodLabel: 'year', bonusCoins: 1500, days: 365 },
@@ -217,6 +217,20 @@ const STATUS_PRESETS = [
   { label: 'At event', icon: 'musical-notes', color: '#AF52DE' },
   { label: 'Do not disturb', icon: 'moon', color: '#FF453A' },
 ];
+
+const PRESENCE_OPTIONS = [
+  { id: 'online', label: 'Online', color: '#34C759', icon: 'ellipse' },
+  { id: 'dnd', label: 'Do not disturb', color: '#FF453A', icon: 'remove-circle' },
+  { id: 'busy', label: 'Busy', color: '#FF9F0A', icon: 'time' },
+  { id: 'ghost', label: 'Offline (Ghost)', color: '#8E8E93', icon: 'eye-off', pro: true },
+];
+const presenceMeta = (person = {}) => PRESENCE_OPTIONS.find(x => x.id === (person.presenceMode || 'online')) || PRESENCE_OPTIONS[0];
+const presenceIsLive = (person = {}) => {
+  if (person.presenceMode === 'ghost' || person.presenceVisible === false) return false;
+  if (!person.lastActiveAt) return false;
+  return Date.now() - Number(person.lastActiveAt) < 95 * 1000;
+};
+
 const STATUS_COLORS = ['#34C759', '#0A84FF', '#AF52DE', '#FF9F0A', '#FF453A', '#FF2D55', '#30B0C7', '#8E8E93'];
 const STATUS_ICONS = ['sparkles', 'heart', 'headset', 'game-controller', 'cafe', 'airplane', 'school', 'fitness', 'moon', 'flame'];
 const PROFILE_EFFECTS = [
@@ -267,7 +281,7 @@ const normalizeUsername = (value = '') => {
 
 function initialData(userId = null) {
   return {
-    version: 14,
+    version: 15,
     themeSetting: 'light',
     activeAccountId: userId,
     localAccountIds: userId ? [userId] : [],
@@ -282,7 +296,7 @@ function initialData(userId = null) {
     notes: [],
     notifications: userId ? { [userId]: [] } : {},
     favorites: userId ? { [userId]: [] } : {},
-    privacy: userId ? { [userId]: { showStatus: true, showSocials: true, momentsToLinks: true, ghostMode: false } } : {},
+    privacy: userId ? { [userId]: { showStatus: true, showSocials: true, momentsToLinks: true, ghostMode: false, showActivityStatus: true, profileVisibility: 'links', messagesFrom: 'links', linkRequestsFrom: 'everyone', readReceipts: true, typingIndicators: true, profileViewsEnabled: true, discoverableByUsername: true, discoverableByEmail: false, notificationsMessages: true, notificationsRequests: true, notificationsMoments: true, notificationsProduct: false, loginAlerts: true } } : {},
     wallets: userId ? { [userId]: 0 } : {},
     ownedEffects: userId ? { [userId]: [] } : {},
     subscriptions: {},
@@ -313,12 +327,19 @@ function EdgeSwipeBack({ onBack, children, enabled = true, style }) {
   return <View style={[styles.edgeSwipePage, style]} {...panResponder.panHandlers}>{children}</View>;
 }
 
-function Avatar({ person, size = 48, theme, accent = ACCENT }) {
+function Avatar({ person, size = 48, theme, accent = ACCENT, showPresence = true }) {
   const isOwn = !!(person?.isSelf || person?.isLocal);
   const radius = size / 2;
+  const meta = presenceMeta(person);
+  const live = presenceIsLive(person);
+  const dotSize = Math.max(10, Math.round(size * .26));
+  const dotColor = live ? meta.color : '#8E8E93';
   return (
-    <View style={[styles.avatar, { width: size, height: size, borderRadius: radius, backgroundColor: isOwn ? accent : theme.soft, overflow: 'hidden' }]}>
-      {person?.photoUri ? <Image source={{ uri: person.photoUri }} style={{ width: size, height: size }} resizeMode="cover" /> : <Text style={{ color: isOwn ? '#fff' : theme.text, fontWeight: '900', fontSize: size * 0.31 }}>{initialsFor(person?.name)}</Text>}
+    <View style={{ width: size, height: size, position: 'relative' }}>
+      <View style={[styles.avatar, { width: size, height: size, borderRadius: radius, backgroundColor: isOwn ? accent : theme.soft, overflow: 'hidden' }]}>
+        {person?.photoUri ? <Image source={{ uri: person.photoUri }} style={{ width: size, height: size }} resizeMode="cover" /> : <Text style={{ color: isOwn ? '#fff' : theme.text, fontWeight: '900', fontSize: size * 0.31 }}>{initialsFor(person?.name)}</Text>}
+      </View>
+      {showPresence && person?.presenceVisible !== false && person?.presenceMode !== 'ghost' ? <View style={{ position: 'absolute', right: -1, bottom: -1, width: dotSize, height: dotSize, borderRadius: dotSize / 2, backgroundColor: dotColor, borderWidth: Math.max(2, Math.round(size * .055)), borderColor: theme.card || theme.bg }} /> : null}
     </View>
   );
 }
@@ -612,6 +633,7 @@ function PeopleScreen({ theme, activeId, profiles, connectedIds, localAccountIds
 
   const searchResults = cleanQuery ? Object.values(profiles)
     .filter(p => p && p.id !== activeId)
+    .filter(p => connectedIds.includes(p.id) || p.discoverableByUsername !== false)
     .filter(p => {
       const username = (p.username || '').toLowerCase();
       const name = (p.name || '').toLowerCase();
@@ -859,14 +881,100 @@ function SettingsRow({ theme, icon, title, subtitle, right, last = false }) {
   return <View style={[styles.settingsRow, !last && { borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: theme.border }]}><View style={[styles.settingsIcon, { backgroundColor: theme.soft }]}><Ionicons name={icon} size={18} color={theme.text} /></View><View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>{title}</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>{subtitle}</Text></View>{right}</View>;
 }
 
+function SettingsChoicePills({ theme, value, options, onChange }) {
+  return <View style={styles.settingsChoiceRow}>{options.map(option => <Pressable key={option.value} onPress={() => onChange(option.value)} style={[styles.settingsChoicePill, { backgroundColor: value === option.value ? theme.inverse : theme.soft, borderColor: value === option.value ? theme.inverse : theme.border }]}><Text style={{ color: value === option.value ? theme.inverseText : theme.text, fontWeight: '850', fontSize: 11.5 }}>{option.label}</Text></Pressable>)}</View>;
+}
+
+function PresenceStatusModal({ visible, onClose, theme, profile, proActive, onSelect }) {
+  const current = profile?.presenceMode || 'online';
+  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.presenceModalCard, { backgroundColor: theme.card }]} onPress={() => {}}>
+    <View style={styles.rowBetween}><View><Text style={[styles.sheetTitle,{color:theme.text}]}>Active status</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>Choose how you appear across LINK.</Text></View><IconButton icon="close" onPress={onClose} theme={theme}/></View>
+    <View style={{ gap: 8, marginTop: 16 }}>{PRESENCE_OPTIONS.map(option => {
+      const locked = !!option.pro && !proActive;
+      const selected = current === option.id;
+      return <Pressable key={option.id} disabled={locked} onPress={() => { onSelect(option.id); onClose(); }} style={[styles.presenceChoice, { backgroundColor: selected ? `${option.color}14` : theme.soft, borderColor: selected ? `${option.color}55` : theme.border, opacity: locked ? .48 : 1 }]}>
+        <View style={[styles.presenceChoiceDot,{backgroundColor:option.color}]} />
+        <View style={{flex:1}}><View style={styles.inlineNameRow}><Text style={[styles.settingsTitle,{color:theme.text}]}>{option.label}</Text>{option.pro ? <ProBadge compact/> : null}</View><Text style={[styles.settingsSub,{color:theme.sub}]}>{option.id === 'online' ? 'Show a green dot while LINK is open.' : option.id === 'dnd' ? 'Red dot · signals that you do not want notifications.' : option.id === 'busy' ? 'Orange dot · you are around, but busy.' : 'Appear offline and hide your active dot.'}</Text></View>
+        {selected ? <Ionicons name="checkmark-circle" size={22} color={option.color}/> : locked ? <Ionicons name="lock-closed" size={18} color={theme.sub}/> : null}
+      </Pressable>;
+    })}</View>
+    {!proActive ? <Text style={[styles.settingHint,{color:theme.sub,marginTop:12}]}>Offline (Ghost) is available with LINK Pro.</Text> : null}
+  </Pressable></Pressable></Modal>;
+}
+
+function SettingsHubModal({ visible, onClose, theme, profile, accountEmail, privacy, setPrivacy, themeSetting, setThemeSetting, proActive, onOpenPresence, onSignOut }) {
+  if (!profile) return null;
+  const patch = (next) => setPrivacy({ ...privacy, ...next });
+  const shortId = profile.id ? `${profile.id.slice(0,8)}…${profile.id.slice(-4)}` : '—';
+  return <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
+    <SafeAreaView style={{flex:1,backgroundColor:theme.bg}}>
+      <View style={[styles.settingsHubHeader,{borderBottomColor:theme.border}]}><IconButton icon="chevron-back" onPress={onClose} theme={theme}/><View style={{flex:1}}><Text style={[styles.sheetTitle,{color:theme.text}]}>Settings</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>Privacy, account and LINK preferences</Text></View></View>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.settingsHubScroll}>
+        <SectionTitle theme={theme}>Active status</SectionTitle>
+        <Pressable onPress={onOpenPresence} style={[styles.settingsEntryCard,{backgroundColor:theme.card,borderColor:theme.border}]}><View style={[styles.settingsIcon,{backgroundColor:theme.soft}]}><View style={[styles.presenceChoiceDot,{backgroundColor:presenceMeta(profile).color}]} /></View><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{presenceMeta(profile).label}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Control your active dot and availability.</Text></View><Ionicons name="chevron-forward" size={19} color={theme.sub}/></Pressable>
+
+        <SectionTitle theme={theme}>Account & personal information</SectionTitle>
+        <View style={[styles.settingsCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
+          <SettingsRow theme={theme} icon="person-outline" title="Display name" subtitle={profile.name || '—'} right={null}/>
+          <SettingsRow theme={theme} icon="at-outline" title="Username" subtitle={profile.username || '—'} right={null}/>
+          <SettingsRow theme={theme} icon="mail-outline" title="Email" subtitle={accountEmail || '—'} right={null}/>
+          <SettingsRow theme={theme} icon="finger-print-outline" title="Account ID" subtitle={shortId} right={null} last/>
+        </View>
+
+        <SectionTitle theme={theme}>Privacy</SectionTitle>
+        <View style={[styles.settingsCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
+          <View style={styles.settingsBlock}><Text style={[styles.settingsTitle,{color:theme.text}]}>Profile visibility</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Choose who can open your full LINK profile.</Text><SettingsChoicePills theme={theme} value={privacy.profileVisibility || 'links'} onChange={v=>patch({profileVisibility:v})} options={[{value:'everyone',label:'Everyone'},{value:'links',label:'LINKs'},{value:'private',label:'Private'}]}/></View>
+          <View style={[styles.settingsBlock,{borderTopWidth:StyleSheet.hairlineWidth,borderTopColor:theme.border}]}><Text style={[styles.settingsTitle,{color:theme.text}]}>Messages from</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Who is allowed to start a conversation.</Text><SettingsChoicePills theme={theme} value={privacy.messagesFrom || 'links'} onChange={v=>patch({messagesFrom:v})} options={[{value:'everyone',label:'Everyone'},{value:'links',label:'LINKs'},{value:'nobody',label:'Nobody'}]}/></View>
+          <View style={[styles.settingsBlock,{borderTopWidth:StyleSheet.hairlineWidth,borderTopColor:theme.border}]}><Text style={[styles.settingsTitle,{color:theme.text}]}>LINK requests</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Control who can send you a LINK request.</Text><SettingsChoicePills theme={theme} value={privacy.linkRequestsFrom || 'everyone'} onChange={v=>patch({linkRequestsFrom:v})} options={[{value:'everyone',label:'Everyone'},{value:'mutuals',label:'Mutuals'},{value:'nobody',label:'Nobody'}]}/></View>
+          <SettingsRow theme={theme} icon="radio-button-on-outline" title="Show activity status" subtitle="Allow people to see your active dot" right={<Switch value={privacy.showActivityStatus !== false} onValueChange={v=>patch({showActivityStatus:v})} trackColor={{false:theme.soft,true:'#34C759'}}/>}/>
+          <SettingsRow theme={theme} icon="checkmark-done-outline" title="Read receipts" subtitle="Show Seen when you read messages" right={<Switch value={privacy.readReceipts !== false} onValueChange={v=>patch({readReceipts:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
+          <SettingsRow theme={theme} icon="chatbubble-ellipses-outline" title="Typing indicators" subtitle="Let people know when you are typing" right={<Switch value={privacy.typingIndicators !== false} onValueChange={v=>patch({typingIndicators:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
+          <SettingsRow theme={theme} icon="analytics-outline" title="Profile views" subtitle="Allow your profile visits to count in insights" right={<Switch value={privacy.profileViewsEnabled !== false} onValueChange={v=>patch({profileViewsEnabled:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
+          <SettingsRow theme={theme} icon="search-outline" title="Discoverable by username" subtitle="People can find your @username in People" right={<Switch value={privacy.discoverableByUsername !== false} onValueChange={v=>patch({discoverableByUsername:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
+          <SettingsRow theme={theme} icon="mail-unread-outline" title="Discoverable by email" subtitle="Allow account discovery using your email" right={<Switch value={!!privacy.discoverableByEmail} onValueChange={v=>patch({discoverableByEmail:v})} trackColor={{false:theme.soft,true:ACCENT}}/>} last/>
+        </View>
+
+        <SectionTitle theme={theme}>Sharing</SectionTitle>
+        <View style={[styles.settingsCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
+          <SettingsRow theme={theme} icon="pulse-outline" title="Share custom status" subtitle="Show your custom text status to LINKs" right={<Switch value={privacy.showStatus !== false} onValueChange={v=>patch({showStatus:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
+          <SettingsRow theme={theme} icon="logo-instagram" title="Show socials" subtitle="Display social handles on your profile" right={<Switch value={privacy.showSocials !== false} onValueChange={v=>patch({showSocials:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
+          <SettingsRow theme={theme} icon="aperture-outline" title="Moments to LINKs" subtitle="Keep Moments limited to people you LINKed" right={<Switch value={privacy.momentsToLinks !== false} onValueChange={v=>patch({momentsToLinks:v})} trackColor={{false:theme.soft,true:ACCENT}}/>} last/>
+        </View>
+
+        <SectionTitle theme={theme}>Notifications</SectionTitle>
+        <View style={[styles.settingsCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
+          <SettingsRow theme={theme} icon="chatbubbles-outline" title="Messages" subtitle="Message and reaction notifications" right={<Switch value={privacy.notificationsMessages !== false} onValueChange={v=>patch({notificationsMessages:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
+          <SettingsRow theme={theme} icon="person-add-outline" title="LINK requests" subtitle="Requests and accepted LINKs" right={<Switch value={privacy.notificationsRequests !== false} onValueChange={v=>patch({notificationsRequests:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
+          <SettingsRow theme={theme} icon="aperture-outline" title="Moments" subtitle="Moment interactions and replies" right={<Switch value={privacy.notificationsMoments !== false} onValueChange={v=>patch({notificationsMoments:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
+          <SettingsRow theme={theme} icon="sparkles-outline" title="LINK updates" subtitle="Product news, drops and feature announcements" right={<Switch value={!!privacy.notificationsProduct} onValueChange={v=>patch({notificationsProduct:v})} trackColor={{false:theme.soft,true:ACCENT}}/>} last/>
+        </View>
+
+        <SectionTitle theme={theme}>Security</SectionTitle>
+        <View style={[styles.settingsCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
+          <SettingsRow theme={theme} icon="shield-checkmark-outline" title="Login alerts" subtitle="Warn about new LINK sign-ins" right={<Switch value={privacy.loginAlerts !== false} onValueChange={v=>patch({loginAlerts:v})} trackColor={{false:theme.soft,true:ACCENT}}/>} last/>
+        </View>
+
+        <SectionTitle theme={theme}>Appearance</SectionTitle>
+        <View style={styles.themeRow}><ThemeOption mode="system" active={themeSetting==='system'} label="System" icon="phone-portrait-outline" onPress={setThemeSetting} theme={theme}/><ThemeOption mode="light" active={themeSetting==='light'} label="Light" icon="sunny-outline" onPress={setThemeSetting} theme={theme}/><ThemeOption mode="dark" active={themeSetting==='dark'} label="Dark" icon="moon-outline" onPress={setThemeSetting} theme={theme}/></View>
+
+        <SectionTitle theme={theme}>Account</SectionTitle>
+        <Pressable onPress={onSignOut} style={[styles.settingsDangerCard,{backgroundColor:theme.card,borderColor:theme.border}]}><Ionicons name="log-out-outline" size={20} color={theme.danger}/><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.danger}]}>Sign out</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Use another LINK account on this device.</Text></View></Pressable>
+        <Text style={[styles.settingHint,{color:theme.sub,textAlign:'center',marginTop:14}]}>LINK 1.1 · privacy preferences sync through LINK Production.</Text>
+      </ScrollView>
+    </SafeAreaView>
+  </Modal>;
+}
+
 function AdminCustomizationModal({ visible, onClose, theme, profile, onUpdate, onPickGif }) {
   if (!profile?.isAdmin) return null;
   return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.adminCustomizeCard, { backgroundColor: theme.card }]} onPress={() => {}}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle, { color: theme.text }]}>CEO Customization</Text><Text style={[styles.sheetSub, { color: theme.sub }]}>Staff-only profile tools for @link</Text></View><IconButton icon="close" onPress={onClose} theme={theme} /></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 8 }}><View style={[styles.adminPreviewCard, { backgroundColor: theme.bg, borderColor: theme.border }]}><EffectAvatarStage person={profile} theme={theme} size={78} effectSize={174} /><View style={styles.profileNameWithBadge}><ProfileDisplayName person={profile} theme={theme} /><CeoBadge /><VerifiedBadge /></View><Text style={[styles.profileUser, { color: theme.sub }]}>{profile.username}</Text></View><Text style={[styles.adminCustomizeLabel, { color: theme.text }]}>Special Profile Effect</Text><View style={styles.adminEffectGrid}>{ADMIN_PROFILE_EFFECTS.map(effect => <Pressable key={effect.id} onPress={() => onUpdate({ ...profile, profileEffectId: effect.id })} style={[styles.adminEffectChoice, { backgroundColor: profile.profileEffectId === effect.id ? `${effect.color}18` : theme.soft, borderColor: profile.profileEffectId === effect.id ? effect.color : theme.border }]}><View style={[styles.adminEffectIcon, { backgroundColor: `${effect.color}20` }]}><Ionicons name={effect.adminSpecial === 'crown' ? 'diamond' : effect.adminSpecial === 'aura' ? 'sparkles' : 'planet'} size={20} color={effect.color} /></View><Text style={[styles.adminEffectName, { color: theme.text }]}>{effect.name}</Text>{profile.profileEffectId === effect.id ? <Ionicons name="checkmark-circle" size={17} color={effect.color} /> : null}</Pressable>)}</View><Pressable onPress={() => onUpdate({ ...profile, profileEffectId: null })} style={[styles.adminMiniAction, { backgroundColor: theme.soft }]}><Ionicons name="close-circle-outline" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '800' }}>No profile effect</Text></Pressable><Text style={[styles.adminCustomizeLabel, { color: theme.text, marginTop: 18 }]}>Name Effect</Text><View style={styles.nameEffectGrid}>{CEO_NAME_EFFECTS.map(effect => <Pressable key={effect.id} onPress={() => onUpdate({ ...profile, nameEffectId: effect.id })} style={[styles.nameEffectChoice, { backgroundColor: profile.nameEffectId === effect.id ? theme.inverse : theme.soft, borderColor: profile.nameEffectId === effect.id ? theme.inverse : theme.border }]}><Text style={{ color: profile.nameEffectId === effect.id ? theme.inverseText : theme.text, fontWeight: '900' }}>{effect.name}</Text></Pressable>)}</View><Pressable onPress={() => onUpdate({ ...profile, nameEffectId: null })} style={[styles.adminMiniAction, { backgroundColor: theme.soft }]}><Ionicons name="text-outline" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '800' }}>Standard name</Text></Pressable><Text style={[styles.adminCustomizeLabel, { color: theme.text, marginTop: 18 }]}>Animated avatar</Text><Pressable onPress={onPickGif} style={[styles.adminGifButton, { backgroundColor: theme.inverse }]}><Ionicons name="images-outline" size={18} color={theme.inverseText} /><View style={{ flex: 1 }}><Text style={{ color: theme.inverseText, fontWeight: '900' }}>Choose GIF / animated image</Text><Text style={{ color: theme.inverseText, opacity: .65, fontSize: 11, marginTop: 2 }}>Keeps the original animation instead of cropping.</Text></View><Ionicons name="chevron-forward" size={18} color={theme.inverseText} /></Pressable></ScrollView></Pressable></Pressable></Modal>;
 }
 
-function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setThemeSetting, privacy, setPrivacy, openAccountSwitcher, openCustomStatus, openShop, openPlus, plusSubscription, openPro, proSubscription, insights, openAdminConsole, doubleTapEmoji = '❤️', openDoubleTapReaction, resetDemo }) {
+function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setThemeSetting, privacy, setPrivacy, openAccountSwitcher, openCustomStatus, openShop, openPlus, plusSubscription, openPro, proSubscription, insights, openAdminConsole, doubleTapEmoji = '❤️', openDoubleTapReaction, resetDemo, accountEmail, setPresenceMode, onSignOut }) {
   const [editing, setEditing] = useState(false);
   const [adminCustomizeOpen, setAdminCustomizeOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [presenceOpen, setPresenceOpen] = useState(false);
   const proActive = !!activeProfile?.isAdmin || subscriptionIsActive(proSubscription);
   const plusActive = !!activeProfile?.isAdmin || subscriptionIsActive(plusSubscription) || proActive;
   const [draft, setDraft] = useState(activeProfile);
@@ -915,7 +1023,7 @@ function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setT
 
   return (<>
     <ScrollView contentContainerStyle={styles.screenScroll} showsVerticalScrollIndicator={false}>
-      <View style={styles.topHeader}><View><Text style={[styles.bigTitle, { color: theme.text }]}>Profile</Text><Text style={[styles.headerSub, { color: theme.sub }]}>Your public LINK identity</Text></View><View style={styles.headerActionRow}><IconButton icon="bag-handle-outline" onPress={openShop} theme={theme} /><IconButton icon={editing ? 'checkmark' : 'create-outline'} onPress={editing ? save : () => setEditing(true)} theme={theme} filled={editing} /></View></View>
+      <View style={styles.topHeader}><View><Text style={[styles.bigTitle, { color: theme.text }]}>Profile</Text><Text style={[styles.headerSub, { color: theme.sub }]}>Your public LINK identity</Text></View><View style={styles.headerActionRow}><IconButton icon="settings-outline" onPress={() => setSettingsOpen(true)} theme={theme} /><IconButton icon="bag-handle-outline" onPress={openShop} theme={theme} /><IconButton icon={editing ? 'checkmark' : 'create-outline'} onPress={editing ? save : () => setEditing(true)} theme={theme} filled={editing} /></View></View>
       <View style={[styles.profileCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
         <EffectAvatarStage person={editing ? draft : activeProfile} theme={theme} size={82} effectSize={188} editable onPress={photoMenu} badgeColor={theme.card} />
         {editing ? <View style={{ width: '100%', marginTop: 18, gap: 10 }}>
@@ -971,6 +1079,9 @@ function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setT
         <Ionicons name="chevron-forward" size={20} color={theme.sub} />
       </Pressable>
 
+      <SectionTitle theme={theme} action="Change" onAction={() => setPresenceOpen(true)}>Active status</SectionTitle>
+      <Pressable onPress={() => setPresenceOpen(true)} style={[styles.settingsEntryCard, { backgroundColor: theme.card, borderColor: theme.border }]}><View style={[styles.settingsIcon, { backgroundColor: theme.soft }]}><View style={[styles.presenceChoiceDot, { backgroundColor: presenceMeta(activeProfile).color }]} /></View><View style={{ flex: 1 }}><View style={styles.inlineNameRow}><Text style={[styles.settingsTitle, { color: theme.text }]}>{presenceMeta(activeProfile).label}</Text>{activeProfile.presenceMode === 'ghost' ? <ProBadge compact /> : null}</View><Text style={[styles.settingsSub, { color: theme.sub }]}>{activeProfile.presenceMode === 'ghost' ? 'You appear offline across LINK.' : presenceIsLive(activeProfile) ? 'Active now · shown across People and chats.' : 'Your selected status will appear when LINK is active.'}</Text></View><Ionicons name="chevron-forward" size={19} color={theme.sub} /></Pressable>
+
       <SectionTitle theme={theme} action="Custom" onAction={openCustomStatus}>Status</SectionTitle>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.statusRow}>{STATUS_PRESETS.map(s => {
         const active = activeProfile.status === s.label && activeProfile.statusIcon === s.icon;
@@ -981,21 +1092,14 @@ function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setT
       <SectionTitle theme={theme}>Account</SectionTitle>
       <Pressable onPress={openAccountSwitcher} style={[styles.accountManagerButton, { backgroundColor: theme.card, borderColor: theme.border }]}><View style={[styles.settingsIcon, { backgroundColor: theme.soft }]}><Ionicons name="people-circle-outline" size={20} color={theme.text} /></View><View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>Account & sign out</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>Use another LINK account or sign out</Text></View><Ionicons name="chevron-forward" size={20} color={theme.sub} /></Pressable>
 
-      <SectionTitle theme={theme}>Appearance</SectionTitle>
-      <View style={styles.themeRow}><ThemeOption mode="system" active={themeSetting === 'system'} label="System" icon="phone-portrait-outline" onPress={setThemeSetting} theme={theme} /><ThemeOption mode="light" active={themeSetting === 'light'} label="Light" icon="sunny-outline" onPress={setThemeSetting} theme={theme} /><ThemeOption mode="dark" active={themeSetting === 'dark'} label="Dark" icon="moon-outline" onPress={setThemeSetting} theme={theme} /></View>
-      <Text style={[styles.settingHint, { color: theme.sub }]}>Light is the default. System follows your device automatically.</Text>
-
-      <SectionTitle theme={theme}>Privacy</SectionTitle>
-      <View style={[styles.settingsCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
-        <SettingsRow theme={theme} icon="pulse-outline" title="Share status" subtitle="Linked people can see your current status" right={<Switch value={privacy.showStatus} onValueChange={v => setPrivacy({ ...privacy, showStatus: v })} trackColor={{ false: theme.soft, true: ACCENT }} />} />
-        <SettingsRow theme={theme} icon="logo-instagram" title="Show socials" subtitle="Display social handles on your profile" right={<Switch value={privacy.showSocials} onValueChange={v => setPrivacy({ ...privacy, showSocials: v })} trackColor={{ false: theme.soft, true: ACCENT }} />} />
-        <SettingsRow theme={theme} icon="aperture-outline" title="Moments to LINKs" subtitle="Only linked people can see your Moments" right={<Switch value={privacy.momentsToLinks} onValueChange={v => setPrivacy({ ...privacy, momentsToLinks: v })} trackColor={{ false: theme.soft, true: ACCENT }} />} />
-        <SettingsRow theme={theme} icon="eye-off-outline" title="Ghost Mode" subtitle={proActive ? 'Read messages without sending Seen receipts' : 'LINK Pro feature · upgrade to unlock'} right={<Switch disabled={!proActive} value={!!privacy.ghostMode && proActive} onValueChange={v => setPrivacy({ ...privacy, ghostMode: v })} trackColor={{ false: theme.soft, true: '#7C5CFC' }} />} last />
-      </View>
+      <SectionTitle theme={theme}>Settings</SectionTitle>
+      <Pressable onPress={() => setSettingsOpen(true)} style={[styles.settingsEntryCard, { backgroundColor: theme.card, borderColor: theme.border }]}><View style={[styles.settingsIcon, { backgroundColor: theme.soft }]}><Ionicons name="settings-outline" size={20} color={theme.text} /></View><View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>Privacy, account & app settings</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>Active status, privacy, notifications, security and personal information.</Text></View><Ionicons name="chevron-forward" size={20} color={theme.sub} /></Pressable>
       <View style={[styles.gestureTip, { backgroundColor: theme.card, borderColor: theme.border }]}><Ionicons name="return-up-back-outline" size={20} color={ACCENT} /><View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>Swipe to go back</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>On detail pages, swipe right from the left edge to go back. In chat, swipe a message right to reply.</Text></View></View>
       <Pressable onPress={resetDemo} style={[styles.resetButton, { borderColor: theme.border }]}><Ionicons name="refresh" size={18} color={theme.danger} /><Text style={{ color: theme.danger, fontWeight: '800' }}>Refresh LINK data</Text></Pressable>
     </ScrollView>
     <AdminCustomizationModal visible={adminCustomizeOpen} onClose={() => setAdminCustomizeOpen(false)} theme={theme} profile={activeProfile} onUpdate={updateProfile} onPickGif={pickProfileGif} />
+    <PresenceStatusModal visible={presenceOpen} onClose={() => setPresenceOpen(false)} theme={theme} profile={activeProfile} proActive={proActive} onSelect={setPresenceMode} />
+    <SettingsHubModal visible={settingsOpen} onClose={() => setSettingsOpen(false)} theme={theme} profile={activeProfile} accountEmail={accountEmail} privacy={privacy} setPrivacy={setPrivacy} themeSetting={themeSetting} setThemeSetting={setThemeSetting} proActive={proActive} onOpenPresence={() => { setSettingsOpen(false); setTimeout(() => setPresenceOpen(true), 180); }} onSignOut={onSignOut} />
   </>);
 }
 
@@ -1724,6 +1828,15 @@ async function loadLinkSnapshot(base, userId) {
       profileEffectId: row.profile_effect_id,
       nameEffectId: row.name_effect_id,
       socials: row.socials || {},
+      presenceMode: row.presence_mode || 'online',
+      presenceVisible: row.presence_visible !== false,
+      lastActiveAt: toMs(row.last_active_at),
+      createdAt: toMs(row.created_at),
+      profileVisibility: row.profile_visibility || 'links',
+      discoverableByUsername: row.discoverable_by_username !== false,
+      messagesFrom: row.messages_from || 'links',
+      linkRequestsFrom: row.link_requests_from || 'everyone',
+      profileViewsEnabled: row.profile_views_enabled !== false,
     };
   }
 
@@ -1834,7 +1947,7 @@ async function loadLinkSnapshot(base, userId) {
 
   return {
     ...base,
-    version: 13,
+    version: 15,
     activeAccountId:userId,
     localAccountIds:[userId],
     profiles,
@@ -1848,7 +1961,7 @@ async function loadLinkSnapshot(base, userId) {
     notes,
     notifications:{ [userId]:notifications },
     favorites:{ [userId]:(favoritesQ.data || []).map(x => x.favorite_user_id) },
-    privacy:{ [userId]:{ showStatus:settings.show_status ?? true, showSocials:settings.show_socials ?? true, momentsToLinks:settings.moments_to_links ?? true, ghostMode:settings.ghost_mode ?? false } },
+    privacy:{ [userId]:{ showStatus:settings.show_status ?? true, showSocials:settings.show_socials ?? true, momentsToLinks:settings.moments_to_links ?? true, ghostMode:settings.ghost_mode ?? false, showActivityStatus:settings.show_activity_status ?? true, profileVisibility:settings.profile_visibility || 'links', messagesFrom:settings.messages_from || 'links', linkRequestsFrom:settings.link_requests_from || 'everyone', readReceipts:settings.read_receipts ?? true, typingIndicators:settings.typing_indicators ?? true, profileViewsEnabled:settings.profile_views_enabled ?? true, discoverableByUsername:settings.discoverable_by_username ?? true, discoverableByEmail:settings.discoverable_by_email ?? false, notificationsMessages:settings.notifications_messages ?? true, notificationsRequests:settings.notifications_requests ?? true, notificationsMoments:settings.notifications_moments ?? true, notificationsProduct:settings.notifications_product ?? false, loginAlerts:settings.login_alerts ?? true } },
     wallets:{ [userId]:ent.coins ?? 2200 },
     ownedEffects:{ [userId]:ent.owned_effects || [] },
     subscriptions,
@@ -1870,6 +1983,7 @@ function subscribeLink(userId, onChange) {
     timer = setTimeout(() => onChange?.(), 120);
   };
   const channel = supabase.channel(`link-live-${userId}`)
+    .on('postgres_changes',{event:'*',schema:'public',table:'profiles'},kick)
     .on('postgres_changes',{event:'*',schema:'public',table:'connections'},kick)
     .on('postgres_changes',{event:'*',schema:'public',table:'chats'},kick)
     .on('postgres_changes',{event:'*',schema:'public',table:'chat_members'},kick)
@@ -1922,19 +2036,37 @@ async function updateSettingsRemote(patch) {
   if ('momentsToLinks' in patch) row.moments_to_links = !!patch.momentsToLinks;
   if ('ghostMode' in patch) row.ghost_mode = !!patch.ghostMode;
   if ('doubleTapEmoji' in patch) row.double_tap_emoji = patch.doubleTapEmoji || '❤️';
+  if ('showActivityStatus' in patch) row.show_activity_status = !!patch.showActivityStatus;
+  if ('profileVisibility' in patch) row.profile_visibility = patch.profileVisibility || 'links';
+  if ('messagesFrom' in patch) row.messages_from = patch.messagesFrom || 'links';
+  if ('linkRequestsFrom' in patch) row.link_requests_from = patch.linkRequestsFrom || 'everyone';
+  if ('readReceipts' in patch) row.read_receipts = !!patch.readReceipts;
+  if ('typingIndicators' in patch) row.typing_indicators = !!patch.typingIndicators;
+  if ('profileViewsEnabled' in patch) row.profile_views_enabled = !!patch.profileViewsEnabled;
+  if ('discoverableByUsername' in patch) row.discoverable_by_username = !!patch.discoverableByUsername;
+  if ('discoverableByEmail' in patch) row.discoverable_by_email = !!patch.discoverableByEmail;
+  if ('notificationsMessages' in patch) row.notifications_messages = !!patch.notificationsMessages;
+  if ('notificationsRequests' in patch) row.notifications_requests = !!patch.notificationsRequests;
+  if ('notificationsMoments' in patch) row.notifications_moments = !!patch.notificationsMoments;
+  if ('notificationsProduct' in patch) row.notifications_product = !!patch.notificationsProduct;
+  if ('loginAlerts' in patch) row.login_alerts = !!patch.loginAlerts;
   const { error } = await supabase.from('user_settings').upsert(row,{onConflict:'user_id'});
   if (error) throw error;
 }
 
+async function setPresenceModeRemote(mode) {
+  const { error } = await supabase.rpc('set_presence_mode',{ p_mode:mode });
+  if (error) throw error;
+}
+
+async function touchPresenceRemote(active=true) {
+  const { error } = await supabase.rpc('touch_presence',{ p_active:!!active });
+  if (error) throw error;
+}
+
 async function requestLinkRemote(toId) {
-  const { data: auth } = await supabase.auth.getUser();
-  const me = auth.user?.id;
-  if (!me || !toId || me===toId) return;
-  const { data: existing, error:findError } = await supabase.from('connections').select('*').or(`and(user_a.eq.${me},user_b.eq.${toId}),and(user_a.eq.${toId},user_b.eq.${me})`).maybeSingle();
-  if (findError) throw findError;
-  if (existing?.status === 'accepted' || existing?.status === 'pending') return existing;
-  if (existing) await supabase.from('connections').delete().eq('id',existing.id);
-  const { data,error } = await supabase.from('connections').insert({user_a:me,user_b:toId,requested_by:me,status:'pending'}).select().single();
+  if (!toId) return null;
+  const { data, error } = await supabase.rpc('request_link',{ other_user:toId });
   if (error) throw error;
   return data;
 }
@@ -2218,7 +2350,7 @@ function LinkApp({ session }) {
   const connectedIds = data.relationships[data.activeAccountId] || [];
   const connectedProfiles = connectedIds.map(id => data.profiles[id]).filter(Boolean);
   const incomingRequests = data.requests.filter(r => r.toId === data.activeAccountId);
-  const privacy = data.privacy[data.activeAccountId] || { showStatus: true, showSocials: true, momentsToLinks: true, ghostMode: false };
+  const privacy = data.privacy[data.activeAccountId] || { showStatus: true, showSocials: true, momentsToLinks: true, ghostMode: false, showActivityStatus: true, profileVisibility: 'links', messagesFrom: 'links', linkRequestsFrom: 'everyone', readReceipts: true, typingIndicators: true, profileViewsEnabled: true, discoverableByUsername: true, discoverableByEmail: false, notificationsMessages: true, notificationsRequests: true, notificationsMoments: true, notificationsProduct: false, loginAlerts: true };
   const favoriteIds = data.favorites?.[data.activeAccountId] || [];
   const activeWallet = data.wallets?.[data.activeAccountId] ?? 0;
   const activeOwnedEffects = data.ownedEffects?.[data.activeAccountId] || [];
@@ -2242,9 +2374,11 @@ function LinkApp({ session }) {
   const profileModalProActive = !!profileModalPerson?.isAdmin || subscriptionIsActive(data.proSubscriptions?.[profileModalId]);
   const profileModalPlusActive = !!profileModalPerson?.isAdmin || subscriptionIsActive(data.subscriptions?.[profileModalId]) || profileModalProActive;
   const profileModalModeration = profileModalId ? (data.moderation?.[profileModalId] || { banned: false, mutedUntil: null }) : { banned: false, mutedUntil: null };
+  const profileModalConnected = !!profileModalId && connectedIds.includes(profileModalId);
+  const profileModalCanView = !profileModalPerson || profileModalPerson.id === data.activeAccountId || profileModalPerson.profileVisibility === 'everyone' || (profileModalPerson.profileVisibility !== 'private' && profileModalConnected);
   const profileModalPrivacy = profileModalPerson?.isLocal
     ? { ...(data.privacy?.[profileModalId] || { showStatus: true, showSocials: true }), showStatus: profileModalProActive && data.privacy?.[profileModalId]?.ghostMode ? false : (data.privacy?.[profileModalId]?.showStatus ?? true) }
-    : { showStatus: true, showSocials: true };
+    : { showStatus: profileModalCanView, showSocials: profileModalCanView };
   const momentView = momentViewId ? data.moments.find(m => m.id === momentViewId) : null;
   const ownNote = (data.notes || []).find(n => n.ownerId === data.activeAccountId && (n.expiresAt || 0) > Date.now()) || null;
   const noteReply = noteReplyId ? (data.notes || []).find(n => n.id === noteReplyId) : null;
@@ -2302,6 +2436,15 @@ function LinkApp({ session }) {
   useEffect(() => {
     if (!hydrated || !liveUserId) return undefined;
     return subscribeLink(liveUserId, refreshRemote);
+  }, [hydrated, liveUserId]);
+  useEffect(() => {
+    if (!hydrated || !liveUserId) return undefined;
+    let alive = true;
+    const ping = (active) => touchPresenceRemote(active).catch(() => {});
+    ping(AppState.currentState === 'active');
+    const sub = AppState.addEventListener('change', state => { if (alive) ping(state === 'active'); });
+    const timer = setInterval(() => { if (alive && AppState.currentState === 'active') ping(true); }, 45000);
+    return () => { alive = false; clearInterval(timer); sub.remove(); touchPresenceRemote(false).catch(() => {}); };
   }, [hydrated, liveUserId]);
   useEffect(() => { chatKeyCacheRef.current = { ...(data.chatKeys || {}) }; }, [data.chatKeys]);
 
@@ -2397,6 +2540,16 @@ function LinkApp({ session }) {
   const setPrivacy = (next) => {
     mutate(prev => ({ ...prev, privacy: { ...prev.privacy, [prev.activeAccountId]: next } }));
     updateSettingsRemote(next).catch(error => Alert.alert('Privacy not saved', error?.message || 'Try again.'));
+  };
+
+  const setActivePresenceMode = async (mode) => {
+    try {
+      await setPresenceModeRemote(mode);
+      await touchPresenceRemote(mode !== 'ghost');
+      await refreshRemote();
+    } catch (error) {
+      Alert.alert(mode === 'ghost' ? 'LINK Pro required' : 'Status not changed', error?.message || 'Try again.');
+    }
   };
 
   const sendRequest = async (toId) => {
@@ -2497,7 +2650,7 @@ function LinkApp({ session }) {
   const openProfileModal = (person) => {
     const id = typeof person === 'string' ? person : person?.id;
     if (!id) return;
-    if (id !== data.activeAccountId) recordProfileViewRemote(id).catch(() => {});
+    if (id !== data.activeAccountId && data.profiles[id]?.profileViewsEnabled !== false) recordProfileViewRemote(id).catch(() => {});
     setProfileModalId(id);
   };
 
@@ -2505,18 +2658,18 @@ function LinkApp({ session }) {
     if (!activeThreadKey) return;
     const key = activeThreadKey;
     const chatId = data.backendChatIds?.[key];
-    const ghost = activePro && !!privacy.ghostMode;
+    const suppressReceipts = (activePro && !!privacy.ghostMode) || privacy.readReceipts === false;
     mutate(prev => {
       const accountId = prev.activeAccountId;
       const list = (prev.conversations[key] || []).map(message => {
         if (message.senderId === accountId) return message;
         const seenBy = Array.from(new Set([...(message.seenBy || message.readBy || []), accountId]));
-        const readBy = ghost ? (message.readBy || []) : Array.from(new Set([...(message.readBy || []), accountId]));
+        const readBy = suppressReceipts ? (message.readBy || []) : Array.from(new Set([...(message.readBy || []), accountId]));
         return { ...message, seenBy, readBy };
       });
       return { ...prev, conversations: { ...prev.conversations, [key]: list } };
     });
-    if (chatId) markChatReadRemote(chatId, ghost).then(refreshRemote).catch(() => {});
+    if (chatId) markChatReadRemote(chatId, suppressReceipts).then(refreshRemote).catch(() => {});
   };
 
   const sendMessage = async (personId, payload) => {
@@ -2773,7 +2926,7 @@ ${text}` });
         {tab === 'people' && <PeopleScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} localAccountIds={data.localAccountIds} requests={data.requests} favoriteIds={favoriteIds} openProfile={openProfileModal} openChat={openChat} sendRequest={sendRequest} onAccept={acceptRequest} onDecline={declineRequest} />}
         {tab === 'link' && <LinkScreen theme={theme} activeProfile={activeProfile} payload={payload} localProfiles={localProfiles} relationships={data.relationships} requests={data.requests} openScanner={() => setScannerOpen(true)} openOwnCard={() => setCardOpen(true)} sendRequest={sendRequest} onAccept={acceptRequest} onDecline={declineRequest} />}
         {tab === 'chats' && <ChatsScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} conversations={data.conversations} favoriteIds={favoriteIds} groups={data.groups || {}} openChat={openChat} openGroup={openGroup} onCreateGroup={() => setGroupCreateOpen(true)} />}
-        {tab === 'profile' && <ProfileScreen theme={theme} activeProfile={activeProfile} updateProfile={updateActiveProfile} themeSetting={data.themeSetting} setThemeSetting={setThemeSetting} privacy={privacy} setPrivacy={setPrivacy} openAccountSwitcher={() => setAccountsOpen(true)} openCustomStatus={() => setCustomStatusOpen(true)} openShop={() => setShopOpen(true)} openPlus={activePro ? () => setProOpen(true) : () => setPlusOpen(true)} plusSubscription={activeSubscription} openPro={() => setProOpen(true)} proSubscription={activeProSubscription} insights={proInsights} openAdminConsole={() => setAdminConsoleOpen(true)} doubleTapEmoji={activeDoubleTapEmoji} openDoubleTapReaction={() => setDoubleTapReactionOpen(true)} resetDemo={resetDemo} />}
+        {tab === 'profile' && <ProfileScreen theme={theme} activeProfile={activeProfile} updateProfile={updateActiveProfile} themeSetting={data.themeSetting} setThemeSetting={setThemeSetting} privacy={privacy} setPrivacy={setPrivacy} openAccountSwitcher={() => setAccountsOpen(true)} openCustomStatus={() => setCustomStatusOpen(true)} openShop={() => setShopOpen(true)} openPlus={activePro ? () => setProOpen(true) : () => setPlusOpen(true)} plusSubscription={activeSubscription} openPro={() => setProOpen(true)} proSubscription={activeProSubscription} insights={proInsights} openAdminConsole={() => setAdminConsoleOpen(true)} doubleTapEmoji={activeDoubleTapEmoji} openDoubleTapReaction={() => setDoubleTapReactionOpen(true)} resetDemo={resetDemo} accountEmail={session?.user?.email || ''} setPresenceMode={setActivePresenceMode} onSignOut={signOutLink} />}
       </View><TabBar tab={tab} setTab={setTab} theme={theme} darkMode={activeMode === 'dark'} /></SafeAreaView>
 
       <ScannerModal visible={scannerOpen} onClose={() => setScannerOpen(false)} onScanned={onScanned} />
@@ -2808,6 +2961,17 @@ export default function App() {
 const styles = StyleSheet.create({
   flexOne: { flex: 1 }, edgeSwipePage: { flex: 1 }, app: { flex: 1 }, safe: { flex: 1 }, content: { flex: 1 },
   screenScroll: { paddingHorizontal: 18, paddingTop: 16, paddingBottom: 120 },
+  settingsHubHeader: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth },
+  settingsHubScroll: { paddingHorizontal: 18, paddingTop: 8, paddingBottom: 50 },
+  settingsEntryCard: { minHeight: 74, borderRadius: 22, borderWidth: StyleSheet.hairlineWidth, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  settingsDangerCard: { minHeight: 72, borderRadius: 22, borderWidth: StyleSheet.hairlineWidth, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  settingsBlock: { padding: 14, gap: 8 },
+  settingsChoiceRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 },
+  settingsChoicePill: { minHeight: 34, paddingHorizontal: 12, borderRadius: 13, borderWidth: StyleSheet.hairlineWidth, alignItems: 'center', justifyContent: 'center' },
+  presenceModalCard: { width: '90%', maxWidth: 430, borderRadius: 28, padding: 18 },
+  presenceChoice: { minHeight: 76, borderRadius: 20, borderWidth: StyleSheet.hairlineWidth, padding: 13, flexDirection: 'row', alignItems: 'center', gap: 12 },
+  presenceChoiceDot: { width: 12, height: 12, borderRadius: 6 },
+
   topHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }, inlineNameRow: { flexDirection: 'row', alignItems: 'center', gap: 5, minWidth: 0 },
   simpleHeader: { paddingHorizontal: 18, paddingTop: 18, paddingBottom: 14 },
   bigTitle: { fontSize: 32, fontWeight: '900', letterSpacing: -1.2 }, headerSub: { fontSize: 13.5, marginTop: 4 },

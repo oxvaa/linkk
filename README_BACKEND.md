@@ -1,4 +1,4 @@
-# LINK 1.0.5 — Backend Beta
+# LINK 1.1.0 — Backend Beta
 
 This project is based directly on LINK 0.9.3. The existing UI is retained while the local-only social data layer is connected to the live `LINK Production` Supabase project.
 
@@ -64,3 +64,10 @@ The Snack build intentionally does not use `react-native-url-polyfill`. Expo Sna
 
 ## 1.0.5 live accounts
 The live client no longer contains demo/local identities. The authenticated Supabase profile is always the active account. Optional backend query failures fail soft instead of restoring demo state.
+
+
+## LINK 1.1 additions
+- Realtime active presence: Online, Do Not Disturb, Busy, Offline (Ghost)
+- Ghost presence is server-gated to LINK Pro / staff
+- Expanded synced settings: privacy, discoverability, messaging permissions, notifications, security, appearance
+- GitHub → Snack launcher resolves the exact current commit SHA to bypass stale raw cache
