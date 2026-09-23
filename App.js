@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
+  AppState,
   Animated,
   Easing,
   FlatList,
@@ -34,16 +35,18 @@ import {
   loadLinkSnapshot, subscribeLink, signOutLink, updateProfileRemote, updateSettingsRemote,
   requestLinkRemote, respondLinkRemote, ensureDirectChat, createGroupRemote, renameGroupRemote,
   setGroupEveryoneRemote, saveChatSettingsRemote, sendMessageRemote, reactMessageRemote,
-  deleteMessageRemote, markChatReadRemote, toggleFavoriteRemote, postMomentRemote,
+  editMessageRemote, hideMessageRemote, deleteMessageForEveryoneRemote, setMessagePinnedRemote,
+  saveChatUserSettingsRemote, markChatDeliveredRemote, subscribeChatSignals, markChatReadRemote, toggleFavoriteRemote, postMomentRemote,
   saveNoteRemote, deleteOwnNoteRemote, sendWaveRemote, markNotificationsReadRemote,
   setModerationRemote, activatePrototypePlanRemote, cancelPrototypePlanRemote, purchaseEffectRemote,
   recordProfileViewRemote, setPresenceModeRemote, touchPresenceRemote,
 } from './services/linkBackend';
 
-const STORAGE_KEY = '@link_live_backend_v15';
+const STORAGE_KEY = '@link_live_backend_v16';
+const DRAFT_PREFIX = '@link_chat_draft_v1';
 const ACCENT = '#6C5CE7';
 const EMPTY_MESSAGES = Object.freeze([]);
-const BUILD = 'LINK 1.0.2 · Backend Beta';
+const BUILD = 'LINK 1.2.0 · Real Messaging';
 const LINK_PLUS_PLANS = {
   monthly: { id: 'monthly', label: 'Monthly', price: 79, periodLabel: 'month', bonusCoins: 400, days: 30 },
   annual: { id: 'annual', label: 'Annual', price: 649, periodLabel: 'year', bonusCoins: 1500, days: 365 },
@@ -179,6 +182,7 @@ const decryptMessageContent = async (cipher, keyBase64) => {
   return JSON.parse(bytesToUtf8(bytes));
 };
 const decryptConversation = async (messages = [], keyBase64) => Promise.all(messages.map(async message => {
+  if (message?.deletedAt) return { ...message, text: 'Message deleted', uri: null, duration: null, encrypted: true };
   if (!message?.cipher) return message;
   try {
     const content = await decryptMessageContent(message.cipher, keyBase64);
@@ -288,7 +292,7 @@ const normalizeUsername = (value = '') => {
 
 function initialData(userId = null) {
   return {
-    version: 15,
+    version: 16,
     themeSetting: 'light',
     activeAccountId: userId,
     localAccountIds: userId ? [userId] : [],
@@ -313,6 +317,7 @@ function initialData(userId = null) {
     silentChats: {},
     chatThemes: {},
     chatThemeScopes: {},
+    chatUserSettings: {},
     profileViews: userId ? { [userId]: 0 } : {},
   };
 }
@@ -581,7 +586,7 @@ function PersonRow({ person, theme, onPress, onChat, unread = 0, favorite = fals
 function HomeScreen({ theme, activeProfile, connectedProfiles, conversations, activeId, requests, notifications, moments, notes, profiles, favorites, favoriteIds, openOwnCard, openScanner, openChat, openAccountSwitcher, openNotifications, onAccept, onDecline, onCreateMoment, onOpenMoment, onOwnNote, onOpenNote, setTab }) {
   const unreadNotifs = (notifications[activeId] || []).filter(n => !n.read).length;
   const visibleMomentOwners = [activeId, ...connectedProfiles.map(p => p.id)];
-  const unreadFor = (personId) => (conversations[threadKey(activeId, personId)] || []).filter(m => !(m.seenBy || m.readBy || []).includes(activeId) && m.senderId !== activeId).length;
+  const unreadFor = (personId) => (conversations[threadKey(activeId, personId)] || []).filter(m => !(m.readBy || []).includes(activeId) && m.senderId !== activeId).length;
 
   return (
     <ScrollView contentContainerStyle={styles.screenScroll} showsVerticalScrollIndicator={false}>
@@ -740,31 +745,36 @@ function GroupAvatar({ group, profiles, theme, size = 52 }) {
   return <View style={[styles.groupAvatarStack, { width: size, height: size }]}>{members.map((person, i) => <View key={person.id} style={[styles.groupAvatarMini, offsets[i], { borderColor: theme.bg }]}><Avatar person={person} size={mini} theme={theme} /></View>)}</View>;
 }
 
-function ChatsScreen({ theme, activeId, profiles, connectedIds, conversations, favoriteIds, groups = {}, openChat, openGroup, onCreateGroup }) {
+function ChatsScreen({ theme, activeId, profiles, connectedIds, conversations, favoriteIds, groups = {}, chatUserSettings = {}, openChat, openGroup, onCreateGroup }) {
+  const [showArchived,setShowArchived]=useState(false);
   const directRows = connectedIds.map(id => {
     const person = profiles[id];
     const convo = conversations[threadKey(activeId, id)] || [];
     const last = convo[convo.length - 1];
-    const unread = convo.filter(m => !(m.seenBy || m.readBy || []).includes(activeId) && m.senderId !== activeId).length;
-    return { type: 'direct', id, person, last, unread, favorite: favoriteIds.includes(id) };
+    const unread = convo.filter(m => !(m.readBy || []).includes(activeId) && m.senderId !== activeId).length;
+    const key=threadKey(activeId,id);
+    return { type: 'direct', id, person, last, unread, favorite: favoriteIds.includes(id), archived:!!chatUserSettings[key]?.archived, muted:chatUserSettings[key]?.mutedUntil>Date.now() };
   }).filter(x => x.person);
   const groupRows = Object.values(groups || {}).filter(group => (group.memberIds || []).includes(activeId)).map(group => {
     const convo = conversations[groupThreadKey(group.id)] || [];
     const last = convo[convo.length - 1];
-    const unread = convo.filter(m => !(m.seenBy || m.readBy || []).includes(activeId) && m.senderId !== activeId).length;
-    return { type: 'group', id: group.id, group, last, unread, favorite: false };
+    const unread = convo.filter(m => !(m.readBy || []).includes(activeId) && m.senderId !== activeId).length;
+    const key=groupThreadKey(group.id);
+    return { type: 'group', id: group.id, group, last, unread, favorite: false, archived:!!chatUserSettings[key]?.archived, muted:chatUserSettings[key]?.mutedUntil>Date.now() };
   });
-  const rows = [...groupRows, ...directRows].sort((a, b) => Number(b.favorite) - Number(a.favorite) || (b.last?.id || b.group?.createdAt || '').toString().localeCompare((a.last?.id || a.group?.createdAt || '').toString()));
+  const allRows = [...groupRows, ...directRows];
+  const archivedCount=allRows.filter(row=>row.archived).length;
+  const rows = allRows.filter(row=>showArchived?row.archived:!row.archived).sort((a, b) => Number(b.favorite) - Number(a.favorite) || (b.last?.id || b.group?.createdAt || '').toString().localeCompare((a.last?.id || a.group?.createdAt || '').toString()));
   const preview = (item) => item.last ? `${item.last.senderId === activeId ? 'You: ' : item.type === 'group' ? `${profiles[item.last.senderId]?.name?.split(' ')[0] || 'Member'}: ` : ''}${item.last.type === 'text' ? (item.last.text || (item.last.cipher ? '🔒 Encrypted message' : 'Message')) : item.last.type === 'photo' ? '📷 Encrypted photo' : '🎙 Encrypted voice message'}` : (item.type === 'group' ? 'Start the group conversation' : 'Start the conversation');
 
   return (
     <View style={styles.flexOne}>
-      <View style={styles.simpleHeader}><View style={{ flex: 1 }}><Text style={[styles.bigTitle, { color: theme.text }]}>Chats</Text><Text style={[styles.headerSub, { color: theme.sub }]}>Direct + group chats · encrypted by default.</Text></View><Pressable onPress={onCreateGroup} style={[styles.newGroupButton, { backgroundColor: theme.inverse }]}><Ionicons name="people" size={16} color={theme.inverseText} /><Text style={{ color: theme.inverseText, fontWeight: '900', fontSize: 11 }}>New group</Text></Pressable></View>
+      <View style={styles.simpleHeader}><View style={{ flex: 1 }}><Text style={[styles.bigTitle, { color: theme.text }]}>{showArchived?'Archived':'Chats'}</Text><Text style={[styles.headerSub, { color: theme.sub }]}>Direct + group chats · encrypted by default.</Text></View>{archivedCount?<Pressable onPress={()=>setShowArchived(v=>!v)} style={[styles.newGroupButton,{backgroundColor:theme.soft,marginRight:7}]}><Ionicons name={showArchived?'chatbubbles':'archive'} size={15} color={theme.text}/><Text style={{color:theme.text,fontWeight:'900',fontSize:11}}>{showArchived?'Inbox':archivedCount}</Text></Pressable>:null}<Pressable onPress={onCreateGroup} style={[styles.newGroupButton, { backgroundColor: theme.inverse }]}><Ionicons name="people" size={16} color={theme.inverseText} /><Text style={{ color: theme.inverseText, fontWeight: '900', fontSize: 11 }}>New group</Text></Pressable></View>
       <FlatList data={rows} keyExtractor={x => `${x.type}_${x.id}`} contentContainerStyle={styles.listPad} showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <Pressable onPress={() => item.type === 'group' ? openGroup(item.group) : openChat(item.person)} style={({ pressed }) => [styles.chatRow, { borderBottomColor: theme.border, opacity: pressed ? .72 : 1 }]}>
             <View>{item.type === 'group' ? <GroupAvatar group={item.group} profiles={profiles} theme={theme} size={52} /> : <Avatar person={item.person} size={52} theme={theme} />}{item.unread ? <View style={styles.unreadDot} /> : null}</View>
-            <View style={{ flex: 1, minWidth: 0 }}><View style={styles.rowBetween}><View style={styles.inlineNameRow}><Text style={[styles.personName, { color: theme.text }]}>{item.type === 'group' ? item.group.name : item.person.name}</Text>{item.type === 'group' ? <View style={[styles.groupPill, { backgroundColor: theme.soft }]}><Text style={[styles.groupPillText, { color: theme.sub }]}>{item.group.memberIds?.length || 0}</Text></View> : item.favorite ? <Ionicons name="star" size={13} color={ACCENT} /> : null}</View><Text style={[styles.metaText, { color: theme.sub }]}>{item.last?.time || ''}</Text></View><Text numberOfLines={1} style={[styles.chatPreview, { color: item.unread ? theme.text : theme.sub, fontWeight: item.unread ? '700' : '400' }]}>{preview(item)}</Text></View>
+            <View style={{ flex: 1, minWidth: 0 }}><View style={styles.rowBetween}><View style={styles.inlineNameRow}><Text style={[styles.personName, { color: theme.text }]}>{item.type === 'group' ? item.group.name : item.person.name}</Text>{item.muted?<Ionicons name="notifications-off" size={12} color={theme.sub}/>:null}{item.type === 'group' ? <View style={[styles.groupPill, { backgroundColor: theme.soft }]}><Text style={[styles.groupPillText, { color: theme.sub }]}>{item.group.memberIds?.length || 0}</Text></View> : item.favorite ? <Ionicons name="star" size={13} color={ACCENT} /> : null}</View><Text style={[styles.metaText, { color: theme.sub }]}>{item.last?.time || ''}</Text></View><Text numberOfLines={1} style={[styles.chatPreview, { color: item.unread ? theme.text : theme.sub, fontWeight: item.unread ? '700' : '400' }]}>{preview(item)}</Text></View>
             {item.unread ? <View style={styles.unreadCount}><Text style={styles.unreadCountText}>{item.unread}</Text></View> : null}
           </Pressable>
         )}
@@ -966,7 +976,7 @@ function SettingsHubModal({ visible, onClose, theme, profile, accountEmail, priv
 
         <SectionTitle theme={theme}>Account</SectionTitle>
         <Pressable onPress={onSignOut} style={[styles.settingsDangerCard,{backgroundColor:theme.card,borderColor:theme.border}]}><Ionicons name="log-out-outline" size={20} color={theme.danger}/><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.danger}]}>Sign out</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Use another LINK account on this device.</Text></View></Pressable>
-        <Text style={[styles.settingHint,{color:theme.sub,textAlign:'center',marginTop:14}]}>LINK 1.1 · privacy preferences sync through LINK Production.</Text>
+        <Text style={[styles.settingHint,{color:theme.sub,textAlign:'center',marginTop:14}]}>LINK 1.2 · messaging and privacy preferences sync through LINK Production.</Text>
       </ScrollView>
     </SafeAreaView>
   </Modal>;
@@ -1125,11 +1135,20 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
 
   const content = (
     <>
+      {message.forwardedFrom ? <View style={styles.forwardedLabel}><Ionicons name="arrow-redo-outline" size={11} color={mine ? outgoingText : theme.sub} /><Text style={{ color: mine ? outgoingText : theme.sub, fontSize: 10, fontWeight: '800', opacity: .72 }}>Forwarded</Text></View> : null}
       {quoted ? <View style={[styles.replyQuote, { borderLeftColor: mine ? (outgoingText === '#FFFFFF' ? 'rgba(255,255,255,.72)' : 'rgba(0,0,0,.32)') : outgoingTheme.colors[0] }]}><Text numberOfLines={1} style={{ color: mine ? (outgoingText === '#FFFFFF' ? 'rgba(255,255,255,.82)' : 'rgba(0,0,0,.62)') : theme.sub, fontSize: 11, fontWeight: '700' }}>{quoted.type === 'text' ? quoted.text : quoted.type === 'photo' ? '📷 Photo' : '🎙 Voice message'}</Text></View> : null}
-      {message.type === 'photo'
+      {message.deletedAt
+        ? <View style={styles.deletedMessage}><Ionicons name="ban-outline" size={15} color={mine ? outgoingText : theme.sub} /><Text style={[styles.bubbleText, { color: mine ? outgoingText : theme.sub, fontStyle:'italic' }]}>Message deleted</Text></View>
+        : message.type === 'photo' || message.type === 'gif'
         ? <View style={[styles.photoMessage, { backgroundColor: mine ? overlayColor : theme.soft }]}>{message.uri ? <Image source={{ uri: message.uri }} style={styles.photoMessageImage} /> : <><Ionicons name="image-outline" size={28} color={mine ? outgoingText : theme.text} /><Text style={{ color: mine ? outgoingText : theme.text, fontWeight: '800', marginTop: 7 }}>Photo</Text></>}</View>
+        : message.type === 'video'
+          ? <View style={[styles.richMessageCard, { backgroundColor: mine ? overlayColor : theme.soft }]}><Ionicons name="videocam" size={22} color={mine ? outgoingText : theme.text} /><View><Text style={{ color: mine ? outgoingText : theme.text, fontWeight:'900' }}>Video</Text><Text style={{ color: mine ? outgoingText : theme.sub, opacity:.72, fontSize:11 }}>Tap to open</Text></View></View>
+        : message.type === 'location'
+          ? <View style={[styles.richMessageCard, { backgroundColor: mine ? overlayColor : theme.soft }]}><Ionicons name="location" size={22} color={mine ? outgoingText : outgoingTheme.colors[0]} /><View><Text style={{ color: mine ? outgoingText : theme.text, fontWeight:'900' }}>Shared location</Text><Text numberOfLines={1} style={{ color: mine ? outgoingText : theme.sub, opacity:.72, fontSize:11 }}>{message.text || 'Open location'}</Text></View></View>
+        : message.type === 'contact'
+          ? <View style={[styles.richMessageCard, { backgroundColor: mine ? overlayColor : theme.soft }]}><Ionicons name="person-circle" size={24} color={mine ? outgoingText : outgoingTheme.colors[0]} /><View><Text style={{ color: mine ? outgoingText : theme.text, fontWeight:'900' }}>Contact</Text><Text numberOfLines={1} style={{ color: mine ? outgoingText : theme.sub, opacity:.72, fontSize:11 }}>{message.text || 'LINK contact'}</Text></View></View>
         : message.type === 'voice'
-          ? <View style={styles.voiceMessage}><View style={[styles.voicePlay, { backgroundColor: mine ? overlayColor : theme.soft }]}><Ionicons name="play" size={16} color={mine ? outgoingText : theme.text} /></View><View style={{ flex: 1, height: 3, borderRadius: 2, backgroundColor: mine ? (outgoingText === '#FFFFFF' ? 'rgba(255,255,255,.48)' : 'rgba(0,0,0,.25)') : theme.border }} /><Text style={{ color: mine ? outgoingText : theme.text, fontSize: 11, fontWeight: '700' }}>{message.duration || '0:08'}</Text></View>
+          ? <View style={styles.voiceMessage}><View style={[styles.voicePlay, { backgroundColor: mine ? overlayColor : theme.soft }]}><Ionicons name="play" size={16} color={mine ? outgoingText : theme.text} /></View><View style={styles.voiceWave}>{[7,14,10,18,12,20,8,16,11,19,9,14].map((height,i)=><View key={i} style={{width:2,height,borderRadius:2,backgroundColor:mine?outgoingText:outgoingTheme.colors[0],opacity:.72}} />)}</View><Text style={{ color: mine ? outgoingText : theme.text, fontSize: 11, fontWeight: '700' }}>{message.duration || '0:08'}</Text></View>
           : <Text style={[styles.bubbleText, { color: mine ? outgoingText : theme.text }]}>{message.text}</Text>}
     </>
   );
@@ -1160,9 +1179,11 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
           </View>
         </Pressable>
         {showMeta ? <View style={[styles.messageMetaOutside, { justifyContent: mine ? 'flex-end' : 'flex-start' }]}>
+          {message.pinned ? <Ionicons name="pin" size={10} color={theme.sub} /> : null}
           {message.expiresAt ? <Ionicons name="timer-outline" size={10} color={theme.sub} /> : null}
+          {message.editedAt ? <Text style={[styles.bubbleTime, { color: theme.sub }]}>Edited</Text> : null}
           <Text style={[styles.bubbleTime, { color: theme.sub }]}>{message.time}</Text>
-          {mine ? <Ionicons name={message.readBy?.length > 1 ? 'checkmark-done' : 'checkmark'} size={12} color={outgoingTheme.colors[0]} /> : null}
+          {mine ? <><Ionicons name={(message.readBy?.length > 1 || message.deliveredBy?.length > 1) ? 'checkmark-done' : 'checkmark'} size={12} color={message.readBy?.length > 1 ? outgoingTheme.colors[0] : theme.sub} /><Text style={[styles.bubbleTime,{color:message.readBy?.length > 1 ? outgoingTheme.colors[0] : theme.sub}]}>{message.readBy?.length > 1 ? 'Read' : message.deliveredBy?.length > 1 ? 'Delivered' : 'Sent'}</Text></> : null}
         </View> : <View style={styles.groupMessageTightSpacer} />}
       </View>
       {groupMode && mine ? avatarSlot : null}
@@ -1170,30 +1191,65 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
   );
 }
 
-function ChatScreen({ theme, activeProfile, person, messages, profiles, onBack, onSend, onReact, onDelete, onOpenProfile, markRead, silentConfig, onOpenSilent, onOpenEncryptionInfo, chatThemeId = 'default', chatThemeScope = 'messages', onOpenTheme, isGroup = false, group = null, groupMembers = [], onRenameGroup, onToggleGroupEveryone, doubleTapEmoji = '❤️' }) {
+function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, typingEnabled = true, onBack, onSend, onReact, onEdit, onDeleteForMe, onDeleteEveryone, onPin, onForward, onOpenProfile, markRead, silentConfig, onOpenSilent, onOpenEncryptionInfo, chatThemeId = 'default', chatThemeScope = 'messages', onOpenTheme, chatPrefs = {}, onSavePrefs, isGroup = false, group = null, groupMembers = [], onRenameGroup, onToggleGroupEveryone, doubleTapEmoji = '❤️' }) {
   const [text, setText] = useState('');
   const [replyTo, setReplyTo] = useState(null);
-  const [typing, setTyping] = useState(false);
+  const [editTarget, setEditTarget] = useState(null);
+  const [typingUsers, setTypingUsers] = useState({});
+  const [draftLoaded,setDraftLoaded]=useState(false);
   const [groupInfoOpen, setGroupInfoOpen] = useState(false);
   const listRef = useRef(null);
+  const signalRef = useRef(null);
+  const typingTimerRef = useRef(null);
+  const remoteTypingTimersRef = useRef({});
   const chatTheme = chatThemeById(chatThemeId);
   const chatAccent = chatTheme.colors[0];
+  const draftKey = `${DRAFT_PREFIX}:${activeProfile.id}:${chatId || person.id}`;
+  const pinnedMessages = messages.filter(message => message.pinned && !message.deletedAt);
 
-  useEffect(() => { markRead(); }, [person.id]);
+  useEffect(() => {
+    markRead();
+    if (chatId) markChatDeliveredRemote(chatId).catch(() => {});
+  }, [person.id, chatId]);
+  useEffect(() => {
+    let disposed = false;
+    let localSignal = null;
+    if (chatId && typingEnabled) subscribeChatSignals(chatId, signal => {
+      if (disposed || signal.type !== 'typing' || !signal.userId || signal.userId === activeProfile.id) return;
+      setTypingUsers(prev => ({...prev,[signal.userId]:!!signal.typing}));
+      clearTimeout(remoteTypingTimersRef.current[signal.userId]);
+      if (signal.typing) remoteTypingTimersRef.current[signal.userId] = setTimeout(() => setTypingUsers(prev => ({...prev,[signal.userId]:false})), 2600);
+    }).then(signal => { if (disposed) signal?.close?.(); else { localSignal=signal; signalRef.current=signal; } }).catch(() => {});
+    return () => { disposed=true; localSignal?.sendTyping?.(false); localSignal?.close?.(); signalRef.current=null; Object.values(remoteTypingTimersRef.current).forEach(clearTimeout); };
+  }, [chatId, activeProfile.id, typingEnabled]);
+  useEffect(() => { let alive=true; setDraftLoaded(false); setText(''); AsyncStorage.getItem(draftKey).then(value => { if (alive && value) setText(value); }).catch(() => {}).finally(()=>{if(alive)setDraftLoaded(true);}); return()=>{alive=false;}; }, [draftKey]);
+  useEffect(() => { if(!draftLoaded)return undefined; const timer=setTimeout(() => AsyncStorage.setItem(draftKey,text).catch(()=>{}),180); return()=>clearTimeout(timer); }, [draftKey,text,draftLoaded]);
+  const changeText = (value) => {
+    setText(value);
+    if (!typingEnabled || !signalRef.current) return;
+    signalRef.current.sendTyping?.(!!value.trim());
+    clearTimeout(typingTimerRef.current);
+    typingTimerRef.current=setTimeout(()=>signalRef.current?.sendTyping?.(false),1400);
+  };
   const send = (extra = {}) => {
     const clean = text.trim();
+    if (editTarget) {
+      if (!clean) return;
+      onEdit(person.id, editTarget, clean);
+      setText(''); setEditTarget(null); setReplyTo(null); AsyncStorage.removeItem(draftKey).catch(()=>{}); signalRef.current?.sendTyping?.(false);
+      return;
+    }
     if (!clean && !extra.type) return;
     onSend(person.id, { type: extra.type || 'text', text: clean, replyTo: replyTo?.id || null, ...extra });
-    setText(''); setReplyTo(null);
+    setText(''); setReplyTo(null); AsyncStorage.removeItem(draftKey).catch(()=>{}); signalRef.current?.sendTyping?.(false);
     setTimeout(() => listRef.current?.scrollToEnd?.({ animated: true }), 50);
-    if (!isGroup && !person.isLocal) { setTyping(true); setTimeout(() => setTyping(false), 1500); }
   };
   const pickChatPhoto = async () => {
     try {
       const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!permission.granted) return Alert.alert('Photos permission', 'Allow photo access to send images in chat.');
-      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.72 });
-      if (!result.canceled && result.assets?.[0]?.uri) send({ type: 'photo', text: '', uri: result.assets[0].uri });
+      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images','videos'], quality: 0.72, videoMaxDuration:60 });
+      if (!result.canceled && result.assets?.[0]?.uri) { const asset=result.assets[0]; send({ type:asset.type==='video'?'video':'photo', text:'', uri:asset.uri, duration:asset.duration?Math.round(asset.duration/1000):null }); }
     } catch { Alert.alert('Photo', 'Could not open your photo library.'); }
   };
 
@@ -1201,10 +1257,13 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, onBack, 
     const mine = m.senderId === activeProfile.id;
     const buttons = [
       { text: 'Reply', onPress: () => setReplyTo(m) },
-      { text: '❤️ React', onPress: () => onReact(person.id, m.id, '❤️') },
-      { text: '😂 React', onPress: () => onReact(person.id, m.id, '😂') },
+      { text: m.pinned ? 'Unpin' : 'Pin', onPress: () => onPin(person.id,m,!m.pinned) },
+      { text: 'Forward', onPress: () => onForward(person.id,m) },
+      { text: 'React', onPress: () => Alert.alert('React', 'Choose a reaction', ['❤️','😂','🔥','😮','😢','👏'].map(emoji=>({text:emoji,onPress:()=>onReact(person.id,m.id,emoji)})).concat({text:'Cancel',style:'cancel'})) },
     ];
-    if (mine) buttons.push({ text: 'Delete', style: 'destructive', onPress: () => onDelete(person.id, m.id) });
+    if (mine && m.type === 'text' && !m.deletedAt) buttons.push({ text: 'Edit', onPress: () => { setEditTarget(m); setReplyTo(null); setText(m.text || ''); } });
+    buttons.push({ text: 'Delete for me', style: 'destructive', onPress: () => onDeleteForMe(person.id,m.id) });
+    if (mine && !m.deletedAt) buttons.push({ text: 'Delete for everyone', style: 'destructive', onPress: () => onDeleteEveryone(person.id,m.id) });
     buttons.push({ text: 'Cancel', style: 'cancel' });
     Alert.alert('Message', 'Choose an action', buttons);
   };
@@ -1220,10 +1279,15 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, onBack, 
             {isGroup ? <GroupAvatar group={{ memberIds: groupMembers.map(p => p.id) }} profiles={profiles} theme={theme} size={34} /> : <Avatar person={person} size={34} theme={theme} />}
             <View style={styles.chatHeaderIdentity}><Text numberOfLines={1} style={[styles.chatHeaderName, { color: theme.text }]}>{person.name}</Text><Ionicons name="chevron-down" size={12} color={theme.sub} /></View>
           </Pressable>
-          <View style={[styles.chatHeaderSide, styles.chatHeaderRight]}><IconButton icon="color-palette-outline" onPress={onOpenTheme} theme={theme} /><IconButton icon={silentConfig?.enabled ? "timer" : "timer-outline"} onPress={onOpenSilent} theme={theme} filled={!!silentConfig?.enabled} /></View>
+          <View style={[styles.chatHeaderSide, styles.chatHeaderRight]}><IconButton icon="color-palette-outline" onPress={onOpenTheme} theme={theme} /><IconButton icon={silentConfig?.enabled ? "timer" : "timer-outline"} onPress={onOpenSilent} theme={theme} filled={!!silentConfig?.enabled} /><IconButton icon="ellipsis-horizontal" onPress={() => Alert.alert('Chat controls', chatPrefs.mutedUntil>Date.now()?'Notifications muted':'Notifications on', [
+            {text:chatPrefs.mutedUntil>Date.now()?'Unmute':'Mute for 8 hours',onPress:()=>onSavePrefs?.({...chatPrefs,mutedUntil:chatPrefs.mutedUntil>Date.now()?null:Date.now()+8*60*60*1000})},
+            {text:chatPrefs.archived?'Move to inbox':'Archive chat',onPress:()=>onSavePrefs?.({...chatPrefs,archived:!chatPrefs.archived})},
+            {text:'Cancel',style:'cancel'},
+          ])} theme={theme} /></View>
         </View>
-        <Pressable onPress={onOpenEncryptionInfo} style={[styles.metContext, { backgroundColor: theme.soft }]}><Ionicons name="lock-closed" size={13} color={theme.success} /><Text style={[styles.metContextText, { color: theme.sub }]}>End-to-end encrypted</Text><Ionicons name="information-circle-outline" size={13} color={theme.sub} /></Pressable>
+        <Pressable onPress={onOpenEncryptionInfo} style={[styles.metContext, { backgroundColor: theme.soft }]}><Ionicons name="lock-closed" size={13} color={theme.success} /><Text style={[styles.metContextText, { color: theme.sub }]}>Encrypted chat</Text><Ionicons name="information-circle-outline" size={13} color={theme.sub} /></Pressable>
         {silentConfig?.enabled ? <Pressable onPress={onOpenSilent} style={[styles.silentBanner, { backgroundColor: `${chatAccent}14` }]}><Ionicons name="timer" size={14} color={chatAccent} /><Text style={[styles.silentBannerText, { color: chatAccent }]}>Silent Chat · new messages disappear after {formatSilentTimer(silentConfig.timerSeconds)}</Text><Ionicons name="chevron-forward" size={13} color={chatAccent} /></Pressable> : null}
+        {pinnedMessages.length ? <Pressable onPress={() => { const pin=pinnedMessages[pinnedMessages.length-1]; setReplyTo(pin); }} style={[styles.pinnedBanner,{backgroundColor:theme.card,borderBottomColor:theme.border}]}><Ionicons name="pin" size={14} color={chatAccent}/><View style={{flex:1}}><Text style={{color:theme.text,fontWeight:'900',fontSize:11}}>Pinned message</Text><Text numberOfLines={1} style={{color:theme.sub,fontSize:11}}>{pinnedMessages[pinnedMessages.length-1].text || pinnedMessages[pinnedMessages.length-1].type}</Text></View><Text style={{color:theme.sub,fontSize:10}}>{pinnedMessages.length}</Text></Pressable> : null}
         <View style={styles.chatBody}>
           {chatThemeScope === 'full' ? <LinearGradient pointerEvents="none" colors={[theme.bg, `${chatAccent}08`, theme.bg]} locations={[0, .56, 1]} style={StyleSheet.absoluteFill} /> : null}
           <FlatList ref={listRef} data={messages} keyExtractor={m => m.id} contentContainerStyle={styles.messageList} showsVerticalScrollIndicator={false} onContentSizeChange={() => listRef.current?.scrollToEnd?.({ animated: false })}
@@ -1236,10 +1300,11 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, onBack, 
             }}
             ListEmptyComponent={<View style={styles.emptyChat}><View style={[styles.emptyChatIcon, { backgroundColor: `${chatAccent}18` }]}><Ionicons name={isGroup ? 'people' : 'chatbubble-ellipses'} size={28} color={chatAccent} /></View><Text style={[styles.emptyTitle, { color: theme.text }]}>{isGroup ? 'New Group' : 'New LINK'}</Text><Text style={[styles.emptyBody, { color: theme.sub }]}>{isGroup ? 'Send the first message to the group.' : `Say hi to ${person.name.split(' ')[0]}.`}</Text></View>}
           />
-          {typing ? <View style={styles.typingLine}><View style={[styles.typingBubble, { backgroundColor: theme.soft }]}><Text style={{ color: theme.sub, letterSpacing: 2 }}>•••</Text></View><Text style={{ color: theme.sub, fontSize: 10 }}>{person.name.split(' ')[0]} is typing</Text></View> : null}
+          {Object.entries(typingUsers).some(([,typing])=>typing) ? <View style={styles.typingLine}><View style={[styles.typingBubble, { backgroundColor: theme.soft }]}><Text style={{ color: theme.sub, letterSpacing: 2 }}>•••</Text></View><Text style={{ color: theme.sub, fontSize: 10 }}>{Object.entries(typingUsers).filter(([,typing])=>typing).map(([id])=>profiles[id]?.name?.split(' ')[0]||'Someone').join(', ')} {Object.values(typingUsers).filter(Boolean).length>1?'are':'is'} typing</Text></View> : null}
         </View>
+        {editTarget ? <View style={[styles.replyComposerBar,{backgroundColor:theme.soft}]}><Ionicons name="create-outline" size={17} color={chatAccent}/><View style={{flex:1}}><Text style={{color:chatAccent,fontWeight:'900',fontSize:11}}>Editing message</Text><Text numberOfLines={1} style={{color:theme.sub,fontSize:12}}>{editTarget.text}</Text></View><Pressable onPress={()=>{setEditTarget(null);setText('');}}><Ionicons name="close" size={19} color={theme.sub}/></Pressable></View> : null}
         {replyTo ? <View style={[styles.replyComposerBar, { backgroundColor: theme.soft }]}><View style={{ flex: 1 }}><Text style={{ color: chatAccent, fontWeight: '800', fontSize: 11 }}>Replying to {replyTo.senderId === activeProfile.id ? 'yourself' : profiles[replyTo.senderId]?.name}</Text><Text numberOfLines={1} style={{ color: theme.sub, fontSize: 12 }}>{replyTo.type === 'text' ? replyTo.text : replyTo.type}</Text></View><Pressable onPress={() => setReplyTo(null)}><Ionicons name="close" size={19} color={theme.sub} /></Pressable></View> : null}
-        <View style={[styles.composerWrap, { backgroundColor: theme.bg }]}><Pressable style={[styles.plusButton, { backgroundColor: theme.soft, borderColor: theme.border }]} onPress={() => Alert.alert('Send', 'Choose an attachment.', [{ text: 'Photo', onPress: pickChatPhoto }, { text: 'Voice message', onPress: () => send({ type: 'voice', text: '', duration: '0:08' }) }, { text: 'Cancel', style: 'cancel' }])}><Ionicons name="add" size={24} color={theme.text} /></Pressable><View style={[styles.composer, { backgroundColor: theme.card, borderColor: theme.border }]}><TextInput value={text} onChangeText={setText} placeholder={silentConfig?.enabled ? `Silent message · ${formatSilentTimer(silentConfig.timerSeconds)}` : 'Message'} placeholderTextColor={theme.sub} style={[styles.composerInput, { color: theme.text }]} multiline maxLength={1000} /><Pressable onPress={() => send()} style={[styles.sendButton, { backgroundColor: text.trim() ? chatAccent : theme.soft }]}><Ionicons name="arrow-up" size={19} color={text.trim() ? (chatTheme.textColor || '#fff') : theme.sub} /></Pressable></View></View>
+        <View style={[styles.composerWrap, { backgroundColor: theme.bg }]}><Pressable style={[styles.plusButton, { backgroundColor: theme.soft, borderColor: theme.border }]} onPress={() => Alert.alert('Send', 'Choose an attachment.', [{ text: 'Photo or video', onPress: pickChatPhoto }, { text: 'Voice message', onPress: () => send({ type: 'voice', text: '', duration: '0:08' }) }, {text:'Location card',onPress:()=>send({type:'location',text:'Current location'})},{text:'Contact card',onPress:()=>send({type:'contact',text:activeProfile.name})},{ text: 'Cancel', style: 'cancel' }])}><Ionicons name="add" size={24} color={theme.text} /></Pressable><View style={[styles.composer, { backgroundColor: theme.card, borderColor: theme.border }]}><TextInput value={text} onChangeText={changeText} placeholder={editTarget?'Edit message':silentConfig?.enabled ? `Silent message · ${formatSilentTimer(silentConfig.timerSeconds)}` : 'Message'} placeholderTextColor={theme.sub} style={[styles.composerInput, { color: theme.text }]} multiline maxLength={1000} /><Pressable onPress={() => send()} style={[styles.sendButton, { backgroundColor: text.trim() ? chatAccent : theme.soft }]}><Ionicons name={editTarget?'checkmark':'arrow-up'} size={19} color={text.trim() ? (chatTheme.textColor || '#fff') : theme.sub} /></Pressable></View></View>
       </SafeAreaView>
       {isGroup ? <GroupInfoModal visible={groupInfoOpen} onClose={() => setGroupInfoOpen(false)} theme={theme} group={group} profiles={profiles} activeId={activeProfile.id} onRename={onRenameGroup} onToggleEveryone={onToggleGroupEveryone} /> : null}
     </KeyboardAvoidingView>
@@ -1763,6 +1828,7 @@ function LinkApp({ session }) {
   const activeSilentConfig = activeThreadKey ? (data.silentChats?.[activeThreadKey] || { enabled: false, timerSeconds: 5 * 60 }) : { enabled: false, timerSeconds: 5 * 60 };
   const activeChatThemeId = activeThreadKey ? (data.chatThemes?.[activeThreadKey] || 'default') : 'default';
   const activeChatThemeScope = activeThreadKey ? (data.chatThemeScopes?.[activeThreadKey] || 'messages') : 'messages';
+  const activeChatPrefs = activeThreadKey ? (data.chatUserSettings?.[activeThreadKey] || { archived:false, locked:false, mutedUntil:null }) : { archived:false, locked:false, mutedUntil:null };
   const profileModalPerson = profileModalId ? data.profiles[profileModalId] : null;
   const profileModalProActive = !!profileModalPerson?.isAdmin || subscriptionIsActive(data.proSubscriptions?.[profileModalId]);
   const profileModalPlusActive = !!profileModalPerson?.isAdmin || subscriptionIsActive(data.subscriptions?.[profileModalId]) || profileModalProActive;
@@ -1792,6 +1858,7 @@ function LinkApp({ session }) {
     try {
       const fresh = await loadLinkSnapshot(initialData(liveUserId), liveUserId);
       setData(fresh);
+      Promise.all(Object.values(fresh.backendChatIds || {}).map(chatId => markChatDeliveredRemote(chatId).catch(() => {}))).catch(() => {});
       return fresh;
     } catch (error) {
       console.warn('LINK backend refresh failed', error);
@@ -1816,7 +1883,10 @@ function LinkApp({ session }) {
           } catch {}
         }
         const remote = await loadLinkSnapshot(base, liveUserId);
-        if (!cancelled) setData(remote);
+        if (!cancelled) {
+          setData(remote);
+          Promise.all(Object.values(remote.backendChatIds || {}).map(chatId => markChatDeliveredRemote(chatId).catch(() => {}))).catch(() => {});
+        }
       } catch (e) {
         console.warn('LINK backend load failed', e);
       } finally {
@@ -2088,7 +2158,7 @@ function LinkApp({ session }) {
       const cipher = await encryptMessageContent({ text: payload.text || '', duration: payload.duration || null }, keyBase64);
       const silent = fresh.silentChats?.[key] || data.silentChats?.[key];
       const expiresAt = silent?.enabled ? Date.now() + (silent.timerSeconds || 5 * 60) * 1000 : null;
-      await sendMessageRemote(chatId, { type: payload.type || 'text', uri: payload.uri || null, cipher, duration: payload.duration || null, replyTo: payload.replyTo || null, expiresAt });
+      await sendMessageRemote(chatId, { type: payload.type || 'text', uri: payload.uri || null, cipher, duration: payload.duration || null, replyTo: payload.replyTo || null, forwardedFrom:payload.forwardedFrom || null, expiresAt });
       await refreshRemote();
     } catch (error) {
       console.warn('LINK message send failed', error);
@@ -2101,10 +2171,10 @@ function LinkApp({ session }) {
     mutate(prev => ({ ...prev, conversations: { ...prev.conversations, [key]: (prev.conversations[key] || []).map(m => m.id === messageId ? { ...m, reactions: [...(m.reactions || []).filter(r => r.userId !== prev.activeAccountId), { userId: prev.activeAccountId, emoji }] } : m) } }));
     reactMessageRemote(messageId, emoji).then(refreshRemote).catch(error => Alert.alert('Reaction not saved', error?.message || 'Try again.'));
   };
-  const deleteMessage = (personId, messageId) => {
+  const deleteMessageForMe = (personId, messageId) => {
     const key = threadKey(data.activeAccountId, personId);
-    mutate(prev => ({ ...prev, conversations: { ...prev.conversations, [key]: (prev.conversations[key] || []).filter(m => !(m.id === messageId && m.senderId === prev.activeAccountId)) } }));
-    deleteMessageRemote(messageId).then(refreshRemote).catch(error => { refreshRemote(); Alert.alert('Message not deleted', error?.message || 'Try again.'); });
+    mutate(prev => ({ ...prev, conversations: { ...prev.conversations, [key]: (prev.conversations[key] || []).filter(m => m.id !== messageId) } }));
+    hideMessageRemote(messageId).then(refreshRemote).catch(error => { refreshRemote(); Alert.alert('Message not hidden', error?.message || 'Try again.'); });
   };
   const sendGroupMessage = async (groupId, payload) => {
     if (!activeCanPost('send messages')) return;
@@ -2125,7 +2195,7 @@ function LinkApp({ session }) {
       const cipher = await encryptMessageContent({ text: payload.text || '', duration: payload.duration || null }, keyBase64);
       const silent = fresh.silentChats?.[key] || data.silentChats?.[key];
       const expiresAt = silent?.enabled ? Date.now() + (silent.timerSeconds || 5 * 60) * 1000 : null;
-      await sendMessageRemote(chatId, { type: payload.type || 'text', uri: payload.uri || null, cipher, duration: payload.duration || null, replyTo: payload.replyTo || null, expiresAt });
+      await sendMessageRemote(chatId, { type: payload.type || 'text', uri: payload.uri || null, cipher, duration: payload.duration || null, replyTo: payload.replyTo || null, forwardedFrom:payload.forwardedFrom || null, expiresAt });
       await refreshRemote();
     } catch (error) {
       console.warn('LINK group message send failed', error);
@@ -2137,10 +2207,45 @@ function LinkApp({ session }) {
     mutate(prev => ({ ...prev, conversations: { ...prev.conversations, [key]: (prev.conversations[key] || []).map(m => m.id === messageId ? { ...m, reactions: [...(m.reactions || []).filter(r => r.userId !== prev.activeAccountId), { userId: prev.activeAccountId, emoji }] } : m) } }));
     reactMessageRemote(messageId, emoji).then(refreshRemote).catch(error => Alert.alert('Reaction not saved', error?.message || 'Try again.'));
   };
-  const deleteGroupMessage = (groupId, messageId) => {
+  const deleteGroupMessageForMe = (groupId, messageId) => {
     const key = groupThreadKey(groupId);
-    mutate(prev => ({ ...prev, conversations: { ...prev.conversations, [key]: (prev.conversations[key] || []).filter(m => !(m.id === messageId && m.senderId === prev.activeAccountId)) } }));
-    deleteMessageRemote(messageId).then(refreshRemote).catch(error => { refreshRemote(); Alert.alert('Message not deleted', error?.message || 'Try again.'); });
+    mutate(prev => ({ ...prev, conversations: { ...prev.conversations, [key]: (prev.conversations[key] || []).filter(m => m.id !== messageId) } }));
+    hideMessageRemote(messageId).then(refreshRemote).catch(error => { refreshRemote(); Alert.alert('Message not hidden', error?.message || 'Try again.'); });
+  };
+  const editActiveMessage = async (_targetId, message, nextText) => {
+    if (!activeThreadKey || !message?.id) return;
+    try {
+      const keyBase64=data.chatKeys?.[activeThreadKey] || chatKeyCacheRef.current[activeThreadKey];
+      if (!keyBase64) throw new Error('Chat encryption key is not available.');
+      const cipher=await encryptMessageContent({text:nextText,uri:null,duration:null},keyBase64);
+      mutate(prev=>({...prev,conversations:{...prev.conversations,[activeThreadKey]:(prev.conversations[activeThreadKey]||[]).map(m=>m.id===message.id?{...m,text:nextText,cipher,editedAt:Date.now()}:m)}}));
+      await editMessageRemote(message.id,cipher);
+      await refreshRemote();
+    } catch(error) { refreshRemote(); Alert.alert('Message not edited',error?.message||'Try again.'); }
+  };
+  const deleteActiveMessageForEveryone = (_targetId, messageId) => {
+    if (!activeThreadKey) return;
+    mutate(prev=>({...prev,conversations:{...prev.conversations,[activeThreadKey]:(prev.conversations[activeThreadKey]||[]).map(m=>m.id===messageId?{...m,text:'Message deleted',uri:null,duration:null,deletedAt:Date.now()}:m)}}));
+    deleteMessageForEveryoneRemote(messageId).then(refreshRemote).catch(error=>{refreshRemote();Alert.alert('Message not deleted',error?.message||'Try again.');});
+  };
+  const pinActiveMessage = (_targetId, message, pinned) => {
+    const chatId=activeThreadKey?data.backendChatIds?.[activeThreadKey]:null;
+    if (!chatId || !message?.id) return;
+    mutate(prev=>({...prev,conversations:{...prev.conversations,[activeThreadKey]:(prev.conversations[activeThreadKey]||[]).map(m=>m.id===message.id?{...m,pinned}:m)}}));
+    setMessagePinnedRemote(chatId,message.id,pinned).then(refreshRemote).catch(error=>{refreshRemote();Alert.alert('Pin not changed',error?.message||'Try again.');});
+  };
+  const forwardActiveMessage = (_targetId, message) => {
+    if (!message || message.deletedAt) return;
+    if (['photo','video','voice','gif'].includes(message.type)) return Alert.alert('Forward media', 'Media forwarding will arrive with the native recorder update. Text and cards can be forwarded now.');
+    const targets=[...connectedProfiles.filter(p=>p.id!==activeChatId).map(p=>({label:p.name,run:()=>sendMessage(p.id,{type:message.type,text:message.text||'',forwardedFrom:message.id})})),...Object.values(data.groups||{}).filter(g=>g.id!==activeGroupId&&(g.memberIds||[]).includes(data.activeAccountId)).map(g=>({label:g.name,run:()=>sendGroupMessage(g.id,{type:message.type,text:message.text||'',forwardedFrom:message.id})}))].slice(0,5);
+    if (!targets.length) return Alert.alert('No other chat', 'Open another LINK or group first.');
+    Alert.alert('Forward to', 'Choose a conversation', targets.map(target=>({text:target.label,onPress:target.run})).concat({text:'Cancel',style:'cancel'}));
+  };
+  const saveActiveChatPrefs = (next) => {
+    if (!activeThreadKey) return;
+    const chatId=data.backendChatIds?.[activeThreadKey];
+    mutate(prev=>({...prev,chatUserSettings:{...(prev.chatUserSettings||{}),[activeThreadKey]:next}}));
+    if (chatId) saveChatUserSettingsRemote(chatId,next).then(refreshRemote).catch(error=>{refreshRemote();Alert.alert('Chat setting not saved',error?.message||'Try again.');});
   };
   const saveDoubleTapReaction = (emoji) => {
     const nextEmoji = emoji || '❤️';
@@ -2304,7 +2409,7 @@ ${text}` });
 
   if (activeChatTarget) return <>
     <RNStatusBar barStyle={activeMode === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={theme.bg} />
-    <ChatScreen theme={theme} activeProfile={activeProfile} person={activeChatTarget} messages={activeMessages} profiles={data.profiles} onBack={() => { setActiveChatId(null); setActiveGroupId(null); }} onSend={activeGroup ? sendGroupMessage : sendMessage} onReact={activeGroup ? reactGroupMessage : reactMessage} onDelete={activeGroup ? deleteGroupMessage : deleteMessage} onOpenProfile={openProfileModal} markRead={markRead} silentConfig={activeSilentConfig} onOpenSilent={() => setSilentChatOpen(true)} onOpenEncryptionInfo={() => setEncryptionInfoOpen(true)} chatThemeId={activeChatThemeId} chatThemeScope={activeChatThemeScope} onOpenTheme={() => setChatThemeOpen(true)} isGroup={!!activeGroup} group={activeGroup} groupMembers={activeGroupMembers} onRenameGroup={(name) => activeGroup && renameGroup(activeGroup.id, name)} onToggleGroupEveryone={(enabled) => activeGroup && toggleGroupEveryone(activeGroup.id, enabled)} doubleTapEmoji={activeDoubleTapEmoji} />
+    <ChatScreen theme={theme} activeProfile={activeProfile} person={activeChatTarget} messages={activeMessages} profiles={data.profiles} chatId={activeThreadKey ? data.backendChatIds?.[activeThreadKey] : null} typingEnabled={privacy.typingIndicators !== false} onBack={() => { setActiveChatId(null); setActiveGroupId(null); }} onSend={activeGroup ? sendGroupMessage : sendMessage} onReact={activeGroup ? reactGroupMessage : reactMessage} onEdit={editActiveMessage} onDeleteForMe={activeGroup ? deleteGroupMessageForMe : deleteMessageForMe} onDeleteEveryone={deleteActiveMessageForEveryone} onPin={pinActiveMessage} onForward={forwardActiveMessage} onOpenProfile={openProfileModal} markRead={markRead} silentConfig={activeSilentConfig} onOpenSilent={() => setSilentChatOpen(true)} onOpenEncryptionInfo={() => setEncryptionInfoOpen(true)} chatThemeId={activeChatThemeId} chatThemeScope={activeChatThemeScope} onOpenTheme={() => setChatThemeOpen(true)} chatPrefs={activeChatPrefs} onSavePrefs={saveActiveChatPrefs} isGroup={!!activeGroup} group={activeGroup} groupMembers={activeGroupMembers} onRenameGroup={(name) => activeGroup && renameGroup(activeGroup.id, name)} onToggleGroupEveryone={(enabled) => activeGroup && toggleGroupEveryone(activeGroup.id, enabled)} doubleTapEmoji={activeDoubleTapEmoji} />
     {!activeGroup ? <PersonProfileModal visible={!!profileModalId} onClose={() => setProfileModalId(null)} theme={theme} person={profileModalPerson} connected={(data.relationships[data.activeAccountId] || []).includes(profileModalId)} privacy={profileModalPrivacy} plusActive={profileModalPlusActive} proActive={profileModalProActive} favorite={favoriteIds.includes(profileModalId)} onToggleFavorite={() => profileModalId && toggleFavorite(profileModalId)} onWave={() => profileModalId && sendWave(profileModalId)} onChat={() => profileModalPerson && openChat(profileModalPerson)} viewerIsAdmin={!!activeProfile.isAdmin} moderationState={profileModalModeration} onAdminBan={() => profileModalId && adminBan(profileModalId)} onAdminUnban={() => profileModalId && adminUnban(profileModalId)} onAdminMute={() => profileModalPerson && Alert.alert('Mute ' + profileModalPerson.name, 'Choose duration.', [{ text: '15 minutes', onPress: () => adminMute(profileModalId, 15 * 60 * 1000) }, { text: '1 hour', onPress: () => adminMute(profileModalId, 60 * 60 * 1000) }, { text: '24 hours', onPress: () => adminMute(profileModalId, 24 * 60 * 60 * 1000) }, { text: 'Indefinitely', style: 'destructive', onPress: () => adminMute(profileModalId, -1) }, { text: 'Cancel', style: 'cancel' }])} onAdminUnmute={() => profileModalId && adminUnmute(profileModalId)} /> : null}
     <SilentChatModal visible={silentChatOpen} onClose={() => setSilentChatOpen(false)} theme={theme} config={activeSilentConfig} proActive={activePro} onSave={saveSilentConfig} />
     <EncryptionInfoModal visible={encryptionInfoOpen} onClose={() => setEncryptionInfoOpen(false)} theme={theme} />
@@ -2318,7 +2423,7 @@ ${text}` });
         {tab === 'home' && <HomeScreen theme={theme} activeProfile={activeProfile} connectedProfiles={connectedProfiles} conversations={data.conversations} activeId={data.activeAccountId} requests={incomingRequests} notifications={data.notifications} moments={data.moments} notes={data.notes || []} profiles={data.profiles} favorites={data.favorites || {}} favoriteIds={favoriteIds} openOwnCard={() => setCardOpen(true)} openScanner={() => setScannerOpen(true)} openChat={openChat} openAccountSwitcher={() => setAccountsOpen(true)} openNotifications={() => setNotificationsOpen(true)} onAccept={acceptRequest} onDecline={declineRequest} onCreateMoment={() => setMomentComposerOpen(true)} onOpenMoment={m => setMomentViewId(m.id)} onOwnNote={() => setNoteComposerOpen(true)} onOpenNote={(n) => setNoteReplyId(n.id)} setTab={setTab} />}
         {tab === 'people' && <PeopleScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} localAccountIds={data.localAccountIds} requests={data.requests} favoriteIds={favoriteIds} openProfile={openProfileModal} openChat={openChat} sendRequest={sendRequest} onAccept={acceptRequest} onDecline={declineRequest} />}
         {tab === 'link' && <LinkScreen theme={theme} activeProfile={activeProfile} payload={payload} localProfiles={localProfiles} relationships={data.relationships} requests={data.requests} openScanner={() => setScannerOpen(true)} openOwnCard={() => setCardOpen(true)} sendRequest={sendRequest} onAccept={acceptRequest} onDecline={declineRequest} />}
-        {tab === 'chats' && <ChatsScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} conversations={data.conversations} favoriteIds={favoriteIds} groups={data.groups || {}} openChat={openChat} openGroup={openGroup} onCreateGroup={() => setGroupCreateOpen(true)} />}
+        {tab === 'chats' && <ChatsScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} conversations={data.conversations} favoriteIds={favoriteIds} groups={data.groups || {}} chatUserSettings={data.chatUserSettings || {}} openChat={openChat} openGroup={openGroup} onCreateGroup={() => setGroupCreateOpen(true)} />}
         {tab === 'profile' && <ProfileScreen theme={theme} activeProfile={activeProfile} updateProfile={updateActiveProfile} themeSetting={data.themeSetting} setThemeSetting={setThemeSetting} privacy={privacy} setPrivacy={setPrivacy} openAccountSwitcher={() => setAccountsOpen(true)} openCustomStatus={() => setCustomStatusOpen(true)} openShop={() => setShopOpen(true)} openPlus={activePro ? () => setProOpen(true) : () => setPlusOpen(true)} plusSubscription={activeSubscription} openPro={() => setProOpen(true)} proSubscription={activeProSubscription} insights={proInsights} openAdminConsole={() => setAdminConsoleOpen(true)} doubleTapEmoji={activeDoubleTapEmoji} openDoubleTapReaction={() => setDoubleTapReactionOpen(true)} resetDemo={resetDemo} accountEmail={session?.user?.email || ''} setPresenceMode={setActivePresenceMode} onSignOut={signOutLink} />}
       </View><TabBar tab={tab} setTab={setTab} theme={theme} darkMode={activeMode === 'dark'} /></SafeAreaView>
 
@@ -2409,7 +2514,8 @@ const styles = StyleSheet.create({
   tabBarShell: { height: Platform.OS === 'ios' ? 88 : 80, paddingHorizontal: 13, paddingTop: 5, paddingBottom: Platform.OS === 'ios' ? 8 : 6, backgroundColor: 'transparent' }, tabGlass: { flex: 1, borderRadius: 27, borderWidth: StyleSheet.hairlineWidth, overflow: 'hidden', shadowOpacity: .14, shadowRadius: 22, shadowOffset: { width: 0, height: 10 }, elevation: 12 }, tabInner: { flex: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 5 }, tabItem: { flex: 1, height: 58, alignItems: 'center', justifyContent: 'center' }, tabActiveCapsule: { minWidth: 54, minHeight: 48, borderRadius: 18, borderWidth: StyleSheet.hairlineWidth, borderColor: 'transparent', alignItems: 'center', justifyContent: 'center', gap: 2, paddingHorizontal: 6 }, tabLabel: { fontSize: 8.5, fontWeight: '800', letterSpacing: -.1 }, centerTabGlass: { width: 48, height: 48, borderRadius: 18, borderWidth: 1, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: .18, shadowRadius: 12, shadowOffset: { width: 0, height: 5 } }, glassHighlight: { position: 'absolute', left: 18, right: 18, top: 1, height: 1, borderRadius: 999, opacity: .8 },
   chatHeader: { height: 78, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, borderBottomWidth: StyleSheet.hairlineWidth, overflow: 'hidden' }, chatHeaderSide: { width: 88, flexDirection: 'row', alignItems: 'center' }, chatHeaderRight: { justifyContent: 'flex-end', gap: 3 }, chatHeaderPersonCenter: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4 }, chatHeaderIdentity: { flexDirection: 'row', alignItems: 'center', gap: 3, maxWidth: 150 }, chatHeaderName: { fontWeight: '800', fontSize: 12.5, letterSpacing: -.2 }, chatHeaderStatus: { fontSize: 10.5, marginTop: 2, fontWeight: '800' }, metContext: { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 7, marginTop: 8 }, metContextText: { fontSize: 10.5, fontWeight: '700' },
   chatBody: { flex: 1, overflow: 'hidden' }, messageList: { paddingHorizontal: 14, paddingTop: 18, paddingBottom: 20, flexGrow: 1 }, messageLine: { flexDirection: 'row', marginVertical: 2.5 }, groupMessageLine: { alignItems: 'flex-end', marginVertical: 1.2 }, messageStack: { maxWidth: '84%' }, groupMessageStack: { maxWidth: '78%' }, groupMessageAvatarSlot: { width: 32, minHeight: 28, justifyContent: 'flex-end' }, groupMessageAvatarLeft: { alignItems: 'flex-start', marginRight: 5 }, groupMessageAvatarRight: { alignItems: 'flex-end', marginLeft: 5 }, groupMessageTightSpacer: { height: 1 }, bubblePressable: { position: 'relative' }, incomingPressable: { paddingLeft: 4 }, outgoingPressable: { paddingRight: 4 }, bubbleShell: { position: 'relative' }, bubble: { borderRadius: 22, paddingHorizontal: 16, paddingTop: 10.5, paddingBottom: 10.5, overflow: 'hidden', minHeight: 42, justifyContent: 'center' }, outgoingBubble: { borderRadius: 22 }, incomingBubble: { borderRadius: 22 }, outgoingTail: { display: 'none' }, incomingTail: { display: 'none' }, bubbleText: { fontSize: 17, lineHeight: 22.5, letterSpacing: -.2 }, messageMetaOutside: { minHeight: 16, flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 3, paddingHorizontal: 10 }, bubbleTime: { fontSize: 10, fontWeight: '600' }, replyQuote: { borderLeftWidth: 2, paddingLeft: 7, marginBottom: 7, maxWidth: 220 }, groupSenderName: { fontSize: 11, fontWeight: '800', marginLeft: 10, marginBottom: 4, marginTop: 8 }, groupSenderNameMine: { marginLeft: 0, marginRight: 10 }, reactionBadge: { position: 'absolute', bottom: -12, right: 7, borderRadius: 999, paddingHorizontal: 7, paddingVertical: 3, borderWidth: StyleSheet.hairlineWidth, shadowColor: '#000', shadowOpacity: .08, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
-  photoMessage: { width: 205, height: 154, borderRadius: 17, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }, photoMessageImage: { width: '100%', height: '100%' }, voiceMessage: { width: 205, flexDirection: 'row', alignItems: 'center', gap: 9, paddingVertical: 3 }, voicePlay: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
+  photoMessage: { width: 205, height: 154, borderRadius: 17, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }, photoMessageImage: { width: '100%', height: '100%' }, voiceMessage: { width: 205, flexDirection: 'row', alignItems: 'center', gap: 9, paddingVertical: 3 }, voicePlay: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' }, voiceWave:{flex:1,height:24,flexDirection:'row',alignItems:'center',justifyContent:'space-between'},
+  richMessageCard:{minWidth:190,maxWidth:225,flexDirection:'row',alignItems:'center',gap:10,padding:11,borderRadius:15}, forwardedLabel:{flexDirection:'row',alignItems:'center',gap:4,marginBottom:4}, deletedMessage:{flexDirection:'row',alignItems:'center',gap:7}, pinnedBanner:{minHeight:44,paddingHorizontal:14,paddingVertical:7,flexDirection:'row',alignItems:'center',gap:9,borderBottomWidth:StyleSheet.hairlineWidth},
   emptyChat: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 120 }, emptyChatIcon: { width: 58, height: 58, borderRadius: 20, alignItems: 'center', justifyContent: 'center' }, typingLine: { paddingHorizontal: 16, paddingBottom: 6, flexDirection: 'row', alignItems: 'center', gap: 7 }, typingBubble: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 16 }, replyComposerBar: { marginHorizontal: 10, marginBottom: 4, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 8, flexDirection: 'row', alignItems: 'center', gap: 10 },
   composerWrap: { flexDirection: 'row', gap: 8, alignItems: 'flex-end', paddingHorizontal: 10, paddingTop: 7, paddingBottom: Platform.OS === 'ios' ? 7 : 10 }, plusButton: { width: 40, height: 40, borderRadius: 20, borderWidth: StyleSheet.hairlineWidth, alignItems: 'center', justifyContent: 'center', marginBottom: 1 }, composer: { flex: 1, minHeight: 42, maxHeight: 120, borderRadius: 22, borderWidth: StyleSheet.hairlineWidth, flexDirection: 'row', alignItems: 'flex-end', paddingLeft: 14, paddingRight: 5, paddingVertical: 4 }, composerInput: { flex: 1, fontSize: 15.5, maxHeight: 100, paddingTop: 7, paddingBottom: 7, letterSpacing: -.1 }, sendButton: { width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center', marginLeft: 5, marginBottom: 1 },
   chatThemeSheet: { width: '100%', maxWidth: 460, maxHeight: '86%', borderRadius: 30, padding: 18 }, chatThemeModeBox: { borderWidth: StyleSheet.hairlineWidth, borderRadius: 22, padding: 14, marginTop: 16 }, chatThemeModeTitle: { fontSize: 14.5, fontWeight: '900' }, chatThemeModeSub: { fontSize: 11.5, lineHeight: 16, marginTop: 4 }, chatThemeModeRow: { flexDirection: 'row', gap: 8, marginTop: 12 }, chatThemeModeChip: { flex: 1, minHeight: 42, borderRadius: 14, borderWidth: StyleSheet.hairlineWidth, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 }, chatThemeSectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 }, chatThemeSectionTitle: { fontSize: 15, fontWeight: '900' }, chatThemeSectionSub: { fontSize: 10.5, lineHeight: 14, marginTop: 2 }, themeTierPill: { minHeight: 24, paddingHorizontal: 9, borderRadius: 999, alignItems: 'center', justifyContent: 'center' }, themeTierText: { color: '#fff', fontSize: 9, fontWeight: '900', letterSpacing: .7 }, chatThemeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 9 }, chatThemeCard: { width: '48.5%', minHeight: 112, borderRadius: 20, borderWidth: StyleSheet.hairlineWidth, padding: 10 }, chatThemePreview: { height: 58, position: 'relative', justifyContent: 'center' }, chatThemeIncomingPreview: { width: '58%', height: 20, borderRadius: 12, borderBottomLeftRadius: 5, alignSelf: 'flex-start' }, chatThemeOutgoingPreview: { width: '68%', height: 24, borderRadius: 14, borderBottomRightRadius: 5, alignSelf: 'flex-end', marginTop: 6 }, chatThemeCardBottom: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 }, chatThemeName: { flex: 1, fontSize: 11.5, fontWeight: '800' },

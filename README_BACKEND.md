@@ -1,4 +1,4 @@
-# LINK 1.1.0 — Backend Beta
+# LINK 1.2.0 — Real Messaging Update
 
 This project is based directly on LINK 0.9.3. The existing UI is retained while the local-only social data layer is connected to the live `LINK Production` Supabase project.
 
@@ -71,3 +71,17 @@ The live client no longer contains demo/local identities. The authenticated Supa
 - Ghost presence is server-gated to LINK Pro / staff
 - Expanded synced settings: privacy, discoverability, messaging permissions, notifications, security, appearance
 - GitHub → Snack launcher resolves the exact current commit SHA to bypass stale raw cache
+
+## LINK 1.2 additions
+- Private Realtime Broadcast typing indicators for direct and group chats
+- Sent, Delivered and Read states backed by message receipts
+- Edit text messages with an Edited label
+- Delete for me and soft Delete for everyone
+- Forward encrypted text, location and contact cards to another conversation
+- Pin and unpin messages with a pinned-message banner
+- Per-account chat archive and notification mute settings
+- Draft restoration per account and chat
+- Multi-emoji reactions from the message action menu
+- Photo/video picker and richer voice, video, location and contact message cards
+
+The included `supabase/1.2.0_real_messaging.sql` mirrors the schema and RLS changes already applied to LINK Production. Native background push delivery and real microphone recording still require an EAS development/production build and platform permissions; they are not simulated as production-ready features in this Snack build.
