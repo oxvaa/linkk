@@ -191,38 +191,58 @@
       }
 
       let rawAppUrl = null;
-      let resolvedCommitSha = null;
       repoDot.className = 'dot wait';
       repoValue.textContent = `${repo.owner}/${repo.repo} · ${repo.branch}`;
-      status.textContent = 'Zjišťuji aktuální GitHub commit…';
+      status.textContent = 'Ověřuji přímý GitHub source…';
+
+      function sourceCandidates(cacheBust = Date.now()) {
+        const owner = encodeURIComponent(repo.owner);
+        const name = encodeURIComponent(repo.repo);
+        const branch = encodeURIComponent(repo.branch);
+        return [
+          `https://raw.githubusercontent.com/${owner}/${name}/${branch}/App.snack.js?cb=${cacheBust}`,
+          `https://cdn.jsdelivr.net/gh/${owner}/${name}@${branch}/App.snack.js?cb=${cacheBust}`,
+          `https://github.com/${owner}/${name}/raw/refs/heads/${branch}/App.snack.js?cb=${cacheBust}`
+        ];
+      }
+
+      function validateSourceText(text) {
+        if (!text.includes('export default')) throw new Error('App.snack.js nevypadá jako Expo entry soubor');
+        if (!text.includes('LINK 2.0.1 · Gesture Polish')) throw new Error('Načtený App.snack.js není LINK 2.0.1 build');
+        if (text.includes('processLock')) throw new Error('Zdroj obsahuje starý Supabase client build');
+        if (text.includes('react-native-url-polyfill') || text.includes('setupURLPolyfill')) throw new Error('Zdroj obsahuje starý URL polyfill build');
+        if (!text.includes('@supabase/supabase-js')) throw new Error('App.snack.js nemá Supabase klienta');
+      }
 
       async function resolveSourceUrl() {
-        const apiUrl = `https://api.github.com/repos/${encodeURIComponent(repo.owner)}/${encodeURIComponent(repo.repo)}/commits/${encodeURIComponent(repo.branch)}?cb=${Date.now()}`;
-        const response = await fetch(apiUrl, { cache: 'no-store', headers: { 'Accept': 'application/vnd.github+json' } });
-        if (!response.ok) throw new Error(`GitHub API HTTP ${response.status}`);
-        const info = await response.json();
-        if (!info?.sha) throw new Error('GitHub commit SHA nebylo nalezeno');
-        resolvedCommitSha = info.sha;
-        rawAppUrl = `https://raw.githubusercontent.com/${encodeURIComponent(repo.owner)}/${encodeURIComponent(repo.repo)}/${resolvedCommitSha}/App.snack.js`;
-        rawBtn.href = rawAppUrl;
-        repoDot.className = 'dot';
-        repoValue.textContent = `${repo.owner}/${repo.repo} · ${repo.branch} · ${resolvedCommitSha.slice(0,7)}`;
-        status.textContent = 'Připraveno. Zdroj je připnutý na aktuální commit.';
-        return rawAppUrl;
+        const errors = [];
+        for (const candidate of sourceCandidates()) {
+          try {
+            const response = await fetch(candidate, { cache: 'no-store' });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const source = await response.text();
+            validateSourceText(source);
+            rawAppUrl = candidate;
+            rawBtn.href = rawAppUrl;
+            repoDot.className = 'dot';
+            repoValue.textContent = `${repo.owner}/${repo.repo} · ${repo.branch}`;
+            status.textContent = 'Připraveno. LINK source je ověřen bez GitHub API.';
+            return rawAppUrl;
+          } catch (error) {
+            errors.push(error?.message || String(error));
+          }
+        }
+        throw new Error(errors.filter(Boolean).slice(-2).join(' · ') || 'Source není dostupný');
       }
-      resolveSourceUrl().catch((e) => { repoDot.className = 'dot bad'; status.textContent = `Nepodařilo se zjistit aktuální commit (${e.message}).`; });
+
+      resolveSourceUrl().catch((e) => {
+        repoDot.className = 'dot bad';
+        status.textContent = `App.snack.js se nepodařilo ověřit (${e.message}).`;
+      });
 
       async function verifySource() {
         try {
-          if (!rawAppUrl) await resolveSourceUrl();
-          const r = await fetch(rawAppUrl, { cache: 'no-store' });
-          if (!r.ok) throw new Error(`HTTP ${r.status}`);
-          const text = await r.text();
-          if (!text.includes('export default')) throw new Error('App.js nevypadá jako Expo entry soubor');
-          if (!text.includes("LINK 2.0.1 · Gesture Polish")) throw new Error('Načtený App.snack.js není LINK 2.0.1 build');
-          if (text.includes('processLock')) throw new Error('GitHub stále vrací starý Supabase client build');
-          if (text.includes('react-native-url-polyfill') || text.includes('setupURLPolyfill')) throw new Error('GitHub stále vrací starý URL polyfill build');
-          if (!text.includes("@supabase/supabase-js")) throw new Error('App.snack.js nemá Supabase klienta');
+          await resolveSourceUrl();
           return true;
         } catch (e) {
           repoDot.className = 'dot bad';
@@ -234,7 +254,7 @@
       createBtn.addEventListener('click', async () => {
         createBtn.disabled = true;
         createBtn.textContent = 'Kontroluji App.snack.js…';
-        status.textContent = 'Ověřuji LINK 2.0.1 na GitHubu…';
+        status.textContent = 'Ověřuji LINK 2.0.1 bez GitHub API…';
 
         const ok = await verifySource();
         if (!ok) {

@@ -27,3 +27,7 @@ The current Pro benefit is a prototype reservation. A real Netflix partnership/r
 - Message swipe now wins over parent edge-back navigation
 - Narrower, more deliberate global edge-back gesture
 - Swipe reply focuses the composer automatically
+
+
+## Launcher 403 hotfix
+Launcher no longer calls GitHub API. It verifies App.snack.js directly using raw/CDN fallbacks to avoid GitHub API HTTP 403.
