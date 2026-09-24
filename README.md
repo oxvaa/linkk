@@ -1,4 +1,4 @@
-# LINK 2.0.1 · Gesture Polish
+# LINK 2.0.2 · Smooth Send
 
 Major beta build for Expo Snack / Expo Go backed by LINK Production (Supabase).
 
@@ -31,3 +31,14 @@ The current Pro benefit is a prototype reservation. A real Netflix partnership/r
 
 ## Launcher 403 hotfix
 Launcher no longer calls GitHub API. It verifies App.snack.js directly using raw/CDN fallbacks to avoid GitHub API HTTP 403.
+
+
+## 2.0.2 Smooth Send
+- Outgoing messages render optimistically the instant Send is tapped
+- Subtle Instagram-style fade + upward lift + micro-scale entrance animation
+- Tiny `Sending…` state changes to Sent / Delivered / Read after backend confirmation
+- Failed sends stay visible as `Not sent` instead of silently disappearing
+- Cached Supabase auth session removes an unnecessary pre-send network round trip
+- Sender receipt is completed asynchronously after the message insert
+- Direct and group chats use the same stable optimistic send pipeline
+- No database migration required

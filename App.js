@@ -46,6 +46,8 @@ const AUTH_LANGUAGE_KEY = '@link_auth_language_v1';
 const NETFLIX_BENEFIT_KEY = 'netflix_3m_2026';
 const CS_TRANSLATIONS = {"Home":"Domů","People":"Lidé","Chats":"Chaty","Profile":"Profil","LINK":"LINK","Settings":"Nastavení","Privacy, account and LINK preferences":"Soukromí, účet a nastavení LINKu","Active status":"Aktivní stav","Control your active dot and availability.":"Nastav, jak se ostatním zobrazuje tvoje aktivita.","Account & personal information":"Účet a osobní údaje","Display name":"Zobrazované jméno","Username":"Uživatelské jméno","Email":"E-mail","Account ID":"ID účtu","Privacy":"Soukromí","Profile visibility":"Viditelnost profilu","Choose who can open your full LINK profile.":"Vyber, kdo může otevřít celý tvůj LINK profil.","Everyone":"Všichni","LINKs":"LINKy","Private":"Soukromé","Messages from":"Zprávy od","Who is allowed to start a conversation.":"Kdo s tebou může zahájit konverzaci.","Nobody":"Nikdo","LINK requests":"Žádosti o LINK","Control who can send you a LINK request.":"Nastav, kdo ti může poslat žádost o LINK.","Mutuals":"Společní LINKové","Show activity status":"Zobrazovat aktivní stav","Allow people to see your active dot":"Povolit ostatním vidět tvůj aktivní stav","Read receipts":"Potvrzení o přečtení","Show Seen when you read messages":"Zobrazit Zobrazeno, když si zprávu přečteš","Typing indicators":"Indikátor psaní","Let people know when you are typing":"Ukázat ostatním, když právě píšeš","Profile views":"Zobrazení profilu","Allow your profile visits to count in insights":"Započítávat návštěvy profilu do přehledů","Discoverable by username":"Vyhledatelný podle uživatelského jména","People can find your @username in People":"Lidé tě mohou najít podle @username","Discoverable by email":"Vyhledatelný podle e-mailu","Allow account discovery using your email":"Povolit nalezení účtu podle e-mailu","Sharing":"Sdílení","Share custom status":"Sdílet vlastní status","Show your custom text status to LINKs":"Zobrazit vlastní textový status tvým LINKům","Show socials":"Zobrazit sociální sítě","Display social handles on your profile":"Zobrazit odkazy na sociální sítě na profilu","Moments to LINKs":"Moments pouze pro LINKy","Keep Moments limited to people you LINKed":"Zobrazit Moments jen lidem, se kterými jsi propojený","Notifications":"Oznámení","Messages":"Zprávy","Message and reaction notifications":"Oznámení o zprávách a reakcích","Requests and accepted LINKs":"Žádosti a přijaté LINKy","Moments":"Moments","Moment interactions and replies":"Interakce s Moments a odpovědi","LINK updates":"Novinky LINKu","Product news, drops and feature announcements":"Novinky, dropy a oznámení nových funkcí","Security":"Zabezpečení","Login alerts":"Upozornění na přihlášení","Warn about new LINK sign-ins":"Upozornit na nové přihlášení do LINKu","Appearance":"Vzhled","System":"Podle systému","Light":"Světlý","Dark":"Tmavý","Account":"Účet","Sign out":"Odhlásit se","Use another LINK account on this device.":"Použít na tomto zařízení jiný LINK účet.","Language":"Jazyk","App language":"Jazyk aplikace","Use your device language or choose manually.":"Použij jazyk zařízení nebo ho zvol ručně.","Czech":"Čeština","English":"English","Follow system":"Podle systému","Online":"Online","Do not disturb":"Nerušit","Busy":"Zaneprázdněn","Offline (Ghost)":"Offline (Ghost)","Show a green dot while LINK is open.":"Zobrazit zelenou tečku, když je LINK otevřený.","Red dot · signals that you do not want notifications.":"Červená tečka · dává najevo, že nechceš být rušen.","Orange dot · you are around, but busy.":"Oranžová tečka · jsi online, ale zaneprázdněný.","Appear offline and hide your active dot.":"Vypadat offline a skrýt aktivní stav.","Offline (Ghost) is available with LINK Pro.":"Offline (Ghost) je dostupný s LINK Pro.","Active status, privacy, notifications, security and personal information.":"Aktivní stav, soukromí, oznámení, zabezpečení a osobní údaje.","Privacy, account & app settings":"Soukromí, účet a nastavení aplikace","Your public LINK identity":"Tvoje veřejná identita v LINKu","Your status":"Tvůj status","Choose how you appear across LINK.":"Nastav, jak se zobrazuješ v LINKu.","Custom status":"Vlastní status","Pick any text, icon and color. LINKs see it across the app.":"Vyber text, ikonu a barvu. Tvé LINKy ho uvidí napříč aplikací.","Use custom status":"Použít vlastní status","Status text":"Text statusu","Solid color":"Jednobarevné","Icon":"Ikona","Gradient · 40":"Gradienty · 40","Double Tap":"Dvojité klepnutí","Double Tap reaction":"Reakce dvojitým klepnutím","Double tap any message":"Dvakrát klepni na libovolnou zprávu","Your selected emoji is added instantly. Double tap again after changing it to replace your reaction.":"Vybrané emoji se přidá okamžitě. Po změně emoji dvojitým klepnutím reakci nahradíš.","Save Double Tap reaction":"Uložit reakci","Or paste any emoji":"Nebo vlož libovolné emoji","Direct + group chats · encrypted by default.":"Soukromé i skupinové chaty · šifrované ve výchozím stavu.","New group":"Nová skupina","Archived":"Archivované","Inbox":"Doručené","No chats yet":"Zatím žádné chaty","LINK with someone or create a group.":"Propoj se s někým nebo vytvoř skupinu.","Start the conversation":"Začni konverzaci","Message":"Zpráva","Send":"Odeslat","Reply":"Odpovědět","React":"Reagovat","Forwarded":"Přeposláno","Edited":"Upraveno","Sent":"Odesláno","Delivered":"Doručeno","Read":"Přečteno","Seen":"Zobrazeno","Pinned message":"Připnutá zpráva","Message deleted":"Zpráva byla odstraněna","Editing message":"Úprava zprávy","Mute":"Ztišit","Unmute":"Zapnout zvuk","Archive":"Archivovat","Unarchive":"Vrátit z archivu","Mark unread":"Označit jako nepřečtené","Chat controls":"Nastavení chatu","Safety options":"Bezpečnost","Safety":"Bezpečnost","Members":"Členové","Group settings":"Nastavení skupiny","Group name":"Název skupiny","Creator":"Zakladatel","Only the group creator can change the name.":"Název může měnit pouze zakladatel skupiny.","Manage the conversation and group name.":"Spravuj konverzaci a název skupiny.","Create Group Chat":"Vytvořit skupinový chat","Create an encrypted chat with your LINKs.":"Vytvoř šifrovaný chat se svými LINKy.","Group name (optional)":"Název skupiny (volitelné)","Add more people":"Přidat další lidi","Typing…":"Píše…","is typing…":"píše…","are typing…":"píšou…","Search registered LINK accounts by @username or name.":"Vyhledej registrované LINK účty podle @username nebo jména.","Find a LINK by @username.":"Najdi LINK podle @username.","Search results":"Výsledky vyhledávání","No @username found":"@username nenalezen","Try the exact @username or display name.":"Zkus přesné @username nebo zobrazované jméno.","Incoming requests":"Příchozí žádosti","Accept":"Přijmout","Decline":"Odmítnout","Send LINK request":"Poslat žádost o LINK","LINK request sent":"Žádost o LINK odeslána","Recently linked":"Nedávno propojení","People linked":"Propojení lidé","You have no LINKs yet.":"Zatím nemáš žádné LINKy.","That’s you":"To jsi ty","Linked":"Propojeno","LINKED":"PROPOJENO","Your moment":"Tvůj Moment","New Moment":"Nový Moment","Visible to your LINKs for 24 hours.":"Viditelný tvým LINKům po dobu 24 hodin.","Add a caption…":"Přidat popisek…","Allow camera":"Povolit fotoaparát","Camera access":"Přístup k fotoaparátu","Camera access needed":"Je potřeba přístup k fotoaparátu","Moment · today":"Moment · dnes","Notes":"Poznámky","Your Note":"Tvoje poznámka","Write a note":"Napsat poznámku","Leave a note…":"Napiš poznámku…","Who can see it?":"Kdo ji uvidí?","All LINKs":"Všechny LINKy","Close LINKs":"Blízcí LINKové","Delete Note":"Smazat poznámku","Reply to Note…":"Odpovědět na poznámku…","Reply privately to their Note":"Odpovědět soukromě na poznámku","Show my LINK":"Ukázat můj LINK","Scan LINK":"Naskenovat LINK","Scan a LINK":"Naskenovat LINK","Point your camera at their card.":"Namiř fotoaparát na jejich kartu.","Only LINK QR cards are accepted.":"Přijímány jsou pouze LINK QR kódy.","Scan again":"Skenovat znovu","tap · scan · connect":"klepni · naskenuj · propoj se","scan to send request":"naskenuj a pošli žádost","Share your card or send a request nearby.":"Sdílej svou kartu nebo pošli žádost někomu poblíž.","Active":"Aktivní","ACTIVE":"AKTIVNÍ","Favorite":"Oblíbené","Status":"Status","Short bio":"Krátké bio","Profile photo":"Profilová fotka","Instagram @handle":"Instagram @uživatelské_jméno","Spotify name":"Jméno na Spotify","Website":"Web","Save":"Uložit","LINK account":"LINK účet","Signed in with Supabase Auth":"Přihlášeno přes Supabase Auth","Sign out / use another account":"Odhlásit se / použít jiný účet","This account is synced through LINK Production and can be used on another device.":"Tento účet je synchronizovaný přes LINK Production a můžeš ho použít na jiném zařízení.","Use another account":"Použít jiný účet","Use another LINK account or sign out":"Použít jiný LINK účet nebo se odhlásit","LINK Shop":"LINK Shop","Profile Effects":"Efekty profilu","Animated Profile Effects":"Animované efekty profilu","Animated profile art from LINK Shop":"Animované prvky profilu z LINK Shopu","Use effect":"Použít efekt","Equipped":"Aktivní","EQUIPPED":"AKTIVNÍ","YOUR BALANCE":"TVŮJ ZŮSTATEK","LINK Coins · local prototype balance":"LINK Coins · prototypový zůstatek","No profile effect":"Bez efektu profilu","Standard name":"Standardní jméno","Animated avatar":"Animovaný avatar","Choose GIF / animated image":"Vybrat GIF / animovaný obrázek","Keeps the original animation instead of cropping.":"Zachová původní animaci bez ořezu.","LINK Plus":"LINK Plus","LINK Pro":"LINK Pro","Everything in Plus":"Vše z Plus","Everything in Pro":"Vše z Pro","More identity. More expression. Less limits.":"Více identity. Více možností. Méně limitů.","The full LINK experience.":"Kompletní LINK zážitek.","Cancel anytime":"Kdykoliv zrušitelné","Monthly":"Měsíčně","Annual":"Ročně","month":"měsíc","year":"rok","7 days Free Trial":"7 dní zdarma","Start 7-day Free Trial":"Spustit 7denní zkušební verzi","Cancel LINK Plus":"Zrušit LINK Plus","Cancel LINK Pro":"Zrušit LINK Pro","Silent Chat":"Mizející chat","New messages can disappear automatically.":"Nové zprávy mohou automaticky zmizet.","Disappear after":"Zmizet po","Save Silent Chat":"Uložit mizející chat","30 sec":"30 s","5 min":"5 min","1 hour":"1 hodina","24 hours":"24 hodin","10 sec":"10 s","7 days":"7 dní","Chat Theme":"Motiv chatu","Choose the color of your outgoing messages.":"Vyber barvu svých odchozích zpráv.","Apply theme to":"Použít motiv na","Messages only":"Pouze zprávy","Messages + background":"Zprávy + pozadí","Keep the chat background white/black, or add a subtle color wash behind the conversation.":"Ponech pozadí chatu bílé/černé, nebo přidej jemný barevný odstín.","All caught up":"Všechno máš přečtené","LINK activity for this account":"Aktivita LINK pro tento účet","Send a wave":"Poslat mávnutí","Wave sent 👋":"Mávnutí odesláno 👋","Admin Console":"Admin konzole","Administrator access":"Přístup správce","Admin controls":"Nástroje správce","LINK Administration":"Správa LINKu","LINK moderation · live backend":"Moderace LINKu · živý backend","Ban":"Zablokovat","Unban":"Odblokovat","BANNED":"ZABLOKOVÁN","MUTED":"ZTIŠEN","Account suspended":"Účet pozastaven","Account muted":"Účet ztišen","Ban account?":"Zablokovat účet?","Cancel":"Zrušit","Got it":"Rozumím","Swipe to go back":"Přejetím zpět","On detail pages, swipe right from the left edge to go back. In chat, swipe a message right to reply.":"Na detailních stránkách se vrať přejetím doprava od levého okraje. V chatu přejeď zprávu doprava pro odpověď.","Encrypted chat":"Šifrovaný chat","Encrypted LINK messages":"Šifrované LINK zprávy","LINK encrypts message text with AES-256-GCM before it is stored in the backend. Each conversation has its own protected chat key and Supabase Row Level Security limits access to chat members.":"LINK šifruje text zpráv pomocí AES-256-GCM ještě před uložením do backendu. Každá konverzace má vlastní chráněný klíč a Supabase Row Level Security omezuje přístup pouze na členy chatu.","Security note: this backend beta is not full end-to-end encryption because chat keys are currently stored server-side behind RLS so multiple devices can decrypt the same conversation. True device-only E2EE key exchange should be added before claiming E2EE in production.":"Bezpečnostní poznámka: tato backend beta zatím není plné end-to-end šifrování, protože klíče chatů jsou uložené na serveru za RLS, aby bylo možné stejnou konverzaci dešifrovat na více zařízeních. Před produkčním označením E2EE je potřeba doplnit výměnu klíčů pouze mezi zařízeními.","Account & sign out":"Účet a odhlášení","Personal information":"Osobní údaje","Camera":"Fotoaparát","Photo":"Fotka","Video":"Video","Contact":"Kontakt","Shared location":"Sdílená poloha","Location":"Poloha","GIF":"GIF","Could not open chat":"Chat se nepodařilo otevřít","Message not sent":"Zprávu se nepodařilo odeslat","Message not edited":"Zprávu se nepodařilo upravit","Message not deleted":"Zprávu se nepodařilo smazat","Message not hidden":"Zprávu se nepodařilo skrýt","Reaction not saved":"Reakci se nepodařilo uložit","Pin not changed":"Připnutí se nepodařilo změnit","Chat setting not saved":"Nastavení chatu se nepodařilo uložit","Chat theme not saved":"Motiv chatu se nepodařilo uložit","Silent Chat not saved":"Mizející chat se nepodařilo uložit","Privacy not saved":"Nastavení soukromí se nepodařilo uložit","Profile not saved":"Profil se nepodařilo uložit","Favorite not saved":"Oblíbené se nepodařilo uložit","Moment not posted":"Moment se nepodařilo zveřejnit","Note not saved":"Poznámku se nepodařilo uložit","Note not deleted":"Poznámku se nepodařilo smazat","Wave not sent":"Mávnutí se nepodařilo odeslat","Request not sent":"Žádost se nepodařilo odeslat","Could not update request":"Žádost se nepodařilo aktualizovat","Group not created":"Skupinu se nepodařilo vytvořit","Group name not changed":"Název skupiny se nepodařilo změnit","Setting not changed":"Nastavení se nepodařilo změnit","Ban failed":"Blokování se nezdařilo","Unban failed":"Odblokování se nezdařilo","Mute failed":"Ztišení se nezdařilo","Unmute failed":"Zapnutí zvuku se nezdařilo","LINK Plus not activated":"LINK Plus se nepodařilo aktivovat","LINK Pro not activated":"LINK Pro se nepodařilo aktivovat","Could not cancel Plus":"LINK Plus se nepodařilo zrušit","Could not cancel Pro":"LINK Pro se nepodařilo zrušit","Try again.":"Zkus to znovu.","Check your details":"Zkontroluj údaje","Complete your profile":"Dokonči profil","Verify your email":"Ověř svůj e-mail","Could not create account":"Účet se nepodařilo vytvořit","Could not sign in":"Přihlášení se nezdařilo","Name":"Jméno","Password":"Heslo","Create account":"Vytvořit účet","Sign in":"Přihlásit se","Connecting to LINK…":"Připojuji k LINKu…","Sign in to your real LINK account.":"Přihlas se ke svému LINK účtu.","Create an account that works across devices.":"Vytvoř si účet, který funguje na všech tvých zařízeních.","New to LINK? Create account":"Jsi tu nový? Vytvoř si účet","Already have LINK? Sign in":"Už máš LINK? Přihlas se","LINK Production · Supabase backend":"LINK Production · zabezpečený backend","Real LINK accounts":"Skutečné LINK účty","Welcome back.":"Vítej zpět.","Your LINK starts here.":"Tvůj LINK začíná tady.","Sign in and pick up where you left off.":"Přihlas se a pokračuj přesně tam, kde jsi skončil.","Create your identity, LINK with people and start chatting.":"Vytvoř si identitu, propoj se s lidmi a začni chatovat.","Built in Czechia":"Vytvořeno v Česku","Real accounts":"Skutečné účty","Private chats":"Soukromé chaty","Cross-device":"Na více zařízeních","Log in":"Přihlásit","Register":"Registrace","Continue":"Pokračovat","By continuing, you agree to use LINK responsibly.":"Pokračováním souhlasíš s odpovědným používáním LINKu.","Your account, chats and settings sync through LINK Production.":"Tvůj účet, chaty a nastavení se synchronizují přes LINK Production.","Invalid login credentials":"Nesprávný e-mail nebo heslo.","Email not confirmed":"E-mail zatím není ověřený.","User already registered":"Účet s tímto e-mailem už existuje.","Password should be at least 6 characters":"Heslo musí mít alespoň 6 znaků.","Unable to validate email address: invalid format":"E-mail nemá platný formát.","Enter a valid email and a password with at least 6 characters.":"Zadej platný e-mail a heslo s alespoň 6 znaky.","Add your name and a username with at least 3 characters.":"Doplň jméno a uživatelské jméno s alespoň 3 znaky.","Your LINK account was created. Verify the email, then return here and sign in.":"LINK účet byl vytvořen. Ověř e-mail a potom se vrať a přihlas se.","Name required":"Je potřeba jméno","Username taken":"Uživatelské jméno je obsazené","Group name required":"Je potřeba název skupiny","Camera permission":"Oprávnění fotoaparátu","Photos permission":"Oprávnění k fotkám","Not a LINK card":"Toto není LINK karta","Refresh LINK data":"Obnovit data LINKu","Refresh LINK data?":"Obnovit data LINKu?","Refresh":"Obnovit","Delete":"Smazat","Delete for me":"Smazat pro mě","Unsend for everyone":"Zrušit odeslání všem","Forward":"Přeposlat","Forward to":"Přeposlat komu","Search":"Hledat","Search in chat":"Hledat v chatu","Media & Voice":"Média a hlasové zprávy","Photos & videos":"Fotky a videa","Voice messages":"Hlasové zprávy","Today":"Dnes","Yesterday":"Včera","Close":"Zavřít","Done":"Hotovo","Edit":"Upravit","Save changes":"Uložit změny","Back":"Zpět","Support URL":"Odkaz podpory","Visible when someone opens your LINK profile.":"Viditelné, když někdo otevře tvůj LINK profil.","Special Profile Effect":"Speciální efekt profilu","Name Effect":"Efekt jména","CEO Customization":"CEO úpravy","Staff-only profile tools for @link":"Nástroje profilu pouze pro staff účet @link","Staff-only animated effects, name effects and GIF profile photos.":"Animované efekty, efekty jména a GIF profilové fotky pouze pro staff.","LINK first":"Nejdřív se propojte přes LINK","Chat unlocks after both people accept the LINK.":"Chat se odemkne, až oba přijmete LINK.","All":"Vše","Media":"Média","Voice":"Hlasové","Links":"Odkazy","Files":"Soubory","LINK 1.3 · language, messaging and privacy preferences sync through LINK Production.":"LINK 1.3 · jazyk, zprávy a nastavení soukromí se synchronizují přes LINK Production.","Available":"K dispozici","Outside":"Venku","At work":"V práci","At event":"Na akci","Conversations":"Konverzace","Create & switch":"Vytvořit a přepnout","Create another test identity":"Vytvořit další testovací identitu","Custom":"Vlastní","Emoji":"Emoji","Gradients are rendered directly on your status pill.":"Gradienty se zobrazují přímo na štítku statusu.","LINK Plus unlocks 5 extra premium colors.":"LINK Plus odemyká 5 dalších prémiových barev.","LINK Plus unlocks 5 extra premium icons.":"LINK Plus odemyká 5 dalších prémiových ikon.","LINK Plus · choose your instant reaction.":"LINK Plus · vyber si rychlou reakci.","LINK Pro adds 10-second and 7-day timer presets. Silent Chat itself is available to everyone.":"LINK Pro přidává časovače 10 sekund a 7 dní. Mizející chat je dostupný všem.","LINK member":"Člen LINKu","LINK people you actually meet, then keep the conversation going without random DMs.":"Propoj se s lidmi, které skutečně potkáš, a pokračuj v konverzaci bez náhodných DM.","LINK uses the camera only to scan QR cards and create Moments.":"LINK používá fotoaparát pouze ke skenování QR karet a vytváření Moments.","LOCAL":"LOKÁLNÍ","Messages sent":"Odeslané zprávy","Mutual LINK":"Společný LINK","New Group":"Nová skupina","New local account":"Nový lokální účet","Pro Insights":"Pro přehledy","Profile effects":"Efekty profilu","Prototype subscription entitlement synced through the LINK backend. No real payment is charged; production billing still needs App Store / Google Play subscriptions.":"Prototyp předplatného synchronizovaný přes LINK backend. Žádná skutečná platba se neúčtuje; produkční platby budou vyžadovat předplatné přes App Store / Google Play.","Prototype subscription only. No real payment is charged. The free-trial toggle demonstrates the intended App Store / Google Play flow.":"Pouze prototyp předplatného. Žádná skutečná platba se neúčtuje. Zkušební verze ukazuje plánovaný tok přes App Store / Google Play.","Scanning sends a mutual LINK request. Chat unlocks after acceptance.":"Naskenováním odešleš žádost o LINK. Chat se odemkne po přijetí.","Tap to open":"Klepni pro otevření","Try all Pro features free for 7 days, then continue on the annual plan.":"Vyzkoušej všechny Pro funkce 7 dní zdarma a potom pokračuj s ročním plánem.","You":"Ty","e.g. Studio all night":"např. Celou noc ve studiu","Ban accounts or mute posting and messaging. Changes sync through LINK Production.":"Blokuj účty nebo omez publikování a zprávy. Změny se synchronizují přes LINK Production.","Ban, unban and mute local users. Staff actions are saved on this device.":"Blokuj, odblokuj a ztiš uživatele. Staff akce se ukládají na tomto zařízení.","CEO Profile Lab":"CEO Profile Lab","CLOSE LINKS":"BLÍZCÍ LINKOVÉ","Default":"Výchozí","Red":"Červená","Green":"Zelená","Yellow":"Žlutá","Bright Red":"Jasně červená","Blue & Purple":"Modrá a fialová","Cyan Blue":"Azurově modrá","Cyan Green":"Azurově zelená","Sky Blue (Classic)":"Nebeská modrá (Classic)","Rose Pink":"Růžová","Hot Pink":"Hot Pink","Monochromatic":"Monochromatický","Gold":"Zlatá","Black Crow":"Black Crow","Pink Cryptid":"Pink Cryptid","Digital Scar":"Digital Scar","Ice Glass":"Ice Glass","Riot Cat":"Riot Cat","Skull Spider":"Skull Spider","Starline":"Starline","Widow Bloom":"Widow Bloom","Executive Gold":"Executive Gold","Executive Orbit":"Executive Orbit","Founder Aura":"Founder Aura","CEO Crown":"CEO Crown","Photo or video":"Fotka nebo video","Voice message":"Hlasová zpráva","Location card":"Karta polohy","Contact card":"Karta kontaktu","Choose an attachment.":"Vyber přílohu.","Current location":"Aktuální poloha","New LINK":"Nový LINK","Send the first message to the group.":"Pošli první zprávu do skupiny.","Silent Chat is on":"Mizející chat je zapnutý","Turn on disappearing messages":"Zapnout mizející zprávy","Existing messages stay. Only new messages use the timer.":"Stávající zprávy zůstanou. Časovač platí pouze pro nové zprávy.","LINK Pro · Staff Access":"LINK Pro · Staff přístup","LINK Pro is active":"LINK Pro je aktivní","Unlock LINK Pro":"Odemknout LINK Pro","All Pro tools are unlocked for LINK administration":"Všechny Pro nástroje jsou odemčené pro správu LINKu","Ghost Mode, 7-day Notes, Profile Insights, 30% Shop savings & more":"Ghost Mode, 7denní Poznámky, přehledy profilu, 30% sleva v Shopu a další","LINK Plus · Staff Access":"LINK Plus · Staff přístup","LINK Plus included with Pro":"LINK Plus je součástí Pro","LINK Plus is active":"LINK Plus je aktivní","Upgrade to LINK Plus":"Přejít na LINK Plus","All Plus perks are unlocked for LINK administration":"Všechny Plus výhody jsou odemčené pro správu LINKu","All LINK Plus perks are included in your Pro plan":"Všechny výhody LINK Plus jsou součástí tvého Pro plánu","From 54 Kč/month on annual · better Notes, Shop savings & more":"Od 54 Kč/měsíc při ročním plánu · lepší Poznámky, slevy v Shopu a další","Premium profile tools and practical perks without locking basic LINK features behind a paywall.":"Prémiové nástroje profilu a praktické výhody bez zamykání základních funkcí LINKu za paywall.","Privacy tools, deeper identity, stronger Shop savings and social insights — with every Plus benefit included.":"Nástroje soukromí, výraznější identita, větší slevy v Shopu a sociální přehledy — včetně všech výhod Plus.","This user":"Tento uživatel","This person":"Tento uživatel","Reply sent":"Odpověď odeslána","Welcome to LINK Plus ✦":"Vítej v LINK Plus ✦","LINK Pro trial started ◆":"Zkušební LINK Pro spuštěn ◆","Welcome to LINK Pro ◆":"Vítej v LINK Pro ◆","This clears only the local cache. Your real LINK account, messages and backend data stay online.":"Tím se smaže pouze místní cache. Tvůj skutečný LINK účet, zprávy a data v backendu zůstanou online.","LINK Pro required":"Je potřeba LINK Pro","Status not changed":"Status se nepodařilo změnit","Create a group":"Vytvořit skupinu","Send messages":"Posílat zprávy","Send LINK requests":"Posílat žádosti o LINK","Use this feature":"Používat tuto funkci"};
 Object.assign(CS_TRANSLATIONS, {
+  "Sending…":"Odesílání…",
+  "Not sent":"Neodesláno",
   "Netflix · 3 months free":"Netflix · 3 měsíce zdarma",
   "Exclusive LINK Pro benefit":"Exkluzivní benefit LINK Pro",
   "3 months of Netflix on us.":"3 měsíce Netflixu od nás.",
@@ -62,6 +64,16 @@ Object.assign(CS_TRANSLATIONS, {
   "Netflix benefit":"Netflix benefit",
   "This benefit is available to active LINK Pro members.":"Tento benefit je dostupný aktivním členům LINK Pro.",
   "Netflix is a trademark of Netflix, Inc.":"Netflix je ochranná známka společnosti Netflix, Inc."
+});
+
+Object.assign(CS_TRANSLATIONS, {
+  "Instant message send":"Okamžité odesílání zpráv",
+  "Outgoing messages appear immediately with a subtle lift, fade and micro-scale animation while encryption and upload continue in the background.":"Odchozí zprávy se zobrazí okamžitě s jemným posunem, prolínáním a mikro-animací, zatímco šifrování a odesílání probíhá na pozadí.",
+  "Lower send latency":"Nižší odezva při odesílání",
+  "LINK now uses the cached auth session before inserts and no longer waits for the sender receipt before completing the send flow.":"LINK při odesílání používá uloženou přihlašovací relaci a už nečeká na potvrzení odesílatele, takže zpráva působí okamžitěji.",
+  "Messages that feel instant.":"Zprávy, které působí okamžitě.",
+  "Smooth Send · optimistic delivery animation, lower perceived latency and all 2.0 stability fixes preserved.":"Smooth Send · okamžité zobrazení zprávy, nižší vnímaná odezva a zachované všechny stabilizační opravy z LINK 2.0.",
+  "Message gestures keep priority over app-wide edge navigation, while left-edge back still works elsewhere.":"Gesta zpráv mají přednost před navigací z levého okraje, která dál funguje ve zbytku aplikace."
 });
 
 Object.assign(CS_TRANSLATIONS, {
@@ -658,8 +670,9 @@ async function saveChatSettingsRemote(chatId, patch) {
 }
 
 async function sendMessageRemote(chatId, payload) {
-  const { data: auth } = await supabase.auth.getUser();
-  const userId = auth.user?.id;
+  // getSession() reads the cached auth session and avoids an extra network round-trip before every send.
+  const { data: auth } = await supabase.auth.getSession();
+  const userId = auth.session?.user?.id;
   if (!userId) throw new Error('Not signed in');
   let mediaPath = null;
   if (payload.uri) mediaPath = await uploadChatMedia(chatId,payload.uri,payload.type);
@@ -669,8 +682,12 @@ async function sendMessageRemote(chatId, payload) {
   };
   const { data,error } = await supabase.from('messages').insert(row).select().single();
   if (error) throw error;
+  // The message is already safely inserted. Sender receipt can finish in the background so the UI does not wait for it.
   const now = new Date().toISOString();
-  await supabase.from('message_receipts').upsert({message_id:data.id,user_id:userId,delivered_at:now,seen_at:now,read_at:now},{onConflict:'message_id,user_id'});
+  supabase.from('message_receipts')
+    .upsert({message_id:data.id,user_id:userId,delivered_at:now,seen_at:now,read_at:now},{onConflict:'message_id,user_id'})
+    .then(({error:receiptError}) => { if (receiptError) console.warn('LINK sender receipt failed', receiptError); })
+    .catch(receiptError => console.warn('LINK sender receipt failed', receiptError));
   return data;
 }
 
@@ -1045,7 +1062,7 @@ const STORAGE_KEY = '@link_live_backend_v18';
 const DRAFT_PREFIX = '@link_chat_draft_v1';
 const ACCENT = '#6C5CE7';
 const EMPTY_MESSAGES = Object.freeze([]);
-const BUILD = 'LINK 2.0.1 · Gesture Polish';
+const BUILD = 'LINK 2.0.2 · Smooth Send';
 
 function NetflixWordmark({ width = 112, height = 31, style }) {
   return (
@@ -2177,6 +2194,42 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
   const outgoingText = outgoingTheme.textColor || '#FFFFFF';
   const overlayColor = outgoingText === '#FFFFFF' ? 'rgba(255,255,255,.16)' : 'rgba(0,0,0,.08)';
   const swipeX = useRef(new Animated.Value(0)).current;
+  const shouldAnimateSend = mine && !!message.optimistic;
+  const sendOpacity = useRef(new Animated.Value(shouldAnimateSend ? 0.58 : 1)).current;
+  const sendLift = useRef(new Animated.Value(shouldAnimateSend ? 9 : 0)).current;
+  const sendScale = useRef(new Animated.Value(shouldAnimateSend ? 0.975 : 1)).current;
+  useEffect(() => {
+    if (!shouldAnimateSend) {
+      sendOpacity.setValue(1);
+      sendLift.setValue(0);
+      sendScale.setValue(1);
+      return undefined;
+    }
+    const animation = Animated.parallel([
+      Animated.timing(sendOpacity, {
+        toValue: 1,
+        duration: 145,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.spring(sendLift, {
+        toValue: 0,
+        stiffness: 410,
+        damping: 31,
+        mass: 0.7,
+        useNativeDriver: true,
+      }),
+      Animated.spring(sendScale, {
+        toValue: 1,
+        stiffness: 430,
+        damping: 30,
+        mass: 0.66,
+        useNativeDriver: true,
+      }),
+    ]);
+    animation.start();
+    return () => animation.stop();
+  }, [message.id]);
   const resetReplySwipe = () => Animated.spring(swipeX, {
     toValue: 0,
     useNativeDriver: true,
@@ -2247,7 +2300,7 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
 
   return (
     <View style={styles.swipeReplyShell}>
-      <Animated.View {...replyGesture.panHandlers} style={[styles.messageLine, groupMode && styles.groupMessageLine, { justifyContent: mine ? 'flex-end' : 'flex-start', transform:[{translateX:swipeX}] }]}>
+      <Animated.View {...replyGesture.panHandlers} style={[styles.messageLine, groupMode && styles.groupMessageLine, { justifyContent: mine ? 'flex-end' : 'flex-start', opacity: sendOpacity, transform:[{translateX:swipeX},{translateY:sendLift},{scale:sendScale}] }]}>
       {groupMode && !mine ? avatarSlot : null}
       <View style={[styles.messageStack, groupMode && styles.groupMessageStack, { alignItems: mine ? 'flex-end' : 'flex-start' }]}>
         {groupMode && showSender ? <Text style={[styles.groupSenderName, mine && styles.groupSenderNameMine, { color: theme.sub }]}>{mine ? 'You' : (sender?.name || 'LINK member')}</Text> : null}
@@ -2266,7 +2319,11 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
           {message.expiresAt ? <Ionicons name="timer-outline" size={10} color={theme.sub} /> : null}
           {message.editedAt ? <Text style={[styles.bubbleTime, { color: theme.sub }]}>Edited</Text> : null}
           <Text style={[styles.bubbleTime, { color: theme.sub }]}>{message.time}</Text>
-          {mine ? <><Ionicons name={(message.readBy?.length > 1 || message.deliveredBy?.length > 1) ? 'checkmark-done' : 'checkmark'} size={12} color={message.readBy?.length > 1 ? outgoingTheme.colors[0] : theme.sub} /><Text style={[styles.bubbleTime,{color:message.readBy?.length > 1 ? outgoingTheme.colors[0] : theme.sub}]}>{message.readBy?.length > 1 ? 'Read' : message.deliveredBy?.length > 1 ? 'Delivered' : 'Sent'}</Text></> : null}
+          {mine ? message.sendState === 'sending'
+            ? <><ActivityIndicator size={9} color={theme.sub} /><Text style={[styles.bubbleTime,{color:theme.sub}]}>Sending…</Text></>
+            : message.sendState === 'failed'
+              ? <><Ionicons name="alert-circle" size={12} color={theme.danger} /><Text style={[styles.bubbleTime,{color:theme.danger}]}>Not sent</Text></>
+              : <><Ionicons name={(message.readBy?.length > 1 || message.deliveredBy?.length > 1) ? 'checkmark-done' : 'checkmark'} size={12} color={message.readBy?.length > 1 ? outgoingTheme.colors[0] : theme.sub} /><Text style={[styles.bubbleTime,{color:message.readBy?.length > 1 ? outgoingTheme.colors[0] : theme.sub}]}>{message.readBy?.length > 1 ? 'Read' : message.deliveredBy?.length > 1 ? 'Delivered' : 'Sent'}</Text></> : null}
         </View> : <View style={styles.groupMessageTightSpacer} />}
       </View>
       {groupMode && mine ? avatarSlot : null}
@@ -2910,7 +2967,9 @@ function MomentViewerModal({ visible, onClose, theme, moment, owner, activeId, o
 
 function WhatsNewModal({ visible, onClose, theme }) {
   const sections=[
-    ['navigate-outline','Gesture priority','Message gestures now take priority over app-wide edge navigation, while left-edge back still works elsewhere.'],
+    ['paper-plane-outline','Instant message send','Outgoing messages appear immediately with a subtle lift, fade and micro-scale animation while encryption and upload continue in the background.'],
+    ['speedometer-outline','Lower send latency','LINK now uses the cached auth session before inserts and no longer waits for the sender receipt before completing the send flow.'],
+    ['navigate-outline','Gesture priority','Message gestures keep priority over app-wide edge navigation, while left-edge back still works elsewhere.'],
     ['chatbubble-ellipses-outline','Smooth swipe-to-reply','Drag the message itself to the right. No permanent reply icons, no fight with the back gesture.'],
     ['people-circle-outline','Groups 2.0','Admins, invite codes, avatars, member controls and ownership transfer.'],
     ['aperture-outline','Moments 2.0','Reactions and view counts make Moments more social.'],
@@ -2919,7 +2978,7 @@ function WhatsNewModal({ visible, onClose, theme }) {
     ['diamond-outline','Pro benefits','LINK Pro members can reserve the Netflix 3-month promotional benefit.'],
     ['speedometer-outline','Stability','Realtime refreshes remain coalesced and serialized to prevent request storms.'],
   ];
-  return <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}><EdgeSwipeBack onBack={onClose}><SafeAreaView style={[styles.whatsNewPage,{backgroundColor:theme.bg}]}><View style={[styles.whatsNewHeader,{borderBottomColor:theme.border}]}><IconButton icon="chevron-back" onPress={onClose} theme={theme}/><View style={{flex:1}}><Text style={[styles.bigTitle,{color:theme.text}]}>What's new</Text><Text style={[styles.headerSub,{color:theme.sub}]}>{BUILD}</Text></View></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.whatsNewScroll}><LinearGradient colors={['#111318','#281A48','#101115']} style={styles.whatsNewHero}><View style={styles.whatsNewHeroIcon}><Text style={styles.whatsNewHeroIconText}>L</Text></View><View style={{flex:1}}><Text style={styles.whatsNewHeroEyebrow}>LINK 2.0.1</Text><Text style={styles.whatsNewHeroTitle}>Gesture polish for LINK.</Text><Text style={styles.whatsNewHeroSub}>Patch update · smoother replies, safer navigation gestures and chat polish.</Text></View></LinearGradient><Text style={[styles.sectionTitle,{color:theme.text,marginTop:22,marginBottom:10}]}>Update highlights</Text><View style={[styles.whatsNewCard,{backgroundColor:theme.card,borderColor:theme.border}]}>{sections.map(([icon,title,body],index)=><View key={title} style={[styles.whatsNewRow,index===sections.length-1&&{borderBottomWidth:0}, {borderBottomColor:theme.border}]}><View style={[styles.whatsNewIcon,{backgroundColor:theme.soft}]}><Ionicons name={icon} size={20} color={ACCENT}/></View><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{title}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{body}</Text></View></View>)}</View><View style={[styles.whatsNewNote,{backgroundColor:theme.soft}]}><Ionicons name="notifications-outline" size={18} color={theme.text}/><Text style={[styles.settingsSub,{color:theme.sub,flex:1}]}>Remote push notifications require a development or production build; Expo Go uses in-app alerts here.</Text></View></ScrollView></SafeAreaView></EdgeSwipeBack></Modal>;
+  return <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}><EdgeSwipeBack onBack={onClose}><SafeAreaView style={[styles.whatsNewPage,{backgroundColor:theme.bg}]}><View style={[styles.whatsNewHeader,{borderBottomColor:theme.border}]}><IconButton icon="chevron-back" onPress={onClose} theme={theme}/><View style={{flex:1}}><Text style={[styles.bigTitle,{color:theme.text}]}>What's new</Text><Text style={[styles.headerSub,{color:theme.sub}]}>{BUILD}</Text></View></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.whatsNewScroll}><LinearGradient colors={['#111318','#281A48','#101115']} style={styles.whatsNewHero}><View style={styles.whatsNewHeroIcon}><Text style={styles.whatsNewHeroIconText}>L</Text></View><View style={{flex:1}}><Text style={styles.whatsNewHeroEyebrow}>LINK 2.0.2</Text><Text style={styles.whatsNewHeroTitle}>Messages that feel instant.</Text><Text style={styles.whatsNewHeroSub}>Smooth Send · optimistic delivery animation, lower perceived latency and all 2.0 stability fixes preserved.</Text></View></LinearGradient><Text style={[styles.sectionTitle,{color:theme.text,marginTop:22,marginBottom:10}]}>Update highlights</Text><View style={[styles.whatsNewCard,{backgroundColor:theme.card,borderColor:theme.border}]}>{sections.map(([icon,title,body],index)=><View key={title} style={[styles.whatsNewRow,index===sections.length-1&&{borderBottomWidth:0}, {borderBottomColor:theme.border}]}><View style={[styles.whatsNewIcon,{backgroundColor:theme.soft}]}><Ionicons name={icon} size={20} color={ACCENT}/></View><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{title}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{body}</Text></View></View>)}</View><View style={[styles.whatsNewNote,{backgroundColor:theme.soft}]}><Ionicons name="notifications-outline" size={18} color={theme.text}/><Text style={[styles.settingsSub,{color:theme.sub,flex:1}]}>Remote push notifications require a development or production build; Expo Go uses in-app alerts here.</Text></View></ScrollView></SafeAreaView></EdgeSwipeBack></Modal>;
 }
 
 function ForegroundNotice({ notice, theme, onPress }) {
@@ -3410,21 +3469,69 @@ function LinkApp({ session }) {
     if (chatId) markChatReadRemote(chatId, suppressReceipts).catch(() => {});
   };
 
+  const makeOptimisticMessage = (senderId, payload, tempId, expiresAt = null) => {
+    const createdAt = Date.now();
+    return {
+      id: tempId,
+      senderId,
+      type: payload.type || 'text',
+      text: payload.text || '',
+      uri: payload.uri || null,
+      duration: payload.duration || null,
+      replyTo: payload.replyTo || null,
+      forwardedFrom: payload.forwardedFrom || null,
+      time: timeLabel(createdAt),
+      deliveredBy: [senderId],
+      readBy: [senderId],
+      seenBy: [senderId],
+      reactions: [],
+      expiresAt,
+      createdAt,
+      editedAt: null,
+      deletedAt: null,
+      pinned: false,
+      optimistic: true,
+      sendState: 'sending',
+    };
+  };
+  const appendOptimisticMessage = (snapshot, key, message) => ({
+    ...snapshot,
+    conversations: {
+      ...(snapshot.conversations || {}),
+      [key]: [...((snapshot.conversations || {})[key] || []).filter(item => item.id !== message.id), message]
+        .sort((a,b) => (a.createdAt || 0) - (b.createdAt || 0)),
+    },
+  });
+  const patchOptimisticMessage = (key, tempId, patch) => mutate(prev => ({
+    ...prev,
+    conversations: {
+      ...prev.conversations,
+      [key]: (prev.conversations[key] || []).map(message => message.id === tempId ? { ...message, ...patch } : message),
+    },
+  }));
+
   const sendMessage = async (personId, payload) => {
     if (!activeCanPost('send messages')) return;
     const senderId = data.activeAccountId;
     const key = threadKey(senderId, personId);
+    const silentNow = data.silentChats?.[key];
+    const optimisticExpiresAt = silentNow?.enabled ? Date.now() + (silentNow.timerSeconds || 5 * 60) * 1000 : null;
+    const tempId = `optimistic:${senderId}:${Date.now()}:${Math.random().toString(36).slice(2,8)}`;
+    const optimistic = makeOptimisticMessage(senderId, payload, tempId, optimisticExpiresAt);
+    mutate(prev => appendOptimisticMessage(prev, key, optimistic));
     try {
       let fresh = data;
       let chatId = fresh.backendChatIds?.[key];
       if (!chatId) {
         chatId = await ensureDirectChat(personId);
         fresh = await loadLinkSnapshot(initialData(liveUserId), liveUserId);
+        fresh = appendOptimisticMessage(fresh, key, optimistic);
         setData(fresh);
       }
       let keyBase64 = fresh.chatKeys?.[key] || chatKeyCacheRef.current[key];
       if (!keyBase64) {
         fresh = await loadLinkSnapshot(initialData(liveUserId), liveUserId);
+        fresh = appendOptimisticMessage(fresh, key, optimistic);
         setData(fresh);
         keyBase64 = fresh.chatKeys?.[key];
       }
@@ -3432,10 +3539,21 @@ function LinkApp({ session }) {
       chatKeyCacheRef.current[key] = keyBase64;
       const cipher = await encryptMessageContent({ text: payload.text || '', duration: payload.duration || null }, keyBase64);
       const silent = fresh.silentChats?.[key] || data.silentChats?.[key];
-      const expiresAt = silent?.enabled ? Date.now() + (silent.timerSeconds || 5 * 60) * 1000 : null;
-      await sendMessageRemote(chatId, { type: payload.type || 'text', uri: payload.uri || null, cipher, duration: payload.duration || null, replyTo: payload.replyTo || null, forwardedFrom:payload.forwardedFrom || null, expiresAt });
+      const expiresAt = silent?.enabled ? optimisticExpiresAt || Date.now() + (silent.timerSeconds || 5 * 60) * 1000 : null;
+      const serverMessage = await sendMessageRemote(chatId, { type: payload.type || 'text', uri: payload.uri || null, cipher, duration: payload.duration || null, replyTo: payload.replyTo || null, forwardedFrom:payload.forwardedFrom || null, expiresAt });
+      patchOptimisticMessage(key, tempId, {
+        id: serverMessage.id,
+        cipher,
+        encrypted: true,
+        optimistic: false,
+        sendState: 'sent',
+        createdAt: toMs(serverMessage.created_at) || optimistic.createdAt,
+        time: timeLabel(serverMessage.created_at || optimistic.createdAt),
+        expiresAt: toMs(serverMessage.expires_at) || expiresAt,
+      });
     } catch (error) {
       console.warn('LINK message send failed', error);
+      patchOptimisticMessage(key, tempId, { optimistic: false, sendState: 'failed' });
       Alert.alert('Message not sent', error?.message || 'LINK could not send this message. Try again.');
     }
   };
@@ -3454,13 +3572,20 @@ function LinkApp({ session }) {
     if (!activeCanPost('send messages')) return;
     const group = data.groups?.[groupId];
     if (!group || !(group.memberIds || []).includes(data.activeAccountId)) return;
+    const senderId = data.activeAccountId;
     const key = groupThreadKey(groupId);
+    const silentNow = data.silentChats?.[key];
+    const optimisticExpiresAt = silentNow?.enabled ? Date.now() + (silentNow.timerSeconds || 5 * 60) * 1000 : null;
+    const tempId = `optimistic:${senderId}:${Date.now()}:${Math.random().toString(36).slice(2,8)}`;
+    const optimistic = makeOptimisticMessage(senderId, payload, tempId, optimisticExpiresAt);
+    mutate(prev => appendOptimisticMessage(prev, key, optimistic));
     try {
       let fresh = data;
       const chatId = fresh.backendChatIds?.[key] || groupId;
       let keyBase64 = fresh.chatKeys?.[key] || chatKeyCacheRef.current[key];
       if (!keyBase64) {
         fresh = await loadLinkSnapshot(initialData(liveUserId), liveUserId);
+        fresh = appendOptimisticMessage(fresh, key, optimistic);
         setData(fresh);
         keyBase64 = fresh.chatKeys?.[key];
       }
@@ -3468,13 +3593,24 @@ function LinkApp({ session }) {
       chatKeyCacheRef.current[key] = keyBase64;
       const cipher = await encryptMessageContent({ text: payload.text || '', duration: payload.duration || null }, keyBase64);
       const silent = fresh.silentChats?.[key] || data.silentChats?.[key];
-      const expiresAt = silent?.enabled ? Date.now() + (silent.timerSeconds || 5 * 60) * 1000 : null;
-      await sendMessageRemote(chatId, { type: payload.type || 'text', uri: payload.uri || null, cipher, duration: payload.duration || null, replyTo: payload.replyTo || null, forwardedFrom:payload.forwardedFrom || null, expiresAt });
+      const expiresAt = silent?.enabled ? optimisticExpiresAt || Date.now() + (silent.timerSeconds || 5 * 60) * 1000 : null;
+      const serverMessage = await sendMessageRemote(chatId, { type: payload.type || 'text', uri: payload.uri || null, cipher, duration: payload.duration || null, replyTo: payload.replyTo || null, forwardedFrom:payload.forwardedFrom || null, expiresAt });
+      patchOptimisticMessage(key, tempId, {
+        id: serverMessage.id,
+        cipher,
+        encrypted: true,
+        optimistic: false,
+        sendState: 'sent',
+        createdAt: toMs(serverMessage.created_at) || optimistic.createdAt,
+        time: timeLabel(serverMessage.created_at || optimistic.createdAt),
+        expiresAt: toMs(serverMessage.expires_at) || expiresAt,
+      });
       const mentionTokens=Array.from(new Set((String(payload.text || '').match(/@[a-z0-9_.]+/gi) || []).map(x=>x.toLowerCase())));
       const mentionedIds=(group.memberIds || []).filter(id=>id!==data.activeAccountId && mentionTokens.includes(String(data.profiles[id]?.username || '').toLowerCase()));
       if(mentionedIds.length) Promise.all(mentionedIds.map(id=>notifyChatMentionRemote(chatId,id).catch(()=>{}))).catch(()=>{});
     } catch (error) {
       console.warn('LINK group message send failed', error);
+      patchOptimisticMessage(key, tempId, { optimistic: false, sendState: 'failed' });
       Alert.alert('Message not sent', error?.message || 'LINK could not send this group message. Try again.');
     }
   };
