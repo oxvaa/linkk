@@ -16,6 +16,7 @@ import {
   Pressable,
   SafeAreaView,
   ScrollView,
+  Share,
   StatusBar as RNStatusBar,
   StyleSheet,
   Switch,
@@ -32,6 +33,7 @@ import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AESEncryptionKey, AESSealedData, aesDecryptAsync, aesEncryptAsync } from 'expo-crypto';
 import { Ionicons } from '@expo/vector-icons';
+import Svg, { Path } from 'react-native-svg';
 import qrcodeGenerator from 'qrcode-generator';
 
 const SYSTEM_LOCALE = (() => {
@@ -42,7 +44,6 @@ const SYSTEM_LANGUAGE = /^cs(?:-|$)/i.test(SYSTEM_LOCALE) ? 'cs' : 'en';
 let CURRENT_LANGUAGE = SYSTEM_LANGUAGE;
 const AUTH_LANGUAGE_KEY = '@link_auth_language_v1';
 const NETFLIX_BENEFIT_KEY = 'netflix_3m_2026';
-const NETFLIX_LOGO_URI = 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/512px-Netflix_2015_logo.svg.png';
 const CS_TRANSLATIONS = {"Home":"Domů","People":"Lidé","Chats":"Chaty","Profile":"Profil","LINK":"LINK","Settings":"Nastavení","Privacy, account and LINK preferences":"Soukromí, účet a nastavení LINKu","Active status":"Aktivní stav","Control your active dot and availability.":"Nastav, jak se ostatním zobrazuje tvoje aktivita.","Account & personal information":"Účet a osobní údaje","Display name":"Zobrazované jméno","Username":"Uživatelské jméno","Email":"E-mail","Account ID":"ID účtu","Privacy":"Soukromí","Profile visibility":"Viditelnost profilu","Choose who can open your full LINK profile.":"Vyber, kdo může otevřít celý tvůj LINK profil.","Everyone":"Všichni","LINKs":"LINKy","Private":"Soukromé","Messages from":"Zprávy od","Who is allowed to start a conversation.":"Kdo s tebou může zahájit konverzaci.","Nobody":"Nikdo","LINK requests":"Žádosti o LINK","Control who can send you a LINK request.":"Nastav, kdo ti může poslat žádost o LINK.","Mutuals":"Společní LINKové","Show activity status":"Zobrazovat aktivní stav","Allow people to see your active dot":"Povolit ostatním vidět tvůj aktivní stav","Read receipts":"Potvrzení o přečtení","Show Seen when you read messages":"Zobrazit Zobrazeno, když si zprávu přečteš","Typing indicators":"Indikátor psaní","Let people know when you are typing":"Ukázat ostatním, když právě píšeš","Profile views":"Zobrazení profilu","Allow your profile visits to count in insights":"Započítávat návštěvy profilu do přehledů","Discoverable by username":"Vyhledatelný podle uživatelského jména","People can find your @username in People":"Lidé tě mohou najít podle @username","Discoverable by email":"Vyhledatelný podle e-mailu","Allow account discovery using your email":"Povolit nalezení účtu podle e-mailu","Sharing":"Sdílení","Share custom status":"Sdílet vlastní status","Show your custom text status to LINKs":"Zobrazit vlastní textový status tvým LINKům","Show socials":"Zobrazit sociální sítě","Display social handles on your profile":"Zobrazit odkazy na sociální sítě na profilu","Moments to LINKs":"Moments pouze pro LINKy","Keep Moments limited to people you LINKed":"Zobrazit Moments jen lidem, se kterými jsi propojený","Notifications":"Oznámení","Messages":"Zprávy","Message and reaction notifications":"Oznámení o zprávách a reakcích","Requests and accepted LINKs":"Žádosti a přijaté LINKy","Moments":"Moments","Moment interactions and replies":"Interakce s Moments a odpovědi","LINK updates":"Novinky LINKu","Product news, drops and feature announcements":"Novinky, dropy a oznámení nových funkcí","Security":"Zabezpečení","Login alerts":"Upozornění na přihlášení","Warn about new LINK sign-ins":"Upozornit na nové přihlášení do LINKu","Appearance":"Vzhled","System":"Podle systému","Light":"Světlý","Dark":"Tmavý","Account":"Účet","Sign out":"Odhlásit se","Use another LINK account on this device.":"Použít na tomto zařízení jiný LINK účet.","Language":"Jazyk","App language":"Jazyk aplikace","Use your device language or choose manually.":"Použij jazyk zařízení nebo ho zvol ručně.","Czech":"Čeština","English":"English","Follow system":"Podle systému","Online":"Online","Do not disturb":"Nerušit","Busy":"Zaneprázdněn","Offline (Ghost)":"Offline (Ghost)","Show a green dot while LINK is open.":"Zobrazit zelenou tečku, když je LINK otevřený.","Red dot · signals that you do not want notifications.":"Červená tečka · dává najevo, že nechceš být rušen.","Orange dot · you are around, but busy.":"Oranžová tečka · jsi online, ale zaneprázdněný.","Appear offline and hide your active dot.":"Vypadat offline a skrýt aktivní stav.","Offline (Ghost) is available with LINK Pro.":"Offline (Ghost) je dostupný s LINK Pro.","Active status, privacy, notifications, security and personal information.":"Aktivní stav, soukromí, oznámení, zabezpečení a osobní údaje.","Privacy, account & app settings":"Soukromí, účet a nastavení aplikace","Your public LINK identity":"Tvoje veřejná identita v LINKu","Your status":"Tvůj status","Choose how you appear across LINK.":"Nastav, jak se zobrazuješ v LINKu.","Custom status":"Vlastní status","Pick any text, icon and color. LINKs see it across the app.":"Vyber text, ikonu a barvu. Tvé LINKy ho uvidí napříč aplikací.","Use custom status":"Použít vlastní status","Status text":"Text statusu","Solid color":"Jednobarevné","Icon":"Ikona","Gradient · 40":"Gradienty · 40","Double Tap":"Dvojité klepnutí","Double Tap reaction":"Reakce dvojitým klepnutím","Double tap any message":"Dvakrát klepni na libovolnou zprávu","Your selected emoji is added instantly. Double tap again after changing it to replace your reaction.":"Vybrané emoji se přidá okamžitě. Po změně emoji dvojitým klepnutím reakci nahradíš.","Save Double Tap reaction":"Uložit reakci","Or paste any emoji":"Nebo vlož libovolné emoji","Direct + group chats · encrypted by default.":"Soukromé i skupinové chaty · šifrované ve výchozím stavu.","New group":"Nová skupina","Archived":"Archivované","Inbox":"Doručené","No chats yet":"Zatím žádné chaty","LINK with someone or create a group.":"Propoj se s někým nebo vytvoř skupinu.","Start the conversation":"Začni konverzaci","Message":"Zpráva","Send":"Odeslat","Reply":"Odpovědět","React":"Reagovat","Forwarded":"Přeposláno","Edited":"Upraveno","Sent":"Odesláno","Delivered":"Doručeno","Read":"Přečteno","Seen":"Zobrazeno","Pinned message":"Připnutá zpráva","Message deleted":"Zpráva byla odstraněna","Editing message":"Úprava zprávy","Mute":"Ztišit","Unmute":"Zapnout zvuk","Archive":"Archivovat","Unarchive":"Vrátit z archivu","Mark unread":"Označit jako nepřečtené","Chat controls":"Nastavení chatu","Safety options":"Bezpečnost","Safety":"Bezpečnost","Members":"Členové","Group settings":"Nastavení skupiny","Group name":"Název skupiny","Creator":"Zakladatel","Only the group creator can change the name.":"Název může měnit pouze zakladatel skupiny.","Manage the conversation and group name.":"Spravuj konverzaci a název skupiny.","Create Group Chat":"Vytvořit skupinový chat","Create an encrypted chat with your LINKs.":"Vytvoř šifrovaný chat se svými LINKy.","Group name (optional)":"Název skupiny (volitelné)","Add more people":"Přidat další lidi","Typing…":"Píše…","is typing…":"píše…","are typing…":"píšou…","Search registered LINK accounts by @username or name.":"Vyhledej registrované LINK účty podle @username nebo jména.","Find a LINK by @username.":"Najdi LINK podle @username.","Search results":"Výsledky vyhledávání","No @username found":"@username nenalezen","Try the exact @username or display name.":"Zkus přesné @username nebo zobrazované jméno.","Incoming requests":"Příchozí žádosti","Accept":"Přijmout","Decline":"Odmítnout","Send LINK request":"Poslat žádost o LINK","LINK request sent":"Žádost o LINK odeslána","Recently linked":"Nedávno propojení","People linked":"Propojení lidé","You have no LINKs yet.":"Zatím nemáš žádné LINKy.","That’s you":"To jsi ty","Linked":"Propojeno","LINKED":"PROPOJENO","Your moment":"Tvůj Moment","New Moment":"Nový Moment","Visible to your LINKs for 24 hours.":"Viditelný tvým LINKům po dobu 24 hodin.","Add a caption…":"Přidat popisek…","Allow camera":"Povolit fotoaparát","Camera access":"Přístup k fotoaparátu","Camera access needed":"Je potřeba přístup k fotoaparátu","Moment · today":"Moment · dnes","Notes":"Poznámky","Your Note":"Tvoje poznámka","Write a note":"Napsat poznámku","Leave a note…":"Napiš poznámku…","Who can see it?":"Kdo ji uvidí?","All LINKs":"Všechny LINKy","Close LINKs":"Blízcí LINKové","Delete Note":"Smazat poznámku","Reply to Note…":"Odpovědět na poznámku…","Reply privately to their Note":"Odpovědět soukromě na poznámku","Show my LINK":"Ukázat můj LINK","Scan LINK":"Naskenovat LINK","Scan a LINK":"Naskenovat LINK","Point your camera at their card.":"Namiř fotoaparát na jejich kartu.","Only LINK QR cards are accepted.":"Přijímány jsou pouze LINK QR kódy.","Scan again":"Skenovat znovu","tap · scan · connect":"klepni · naskenuj · propoj se","scan to send request":"naskenuj a pošli žádost","Share your card or send a request nearby.":"Sdílej svou kartu nebo pošli žádost někomu poblíž.","Active":"Aktivní","ACTIVE":"AKTIVNÍ","Favorite":"Oblíbené","Status":"Status","Short bio":"Krátké bio","Profile photo":"Profilová fotka","Instagram @handle":"Instagram @uživatelské_jméno","Spotify name":"Jméno na Spotify","Website":"Web","Save":"Uložit","LINK account":"LINK účet","Signed in with Supabase Auth":"Přihlášeno přes Supabase Auth","Sign out / use another account":"Odhlásit se / použít jiný účet","This account is synced through LINK Production and can be used on another device.":"Tento účet je synchronizovaný přes LINK Production a můžeš ho použít na jiném zařízení.","Use another account":"Použít jiný účet","Use another LINK account or sign out":"Použít jiný LINK účet nebo se odhlásit","LINK Shop":"LINK Shop","Profile Effects":"Efekty profilu","Animated Profile Effects":"Animované efekty profilu","Animated profile art from LINK Shop":"Animované prvky profilu z LINK Shopu","Use effect":"Použít efekt","Equipped":"Aktivní","EQUIPPED":"AKTIVNÍ","YOUR BALANCE":"TVŮJ ZŮSTATEK","LINK Coins · local prototype balance":"LINK Coins · prototypový zůstatek","No profile effect":"Bez efektu profilu","Standard name":"Standardní jméno","Animated avatar":"Animovaný avatar","Choose GIF / animated image":"Vybrat GIF / animovaný obrázek","Keeps the original animation instead of cropping.":"Zachová původní animaci bez ořezu.","LINK Plus":"LINK Plus","LINK Pro":"LINK Pro","Everything in Plus":"Vše z Plus","Everything in Pro":"Vše z Pro","More identity. More expression. Less limits.":"Více identity. Více možností. Méně limitů.","The full LINK experience.":"Kompletní LINK zážitek.","Cancel anytime":"Kdykoliv zrušitelné","Monthly":"Měsíčně","Annual":"Ročně","month":"měsíc","year":"rok","7 days Free Trial":"7 dní zdarma","Start 7-day Free Trial":"Spustit 7denní zkušební verzi","Cancel LINK Plus":"Zrušit LINK Plus","Cancel LINK Pro":"Zrušit LINK Pro","Silent Chat":"Mizející chat","New messages can disappear automatically.":"Nové zprávy mohou automaticky zmizet.","Disappear after":"Zmizet po","Save Silent Chat":"Uložit mizející chat","30 sec":"30 s","5 min":"5 min","1 hour":"1 hodina","24 hours":"24 hodin","10 sec":"10 s","7 days":"7 dní","Chat Theme":"Motiv chatu","Choose the color of your outgoing messages.":"Vyber barvu svých odchozích zpráv.","Apply theme to":"Použít motiv na","Messages only":"Pouze zprávy","Messages + background":"Zprávy + pozadí","Keep the chat background white/black, or add a subtle color wash behind the conversation.":"Ponech pozadí chatu bílé/černé, nebo přidej jemný barevný odstín.","All caught up":"Všechno máš přečtené","LINK activity for this account":"Aktivita LINK pro tento účet","Send a wave":"Poslat mávnutí","Wave sent 👋":"Mávnutí odesláno 👋","Admin Console":"Admin konzole","Administrator access":"Přístup správce","Admin controls":"Nástroje správce","LINK Administration":"Správa LINKu","LINK moderation · live backend":"Moderace LINKu · živý backend","Ban":"Zablokovat","Unban":"Odblokovat","BANNED":"ZABLOKOVÁN","MUTED":"ZTIŠEN","Account suspended":"Účet pozastaven","Account muted":"Účet ztišen","Ban account?":"Zablokovat účet?","Cancel":"Zrušit","Got it":"Rozumím","Swipe to go back":"Přejetím zpět","On detail pages, swipe right from the left edge to go back. In chat, swipe a message right to reply.":"Na detailních stránkách se vrať přejetím doprava od levého okraje. V chatu přejeď zprávu doprava pro odpověď.","Encrypted chat":"Šifrovaný chat","Encrypted LINK messages":"Šifrované LINK zprávy","LINK encrypts message text with AES-256-GCM before it is stored in the backend. Each conversation has its own protected chat key and Supabase Row Level Security limits access to chat members.":"LINK šifruje text zpráv pomocí AES-256-GCM ještě před uložením do backendu. Každá konverzace má vlastní chráněný klíč a Supabase Row Level Security omezuje přístup pouze na členy chatu.","Security note: this backend beta is not full end-to-end encryption because chat keys are currently stored server-side behind RLS so multiple devices can decrypt the same conversation. True device-only E2EE key exchange should be added before claiming E2EE in production.":"Bezpečnostní poznámka: tato backend beta zatím není plné end-to-end šifrování, protože klíče chatů jsou uložené na serveru za RLS, aby bylo možné stejnou konverzaci dešifrovat na více zařízeních. Před produkčním označením E2EE je potřeba doplnit výměnu klíčů pouze mezi zařízeními.","Account & sign out":"Účet a odhlášení","Personal information":"Osobní údaje","Camera":"Fotoaparát","Photo":"Fotka","Video":"Video","Contact":"Kontakt","Shared location":"Sdílená poloha","Location":"Poloha","GIF":"GIF","Could not open chat":"Chat se nepodařilo otevřít","Message not sent":"Zprávu se nepodařilo odeslat","Message not edited":"Zprávu se nepodařilo upravit","Message not deleted":"Zprávu se nepodařilo smazat","Message not hidden":"Zprávu se nepodařilo skrýt","Reaction not saved":"Reakci se nepodařilo uložit","Pin not changed":"Připnutí se nepodařilo změnit","Chat setting not saved":"Nastavení chatu se nepodařilo uložit","Chat theme not saved":"Motiv chatu se nepodařilo uložit","Silent Chat not saved":"Mizející chat se nepodařilo uložit","Privacy not saved":"Nastavení soukromí se nepodařilo uložit","Profile not saved":"Profil se nepodařilo uložit","Favorite not saved":"Oblíbené se nepodařilo uložit","Moment not posted":"Moment se nepodařilo zveřejnit","Note not saved":"Poznámku se nepodařilo uložit","Note not deleted":"Poznámku se nepodařilo smazat","Wave not sent":"Mávnutí se nepodařilo odeslat","Request not sent":"Žádost se nepodařilo odeslat","Could not update request":"Žádost se nepodařilo aktualizovat","Group not created":"Skupinu se nepodařilo vytvořit","Group name not changed":"Název skupiny se nepodařilo změnit","Setting not changed":"Nastavení se nepodařilo změnit","Ban failed":"Blokování se nezdařilo","Unban failed":"Odblokování se nezdařilo","Mute failed":"Ztišení se nezdařilo","Unmute failed":"Zapnutí zvuku se nezdařilo","LINK Plus not activated":"LINK Plus se nepodařilo aktivovat","LINK Pro not activated":"LINK Pro se nepodařilo aktivovat","Could not cancel Plus":"LINK Plus se nepodařilo zrušit","Could not cancel Pro":"LINK Pro se nepodařilo zrušit","Try again.":"Zkus to znovu.","Check your details":"Zkontroluj údaje","Complete your profile":"Dokonči profil","Verify your email":"Ověř svůj e-mail","Could not create account":"Účet se nepodařilo vytvořit","Could not sign in":"Přihlášení se nezdařilo","Name":"Jméno","Password":"Heslo","Create account":"Vytvořit účet","Sign in":"Přihlásit se","Connecting to LINK…":"Připojuji k LINKu…","Sign in to your real LINK account.":"Přihlas se ke svému LINK účtu.","Create an account that works across devices.":"Vytvoř si účet, který funguje na všech tvých zařízeních.","New to LINK? Create account":"Jsi tu nový? Vytvoř si účet","Already have LINK? Sign in":"Už máš LINK? Přihlas se","LINK Production · Supabase backend":"LINK Production · zabezpečený backend","Real LINK accounts":"Skutečné LINK účty","Welcome back.":"Vítej zpět.","Your LINK starts here.":"Tvůj LINK začíná tady.","Sign in and pick up where you left off.":"Přihlas se a pokračuj přesně tam, kde jsi skončil.","Create your identity, LINK with people and start chatting.":"Vytvoř si identitu, propoj se s lidmi a začni chatovat.","Built in Czechia":"Vytvořeno v Česku","Real accounts":"Skutečné účty","Private chats":"Soukromé chaty","Cross-device":"Na více zařízeních","Log in":"Přihlásit","Register":"Registrace","Continue":"Pokračovat","By continuing, you agree to use LINK responsibly.":"Pokračováním souhlasíš s odpovědným používáním LINKu.","Your account, chats and settings sync through LINK Production.":"Tvůj účet, chaty a nastavení se synchronizují přes LINK Production.","Invalid login credentials":"Nesprávný e-mail nebo heslo.","Email not confirmed":"E-mail zatím není ověřený.","User already registered":"Účet s tímto e-mailem už existuje.","Password should be at least 6 characters":"Heslo musí mít alespoň 6 znaků.","Unable to validate email address: invalid format":"E-mail nemá platný formát.","Enter a valid email and a password with at least 6 characters.":"Zadej platný e-mail a heslo s alespoň 6 znaky.","Add your name and a username with at least 3 characters.":"Doplň jméno a uživatelské jméno s alespoň 3 znaky.","Your LINK account was created. Verify the email, then return here and sign in.":"LINK účet byl vytvořen. Ověř e-mail a potom se vrať a přihlas se.","Name required":"Je potřeba jméno","Username taken":"Uživatelské jméno je obsazené","Group name required":"Je potřeba název skupiny","Camera permission":"Oprávnění fotoaparátu","Photos permission":"Oprávnění k fotkám","Not a LINK card":"Toto není LINK karta","Refresh LINK data":"Obnovit data LINKu","Refresh LINK data?":"Obnovit data LINKu?","Refresh":"Obnovit","Delete":"Smazat","Delete for me":"Smazat pro mě","Unsend for everyone":"Zrušit odeslání všem","Forward":"Přeposlat","Forward to":"Přeposlat komu","Search":"Hledat","Search in chat":"Hledat v chatu","Media & Voice":"Média a hlasové zprávy","Photos & videos":"Fotky a videa","Voice messages":"Hlasové zprávy","Today":"Dnes","Yesterday":"Včera","Close":"Zavřít","Done":"Hotovo","Edit":"Upravit","Save changes":"Uložit změny","Back":"Zpět","Support URL":"Odkaz podpory","Visible when someone opens your LINK profile.":"Viditelné, když někdo otevře tvůj LINK profil.","Special Profile Effect":"Speciální efekt profilu","Name Effect":"Efekt jména","CEO Customization":"CEO úpravy","Staff-only profile tools for @link":"Nástroje profilu pouze pro staff účet @link","Staff-only animated effects, name effects and GIF profile photos.":"Animované efekty, efekty jména a GIF profilové fotky pouze pro staff.","LINK first":"Nejdřív se propojte přes LINK","Chat unlocks after both people accept the LINK.":"Chat se odemkne, až oba přijmete LINK.","All":"Vše","Media":"Média","Voice":"Hlasové","Links":"Odkazy","Files":"Soubory","LINK 1.3 · language, messaging and privacy preferences sync through LINK Production.":"LINK 1.3 · jazyk, zprávy a nastavení soukromí se synchronizují přes LINK Production.","Available":"K dispozici","Outside":"Venku","At work":"V práci","At event":"Na akci","Conversations":"Konverzace","Create & switch":"Vytvořit a přepnout","Create another test identity":"Vytvořit další testovací identitu","Custom":"Vlastní","Emoji":"Emoji","Gradients are rendered directly on your status pill.":"Gradienty se zobrazují přímo na štítku statusu.","LINK Plus unlocks 5 extra premium colors.":"LINK Plus odemyká 5 dalších prémiových barev.","LINK Plus unlocks 5 extra premium icons.":"LINK Plus odemyká 5 dalších prémiových ikon.","LINK Plus · choose your instant reaction.":"LINK Plus · vyber si rychlou reakci.","LINK Pro adds 10-second and 7-day timer presets. Silent Chat itself is available to everyone.":"LINK Pro přidává časovače 10 sekund a 7 dní. Mizející chat je dostupný všem.","LINK member":"Člen LINKu","LINK people you actually meet, then keep the conversation going without random DMs.":"Propoj se s lidmi, které skutečně potkáš, a pokračuj v konverzaci bez náhodných DM.","LINK uses the camera only to scan QR cards and create Moments.":"LINK používá fotoaparát pouze ke skenování QR karet a vytváření Moments.","LOCAL":"LOKÁLNÍ","Messages sent":"Odeslané zprávy","Mutual LINK":"Společný LINK","New Group":"Nová skupina","New local account":"Nový lokální účet","Pro Insights":"Pro přehledy","Profile effects":"Efekty profilu","Prototype subscription entitlement synced through the LINK backend. No real payment is charged; production billing still needs App Store / Google Play subscriptions.":"Prototyp předplatného synchronizovaný přes LINK backend. Žádná skutečná platba se neúčtuje; produkční platby budou vyžadovat předplatné přes App Store / Google Play.","Prototype subscription only. No real payment is charged. The free-trial toggle demonstrates the intended App Store / Google Play flow.":"Pouze prototyp předplatného. Žádná skutečná platba se neúčtuje. Zkušební verze ukazuje plánovaný tok přes App Store / Google Play.","Scanning sends a mutual LINK request. Chat unlocks after acceptance.":"Naskenováním odešleš žádost o LINK. Chat se odemkne po přijetí.","Tap to open":"Klepni pro otevření","Try all Pro features free for 7 days, then continue on the annual plan.":"Vyzkoušej všechny Pro funkce 7 dní zdarma a potom pokračuj s ročním plánem.","You":"Ty","e.g. Studio all night":"např. Celou noc ve studiu","Ban accounts or mute posting and messaging. Changes sync through LINK Production.":"Blokuj účty nebo omez publikování a zprávy. Změny se synchronizují přes LINK Production.","Ban, unban and mute local users. Staff actions are saved on this device.":"Blokuj, odblokuj a ztiš uživatele. Staff akce se ukládají na tomto zařízení.","CEO Profile Lab":"CEO Profile Lab","CLOSE LINKS":"BLÍZCÍ LINKOVÉ","Default":"Výchozí","Red":"Červená","Green":"Zelená","Yellow":"Žlutá","Bright Red":"Jasně červená","Blue & Purple":"Modrá a fialová","Cyan Blue":"Azurově modrá","Cyan Green":"Azurově zelená","Sky Blue (Classic)":"Nebeská modrá (Classic)","Rose Pink":"Růžová","Hot Pink":"Hot Pink","Monochromatic":"Monochromatický","Gold":"Zlatá","Black Crow":"Black Crow","Pink Cryptid":"Pink Cryptid","Digital Scar":"Digital Scar","Ice Glass":"Ice Glass","Riot Cat":"Riot Cat","Skull Spider":"Skull Spider","Starline":"Starline","Widow Bloom":"Widow Bloom","Executive Gold":"Executive Gold","Executive Orbit":"Executive Orbit","Founder Aura":"Founder Aura","CEO Crown":"CEO Crown","Photo or video":"Fotka nebo video","Voice message":"Hlasová zpráva","Location card":"Karta polohy","Contact card":"Karta kontaktu","Choose an attachment.":"Vyber přílohu.","Current location":"Aktuální poloha","New LINK":"Nový LINK","Send the first message to the group.":"Pošli první zprávu do skupiny.","Silent Chat is on":"Mizející chat je zapnutý","Turn on disappearing messages":"Zapnout mizející zprávy","Existing messages stay. Only new messages use the timer.":"Stávající zprávy zůstanou. Časovač platí pouze pro nové zprávy.","LINK Pro · Staff Access":"LINK Pro · Staff přístup","LINK Pro is active":"LINK Pro je aktivní","Unlock LINK Pro":"Odemknout LINK Pro","All Pro tools are unlocked for LINK administration":"Všechny Pro nástroje jsou odemčené pro správu LINKu","Ghost Mode, 7-day Notes, Profile Insights, 30% Shop savings & more":"Ghost Mode, 7denní Poznámky, přehledy profilu, 30% sleva v Shopu a další","LINK Plus · Staff Access":"LINK Plus · Staff přístup","LINK Plus included with Pro":"LINK Plus je součástí Pro","LINK Plus is active":"LINK Plus je aktivní","Upgrade to LINK Plus":"Přejít na LINK Plus","All Plus perks are unlocked for LINK administration":"Všechny Plus výhody jsou odemčené pro správu LINKu","All LINK Plus perks are included in your Pro plan":"Všechny výhody LINK Plus jsou součástí tvého Pro plánu","From 54 Kč/month on annual · better Notes, Shop savings & more":"Od 54 Kč/měsíc při ročním plánu · lepší Poznámky, slevy v Shopu a další","Premium profile tools and practical perks without locking basic LINK features behind a paywall.":"Prémiové nástroje profilu a praktické výhody bez zamykání základních funkcí LINKu za paywall.","Privacy tools, deeper identity, stronger Shop savings and social insights — with every Plus benefit included.":"Nástroje soukromí, výraznější identita, větší slevy v Shopu a sociální přehledy — včetně všech výhod Plus.","This user":"Tento uživatel","This person":"Tento uživatel","Reply sent":"Odpověď odeslána","Welcome to LINK Plus ✦":"Vítej v LINK Plus ✦","LINK Pro trial started ◆":"Zkušební LINK Pro spuštěn ◆","Welcome to LINK Pro ◆":"Vítej v LINK Pro ◆","This clears only the local cache. Your real LINK account, messages and backend data stay online.":"Tím se smaže pouze místní cache. Tvůj skutečný LINK účet, zprávy a data v backendu zůstanou online.","LINK Pro required":"Je potřeba LINK Pro","Status not changed":"Status se nepodařilo změnit","Create a group":"Vytvořit skupinu","Send messages":"Posílat zprávy","Send LINK requests":"Posílat žádosti o LINK","Use this feature":"Používat tuto funkci"};
 Object.assign(CS_TRANSLATIONS, {
   "Netflix · 3 months free":"Netflix · 3 měsíce zdarma",
@@ -61,6 +62,66 @@ Object.assign(CS_TRANSLATIONS, {
   "Netflix benefit":"Netflix benefit",
   "This benefit is available to active LINK Pro members.":"Tento benefit je dostupný aktivním členům LINK Pro.",
   "Netflix is a trademark of Netflix, Inc.":"Netflix je ochranná známka společnosti Netflix, Inc."
+});
+
+Object.assign(CS_TRANSLATIONS, {
+  "Version info":"Info o verzi",
+  "What's new":"Co je nového",
+  "Major Update":"Velká aktualizace",
+  "A new chapter for LINK.":"Nová kapitola LINKu.",
+  "Navigation & UI":"Navigace a UI",
+  "Swipe from the left edge to go back across LINK.":"Přejetím od levého okraje se vrátíš zpět napříč LINKem.",
+  "Messages & replies":"Zprávy a odpovědi",
+  "Swipe a message right to reply instantly, with smoother realtime and read states.":"Přejeď zprávu doprava a okamžitě odpověz. Realtime a stavy přečtení jsou stabilnější.",
+  "Groups 2.0":"Skupiny 2.0",
+  "Admins, invite codes, avatars, member controls and ownership transfer.":"Administrátoři, pozvánky, avatary, správa členů a předání vlastnictví.",
+  "Moments 2.0":"Moments 2.0",
+  "Reactions and view counts make Moments more social.":"Reakce a počty zobrazení dělají Moments více sociální.",
+  "Mentions and reactions can appear as lightweight in-app alerts.":"Zmínky a reakce se mohou zobrazit jako lehká upozornění přímo v aplikaci.",
+  "Czech first":"Čeština na prvním místě",
+  "Full Czech and English support stays built into LINK.":"Plná podpora češtiny a angličtiny zůstává součástí LINKu.",
+  "Pro benefits":"Výhody Pro",
+  "LINK Pro members can reserve the Netflix 3-month promotional benefit.":"Členové LINK Pro si mohou rezervovat promo benefit Netflix na 3 měsíce.",
+  "Stability":"Stabilita",
+  "Realtime refreshes remain coalesced and serialized to prevent request storms.":"Realtime aktualizace zůstávají slučované a serializované, aby nevznikaly request stormy.",
+  "3 months free":"3 měsíce zdarma",
+  "LINK Pro benefit":"Benefit LINK Pro",
+  "Reserved":"Rezervováno",
+  "Join group":"Připojit se ke skupině",
+  "Invite code":"Kód pozvánky",
+  "Enter invite code":"Zadej kód pozvánky",
+  "Join":"Připojit",
+  "Invite link":"Pozvánka",
+  "Generate invite":"Vygenerovat pozvánku",
+  "Rotate invite":"Obnovit pozvánku",
+  "Disable invite":"Vypnout pozvánku",
+  "Enable invite":"Zapnout pozvánku",
+  "Admin":"Admin",
+  "Make admin":"Povýšit na admina",
+  "Remove admin":"Odebrat admina",
+  "Transfer ownership":"Předat vlastnictví",
+  "Remove from group":"Odebrat ze skupiny",
+  "Leave group":"Opustit skupinu",
+  "Moment reaction":"Reakce na Moment",
+  "views":"zobrazení",
+  "Remote push notifications require a development or production build; Expo Go uses in-app alerts here.":"Systémové push notifikace vyžadují development nebo produkční build; v Expo Go LINK používá upozornění v aplikaci.",
+  "Update highlights":"Hlavní novinky",
+  "Message reaction":"Reakce na zprávu",
+  "New activity":"Nová aktivita",
+  "Admins, invites, members and group identity.":"Administrátoři, pozvánky, členové a identita skupiny.",
+  "No invite yet":"Zatím bez pozvánky",
+  "Anyone with this code can request to join instantly.":"Kdokoli s tímto kódem se může ke skupině připojit.",
+  "This invite is disabled.":"Tato pozvánka je vypnutá.",
+  "Owner":"Vlastník",
+  "Member":"Člen",
+  "Only admins can manage the group name.":"Název skupiny mohou spravovat jen administrátoři.",
+  "Enter a LINK group invite code.":"Zadej kód pozvánky do LINK skupiny.",
+  "Could not join group":"Ke skupině se nepodařilo připojit",
+  "Check the invite code and try again.":"Zkontroluj kód pozvánky a zkus to znovu.",
+  "Group photo not changed":"Fotku skupiny se nepodařilo změnit",
+  "Role not changed":"Roli se nepodařilo změnit",
+  "Ownership not transferred":"Vlastnictví se nepodařilo předat",
+  "Could not leave group":"Skupinu se nepodařilo opustit"
 });
 const resolveLanguage = (setting = 'system') => setting === 'cs' || setting === 'en' ? setting : SYSTEM_LANGUAGE;
 const translateLiteral = (value) => {
@@ -189,7 +250,7 @@ async function signedChatUrl(path) {
 }
 
 async function loadLinkSnapshot(base, userId) {
-  const [profilesQ, settingsQ, entitlementsQ, tiersQ, moderationQ, connectionsQ, chatsQ, membersQ, keysQ, messagesQ, reactionsQ, receiptsQ, hidesQ, pinsQ, chatUserSettingsQ, momentsQ, notesQ, favoritesQ, notificationsQ, profileViewsQ, benefitsQ] = await Promise.all([
+  const [profilesQ, settingsQ, entitlementsQ, tiersQ, moderationQ, connectionsQ, chatsQ, membersQ, keysQ, messagesQ, reactionsQ, receiptsQ, hidesQ, pinsQ, chatUserSettingsQ, momentsQ, momentReactionsQ, momentViewsQ, notesQ, favoritesQ, notificationsQ, profileViewsQ, benefitsQ] = await Promise.all([
     supabase.from('profiles').select('*'),
     supabase.from('user_settings').select('*').eq('user_id', userId).maybeSingle(),
     supabase.from('entitlements').select('*').eq('user_id', userId).maybeSingle(),
@@ -206,6 +267,8 @@ async function loadLinkSnapshot(base, userId) {
     supabase.from('message_pins').select('*').order('created_at'),
     supabase.from('chat_user_settings').select('*').eq('user_id', userId),
     supabase.from('moments').select('*').gt('expires_at', new Date().toISOString()).order('created_at', { ascending: false }),
+    supabase.from('moment_reactions').select('*'),
+    supabase.from('moment_views').select('*'),
     supabase.from('notes').select('*').gt('expires_at', new Date().toISOString()).order('created_at', { ascending: false }),
     supabase.from('favorites').select('*').eq('user_id', userId),
     supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(80),
@@ -213,7 +276,7 @@ async function loadLinkSnapshot(base, userId) {
     supabase.from('pro_benefit_claims').select('*').eq('user_id', userId),
   ]);
   if (profilesQ.error) throw profilesQ.error;
-  const optionalQueries = { settingsQ, entitlementsQ, tiersQ, moderationQ, connectionsQ, chatsQ, membersQ, keysQ, messagesQ, reactionsQ, receiptsQ, hidesQ, pinsQ, chatUserSettingsQ, momentsQ, notesQ, favoritesQ, notificationsQ, profileViewsQ, benefitsQ };
+  const optionalQueries = { settingsQ, entitlementsQ, tiersQ, moderationQ, connectionsQ, chatsQ, membersQ, keysQ, messagesQ, reactionsQ, receiptsQ, hidesQ, pinsQ, chatUserSettingsQ, momentsQ, momentReactionsQ, momentViewsQ, notesQ, favoritesQ, notificationsQ, profileViewsQ, benefitsQ };
   Object.entries(optionalQueries).forEach(([name, q]) => { if (q?.error) console.warn(`LINK optional backend query failed: ${name}`, q.error.message); });
 
   const profiles = {};
@@ -277,6 +340,7 @@ async function loadLinkSnapshot(base, userId) {
       }
     } else {
       const key = groupThreadKey(chat.id);
+      const memberRows = membersByChat[chat.id] || [];
       backendChatIds[key] = chat.id;
       threadForChat[chat.id] = key;
       groups[chat.id] = {
@@ -284,7 +348,11 @@ async function loadLinkSnapshot(base, userId) {
         name: chat.name || 'New Group',
         ownerId: chat.created_by,
         memberIds: members,
+        memberRoles: Object.fromEntries(memberRows.map(row => [row.user_id, row.role || 'member'])),
         everyoneCanEditName: !!chat.everyone_can_edit_name,
+        avatarUrl: chat.avatar_url || null,
+        inviteCode: chat.invite_code || null,
+        inviteEnabled: chat.invite_enabled !== false,
         createdAt: toMs(chat.created_at),
       };
     }
@@ -350,7 +418,21 @@ async function loadLinkSnapshot(base, userId) {
   }
 
   const signedMoments = await Promise.all((momentsQ.data || []).map(m => signedMomentUrl(m.image_url)));
-  const moments = (momentsQ.data || []).map((m,i) => ({ id:m.id, ownerId:m.owner_id, imageUri:signedMoments[i], caption:m.caption || '', emoji:m.emoji, createdAt:toMs(m.created_at), expiresAt:toMs(m.expires_at) }));
+  const momentReactions = {};
+  for (const row of momentReactionsQ.data || []) {
+    if (!momentReactions[row.moment_id]) momentReactions[row.moment_id] = [];
+    momentReactions[row.moment_id].push({ userId:row.user_id, emoji:row.emoji, createdAt:toMs(row.created_at) });
+  }
+  const momentViewers = {};
+  for (const row of momentViewsQ.data || []) {
+    if (!momentViewers[row.moment_id]) momentViewers[row.moment_id] = [];
+    momentViewers[row.moment_id].push(row.user_id);
+  }
+  const moments = (momentsQ.data || []).map((m,i) => ({
+    id:m.id, ownerId:m.owner_id, imageUri:signedMoments[i], caption:m.caption || '', emoji:m.emoji,
+    createdAt:toMs(m.created_at), expiresAt:toMs(m.expires_at), reactions:momentReactions[m.id] || [],
+    viewerIds:momentViewers[m.id] || [], viewCount:(momentViewers[m.id] || []).length,
+  }));
   const notes = (notesQ.data || []).map(n => ({ id:n.id, ownerId:n.owner_id, text:n.text, emoji:n.emoji, audience:n.audience, createdAt:toMs(n.created_at), expiresAt:toMs(n.expires_at) }));
   const settings = settingsQ.data || {};
   const ent = entitlementsQ.data || {};
@@ -448,6 +530,8 @@ function subscribeLink(userId, onChange) {
     .on('postgres_changes',{event:'*',schema:'public',table:'message_pins'},kick)
     .on('postgres_changes',{event:'*',schema:'public',table:'chat_user_settings'},kick)
     .on('postgres_changes',{event:'*',schema:'public',table:'moments'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'moment_reactions'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'moment_views'},kick)
     .on('postgres_changes',{event:'*',schema:'public',table:'notes'},kick)
     .on('postgres_changes',{event:'*',schema:'public',table:'notifications'},kick)
     .on('postgres_changes',{event:'*',schema:'public',table:'moderation'},kick)
@@ -647,6 +731,66 @@ async function subscribeChatSignals(chatId, onSignal) {
     sendTyping: (typing) => channel.send({type:'broadcast',event:'typing',payload:{userId,typing:!!typing,at:Date.now()}}),
     close: () => supabase.removeChannel(channel),
   };
+}
+
+async function rotateGroupInviteRemote(chatId) {
+  const { data,error } = await supabase.rpc('rotate_group_invite',{p_chat_id:chatId});
+  if (error) throw error;
+  return data;
+}
+
+async function setGroupInviteEnabledRemote(chatId, enabled) {
+  const { error } = await supabase.rpc('set_group_invite_enabled',{p_chat_id:chatId,p_enabled:!!enabled});
+  if (error) throw error;
+}
+
+async function joinGroupByInviteRemote(code) {
+  const { data,error } = await supabase.rpc('join_group_by_invite',{p_code:String(code || '').trim()});
+  if (error) throw error;
+  return data;
+}
+
+async function setGroupMemberRoleRemote(chatId, userId, role) {
+  const { error } = await supabase.rpc('set_group_member_role',{p_chat_id:chatId,p_user_id:userId,p_role:role});
+  if (error) throw error;
+}
+
+async function removeGroupMemberRemote(chatId, userId) {
+  const { error } = await supabase.rpc('remove_group_member',{p_chat_id:chatId,p_user_id:userId});
+  if (error) throw error;
+}
+
+async function transferGroupOwnerRemote(chatId, userId) {
+  const { error } = await supabase.rpc('transfer_group_owner',{p_chat_id:chatId,p_user_id:userId});
+  if (error) throw error;
+}
+
+async function leaveGroupRemote(chatId) {
+  const { error } = await supabase.rpc('leave_group',{p_chat_id:chatId});
+  if (error) throw error;
+}
+
+async function setGroupAvatarRemote(chatId, avatarUrl) {
+  const { error } = await supabase.rpc('set_group_avatar',{p_chat_id:chatId,p_avatar_url:avatarUrl || null});
+  if (error) throw error;
+}
+
+async function viewMomentRemote(momentId) {
+  const { error } = await supabase.rpc('view_moment',{p_moment_id:momentId});
+  if (error) throw error;
+}
+
+async function reactMomentRemote(momentId, emoji) {
+  const { data: auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) throw new Error('Not signed in');
+  const { error } = await supabase.from('moment_reactions').upsert({moment_id:momentId,user_id:userId,emoji},{onConflict:'moment_id,user_id'});
+  if (error) throw error;
+}
+
+async function notifyChatMentionRemote(chatId, userId) {
+  const { error } = await supabase.rpc('notify_chat_mention',{p_chat_id:chatId,p_mentioned_user:userId});
+  if (error) throw error;
 }
 
 async function reactMessageRemote(messageId, emoji) {
@@ -867,7 +1011,7 @@ function BackendGate({ children }) {
             <View style={backendStyles.liveDot}/>
           </View>
 
-          <Text style={backendStyles.foot}>LINK 1.3.1 · Pro Benefits · Backend Beta</Text>
+          <Text style={backendStyles.foot}>LINK 2.0 · Major Update · Backend Beta</Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -896,7 +1040,15 @@ const STORAGE_KEY = '@link_live_backend_v18';
 const DRAFT_PREFIX = '@link_chat_draft_v1';
 const ACCENT = '#6C5CE7';
 const EMPTY_MESSAGES = Object.freeze([]);
-const BUILD = 'LINK 1.3.1 · Pro Benefits';
+const BUILD = 'LINK 2.0 · Major Update';
+
+function NetflixWordmark({ width = 112, height = 31, style }) {
+  return (
+    <Svg width={width} height={height} viewBox="0 0 1024 276.742" style={style} accessibilityLabel="Netflix">
+      <Path fill="#E50914" d="M140.803 258.904c-15.404 2.705-31.079 3.516-47.294 5.676l-49.458-144.856v151.073c-15.404 1.621-29.457 3.783-44.051 5.945v-276.742h41.08l56.212 157.021v-157.021h43.511v258.904zm85.131-157.558c16.757 0 42.431-.811 57.835-.811v43.24c-19.189 0-41.619 0-57.835.811v64.322c25.405-1.621 50.809-3.785 76.482-4.596v41.617l-119.724 9.461v-255.39h119.724v43.241h-76.482v58.105zm237.284-58.104h-44.862v198.908c-14.594 0-29.188 0-43.239.539v-199.447h-44.862v-43.242h132.965l-.002 43.242zm70.266 55.132h59.187v43.24h-59.187v98.104h-42.433v-239.718h120.808v43.241h-78.375v55.133zm148.641 103.507c24.594.539 49.456 2.434 73.51 3.783v42.701c-38.646-2.434-77.293-4.863-116.75-5.676v-242.689h43.24v201.881zm109.994 49.457c13.783.812 28.377 1.623 42.43 3.242v-254.58h-42.43v251.338zm231.881-251.338l-54.863 131.615 54.863 145.127c-16.217-2.162-32.432-5.135-48.648-7.838l-31.078-79.994-31.617 73.51c-15.678-2.705-30.812-3.516-46.484-5.678l55.672-126.75-50.269-129.992h46.482l28.377 72.699 30.27-72.699h47.295z" />
+    </Svg>
+  );
+}
 
 function QRCode({ value, size = 170, color = '#0E0F12', backgroundColor = '#FFFFFF' }) {
   const qr = useMemo(() => {
@@ -1461,7 +1613,7 @@ function PersonRow({ person, theme, onPress, onChat, unread = 0, favorite = fals
   );
 }
 
-function HomeScreen({ theme, activeProfile, connectedProfiles, conversations, activeId, requests, notifications, moments, notes, profiles, favorites, favoriteIds, openOwnCard, openScanner, openChat, openAccountSwitcher, openNotifications, onAccept, onDecline, onCreateMoment, onOpenMoment, onOwnNote, onOpenNote, setTab }) {
+function HomeScreen({ theme, activeProfile, connectedProfiles, conversations, activeId, requests, notifications, moments, notes, profiles, favorites, favoriteIds, openOwnCard, openScanner, openChat, openAccountSwitcher, openNotifications, onAccept, onDecline, onCreateMoment, onOpenMoment, onOwnNote, onOpenNote, setTab, openWhatsNew, activePro, benefitClaim, openPro }) {
   const unreadNotifs = (notifications[activeId] || []).filter(n => !n.read && !['message','group_message'].includes(n.type)).length;
   const visibleMomentOwners = [activeId, ...connectedProfiles.map(p => p.id)];
   const unreadFor = (personId) => (conversations[threadKey(activeId, personId)] || []).filter(m => !(m.seenBy || m.readBy || []).includes(activeId) && m.senderId !== activeId).length;
@@ -1474,7 +1626,7 @@ function HomeScreen({ theme, activeProfile, connectedProfiles, conversations, ac
       </View>
 
       <View style={[styles.heroCard, { backgroundColor: theme.card, borderColor: theme.border }]}> 
-        <View style={styles.rowBetween}><Pill theme={theme} tone="accent">{BUILD}</Pill><Ionicons name="sparkles" size={19} color={ACCENT} /></View>
+        <View style={styles.rowBetween}><View style={styles.versionRow}><Pill theme={theme} tone="accent">{BUILD}</Pill><Pressable onPress={openWhatsNew} style={[styles.versionInfoButton,{backgroundColor:theme.soft,borderColor:theme.border}]}><Ionicons name="information-circle-outline" size={14} color={theme.text}/><Text style={[styles.versionInfoText,{color:theme.text}]}>Version info</Text></Pressable></View><Ionicons name="sparkles" size={19} color={ACCENT} /></View>
         <Text style={[styles.heroHeadline, { color: theme.text }]}>Meet IRL.{`\n`}Stay connected.</Text>
         <Text style={[styles.heroBody, { color: theme.sub }]}>LINK people you actually meet, then keep the conversation going without random DMs.</Text>
         <View style={styles.heroActions}>
@@ -1482,6 +1634,12 @@ function HomeScreen({ theme, activeProfile, connectedProfiles, conversations, ac
           <Pressable onPress={openScanner} style={[styles.secondaryButton, { backgroundColor: theme.soft }]}><Ionicons name="scan" size={20} color={theme.text} /></Pressable>
         </View>
       </View>
+
+      <Pressable onPress={openPro} style={[styles.homeNetflixBanner,{backgroundColor:'#0B0B0D',borderColor:'rgba(229,9,20,.28)'}]}>
+        <View style={styles.homeNetflixLogoWrap}><NetflixWordmark width={88} height={24}/></View>
+        <View style={{flex:1,minWidth:0}}><View style={styles.inlineNameRow}><Text style={styles.homeNetflixTitle}>3 months free</Text><View style={styles.homeProMini}><Text style={styles.homeProMiniText}>PRO</Text></View></View><Text numberOfLines={1} style={styles.homeNetflixSub}>{benefitClaim?'Reserved':activePro?'LINK Pro benefit':'Unlock with LINK Pro'}</Text></View>
+        <Ionicons name="chevron-forward" size={18} color="rgba(255,255,255,.55)"/>
+      </Pressable>
 
       <SectionTitle theme={theme} action="Add note" onAction={() => onOwnNote(notes.find(n => n.ownerId === activeId && (n.expiresAt || 0) > Date.now()))}>Notes</SectionTitle>
       <NotesStrip theme={theme} activeProfile={activeProfile} connectedProfiles={connectedProfiles} notes={notes} favorites={favorites} onOwnNote={onOwnNote} onOpenNote={onOpenNote} />
@@ -1616,6 +1774,9 @@ function LinkScreen({ theme, activeProfile, payload, localProfiles, relationship
 }
 
 function GroupAvatar({ group, profiles, theme, size = 52 }) {
+  if (group?.avatarUrl) {
+    return <View style={[styles.groupAvatarFallback,{width:size,height:size,borderRadius:size/2,backgroundColor:theme.soft,overflow:'hidden'}]}><Image source={{uri:group.avatarUrl}} style={{width:size,height:size}} resizeMode="cover" /></View>;
+  }
   const members = (group?.memberIds || []).map(id => profiles[id]).filter(Boolean).slice(0, 3);
   if (!members.length) return <View style={[styles.groupAvatarFallback, { width: size, height: size, borderRadius: size / 2, backgroundColor: theme.soft }]}><Ionicons name="people" size={Math.round(size * .42)} color={theme.text} /></View>;
   const mini = Math.round(size * .58);
@@ -1623,7 +1784,7 @@ function GroupAvatar({ group, profiles, theme, size = 52 }) {
   return <View style={[styles.groupAvatarStack, { width: size, height: size }]}>{members.map((person, i) => <View key={person.id} style={[styles.groupAvatarMini, offsets[i], { borderColor: theme.bg }]}><Avatar person={person} size={mini} theme={theme} /></View>)}</View>;
 }
 
-function ChatsScreen({ theme, activeId, profiles, connectedIds, conversations, favoriteIds, groups = {}, chatUserSettings = {}, openChat, openGroup, onCreateGroup }) {
+function ChatsScreen({ theme, activeId, profiles, connectedIds, conversations, favoriteIds, groups = {}, chatUserSettings = {}, openChat, openGroup, onCreateGroup, onJoinGroup }) {
   const [showArchived,setShowArchived]=useState(false);
   const directRows = connectedIds.map(id => {
     const person = profiles[id];
@@ -1647,7 +1808,7 @@ function ChatsScreen({ theme, activeId, profiles, connectedIds, conversations, f
 
   return (
     <View style={styles.flexOne}>
-      <View style={styles.simpleHeader}><View style={{ flex: 1 }}><Text style={[styles.bigTitle, { color: theme.text }]}>{showArchived?'Archived':'Chats'}</Text><Text style={[styles.headerSub, { color: theme.sub }]}>Direct + group chats · encrypted by default.</Text></View>{archivedCount?<Pressable onPress={()=>setShowArchived(v=>!v)} style={[styles.newGroupButton,{backgroundColor:theme.soft,marginRight:7}]}><Ionicons name={showArchived?'chatbubbles':'archive'} size={15} color={theme.text}/><Text style={{color:theme.text,fontWeight:'900',fontSize:11}}>{showArchived?'Inbox':archivedCount}</Text></Pressable>:null}<Pressable onPress={onCreateGroup} style={[styles.newGroupButton, { backgroundColor: theme.inverse }]}><Ionicons name="people" size={16} color={theme.inverseText} /><Text style={{ color: theme.inverseText, fontWeight: '900', fontSize: 11 }}>New group</Text></Pressable></View>
+      <View style={styles.simpleHeader}><View style={{ flex: 1 }}><Text style={[styles.bigTitle, { color: theme.text }]}>{showArchived?'Archived':'Chats'}</Text><Text style={[styles.headerSub, { color: theme.sub }]}>Direct + group chats · encrypted by default.</Text></View>{archivedCount?<Pressable onPress={()=>setShowArchived(v=>!v)} style={[styles.newGroupButton,{backgroundColor:theme.soft,marginRight:7}]}><Ionicons name={showArchived?'chatbubbles':'archive'} size={15} color={theme.text}/><Text style={{color:theme.text,fontWeight:'900',fontSize:11}}>{showArchived?'Inbox':archivedCount}</Text></Pressable>:null}<Pressable onPress={onJoinGroup} style={[styles.newGroupButton,{backgroundColor:theme.soft,marginRight:7}]}><Ionicons name="enter-outline" size={15} color={theme.text}/><Text style={{color:theme.text,fontWeight:'900',fontSize:11}}>Join</Text></Pressable><Pressable onPress={onCreateGroup} style={[styles.newGroupButton, { backgroundColor: theme.inverse }]}><Ionicons name="people" size={16} color={theme.inverseText} /><Text style={{ color: theme.inverseText, fontWeight: '900', fontSize: 11 }}>New group</Text></Pressable></View>
       <FlatList data={rows} keyExtractor={x => `${x.type}_${x.id}`} contentContainerStyle={styles.listPad} showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
           <Pressable onPress={() => item.type === 'group' ? openGroup(item.group) : openChat(item.person)} style={({ pressed }) => [styles.chatRow, { borderBottomColor: theme.border, opacity: pressed ? .72 : 1 }]}>
@@ -1684,12 +1845,30 @@ function CreateGroupModal({ visible, onClose, theme, activeProfile, profiles, co
 }
 
 
-function GroupInfoModal({ visible, onClose, theme, group, profiles, activeId, onRename, onToggleEveryone }) {
+function JoinGroupModal({ visible, onClose, theme, onJoin }) {
+  const [code,setCode]=useState('');
+  const [loading,setLoading]=useState(false);
+  useEffect(()=>{ if(visible){setCode('');setLoading(false);} },[visible]);
+  const submit=async()=>{
+    const clean=code.trim().toLowerCase();
+    if(!clean) return Alert.alert('Invite code','Enter the invite code first.');
+    setLoading(true);
+    try { await onJoin?.(clean); onClose(); }
+    catch(error){ Alert.alert('Could not join group',error?.message || 'Check the invite code and try again.'); }
+    finally { setLoading(false); }
+  };
+  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><EdgeSwipeBack onBack={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.joinGroupCard,{backgroundColor:theme.card,borderColor:theme.border}]} onPress={()=>{}}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle,{color:theme.text}]}>Join group</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>Enter a LINK group invite code.</Text></View><IconButton icon="close" onPress={onClose} theme={theme}/></View><View style={[styles.groupNameInputWrap,{backgroundColor:theme.input,borderColor:theme.border,marginTop:18}]}><Ionicons name="key-outline" size={18} color={theme.sub}/><TextInput value={code} onChangeText={setCode} autoCapitalize="none" autoCorrect={false} placeholder="Invite code" placeholderTextColor={theme.sub} style={[styles.groupNameInput,{color:theme.text}]} returnKeyType="go" onSubmitEditing={submit}/></View><Pressable disabled={loading} onPress={submit} style={[styles.groupCreateButton,{backgroundColor:theme.inverse,opacity:loading ? .65 : 1}]}>{loading?<ActivityIndicator color={theme.inverseText}/>:<><Ionicons name="enter" size={18} color={theme.inverseText}/><Text style={{color:theme.inverseText,fontWeight:'900'}}>Join group</Text></>}</Pressable></Pressable></Pressable></EdgeSwipeBack></Modal>;
+}
+
+
+function GroupInfoModal({ visible, onClose, theme, group, profiles, activeId, onRename, onToggleEveryone, onPickAvatar, onRotateInvite, onToggleInvite, onSetRole, onRemoveMember, onTransferOwner, onLeave }) {
   const [draftName, setDraftName] = useState(group?.name || '');
   useEffect(() => { if (visible) setDraftName(group?.name || ''); }, [visible, group?.name]);
   if (!group) return null;
-  const isOwner = group.ownerId === activeId;
-  const canEditName = isOwner || !!group.everyoneCanEditName;
+  const myRole = group.memberRoles?.[activeId] || (group.ownerId === activeId ? 'owner' : 'member');
+  const isOwner = myRole === 'owner';
+  const canManage = myRole === 'owner' || myRole === 'admin';
+  const canEditName = canManage || !!group.everyoneCanEditName;
   const owner = profiles[group.ownerId];
   const members = (group.memberIds || []).map(id => profiles[id]).filter(Boolean);
   const saveName = () => {
@@ -1698,72 +1877,50 @@ function GroupInfoModal({ visible, onClose, theme, group, profiles, activeId, on
     if (!clean) return Alert.alert('Group name required', 'Enter a name for this group.');
     onRename?.(clean);
   };
+  const shareInvite = async () => {
+    if (!group.inviteCode) return onRotateInvite?.();
+    try { await Share.share({ message:`LINK Group · ${group.name}\nInvite code: ${group.inviteCode}` }); } catch {}
+  };
+  const manageMember = (person) => {
+    if (!canManage || person.id === activeId) return;
+    const role = group.memberRoles?.[person.id] || (person.id===group.ownerId?'owner':'member');
+    if (role === 'owner') return;
+    const actions=[];
+    if (isOwner) actions.push({text:role==='admin'?'Remove admin':'Make admin',onPress:()=>onSetRole?.(person.id,role==='admin'?'member':'admin')});
+    if (isOwner) actions.push({text:'Transfer ownership',onPress:()=>Alert.alert('Transfer ownership?',`${person.name} will become the group owner.`,[{text:'Cancel',style:'cancel'},{text:'Transfer',style:'destructive',onPress:()=>onTransferOwner?.(person.id)}])});
+    if (!(myRole==='admin' && role==='admin')) actions.push({text:'Remove from group',style:'destructive',onPress:()=>Alert.alert('Remove from group?',`${person.name} will lose access to this conversation.`,[{text:'Cancel',style:'cancel'},{text:'Remove',style:'destructive',onPress:()=>onRemoveMember?.(person.id)}])});
+    actions.push({text:'Cancel',style:'cancel'});
+    Alert.alert(person.name,role==='admin'?'Group admin':'Group member',actions);
+  };
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <EdgeSwipeBack onBack={onClose}>
       <View style={styles.modalBackdrop}>
-        <View style={[styles.groupInfoCard, { backgroundColor: theme.card }]}>
-          <View style={styles.rowBetween}>
-            <View style={{ flex: 1, paddingRight: 10 }}>
-              <Text style={[styles.sheetTitle, { color: theme.text }]}>Group settings</Text>
-              <Text style={[styles.sheetSub, { color: theme.sub }]}>Manage the conversation and group name.</Text>
+        <View style={[styles.groupInfoCard, { backgroundColor: theme.card }]}> 
+          <View style={styles.rowBetween}><View style={{flex:1,paddingRight:10}}><Text style={[styles.sheetTitle,{color:theme.text}]}>Group settings</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>Admins, invites, members and group identity.</Text></View><IconButton icon="close" onPress={onClose} theme={theme}/></View>
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom:8}}>
+            <View style={styles.groupInfoHero}>
+              <Pressable disabled={!canManage} onPress={onPickAvatar} style={styles.groupAvatarEdit}><GroupAvatar group={group} profiles={profiles} theme={theme} size={72}/>{canManage?<View style={styles.groupAvatarEditBadge}><Ionicons name="camera" size={13} color="#fff"/></View>:null}</Pressable>
+              <View style={{flex:1,minWidth:0}}><Text numberOfLines={1} style={[styles.groupInfoTitle,{color:theme.text}]}>{group.name}</Text><Text style={[styles.groupInfoSub,{color:theme.sub}]}>{members.length} members · {myRole==='owner'?'Owner':myRole==='admin'?'Admin':'Member'}</Text></View>
             </View>
-            <IconButton icon="close" onPress={onClose} theme={theme} />
-          </View>
 
-          <View style={styles.groupInfoHero}>
-            <GroupAvatar group={group} profiles={profiles} theme={theme} size={66} />
-            <View style={{ flex: 1, minWidth: 0 }}>
-              <Text numberOfLines={1} style={[styles.groupInfoTitle, { color: theme.text }]}>{group.name}</Text>
-              <Text style={[styles.groupInfoSub, { color: theme.sub }]}>{members.length} members · Created by {owner?.name || 'LINK member'}</Text>
-            </View>
-          </View>
+            <Text style={[styles.groupPickerLabel,{color:theme.text}]}>Group name</Text>
+            <View style={[styles.groupNameInputWrap,{backgroundColor:theme.input,borderColor:canEditName?theme.border:'transparent',opacity:canEditName?1:.72}]}><Ionicons name="chatbubbles-outline" size={18} color={theme.sub}/><TextInput value={draftName} onChangeText={setDraftName} editable={canEditName} placeholder="Group name" placeholderTextColor={theme.sub} style={[styles.groupNameInput,{color:theme.text}]} maxLength={42} returnKeyType="done" onSubmitEditing={saveName}/>{canEditName?<Pressable onPress={saveName} style={[styles.groupNameSave,{backgroundColor:theme.inverse}]}><Text style={{color:theme.inverseText,fontWeight:'900',fontSize:11}}>Save</Text></Pressable>:<Ionicons name="lock-closed" size={16} color={theme.sub}/>}</View>
 
-          <Text style={[styles.groupPickerLabel, { color: theme.text }]}>Group name</Text>
-          <View style={[styles.groupNameInputWrap, { backgroundColor: theme.input, borderColor: canEditName ? theme.border : 'transparent', opacity: canEditName ? 1 : .72 }]}>
-            <Ionicons name="chatbubbles-outline" size={18} color={theme.sub} />
-            <TextInput
-              value={draftName}
-              onChangeText={setDraftName}
-              editable={canEditName}
-              placeholder="Group name"
-              placeholderTextColor={theme.sub}
-              style={[styles.groupNameInput, { color: theme.text }]}
-              maxLength={42}
-              returnKeyType="done"
-              onSubmitEditing={saveName}
-            />
-            {canEditName ? <Pressable onPress={saveName} style={[styles.groupNameSave, { backgroundColor: theme.inverse }]}><Text style={{ color: theme.inverseText, fontWeight: '900', fontSize: 11 }}>Save</Text></Pressable> : <Ionicons name="lock-closed" size={16} color={theme.sub} />}
-          </View>
-          {!canEditName ? <Text style={[styles.groupPermissionHint, { color: theme.sub }]}>Only the group creator can change the name.</Text> : null}
+            {isOwner?<View style={[styles.groupPermissionCard,{backgroundColor:theme.soft,borderColor:theme.border}]}><View style={[styles.groupPermissionIcon,{backgroundColor:theme.card}]}><Ionicons name="people-outline" size={19} color={theme.text}/></View><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>Everyone</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{group.everyoneCanEditName?'Every member can change the group name.':'Only admins can manage the group name.'}</Text></View><Switch value={!!group.everyoneCanEditName} onValueChange={onToggleEveryone} trackColor={{false:theme.border,true:ACCENT}}/></View>:null}
 
-          <View style={[styles.groupPermissionCard, { backgroundColor: theme.soft, borderColor: theme.border }]}>
-            <View style={[styles.groupPermissionIcon, { backgroundColor: theme.card }]}><Ionicons name="people-outline" size={19} color={theme.text} /></View>
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.settingsTitle, { color: theme.text }]}>Everyone</Text>
-              <Text style={[styles.settingsSub, { color: theme.sub }]}>{group.everyoneCanEditName ? 'Every member can change the group name.' : 'Only the creator can change the group name.'}</Text>
-            </View>
-            <Switch
-              disabled={!isOwner}
-              value={!!group.everyoneCanEditName}
-              onValueChange={onToggleEveryone}
-              trackColor={{ false: theme.border, true: ACCENT }}
-            />
-          </View>
-          {!isOwner ? <Text style={[styles.groupPermissionHint, { color: theme.sub }]}>Only {owner?.name || 'the creator'} can change this permission.</Text> : null}
+            <Text style={[styles.groupPickerLabel,{color:theme.text}]}>Invite link</Text>
+            <View style={[styles.groupInviteCard,{backgroundColor:theme.soft,borderColor:theme.border}]}><View style={[styles.groupPermissionIcon,{backgroundColor:theme.card}]}><Ionicons name="link-outline" size={19} color={theme.text}/></View><View style={{flex:1,minWidth:0}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{group.inviteCode || 'No invite yet'}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{group.inviteEnabled?'Anyone with this code can request to join instantly.':'This invite is disabled.'}</Text></View>{canManage?<Pressable onPress={group.inviteCode?shareInvite:onRotateInvite} style={[styles.groupMiniButton,{backgroundColor:theme.card}]}><Ionicons name={group.inviteCode?'share-outline':'add'} size={17} color={theme.text}/></Pressable>:null}</View>
+            {canManage?<View style={styles.groupAdminActions}><Pressable onPress={onRotateInvite} style={[styles.groupAdminAction,{backgroundColor:theme.soft}]}><Ionicons name="refresh-outline" size={16} color={theme.text}/><Text style={{color:theme.text,fontWeight:'800',fontSize:11}}>{group.inviteCode?'Rotate invite':'Generate invite'}</Text></Pressable><Pressable onPress={()=>onToggleInvite?.(!group.inviteEnabled)} style={[styles.groupAdminAction,{backgroundColor:theme.soft}]}><Ionicons name={group.inviteEnabled?'pause-circle-outline':'play-circle-outline'} size={16} color={theme.text}/><Text style={{color:theme.text,fontWeight:'800',fontSize:11}}>{group.inviteEnabled?'Disable invite':'Enable invite'}</Text></Pressable></View>:null}
 
-          <Text style={[styles.groupPickerLabel, { color: theme.text }]}>Members</Text>
-          <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 270 }}>
-            {members.map(person => <View key={person.id} style={[styles.groupMemberRow, { borderBottomColor: theme.border }]}>
-              <Avatar person={person} size={42} theme={theme} />
-              <View style={{ flex: 1, minWidth: 0 }}>
-                <Text numberOfLines={1} style={[styles.personName, { color: theme.text }]}>{person.name}</Text>
-                <Text numberOfLines={1} style={[styles.personSub, { color: theme.sub }]}>{person.username}</Text>
-              </View>
-              {person.id === group.ownerId ? <View style={[styles.ownerPill, { backgroundColor: theme.soft }]}><Text style={[styles.ownerPillText, { color: theme.text }]}>Creator</Text></View> : null}
-            </View>)}
+            <Text style={[styles.groupPickerLabel,{color:theme.text}]}>Members</Text>
+            <View>{members.map(person=>{const role=group.memberRoles?.[person.id] || (person.id===group.ownerId?'owner':'member');return <Pressable disabled={!canManage||person.id===activeId} onPress={()=>manageMember(person)} key={person.id} style={[styles.groupMemberRow,{borderBottomColor:theme.border}]}><Avatar person={person} size={42} theme={theme}/><View style={{flex:1,minWidth:0}}><Text numberOfLines={1} style={[styles.personName,{color:theme.text}]}>{person.name}</Text><Text numberOfLines={1} style={[styles.personSub,{color:theme.sub}]}>{person.username}</Text></View>{role==='owner'?<View style={[styles.ownerPill,{backgroundColor:theme.soft}]}><Text style={[styles.ownerPillText,{color:theme.text}]}>Creator</Text></View>:role==='admin'?<View style={[styles.ownerPill,{backgroundColor:'rgba(108,92,231,.14)'}]}><Text style={[styles.ownerPillText,{color:ACCENT}]}>Admin</Text></View>:null}{canManage&&person.id!==activeId?<Ionicons name="ellipsis-horizontal" size={18} color={theme.sub}/>:null}</Pressable>;})}</View>
+
+            <Pressable onPress={()=>Alert.alert('Leave group?',isOwner&&members.length>1?'Transfer ownership before leaving this group.':'You will stop receiving messages from this group.',[{text:'Cancel',style:'cancel'},{text:'Leave group',style:'destructive',onPress:onLeave}])} style={[styles.groupLeaveButton,{borderColor:theme.border}]}><Ionicons name="exit-outline" size={18} color={theme.danger}/><Text style={{color:theme.danger,fontWeight:'900'}}>Leave group</Text></Pressable>
           </ScrollView>
         </View>
       </View>
+      </EdgeSwipeBack>
     </Modal>
   );
 }
@@ -1802,7 +1959,7 @@ function SettingsHubModal({ visible, onClose, theme, profile, accountEmail, priv
   const patch = (next) => setPrivacy({ ...privacy, ...next });
   const shortId = profile.id ? `${profile.id.slice(0,8)}…${profile.id.slice(-4)}` : '—';
   return <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-    <SafeAreaView style={{flex:1,backgroundColor:theme.bg}}>
+    <EdgeSwipeBack onBack={onClose}><SafeAreaView style={{flex:1,backgroundColor:theme.bg}}>
       <View style={[styles.settingsHubHeader,{borderBottomColor:theme.border}]}><IconButton icon="chevron-back" onPress={onClose} theme={theme}/><View style={{flex:1}}><Text style={[styles.sheetTitle,{color:theme.text}]}>Settings</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>Privacy, account and LINK preferences</Text></View></View>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.settingsHubScroll}>
         <SectionTitle theme={theme}>Active status</SectionTitle>
@@ -1859,9 +2016,9 @@ function SettingsHubModal({ visible, onClose, theme, profile, accountEmail, priv
 
         <SectionTitle theme={theme}>Account</SectionTitle>
         <Pressable onPress={onSignOut} style={[styles.settingsDangerCard,{backgroundColor:theme.card,borderColor:theme.border}]}><Ionicons name="log-out-outline" size={20} color={theme.danger}/><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.danger}]}>Sign out</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Use another LINK account on this device.</Text></View></Pressable>
-        <Text style={[styles.settingHint,{color:theme.sub,textAlign:'center',marginTop:14}]}>LINK 1.3 · language, messaging and privacy preferences sync through LINK Production.</Text>
+        <Text style={[styles.settingHint,{color:theme.sub,textAlign:'center',marginTop:14}]}>LINK 2.0 · preferences sync through LINK Production.</Text>
       </ScrollView>
-    </SafeAreaView>
+    </SafeAreaView></EdgeSwipeBack>
   </Modal>;
 }
 
@@ -2011,10 +2168,19 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
   const outgoingTheme = chatTheme || CHAT_THEMES[0];
   const outgoingText = outgoingTheme.textColor || '#FFFFFF';
   const overlayColor = outgoingText === '#FFFFFF' ? 'rgba(255,255,255,.16)' : 'rgba(0,0,0,.08)';
+  const swipeX = useRef(new Animated.Value(0)).current;
   const replyGesture = useMemo(() => PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gesture) => Math.abs(gesture.dx) > 8 && gesture.dx > 0 && Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.35,
-    onPanResponderRelease: (_, gesture) => { if (gesture.dx > 54 && Math.abs(gesture.dy) < 70) onSwipeReply?.(); },
-  }), [onSwipeReply]);
+    onMoveShouldSetPanResponder: (_, gesture) => gesture.dx > 7 && Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.45,
+    onPanResponderGrant: () => swipeX.stopAnimation(),
+    onPanResponderMove: (_, gesture) => swipeX.setValue(Math.max(0, Math.min(76, gesture.dx))),
+    onPanResponderTerminationRequest: () => false,
+    onPanResponderRelease: (_, gesture) => {
+      const shouldReply = gesture.dx > 46 && Math.abs(gesture.dy) < 68;
+      Animated.spring(swipeX,{toValue:0,useNativeDriver:true,speed:22,bounciness:4}).start();
+      if (shouldReply) onSwipeReply?.();
+    },
+    onPanResponderTerminate: () => Animated.spring(swipeX,{toValue:0,useNativeDriver:true}).start(),
+  }), [onSwipeReply, swipeX]);
 
   const content = (
     <>
@@ -2047,7 +2213,9 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
   ) : null;
 
   return (
-    <View {...replyGesture.panHandlers} style={[styles.messageLine, groupMode && styles.groupMessageLine, { justifyContent: mine ? 'flex-end' : 'flex-start' }]}>
+    <View style={styles.swipeReplyShell} {...replyGesture.panHandlers}>
+      <View pointerEvents="none" style={[styles.swipeReplyCue,{backgroundColor:theme.soft}]}><Ionicons name="arrow-undo" size={17} color={ACCENT}/></View>
+      <Animated.View style={[styles.messageLine, groupMode && styles.groupMessageLine, { justifyContent: mine ? 'flex-end' : 'flex-start', transform:[{translateX:swipeX}] }]}>
       {groupMode && !mine ? avatarSlot : null}
       <View style={[styles.messageStack, groupMode && styles.groupMessageStack, { alignItems: mine ? 'flex-end' : 'flex-start' }]}>
         {groupMode && showSender ? <Text style={[styles.groupSenderName, mine && styles.groupSenderNameMine, { color: theme.sub }]}>{mine ? 'You' : (sender?.name || 'LINK member')}</Text> : null}
@@ -2070,11 +2238,12 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
         </View> : <View style={styles.groupMessageTightSpacer} />}
       </View>
       {groupMode && mine ? avatarSlot : null}
+      </Animated.View>
     </View>
   );
 }
 
-function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, typingEnabled = true, onBack, onSend, onReact, onEdit, onDeleteForMe, onDeleteEveryone, onPin, onForward, onOpenProfile, markRead, silentConfig, onOpenSilent, onOpenEncryptionInfo, chatThemeId = 'default', chatThemeScope = 'messages', onOpenTheme, chatPrefs = {}, onSavePrefs, isGroup = false, group = null, groupMembers = [], onRenameGroup, onToggleGroupEveryone, doubleTapEmoji = '❤️' }) {
+function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, typingEnabled = true, onBack, onSend, onReact, onEdit, onDeleteForMe, onDeleteEveryone, onPin, onForward, onOpenProfile, markRead, silentConfig, onOpenSilent, onOpenEncryptionInfo, chatThemeId = 'default', chatThemeScope = 'messages', onOpenTheme, chatPrefs = {}, onSavePrefs, isGroup = false, group = null, groupMembers = [], onRenameGroup, onToggleGroupEveryone, onPickGroupAvatar, onRotateGroupInvite, onToggleGroupInvite, onSetGroupRole, onRemoveGroupMember, onTransferGroupOwner, onLeaveGroup, doubleTapEmoji = '❤️' }) {
   const [text, setText] = useState('');
   const [replyTo, setReplyTo] = useState(null);
   const [editTarget, setEditTarget] = useState(null);
@@ -2152,6 +2321,15 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
     } catch { Alert.alert('Photo', 'Could not open your photo library.'); }
   };
 
+  const mentionMatch = isGroup ? text.match(/(?:^|\s)@([a-z0-9_.]*)$/i) : null;
+  const mentionQuery = mentionMatch?.[1]?.toLowerCase() || '';
+  const mentionSuggestions = mentionMatch ? groupMembers.filter(member => member.id !== activeProfile.id && (!mentionQuery || String(member.username || '').toLowerCase().includes(mentionQuery) || String(member.name || '').toLowerCase().includes(mentionQuery))).slice(0,5) : [];
+  const insertMention = (member) => {
+    const handle=member?.username || '';
+    if (!handle) return;
+    setText(prev => prev.replace(/@[a-z0-9_.]*$/i, `${handle} `));
+  };
+
   const longPress = (m) => {
     const mine = m.senderId === activeProfile.id;
     const buttons = [
@@ -2175,7 +2353,7 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
           <BlurView intensity={Platform.OS === 'ios' ? 42 : 28} tint={theme.bg === dark.bg ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
           <View style={styles.chatHeaderSide}><IconButton icon="chevron-back" onPress={onBack} theme={theme} /></View>
           <Pressable onPress={() => isGroup ? setGroupInfoOpen(true) : onOpenProfile(person)} style={styles.chatHeaderPersonCenter}>
-            {isGroup ? <GroupAvatar group={{ memberIds: groupMembers.map(p => p.id) }} profiles={profiles} theme={theme} size={34} /> : <Avatar person={person} size={34} theme={theme} />}
+            {isGroup ? <GroupAvatar group={group || { memberIds: groupMembers.map(p => p.id) }} profiles={profiles} theme={theme} size={34} /> : <Avatar person={person} size={34} theme={theme} />}
             <View style={styles.chatHeaderIdentity}><Text numberOfLines={1} style={[styles.chatHeaderName, { color: theme.text }]}>{person.name}</Text><Ionicons name="chevron-down" size={12} color={theme.sub} /></View>
           </Pressable>
           <View style={[styles.chatHeaderSide, styles.chatHeaderRight]}><IconButton icon="color-palette-outline" onPress={onOpenTheme} theme={theme} /><IconButton icon={silentConfig?.enabled ? "timer" : "timer-outline"} onPress={onOpenSilent} theme={theme} filled={!!silentConfig?.enabled} /><IconButton icon="ellipsis-horizontal" onPress={() => Alert.alert('Chat controls', chatPrefs.mutedUntil>Date.now()?'Notifications muted':'Notifications on', [
@@ -2203,9 +2381,10 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
         </View>
         {editTarget ? <View style={[styles.replyComposerBar,{backgroundColor:theme.soft}]}><Ionicons name="create-outline" size={17} color={chatAccent}/><View style={{flex:1}}><Text style={{color:chatAccent,fontWeight:'900',fontSize:11}}>Editing message</Text><Text numberOfLines={1} style={{color:theme.sub,fontSize:12}}>{editTarget.text}</Text></View><Pressable onPress={()=>{setEditTarget(null);setText('');}}><Ionicons name="close" size={19} color={theme.sub}/></Pressable></View> : null}
         {replyTo ? <View style={[styles.replyComposerBar, { backgroundColor: theme.soft }]}><View style={{ flex: 1 }}><Text style={{ color: chatAccent, fontWeight: '800', fontSize: 11 }}>Replying to {replyTo.senderId === activeProfile.id ? 'yourself' : profiles[replyTo.senderId]?.name}</Text><Text numberOfLines={1} style={{ color: theme.sub, fontSize: 12 }}>{replyTo.type === 'text' ? replyTo.text : replyTo.type}</Text></View><Pressable onPress={() => setReplyTo(null)}><Ionicons name="close" size={19} color={theme.sub} /></Pressable></View> : null}
+        {mentionSuggestions.length ? <View style={[styles.mentionSuggestBar,{backgroundColor:theme.bg}]}><ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="always" contentContainerStyle={styles.mentionSuggestContent}>{mentionSuggestions.map(member=><Pressable key={member.id} onPress={()=>insertMention(member)} style={[styles.mentionSuggestChip,{backgroundColor:theme.card,borderColor:theme.border}]}><Avatar person={member} size={27} theme={theme}/><View><Text style={[styles.mentionSuggestName,{color:theme.text}]}>{member.name}</Text><Text style={[styles.mentionSuggestUser,{color:theme.sub}]}>{member.username}</Text></View></Pressable>)}</ScrollView></View> : null}
         <View style={[styles.composerWrap, { backgroundColor: theme.bg }]}><Pressable style={[styles.plusButton, { backgroundColor: theme.soft, borderColor: theme.border }]} onPress={() => Alert.alert('Send', 'Choose an attachment.', [{ text: 'Photo or video', onPress: pickChatPhoto }, { text: 'Voice message', onPress: () => send({ type: 'voice', text: '', duration: '0:08' }) }, {text:'Location card',onPress:()=>send({type:'location',text:'Current location'})},{text:'Contact card',onPress:()=>send({type:'contact',text:activeProfile.name})},{ text: 'Cancel', style: 'cancel' }])}><Ionicons name="add" size={24} color={theme.text} /></Pressable><View style={[styles.composer, { backgroundColor: theme.card, borderColor: theme.border }]}><TextInput value={text} onChangeText={changeText} onFocus={() => setTimeout(() => listRef.current?.scrollToEnd?.({ animated: true }), 80)} placeholder={editTarget?'Edit message':silentConfig?.enabled ? `Silent message · ${formatSilentTimer(silentConfig.timerSeconds)}` : 'Message'} placeholderTextColor={theme.sub} style={[styles.composerInput, { color: theme.text }]} multiline maxLength={1000} /><Pressable onPress={() => send()} style={[styles.sendButton, { backgroundColor: text.trim() ? chatAccent : theme.soft }]}><Ionicons name={editTarget?'checkmark':'arrow-up'} size={19} color={text.trim() ? (chatTheme.textColor || '#fff') : theme.sub} /></Pressable></View></View>
       </SafeAreaView>
-      {isGroup ? <GroupInfoModal visible={groupInfoOpen} onClose={() => setGroupInfoOpen(false)} theme={theme} group={group} profiles={profiles} activeId={activeProfile.id} onRename={onRenameGroup} onToggleEveryone={onToggleGroupEveryone} /> : null}
+      {isGroup ? <GroupInfoModal visible={groupInfoOpen} onClose={() => setGroupInfoOpen(false)} theme={theme} group={group} profiles={profiles} activeId={activeProfile.id} onRename={onRenameGroup} onToggleEveryone={onToggleGroupEveryone} onPickAvatar={onPickGroupAvatar} onRotateInvite={onRotateGroupInvite} onToggleInvite={onToggleGroupInvite} onSetRole={onSetGroupRole} onRemoveMember={onRemoveGroupMember} onTransferOwner={onTransferGroupOwner} onLeave={onLeaveGroup} /> : null}
     </KeyboardAvoidingView>
     </EdgeSwipeBack>
   );
@@ -2564,7 +2743,7 @@ function LinkProModal({ visible, onClose, theme, subscription, benefitClaim, onC
               <View style={styles.netflixBenefitGlow} />
               <View style={styles.netflixBenefitTop}>
                 <View style={styles.netflixLogoWrap}>
-                  <Image source={{ uri: NETFLIX_LOGO_URI }} style={styles.netflixLogo} resizeMode="contain" />
+                  <NetflixWordmark width={112} height={31} style={styles.netflixLogo} />
                 </View>
                 <View style={styles.netflixProPill}><Ionicons name="diamond" size={11} color="#fff" /><Text style={styles.netflixProPillText}>LINK PRO</Text></View>
               </View>
@@ -2680,9 +2859,32 @@ function MomentComposerModal({ visible, onClose, theme, activeProfile, onPost })
   return <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}><EdgeSwipeBack onBack={onClose}><View style={[styles.momentComposerPage, { backgroundColor: '#08090C' }]}><SafeAreaView style={styles.flexOne}><View style={styles.scannerHeader}><View><Text style={styles.scannerTitle}>New Moment</Text><Text style={styles.scannerSub}>Visible to your LINKs for 24 hours.</Text></View><Pressable onPress={onClose} style={styles.scannerClose}><Ionicons name="close" size={24} color="#fff" /></Pressable></View><View style={styles.momentCameraShell}>{captured ? <Image source={{ uri: captured }} style={StyleSheet.absoluteFill} /> : permission?.granted ? <CameraView ref={cameraRef} style={StyleSheet.absoluteFill} facing="back" /> : <View style={styles.permissionState}><Ionicons name="camera-outline" size={42} color="#fff" /><Text style={styles.permissionTitle}>Camera access</Text><Pressable onPress={requestPermission} style={styles.permissionButton}><Text style={{ color: '#111318', fontWeight: '800' }}>Allow camera</Text></Pressable></View>}</View><View style={styles.momentComposerBottom}><TextInput value={caption} onChangeText={setCaption} placeholder="Add a caption…" placeholderTextColor="rgba(255,255,255,.45)" style={styles.momentCaptionInput} />{captured ? <Pressable onPress={() => setCaptured(null)} style={styles.momentSecondary}><Ionicons name="refresh" size={20} color="#fff" /></Pressable> : <Pressable onPress={snap} style={styles.shutter}><View style={styles.shutterInner} /></Pressable>}<Pressable onPress={post} style={styles.momentPost}><Ionicons name="arrow-up" size={22} color="#111318" /></Pressable></View></SafeAreaView></View></EdgeSwipeBack></Modal>;
 }
 
-function MomentViewerModal({ visible, onClose, theme, moment, owner }) {
+function MomentViewerModal({ visible, onClose, theme, moment, owner, activeId, onReact }) {
   if (!moment || !owner) return null;
-  return <Modal visible={visible} animationType="fade" presentationStyle="fullScreen" onRequestClose={onClose}><EdgeSwipeBack onBack={onClose}><View style={styles.momentViewer}><SafeAreaView style={styles.flexOne}><View style={styles.momentViewerHeader}><View style={styles.chatHeaderPerson}><Avatar person={owner} size={38} theme={dark} /><View><Text style={{ color: '#fff', fontWeight: '800' }}>{owner.name}</Text><Text style={{ color: 'rgba(255,255,255,.55)', fontSize: 10 }}>Moment · today</Text></View></View><Pressable onPress={onClose} style={styles.scannerClose}><Ionicons name="close" size={24} color="#fff" /></Pressable></View><View style={styles.momentViewerContent}>{moment.imageUri ? <Image source={{ uri: moment.imageUri }} style={styles.momentViewerImage} resizeMode="cover" /> : <><Text style={styles.momentEmoji}>{moment.emoji || '✨'}</Text><Text style={styles.momentBigCaption}>{moment.caption}</Text></>}</View>{moment.imageUri ? <View style={styles.momentCaptionOverlay}><Text style={{ color: '#fff', fontSize: 18, fontWeight: '800', textAlign: 'center' }}>{moment.caption}</Text></View> : null}</SafeAreaView></View></EdgeSwipeBack></Modal>;
+  const myReaction=(moment.reactions || []).find(r=>r.userId===activeId)?.emoji;
+  const isOwner=moment.ownerId===activeId;
+  const emojis=['❤️','🔥','😂','😍','👏','😮'];
+  return <Modal visible={visible} animationType="fade" presentationStyle="fullScreen" onRequestClose={onClose}><EdgeSwipeBack onBack={onClose}><View style={styles.momentViewer}><SafeAreaView style={styles.flexOne}><View style={styles.momentViewerHeader}><View style={styles.chatHeaderPerson}><Avatar person={owner} size={38} theme={dark}/><View><Text style={{color:'#fff',fontWeight:'800'}}>{owner.name}</Text><Text style={{color:'rgba(255,255,255,.55)',fontSize:10}}>Moment · today</Text></View></View><Pressable onPress={onClose} style={styles.scannerClose}><Ionicons name="close" size={24} color="#fff"/></Pressable></View><View style={styles.momentViewerContent}>{moment.imageUri?<Image source={{uri:moment.imageUri}} style={styles.momentViewerImage} resizeMode="cover"/>:<><Text style={styles.momentEmoji}>{moment.emoji || '✨'}</Text><Text style={styles.momentBigCaption}>{moment.caption}</Text></>}</View>{moment.imageUri?<View style={styles.momentCaptionOverlay}><Text style={{color:'#fff',fontSize:18,fontWeight:'800',textAlign:'center'}}>{moment.caption}</Text></View>:null}<View style={styles.momentSocialBar}><View style={styles.momentReactionRow}>{emojis.map(emoji=><Pressable key={emoji} onPress={()=>onReact?.(moment.id,emoji)} style={[styles.momentReactionChip,myReaction===emoji&&styles.momentReactionChipActive]}><Text style={{fontSize:18}}>{emoji}</Text></Pressable>)}</View>{isOwner?<View style={styles.momentViewsPill}><Ionicons name="eye-outline" size={15} color="#fff"/><Text style={styles.momentViewsText}>{moment.viewCount || 0} views</Text></View>:null}</View></SafeAreaView></View></EdgeSwipeBack></Modal>;
+}
+
+function WhatsNewModal({ visible, onClose, theme }) {
+  const sections=[
+    ['navigate-outline','Navigation & UI','Swipe from the left edge to go back across LINK.'],
+    ['arrow-undo-outline','Messages & replies','Swipe a message right to reply instantly, with smoother realtime and read states.'],
+    ['people-circle-outline','Groups 2.0','Admins, invite codes, avatars, member controls and ownership transfer.'],
+    ['aperture-outline','Moments 2.0','Reactions and view counts make Moments more social.'],
+    ['notifications-outline','Notifications','Mentions and reactions can appear as lightweight in-app alerts.'],
+    ['language-outline','Czech first','Full Czech and English support stays built into LINK.'],
+    ['diamond-outline','Pro benefits','LINK Pro members can reserve the Netflix 3-month promotional benefit.'],
+    ['speedometer-outline','Stability','Realtime refreshes remain coalesced and serialized to prevent request storms.'],
+  ];
+  return <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}><EdgeSwipeBack onBack={onClose}><SafeAreaView style={[styles.whatsNewPage,{backgroundColor:theme.bg}]}><View style={[styles.whatsNewHeader,{borderBottomColor:theme.border}]}><IconButton icon="chevron-back" onPress={onClose} theme={theme}/><View style={{flex:1}}><Text style={[styles.bigTitle,{color:theme.text}]}>What's new</Text><Text style={[styles.headerSub,{color:theme.sub}]}>{BUILD}</Text></View></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.whatsNewScroll}><LinearGradient colors={['#111318','#281A48','#101115']} style={styles.whatsNewHero}><View style={styles.whatsNewHeroIcon}><Text style={styles.whatsNewHeroIconText}>L</Text></View><View style={{flex:1}}><Text style={styles.whatsNewHeroEyebrow}>LINK 2.0</Text><Text style={styles.whatsNewHeroTitle}>A new chapter for LINK.</Text><Text style={styles.whatsNewHeroSub}>Major Update · messaging, groups, Moments, navigation and stability.</Text></View></LinearGradient><Text style={[styles.sectionTitle,{color:theme.text,marginTop:22,marginBottom:10}]}>Update highlights</Text><View style={[styles.whatsNewCard,{backgroundColor:theme.card,borderColor:theme.border}]}>{sections.map(([icon,title,body],index)=><View key={title} style={[styles.whatsNewRow,index===sections.length-1&&{borderBottomWidth:0}, {borderBottomColor:theme.border}]}><View style={[styles.whatsNewIcon,{backgroundColor:theme.soft}]}><Ionicons name={icon} size={20} color={ACCENT}/></View><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{title}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{body}</Text></View></View>)}</View><View style={[styles.whatsNewNote,{backgroundColor:theme.soft}]}><Ionicons name="notifications-outline" size={18} color={theme.text}/><Text style={[styles.settingsSub,{color:theme.sub,flex:1}]}>Remote push notifications require a development or production build; Expo Go uses in-app alerts here.</Text></View></ScrollView></SafeAreaView></EdgeSwipeBack></Modal>;
+}
+
+function ForegroundNotice({ notice, theme, onPress }) {
+  if(!notice) return null;
+  const icon=notice.type==='mention'?'at':notice.type==='moment_reaction'?'aperture':notice.type==='message_reaction'?'heart':'notifications';
+  return <Pressable onPress={onPress} style={[styles.foregroundNotice,{backgroundColor:theme.card,borderColor:theme.border}]}><View style={[styles.foregroundNoticeIcon,{backgroundColor:theme.soft}]}><Ionicons name={icon} size={18} color={ACCENT}/></View><View style={{flex:1,minWidth:0}}><Text numberOfLines={1} style={[styles.foregroundNoticeTitle,{color:theme.text}]}>{notice.title || 'New activity'}</Text><Text numberOfLines={1} style={[styles.foregroundNoticeBody,{color:theme.sub}]}>{notice.body || ''}</Text></View><Ionicons name="chevron-forward" size={16} color={theme.sub}/></Pressable>;
 }
 
 function TabBar({ tab, setTab, theme, darkMode, unreadCount = 0 }) {
@@ -2738,6 +2940,11 @@ function LinkApp({ session }) {
   const [chatThemeOpen, setChatThemeOpen] = useState(false);
   const [adminConsoleOpen, setAdminConsoleOpen] = useState(false);
   const [groupCreateOpen, setGroupCreateOpen] = useState(false);
+  const [groupJoinOpen, setGroupJoinOpen] = useState(false);
+  const [whatsNewOpen, setWhatsNewOpen] = useState(false);
+  const [foregroundNotice, setForegroundNotice] = useState(null);
+  const foregroundSeenRef = useRef(null);
+  const foregroundReadyRef = useRef(false);
   const [doubleTapReactionOpen, setDoubleTapReactionOpen] = useState(false);
   const [decryptedActiveMessages, setDecryptedActiveMessages] = useState([]);
   const chatKeyCacheRef = useRef({});
@@ -2874,6 +3081,16 @@ function LinkApp({ session }) {
     return () => { alive = false; clearInterval(timer); sub.remove(); touchPresenceRemote(false).catch(() => {}); };
   }, [hydrated, liveUserId]);
   useEffect(() => { chatKeyCacheRef.current = { ...(data.chatKeys || {}) }; }, [data.chatKeys]);
+  useEffect(() => {
+    if (!hydrated || !data.activeAccountId) return undefined;
+    const newest=(data.notifications?.[data.activeAccountId] || []).find(item=>!item.read && !['message','group_message'].includes(item.type));
+    if (!foregroundReadyRef.current) { foregroundReadyRef.current=true; foregroundSeenRef.current=newest?.id || null; return undefined; }
+    if (!newest || newest.id===foregroundSeenRef.current) return undefined;
+    foregroundSeenRef.current=newest.id;
+    setForegroundNotice(newest);
+    const timer=setTimeout(()=>setForegroundNotice(current=>current?.id===newest.id?null:current),4200);
+    return ()=>clearTimeout(timer);
+  }, [hydrated, data.activeAccountId, data.notifications]);
 
   useEffect(() => {
     let cancelled = false;
@@ -3052,6 +3269,53 @@ function LinkApp({ session }) {
       Alert.alert('Group not created', error?.message || 'Try again.');
     }
   };
+  const joinGroup = async (code) => {
+    const groupId=await joinGroupByInviteRemote(code);
+    await refreshRemote();
+    setGroupJoinOpen(false); setActiveChatId(null); setActiveGroupId(groupId); setTab('chats');
+  };
+  const rotateGroupInvite = async () => {
+    if(!activeGroupId) return;
+    try { await rotateGroupInviteRemote(activeGroupId); await refreshRemote(); }
+    catch(error){ Alert.alert('Invite not changed',error?.message || 'Try again.'); }
+  };
+  const toggleGroupInvite = async (enabled) => {
+    if(!activeGroupId) return;
+    try { await setGroupInviteEnabledRemote(activeGroupId,enabled); await refreshRemote(); }
+    catch(error){ Alert.alert('Invite not changed',error?.message || 'Try again.'); }
+  };
+  const setGroupRole = async (userId,role) => {
+    if(!activeGroupId) return;
+    try { await setGroupMemberRoleRemote(activeGroupId,userId,role); await refreshRemote(); }
+    catch(error){ Alert.alert('Role not changed',error?.message || 'Try again.'); }
+  };
+  const removeGroupMember = async (userId) => {
+    if(!activeGroupId) return;
+    try { await removeGroupMemberRemote(activeGroupId,userId); await refreshRemote(); }
+    catch(error){ Alert.alert('Member not removed',error?.message || 'Try again.'); }
+  };
+  const transferGroupOwner = async (userId) => {
+    if(!activeGroupId) return;
+    try { await transferGroupOwnerRemote(activeGroupId,userId); await refreshRemote(); }
+    catch(error){ Alert.alert('Ownership not transferred',error?.message || 'Try again.'); }
+  };
+  const leaveActiveGroup = async () => {
+    if(!activeGroupId) return;
+    try { await leaveGroupRemote(activeGroupId); setActiveGroupId(null); setTab('chats'); await refreshRemote(); }
+    catch(error){ Alert.alert('Could not leave group',error?.message || 'Try again.'); }
+  };
+  const pickActiveGroupAvatar = async () => {
+    if(!activeGroupId) return;
+    try {
+      const permission=await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if(!permission.granted) return Alert.alert('Photos permission','Allow photo access to choose a group photo.');
+      const result=await ImagePicker.launchImageLibraryAsync({mediaTypes:['images'],allowsEditing:true,aspect:[1,1],quality:.75});
+      if(result.canceled || !result.assets?.[0]?.uri) return;
+      const url=await uploadAvatar(data.activeAccountId,result.assets[0].uri);
+      await setGroupAvatarRemote(activeGroupId,url);
+      await refreshRemote();
+    } catch(error){ Alert.alert('Group photo not changed',error?.message || 'Try again.'); }
+  };
 
 
   const renameGroup = (groupId, nextName) => {
@@ -3165,6 +3429,9 @@ function LinkApp({ session }) {
       const silent = fresh.silentChats?.[key] || data.silentChats?.[key];
       const expiresAt = silent?.enabled ? Date.now() + (silent.timerSeconds || 5 * 60) * 1000 : null;
       await sendMessageRemote(chatId, { type: payload.type || 'text', uri: payload.uri || null, cipher, duration: payload.duration || null, replyTo: payload.replyTo || null, forwardedFrom:payload.forwardedFrom || null, expiresAt });
+      const mentionTokens=Array.from(new Set((String(payload.text || '').match(/@[a-z0-9_.]+/gi) || []).map(x=>x.toLowerCase())));
+      const mentionedIds=(group.memberIds || []).filter(id=>id!==data.activeAccountId && mentionTokens.includes(String(data.profiles[id]?.username || '').toLowerCase()));
+      if(mentionedIds.length) Promise.all(mentionedIds.map(id=>notifyChatMentionRemote(chatId,id).catch(()=>{}))).catch(()=>{});
     } catch (error) {
       console.warn('LINK group message send failed', error);
       Alert.alert('Message not sent', error?.message || 'LINK could not send this group message. Try again.');
@@ -3230,6 +3497,19 @@ function LinkApp({ session }) {
       Alert.alert('Moment not posted', error?.message || 'Try again.');
     }
   };
+  const openMoment = (moment) => {
+    if(!moment?.id) return;
+    setMomentViewId(moment.id);
+    if (moment.ownerId !== data.activeAccountId) {
+      mutate(prev=>({...prev,moments:(prev.moments||[]).map(item=>item.id===moment.id?{...item,viewerIds:Array.from(new Set([...(item.viewerIds||[]),prev.activeAccountId])),viewCount:Array.from(new Set([...(item.viewerIds||[]),prev.activeAccountId])).length}:item)}));
+      viewMomentRemote(moment.id).catch(()=>{});
+    }
+  };
+  const reactMoment = (momentId,emoji) => {
+    mutate(prev=>({...prev,moments:(prev.moments||[]).map(item=>item.id===momentId?{...item,reactions:[...(item.reactions||[]).filter(r=>r.userId!==prev.activeAccountId),{userId:prev.activeAccountId,emoji,createdAt:Date.now()}]}:item)}));
+    reactMomentRemote(momentId,emoji).catch(error=>Alert.alert('Reaction not saved',error?.message || 'Try again.'));
+  };
+
   const saveNote = async ({ text, emoji, audience }) => {
     if (!activeCanPost('post Notes')) return;
     const durationHours = activePro ? 168 : activePlus ? 72 : 24;
@@ -3391,7 +3671,7 @@ ${text}` });
 
   if (activeChatTarget) return <>
     <RNStatusBar barStyle={activeMode === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={theme.bg} />
-    <ChatScreen theme={theme} activeProfile={activeProfile} person={activeChatTarget} messages={activeMessages} profiles={data.profiles} chatId={activeThreadKey ? data.backendChatIds?.[activeThreadKey] : null} typingEnabled={privacy.typingIndicators !== false} onBack={() => { setActiveChatId(null); setActiveGroupId(null); }} onSend={activeGroup ? sendGroupMessage : sendMessage} onReact={activeGroup ? reactGroupMessage : reactMessage} onEdit={editActiveMessage} onDeleteForMe={activeGroup ? deleteGroupMessageForMe : deleteMessageForMe} onDeleteEveryone={deleteActiveMessageForEveryone} onPin={pinActiveMessage} onForward={forwardActiveMessage} onOpenProfile={openProfileModal} markRead={markRead} silentConfig={activeSilentConfig} onOpenSilent={() => setSilentChatOpen(true)} onOpenEncryptionInfo={() => setEncryptionInfoOpen(true)} chatThemeId={activeChatThemeId} chatThemeScope={activeChatThemeScope} onOpenTheme={() => setChatThemeOpen(true)} chatPrefs={activeChatPrefs} onSavePrefs={saveActiveChatPrefs} isGroup={!!activeGroup} group={activeGroup} groupMembers={activeGroupMembers} onRenameGroup={(name) => activeGroup && renameGroup(activeGroup.id, name)} onToggleGroupEveryone={(enabled) => activeGroup && toggleGroupEveryone(activeGroup.id, enabled)} doubleTapEmoji={activeDoubleTapEmoji} />
+    <ChatScreen theme={theme} activeProfile={activeProfile} person={activeChatTarget} messages={activeMessages} profiles={data.profiles} chatId={activeThreadKey ? data.backendChatIds?.[activeThreadKey] : null} typingEnabled={privacy.typingIndicators !== false} onBack={() => { setActiveChatId(null); setActiveGroupId(null); }} onSend={activeGroup ? sendGroupMessage : sendMessage} onReact={activeGroup ? reactGroupMessage : reactMessage} onEdit={editActiveMessage} onDeleteForMe={activeGroup ? deleteGroupMessageForMe : deleteMessageForMe} onDeleteEveryone={deleteActiveMessageForEveryone} onPin={pinActiveMessage} onForward={forwardActiveMessage} onOpenProfile={openProfileModal} markRead={markRead} silentConfig={activeSilentConfig} onOpenSilent={() => setSilentChatOpen(true)} onOpenEncryptionInfo={() => setEncryptionInfoOpen(true)} chatThemeId={activeChatThemeId} chatThemeScope={activeChatThemeScope} onOpenTheme={() => setChatThemeOpen(true)} chatPrefs={activeChatPrefs} onSavePrefs={saveActiveChatPrefs} isGroup={!!activeGroup} group={activeGroup} groupMembers={activeGroupMembers} onRenameGroup={(name) => activeGroup && renameGroup(activeGroup.id, name)} onToggleGroupEveryone={(enabled) => activeGroup && toggleGroupEveryone(activeGroup.id, enabled)} onPickGroupAvatar={pickActiveGroupAvatar} onRotateGroupInvite={rotateGroupInvite} onToggleGroupInvite={toggleGroupInvite} onSetGroupRole={setGroupRole} onRemoveGroupMember={removeGroupMember} onTransferGroupOwner={transferGroupOwner} onLeaveGroup={leaveActiveGroup} doubleTapEmoji={activeDoubleTapEmoji} />
     {!activeGroup ? <PersonProfileModal visible={!!profileModalId} onClose={() => setProfileModalId(null)} theme={theme} person={profileModalPerson} connected={(data.relationships[data.activeAccountId] || []).includes(profileModalId)} privacy={profileModalPrivacy} plusActive={profileModalPlusActive} proActive={profileModalProActive} favorite={favoriteIds.includes(profileModalId)} onToggleFavorite={() => profileModalId && toggleFavorite(profileModalId)} onWave={() => profileModalId && sendWave(profileModalId)} onChat={() => profileModalPerson && openChat(profileModalPerson)} viewerIsAdmin={!!activeProfile.isAdmin} moderationState={profileModalModeration} onAdminBan={() => profileModalId && adminBan(profileModalId)} onAdminUnban={() => profileModalId && adminUnban(profileModalId)} onAdminMute={() => profileModalPerson && Alert.alert('Mute ' + profileModalPerson.name, 'Choose duration.', [{ text: '15 minutes', onPress: () => adminMute(profileModalId, 15 * 60 * 1000) }, { text: '1 hour', onPress: () => adminMute(profileModalId, 60 * 60 * 1000) }, { text: '24 hours', onPress: () => adminMute(profileModalId, 24 * 60 * 60 * 1000) }, { text: 'Indefinitely', style: 'destructive', onPress: () => adminMute(profileModalId, -1) }, { text: 'Cancel', style: 'cancel' }])} onAdminUnmute={() => profileModalId && adminUnmute(profileModalId)} /> : null}
     <SilentChatModal visible={silentChatOpen} onClose={() => setSilentChatOpen(false)} theme={theme} config={activeSilentConfig} proActive={activePro} onSave={saveSilentConfig} />
     <EncryptionInfoModal visible={encryptionInfoOpen} onClose={() => setEncryptionInfoOpen(false)} theme={theme} />
@@ -3401,13 +3681,14 @@ ${text}` });
   return (
     <View style={[styles.app, { backgroundColor: theme.bg }]}>
       <RNStatusBar barStyle={activeMode === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={theme.bg} />
-      <SafeAreaView style={styles.safe}><View style={styles.content}>
-        {tab === 'home' && <HomeScreen theme={theme} activeProfile={activeProfile} connectedProfiles={connectedProfiles} conversations={data.conversations} activeId={data.activeAccountId} requests={incomingRequests} notifications={data.notifications} moments={data.moments} notes={data.notes || []} profiles={data.profiles} favorites={data.favorites || {}} favoriteIds={favoriteIds} openOwnCard={() => setCardOpen(true)} openScanner={() => setScannerOpen(true)} openChat={openChat} openAccountSwitcher={() => setAccountsOpen(true)} openNotifications={() => setNotificationsOpen(true)} onAccept={acceptRequest} onDecline={declineRequest} onCreateMoment={() => setMomentComposerOpen(true)} onOpenMoment={m => setMomentViewId(m.id)} onOwnNote={() => setNoteComposerOpen(true)} onOpenNote={(n) => setNoteReplyId(n.id)} setTab={setTab} />}
+      <EdgeSwipeBack enabled={tab !== 'home'} onBack={() => setTab('home')} style={styles.flexOne}><SafeAreaView style={styles.safe}><View style={styles.content}>
+        {tab === 'home' && <HomeScreen theme={theme} activeProfile={activeProfile} connectedProfiles={connectedProfiles} conversations={data.conversations} activeId={data.activeAccountId} requests={incomingRequests} notifications={data.notifications} moments={data.moments} notes={data.notes || []} profiles={data.profiles} favorites={data.favorites || {}} favoriteIds={favoriteIds} openOwnCard={() => setCardOpen(true)} openScanner={() => setScannerOpen(true)} openChat={openChat} openAccountSwitcher={() => setAccountsOpen(true)} openNotifications={() => setNotificationsOpen(true)} onAccept={acceptRequest} onDecline={declineRequest} onCreateMoment={() => setMomentComposerOpen(true)} onOpenMoment={openMoment} onOwnNote={() => setNoteComposerOpen(true)} onOpenNote={(n) => setNoteReplyId(n.id)} setTab={setTab} openWhatsNew={() => setWhatsNewOpen(true)} activePro={activePro} benefitClaim={activeNetflixClaim} openPro={() => setProOpen(true)} />}
         {tab === 'people' && <PeopleScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} localAccountIds={data.localAccountIds} requests={data.requests} favoriteIds={favoriteIds} openProfile={openProfileModal} openChat={openChat} sendRequest={sendRequest} onAccept={acceptRequest} onDecline={declineRequest} />}
         {tab === 'link' && <LinkScreen theme={theme} activeProfile={activeProfile} payload={payload} localProfiles={localProfiles} relationships={data.relationships} requests={data.requests} openScanner={() => setScannerOpen(true)} openOwnCard={() => setCardOpen(true)} sendRequest={sendRequest} onAccept={acceptRequest} onDecline={declineRequest} />}
-        {tab === 'chats' && <ChatsScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} conversations={data.conversations} favoriteIds={favoriteIds} groups={data.groups || {}} chatUserSettings={data.chatUserSettings || {}} openChat={openChat} openGroup={openGroup} onCreateGroup={() => setGroupCreateOpen(true)} />}
+        {tab === 'chats' && <ChatsScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} conversations={data.conversations} favoriteIds={favoriteIds} groups={data.groups || {}} chatUserSettings={data.chatUserSettings || {}} openChat={openChat} openGroup={openGroup} onCreateGroup={() => setGroupCreateOpen(true)} onJoinGroup={() => setGroupJoinOpen(true)} />}
         {tab === 'profile' && <ProfileScreen theme={theme} activeProfile={activeProfile} updateProfile={updateActiveProfile} themeSetting={data.themeSetting} setThemeSetting={setThemeSetting} languageSetting={data.languageSetting || 'system'} setLanguageSetting={setLanguageSetting} privacy={privacy} setPrivacy={setPrivacy} openAccountSwitcher={() => setAccountsOpen(true)} openCustomStatus={() => setCustomStatusOpen(true)} openShop={() => setShopOpen(true)} openPlus={activePro ? () => setProOpen(true) : () => setPlusOpen(true)} plusSubscription={activeSubscription} openPro={() => setProOpen(true)} proSubscription={activeProSubscription} insights={proInsights} openAdminConsole={() => setAdminConsoleOpen(true)} doubleTapEmoji={activeDoubleTapEmoji} openDoubleTapReaction={() => setDoubleTapReactionOpen(true)} resetDemo={resetDemo} accountEmail={session?.user?.email || ''} setPresenceMode={setActivePresenceMode} onSignOut={signOutLink} />}
-      </View></SafeAreaView><TabBar tab={tab} setTab={setTab} theme={theme} darkMode={activeMode === 'dark'} unreadCount={unreadChatCount} />
+      </View></SafeAreaView><TabBar tab={tab} setTab={setTab} theme={theme} darkMode={activeMode === 'dark'} unreadCount={unreadChatCount} /></EdgeSwipeBack>
+      <ForegroundNotice notice={foregroundNotice} theme={theme} onPress={() => { setForegroundNotice(null); setNotificationsOpen(true); }} />
 
       <ScannerModal visible={scannerOpen} onClose={() => setScannerOpen(false)} onScanned={onScanned} />
       <OwnCardModal visible={cardOpen} onClose={() => setCardOpen(false)} theme={theme} profile={activeProfile} payload={payload} />
@@ -3415,10 +3696,12 @@ ${text}` });
       <AccountSwitcherModal visible={accountsOpen} onClose={() => setAccountsOpen(false)} theme={theme} localProfiles={localProfiles} activeId={data.activeAccountId} onSwitch={switchAccount} onCreate={async () => { setAccountsOpen(false); await signOutLink(); }} />
       <CreateAccountModal visible={createAccountOpen} onClose={() => setCreateAccountOpen(false)} theme={theme} onCreate={createLocalAccount} existingProfiles={data.profiles} />
       <CreateGroupModal visible={groupCreateOpen} onClose={() => setGroupCreateOpen(false)} theme={theme} activeProfile={activeProfile} profiles={data.profiles} connectedIds={connectedIds} onCreate={createGroup} />
+      <JoinGroupModal visible={groupJoinOpen} onClose={() => setGroupJoinOpen(false)} theme={theme} onJoin={joinGroup} />
+      <WhatsNewModal visible={whatsNewOpen} onClose={() => setWhatsNewOpen(false)} theme={theme} />
       <AdminConsoleModal visible={adminConsoleOpen} onClose={() => setAdminConsoleOpen(false)} theme={theme} profiles={data.profiles} moderation={data.moderation || {}} onBan={adminBan} onUnban={adminUnban} onMute={adminMute} onUnmute={adminUnmute} />
       <PersonProfileModal visible={!!profileModalId} onClose={() => setProfileModalId(null)} theme={theme} person={profileModalPerson} connected={(data.relationships[data.activeAccountId] || []).includes(profileModalId)} privacy={profileModalPrivacy} plusActive={profileModalPlusActive} proActive={profileModalProActive} favorite={favoriteIds.includes(profileModalId)} onToggleFavorite={() => profileModalId && toggleFavorite(profileModalId)} onWave={() => profileModalId && sendWave(profileModalId)} onChat={() => profileModalPerson && openChat(profileModalPerson)} onSendRequest={() => profileModalId && sendRequest(profileModalId)} viewerIsAdmin={!!activeProfile.isAdmin} moderationState={profileModalModeration} onAdminBan={() => profileModalId && adminBan(profileModalId)} onAdminUnban={() => profileModalId && adminUnban(profileModalId)} onAdminMute={() => profileModalPerson && Alert.alert('Mute ' + profileModalPerson.name, 'Choose duration.', [{ text: '15 minutes', onPress: () => adminMute(profileModalId, 15 * 60 * 1000) }, { text: '1 hour', onPress: () => adminMute(profileModalId, 60 * 60 * 1000) }, { text: '24 hours', onPress: () => adminMute(profileModalId, 24 * 60 * 60 * 1000) }, { text: 'Indefinitely', style: 'destructive', onPress: () => adminMute(profileModalId, -1) }, { text: 'Cancel', style: 'cancel' }])} onAdminUnmute={() => profileModalId && adminUnmute(profileModalId)} />
       <MomentComposerModal visible={momentComposerOpen} onClose={() => setMomentComposerOpen(false)} theme={theme} activeProfile={activeProfile} onPost={postMoment} />
-      <MomentViewerModal visible={!!momentViewId} onClose={() => setMomentViewId(null)} theme={theme} moment={momentView} owner={momentView ? data.profiles[momentView.ownerId] : null} />
+      <MomentViewerModal visible={!!momentViewId} onClose={() => setMomentViewId(null)} theme={theme} moment={momentView} owner={momentView ? data.profiles[momentView.ownerId] : null} activeId={data.activeAccountId} onReact={reactMoment} />
       <NoteComposerModal visible={noteComposerOpen} onClose={() => setNoteComposerOpen(false)} theme={theme} currentNote={ownNote} plusActive={activePlus} proActive={activePro} onSave={saveNote} onDelete={deleteOwnNote} />
       <NoteReplyModal visible={!!noteReplyId} onClose={() => setNoteReplyId(null)} theme={theme} note={noteReply} person={noteReplyPerson} onReply={text => noteReply && replyToNote(noteReply, text)} />
       <ShopModal visible={shopOpen} onClose={() => setShopOpen(false)} theme={theme} profile={activeProfile} balance={activeWallet} ownedIds={activeOwnedEffects} plusActive={activePlus} proActive={activePro} onPurchase={purchaseEffect} onEquip={equipEffect} onRemove={removeEffect} />
@@ -3628,5 +3911,31 @@ const styles = StyleSheet.create({
   securityNotice: { width: '100%', borderRadius: 18, padding: 13, flexDirection: 'row', gap: 9, alignItems: 'flex-start', marginTop: 16 },
   groupCreateCard: { width: '100%', maxWidth: 460, maxHeight: '88%', borderRadius: 30, padding: 18 }, groupInfoCard: { width: '100%', maxWidth: 460, maxHeight: '90%', borderRadius: 30, padding: 18 }, groupInfoHero: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 16 }, groupInfoTitle: { fontSize: 20, fontWeight: '900', letterSpacing: -.35 }, groupInfoSub: { fontSize: 11.5, fontWeight: '600', marginTop: 4 }, groupNameSave: { minWidth: 52, height: 32, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }, groupPermissionCard: { minHeight: 74, borderRadius: 20, borderWidth: StyleSheet.hairlineWidth, flexDirection: 'row', alignItems: 'center', gap: 11, padding: 12, marginTop: 14 }, groupPermissionIcon: { width: 40, height: 40, borderRadius: 14, alignItems: 'center', justifyContent: 'center' }, groupPermissionHint: { fontSize: 11, lineHeight: 15, marginTop: 7, paddingHorizontal: 4 }, ownerPill: { height: 24, paddingHorizontal: 8, borderRadius: 12, alignItems: 'center', justifyContent: 'center' }, ownerPillText: { fontSize: 9.5, fontWeight: '900' }, groupNameInputWrap: { minHeight: 52, borderWidth: StyleSheet.hairlineWidth, borderRadius: 17, flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 13, marginTop: 16 }, groupNameInput: { flex: 1, fontSize: 15.5, paddingVertical: 10 }, groupPickerLabel: { fontSize: 13, fontWeight: '900', marginTop: 18, marginBottom: 7 }, groupMemberRow: { minHeight: 62, flexDirection: 'row', alignItems: 'center', gap: 11, borderBottomWidth: StyleSheet.hairlineWidth }, groupCheck: { width: 26, height: 26, borderRadius: 13, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center' }, groupCreateButton: { minHeight: 52, borderRadius: 17, marginTop: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 },
   doubleTapModalCard: { width: '100%', maxWidth: 450, borderRadius: 30, padding: 18 }, doubleTapHero: { borderRadius: 22, padding: 15, flexDirection: 'row', alignItems: 'center', gap: 13, marginTop: 16 }, doubleTapHeroEmoji: { fontSize: 34 }, doubleTapEmojiGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 16 }, doubleTapEmojiChip: { width: 46, height: 46, borderRadius: 15, borderWidth: StyleSheet.hairlineWidth, alignItems: 'center', justifyContent: 'center' }, doubleTapEmojiChipText: { fontSize: 22 }, doubleTapCustomInput: { minHeight: 50, borderWidth: StyleSheet.hairlineWidth, borderRadius: 16, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 13, marginTop: 14 },
+
+  versionRow:{flexDirection:'row',alignItems:'center',gap:7,flexWrap:'wrap'},
+  versionInfoButton:{minHeight:28,paddingHorizontal:9,borderRadius:999,borderWidth:StyleSheet.hairlineWidth,flexDirection:'row',alignItems:'center',gap:4},
+  versionInfoText:{fontSize:9.5,fontWeight:'900'},
+  homeNetflixBanner:{minHeight:68,borderWidth:StyleSheet.hairlineWidth,borderRadius:21,paddingHorizontal:13,paddingVertical:10,flexDirection:'row',alignItems:'center',gap:12,marginTop:-6,marginBottom:18,overflow:'hidden'},
+  homeNetflixLogoWrap:{width:94,height:34,borderRadius:10,alignItems:'center',justifyContent:'center'},
+  homeNetflixTitle:{color:'#fff',fontSize:13,fontWeight:'900',letterSpacing:-.2},
+  homeNetflixSub:{color:'rgba(255,255,255,.55)',fontSize:10.5,fontWeight:'700',marginTop:3},
+  homeProMini:{minHeight:17,paddingHorizontal:5,borderRadius:999,backgroundColor:'rgba(124,92,252,.22)',borderWidth:StyleSheet.hairlineWidth,borderColor:'rgba(166,145,255,.45)',alignItems:'center',justifyContent:'center'},
+  homeProMiniText:{color:'#C9BCFF',fontSize:7.5,fontWeight:'900',letterSpacing:.4},
+  swipeReplyShell:{position:'relative',overflow:'visible'},
+  swipeReplyCue:{position:'absolute',left:5,top:'50%',marginTop:-16,width:32,height:32,borderRadius:16,alignItems:'center',justifyContent:'center'},
+  joinGroupCard:{width:'100%',maxWidth:420,borderRadius:30,borderWidth:StyleSheet.hairlineWidth,padding:18},
+  groupAvatarEdit:{position:'relative'},groupAvatarEditBadge:{position:'absolute',right:-2,bottom:-2,width:25,height:25,borderRadius:13,backgroundColor:ACCENT,borderWidth:2,borderColor:'#fff',alignItems:'center',justifyContent:'center'},
+  groupInviteCard:{minHeight:72,borderWidth:StyleSheet.hairlineWidth,borderRadius:20,padding:12,flexDirection:'row',alignItems:'center',gap:10},
+  groupMiniButton:{width:38,height:38,borderRadius:13,alignItems:'center',justifyContent:'center'},
+  groupAdminActions:{flexDirection:'row',gap:8,marginTop:8},groupAdminAction:{flex:1,minHeight:40,borderRadius:14,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:6},
+  groupLeaveButton:{minHeight:48,borderRadius:16,borderWidth:StyleSheet.hairlineWidth,marginTop:18,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8},
+  momentSocialBar:{position:'absolute',left:14,right:14,bottom:14,minHeight:58,backgroundColor:'rgba(10,10,12,.62)',borderRadius:22,paddingHorizontal:10,flexDirection:'row',alignItems:'center',gap:8},
+  momentReactionRow:{flex:1,flexDirection:'row',alignItems:'center',gap:4},momentReactionChip:{width:36,height:36,borderRadius:18,alignItems:'center',justifyContent:'center'},momentReactionChipActive:{backgroundColor:'rgba(255,255,255,.18)'},
+  momentViewsPill:{minHeight:34,paddingHorizontal:10,borderRadius:999,backgroundColor:'rgba(255,255,255,.12)',flexDirection:'row',alignItems:'center',gap:5},momentViewsText:{color:'#fff',fontSize:10,fontWeight:'800'},
+  whatsNewPage:{flex:1},whatsNewHeader:{minHeight:70,paddingHorizontal:14,flexDirection:'row',alignItems:'center',gap:10,borderBottomWidth:StyleSheet.hairlineWidth},whatsNewScroll:{paddingHorizontal:18,paddingTop:14,paddingBottom:42},
+  whatsNewHero:{minHeight:166,borderRadius:30,padding:20,flexDirection:'row',alignItems:'center',gap:16,overflow:'hidden'},whatsNewHeroIcon:{width:60,height:60,borderRadius:20,backgroundColor:'rgba(255,255,255,.11)',alignItems:'center',justifyContent:'center'},whatsNewHeroIconText:{color:'#fff',fontSize:29,fontWeight:'900'},whatsNewHeroEyebrow:{color:'#C9BCFF',fontSize:10,fontWeight:'900',letterSpacing:.7},whatsNewHeroTitle:{color:'#fff',fontSize:25,lineHeight:28,fontWeight:'900',letterSpacing:-.8,marginTop:4},whatsNewHeroSub:{color:'rgba(255,255,255,.6)',fontSize:11,lineHeight:16,marginTop:7},
+  whatsNewCard:{borderWidth:StyleSheet.hairlineWidth,borderRadius:25,overflow:'hidden'},whatsNewRow:{minHeight:78,padding:13,flexDirection:'row',alignItems:'center',gap:12,borderBottomWidth:StyleSheet.hairlineWidth},whatsNewIcon:{width:42,height:42,borderRadius:14,alignItems:'center',justifyContent:'center'},whatsNewNote:{borderRadius:19,padding:13,marginTop:12,flexDirection:'row',alignItems:'flex-start',gap:9},
+  mentionSuggestBar:{paddingTop:5,paddingBottom:3},mentionSuggestContent:{paddingHorizontal:10,gap:7},mentionSuggestChip:{minHeight:43,borderRadius:15,borderWidth:StyleSheet.hairlineWidth,paddingHorizontal:8,paddingVertical:6,flexDirection:'row',alignItems:'center',gap:7},mentionSuggestName:{fontSize:10.5,fontWeight:'900'},mentionSuggestUser:{fontSize:9.5,fontWeight:'600',marginTop:1},
+  foregroundNotice:{position:'absolute',top:Platform.OS==='ios'?54:18,left:14,right:14,minHeight:66,borderRadius:21,borderWidth:StyleSheet.hairlineWidth,padding:11,flexDirection:'row',alignItems:'center',gap:10,zIndex:999,shadowColor:'#000',shadowOpacity:.15,shadowRadius:18,shadowOffset:{width:0,height:8},elevation:15},foregroundNoticeIcon:{width:40,height:40,borderRadius:14,alignItems:'center',justifyContent:'center'},foregroundNoticeTitle:{fontSize:12.5,fontWeight:'900'},foregroundNoticeBody:{fontSize:10.5,fontWeight:'600',marginTop:2},
 
 });
