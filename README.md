@@ -1,4 +1,4 @@
-# LINK 2.0.2 · Smooth Send
+# LINK 2.0.3 · Profile Layouts
 
 Major beta build for Expo Snack / Expo Go backed by LINK Production (Supabase).
 
@@ -42,3 +42,12 @@ Launcher no longer calls GitHub API. It verifies App.snack.js directly using raw
 - Sender receipt is completed asynchronously after the message insert
 - Direct and group chats use the same stable optimistic send pipeline
 - No database migration required
+
+
+## 2.0.3 Profile Layouts
+- Three public profile arrangements: Default, Social and Compact
+- Social layout places the avatar on the left with name, plan badge and username beside it, then bio/status/links below
+- Compact layout keeps the centered LINK identity with much tighter spacing
+- Layout choice syncs through `profiles.profile_layout` in LINK Production
+- Other users see the selected layout when opening the profile
+- Existing Smooth Send and Gesture Polish behavior is preserved

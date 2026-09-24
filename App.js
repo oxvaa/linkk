@@ -140,6 +140,20 @@ Object.assign(CS_TRANSLATIONS, {
   "Ownership not transferred":"Vlastnictví se nepodařilo předat",
   "Could not leave group":"Skupinu se nepodařilo opustit"
 });
+Object.assign(CS_TRANSLATIONS, {
+  "Profile layout":"Vzhled profilu",
+  "Choose how your public LINK identity is arranged.":"Vyber, jak bude uspořádaná tvoje veřejná LINK identita.",
+  "Social":"Sociální",
+  "Compact":"Kompaktní",
+  "Classic centered profile":"Klasický profil zarovnaný na střed",
+  "Photo left · identity and links beside it":"Fotka vlevo · identita a odkazy vedle ní",
+  "Tighter spacing · same LINK character":"Menší rozestupy · stejný LINK charakter",
+  "Profile layouts":"Vzhledy profilu",
+  "Three ways to present your LINK identity":"Tři způsoby, jak zobrazit svou LINK identitu",
+  "Choose Default, Social or Compact and sync the public profile arrangement across devices.":"Vyber Výchozí, Sociální nebo Kompaktní vzhled a synchronizuj uspořádání veřejného profilu mezi zařízeními.",
+  "Your profile, your layout.":"Tvůj profil, tvůj vzhled.",
+  "Profile Layouts · Default, Social and Compact, synced through LINK Production.":"Vzhledy profilu · Výchozí, Sociální a Kompaktní, synchronizované přes LINK Production."
+});
 const resolveLanguage = (setting = 'system') => setting === 'cs' || setting === 'en' ? setting : SYSTEM_LANGUAGE;
 const translateLiteral = (value) => {
   if (value == null || CURRENT_LANGUAGE !== 'cs') return value;
@@ -315,6 +329,7 @@ async function loadLinkSnapshot(base, userId) {
       statusGradient: row.status_gradient,
       profileEffectId: row.profile_effect_id,
       nameEffectId: row.name_effect_id,
+      profileLayout: row.profile_layout || 'default',
       socials: row.socials || {},
       presenceMode: row.presence_mode || 'online',
       presenceVisible: row.presence_visible !== false,
@@ -578,7 +593,7 @@ async function updateProfileRemote(profile) {
   const row = {
     username:cleanUsername(profile.username), name:String(profile.name || 'LINK user').trim().slice(0,60), bio:String(profile.bio || '').slice(0,180), avatar_url:avatar,
     status:profile.status || 'Available', status_icon:profile.statusIcon || 'checkmark-circle', status_color:profile.statusColor || '#34C759', status_gradient:profile.statusGradient || null,
-    profile_effect_id:profile.profileEffectId || null, name_effect_id:profile.nameEffectId || null, socials:profile.socials || {}, updated_at:new Date().toISOString(),
+    profile_effect_id:profile.profileEffectId || null, name_effect_id:profile.nameEffectId || null, profile_layout:['default','social','compact'].includes(profile.profileLayout) ? profile.profileLayout : 'default', socials:profile.socials || {}, updated_at:new Date().toISOString(),
   };
   const { error } = await supabase.from('profiles').update(row).eq('id',userId);
   if (error) throw error;
@@ -1062,7 +1077,7 @@ const STORAGE_KEY = '@link_live_backend_v18';
 const DRAFT_PREFIX = '@link_chat_draft_v1';
 const ACCENT = '#6C5CE7';
 const EMPTY_MESSAGES = Object.freeze([]);
-const BUILD = 'LINK 2.0.2 · Smooth Send';
+const BUILD = 'LINK 2.0.3 · Profile Layouts';
 
 function NetflixWordmark({ width = 112, height = 31, style }) {
   return (
@@ -2052,11 +2067,78 @@ function AdminCustomizationModal({ visible, onClose, theme, profile, onUpdate, o
   return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.adminCustomizeCard, { backgroundColor: theme.card }]} onPress={() => {}}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle, { color: theme.text }]}>CEO Customization</Text><Text style={[styles.sheetSub, { color: theme.sub }]}>Staff-only profile tools for @link</Text></View><IconButton icon="close" onPress={onClose} theme={theme} /></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 8 }}><View style={[styles.adminPreviewCard, { backgroundColor: theme.bg, borderColor: theme.border }]}><EffectAvatarStage person={profile} theme={theme} size={78} effectSize={174} /><View style={styles.profileNameWithBadge}><ProfileDisplayName person={profile} theme={theme} /><CeoBadge /><VerifiedBadge /></View><Text style={[styles.profileUser, { color: theme.sub }]}>{profile.username}</Text></View><Text style={[styles.adminCustomizeLabel, { color: theme.text }]}>Special Profile Effect</Text><View style={styles.adminEffectGrid}>{ADMIN_PROFILE_EFFECTS.map(effect => <Pressable key={effect.id} onPress={() => onUpdate({ ...profile, profileEffectId: effect.id })} style={[styles.adminEffectChoice, { backgroundColor: profile.profileEffectId === effect.id ? `${effect.color}18` : theme.soft, borderColor: profile.profileEffectId === effect.id ? effect.color : theme.border }]}><View style={[styles.adminEffectIcon, { backgroundColor: `${effect.color}20` }]}><Ionicons name={effect.adminSpecial === 'crown' ? 'diamond' : effect.adminSpecial === 'aura' ? 'sparkles' : 'planet'} size={20} color={effect.color} /></View><Text style={[styles.adminEffectName, { color: theme.text }]}>{effect.name}</Text>{profile.profileEffectId === effect.id ? <Ionicons name="checkmark-circle" size={17} color={effect.color} /> : null}</Pressable>)}</View><Pressable onPress={() => onUpdate({ ...profile, profileEffectId: null })} style={[styles.adminMiniAction, { backgroundColor: theme.soft }]}><Ionicons name="close-circle-outline" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '800' }}>No profile effect</Text></Pressable><Text style={[styles.adminCustomizeLabel, { color: theme.text, marginTop: 18 }]}>Name Effect</Text><View style={styles.nameEffectGrid}>{CEO_NAME_EFFECTS.map(effect => <Pressable key={effect.id} onPress={() => onUpdate({ ...profile, nameEffectId: effect.id })} style={[styles.nameEffectChoice, { backgroundColor: profile.nameEffectId === effect.id ? theme.inverse : theme.soft, borderColor: profile.nameEffectId === effect.id ? theme.inverse : theme.border }]}><Text style={{ color: profile.nameEffectId === effect.id ? theme.inverseText : theme.text, fontWeight: '900' }}>{effect.name}</Text></Pressable>)}</View><Pressable onPress={() => onUpdate({ ...profile, nameEffectId: null })} style={[styles.adminMiniAction, { backgroundColor: theme.soft }]}><Ionicons name="text-outline" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '800' }}>Standard name</Text></Pressable><Text style={[styles.adminCustomizeLabel, { color: theme.text, marginTop: 18 }]}>Animated avatar</Text><Pressable onPress={onPickGif} style={[styles.adminGifButton, { backgroundColor: theme.inverse }]}><Ionicons name="images-outline" size={18} color={theme.inverseText} /><View style={{ flex: 1 }}><Text style={{ color: theme.inverseText, fontWeight: '900' }}>Choose GIF / animated image</Text><Text style={{ color: theme.inverseText, opacity: .65, fontSize: 11, marginTop: 2 }}>Keeps the original animation instead of cropping.</Text></View><Ionicons name="chevron-forward" size={18} color={theme.inverseText} /></Pressable></ScrollView></Pressable></Pressable></Modal>;
 }
 
+const PROFILE_LAYOUTS = [
+  { id: 'default', name: 'Default', subtitle: 'Classic centered profile', icon: 'person-circle-outline' },
+  { id: 'social', name: 'Social', subtitle: 'Photo left · identity and links beside it', icon: 'grid-outline' },
+  { id: 'compact', name: 'Compact', subtitle: 'Tighter spacing · same LINK character', icon: 'contract-outline' },
+];
+
+function ProfilePlanBadgeRow({ person, proActive = false, plusActive = false, compact = false, align = 'center' }) {
+  return <View style={[styles.profilePlanBadgeRow, align === 'start' && styles.profilePlanBadgeRowStart]}>
+    {person?.isAdmin ? <><CeoBadge compact={compact} /><VerifiedBadge compact={compact} /></> : proActive ? <ProBadge compact={compact} /> : plusActive ? <PlusBadge compact={compact} /> : null}
+  </View>;
+}
+
+function ProfileSocialLinks({ person, theme, compact = false }) {
+  const links = [
+    person?.socials?.instagram ? ['logo-instagram', person.socials.instagram] : null,
+    person?.socials?.spotify ? ['musical-notes-outline', person.socials.spotify] : null,
+    person?.socials?.web ? ['globe-outline', person.socials.web] : null,
+    person?.socials?.support ? ['headset-outline', person.socials.support] : null,
+  ].filter(Boolean);
+  if (!links.length) return null;
+  return <View style={[styles.profileSocialLinks, compact && styles.profileSocialLinksCompact]}>{links.map(([icon,label],index)=><View key={`${icon}-${index}`} style={[styles.profileSocialChip,{backgroundColor:theme.soft,borderColor:theme.border}]}><Ionicons name={icon} size={compact?13:14} color={theme.text}/><Text numberOfLines={1} style={[styles.profileSocialChipText,{color:theme.text}]}>{label}</Text></View>)}</View>;
+}
+
+function ProfileIdentityLayout({ person, theme, layout = 'default', proActive = false, plusActive = false, editable = false, onPhoto, showStatus = true, showSocials = false }) {
+  const mode = ['default','social','compact'].includes(layout) ? layout : 'default';
+  if (mode === 'social') {
+    return <View style={styles.profileSocialLayout}>
+      <View style={styles.profileSocialTop}>
+        <EffectAvatarStage person={person} theme={theme} size={76} effectSize={116} editable={editable} onPress={onPhoto} badgeColor={theme.card}/>
+        <View style={styles.profileSocialIdentity}>
+          <View style={styles.profileSocialNameLine}><ProfileDisplayName person={person} theme={theme}/><ProfilePlanBadgeRow person={person} proActive={proActive} plusActive={plusActive} compact align="start"/></View>
+          <Text style={[styles.profileSocialUsername,{color:theme.sub}]}>{person.username}</Text>
+          {showStatus ? <View style={styles.profileSocialStatus}><StatusBadge person={person} theme={theme}/></View> : null}
+        </View>
+      </View>
+      {!!person.bio && <Text style={[styles.profileSocialBio,{color:theme.text}]}>{person.bio}</Text>}
+      {showSocials ? <ProfileSocialLinks person={person} theme={theme}/> : null}
+    </View>;
+  }
+  const compact = mode === 'compact';
+  return <View style={[styles.profileCenteredLayout, compact && styles.profileCompactLayout]}>
+    <EffectAvatarStage person={person} theme={theme} size={compact?78:82} effectSize={compact?152:188} editable={editable} onPress={onPhoto} badgeColor={theme.card}/>
+    <View style={[styles.profileNameWithBadge, compact && styles.profileNameWithBadgeCompact]}><ProfileDisplayName person={person} theme={theme}/><ProfilePlanBadgeRow person={person} proActive={proActive} plusActive={plusActive} compact={compact}/></View>
+    <Text style={[styles.profileUser, compact && styles.profileUserCompact,{color:theme.sub}]}>{person.username}</Text>
+    {!!person.bio && <Text style={[styles.profileBio, compact && styles.profileBioCompact,{color:theme.sub}]}>{person.bio}</Text>}
+    {showStatus ? <StatusBadge person={person} theme={theme}/> : null}
+    {showSocials ? <ProfileSocialLinks person={person} theme={theme} compact={compact}/> : null}
+  </View>;
+}
+
+function ProfileLayoutChooser({ theme, value = 'default', onChange }) {
+  return <View style={styles.profileLayoutGrid}>{PROFILE_LAYOUTS.map(item=>{
+    const active=value===item.id;
+    return <Pressable key={item.id} onPress={()=>onChange?.(item.id)} style={[styles.profileLayoutChoice,{backgroundColor:active?theme.soft:theme.card,borderColor:active?ACCENT:theme.border}]}>
+      <View style={[styles.profileLayoutPreview,{backgroundColor:theme.bg}]}>
+        {item.id==='social'?<><View style={[styles.profileLayoutMiniAvatar,{backgroundColor:theme.inverse}]}/><View style={styles.profileLayoutMiniRight}><View style={[styles.profileLayoutMiniLine,{backgroundColor:theme.text,width:'76%'}]}/><View style={[styles.profileLayoutMiniLine,{backgroundColor:theme.sub,width:'56%'}]}/><View style={[styles.profileLayoutMiniLine,{backgroundColor:theme.sub,width:'88%',marginTop:6}]}/></View></>:<><View style={[styles.profileLayoutMiniAvatar,{backgroundColor:theme.inverse,width:item.id==='compact'?28:34,height:item.id==='compact'?28:34,borderRadius:20,alignSelf:'center'}]}/><View style={[styles.profileLayoutMiniLine,{backgroundColor:theme.text,width:'58%',alignSelf:'center',marginTop:item.id==='compact'?4:8}]}/><View style={[styles.profileLayoutMiniLine,{backgroundColor:theme.sub,width:'42%',alignSelf:'center'}]}/></>}
+      </View>
+      <View style={styles.profileLayoutChoiceBottom}><View style={{flex:1,minWidth:0}}><Text style={[styles.profileLayoutChoiceTitle,{color:theme.text}]}>{item.name}</Text><Text numberOfLines={2} style={[styles.profileLayoutChoiceSub,{color:theme.sub}]}>{item.subtitle}</Text></View>{active?<Ionicons name="checkmark-circle" size={19} color={ACCENT}/>:null}</View>
+    </Pressable>;
+  })}</View>;
+}
+
 function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setThemeSetting, languageSetting, setLanguageSetting, privacy, setPrivacy, openAccountSwitcher, openCustomStatus, openShop, openPlus, plusSubscription, openPro, proSubscription, insights, openAdminConsole, doubleTapEmoji = '❤️', openDoubleTapReaction, resetDemo, accountEmail, setPresenceMode, onSignOut }) {
   const [editing, setEditing] = useState(false);
   const [adminCustomizeOpen, setAdminCustomizeOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [presenceOpen, setPresenceOpen] = useState(false);
+  const profileLayout = (editing ? draft?.profileLayout : activeProfile?.profileLayout) || 'default';
+  const setProfileLayout = (layout) => {
+    if (editing) setDraft(prev => ({ ...prev, profileLayout: layout }));
+    else updateProfile({ ...activeProfile, profileLayout: layout });
+  };
   const proActive = !!activeProfile?.isAdmin || subscriptionIsActive(proSubscription);
   const plusActive = !!activeProfile?.isAdmin || subscriptionIsActive(plusSubscription) || proActive;
   const [draft, setDraft] = useState(activeProfile);
@@ -2106,17 +2188,20 @@ function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setT
   return (<>
     <ScrollView contentContainerStyle={styles.screenScroll} showsVerticalScrollIndicator={false}>
       <View style={styles.topHeader}><View><Text style={[styles.bigTitle, { color: theme.text }]}>Profile</Text><Text style={[styles.headerSub, { color: theme.sub }]}>Your public LINK identity</Text></View><View style={styles.headerActionRow}><IconButton icon="settings-outline" onPress={() => setSettingsOpen(true)} theme={theme} /><IconButton icon="bag-handle-outline" onPress={openShop} theme={theme} /><IconButton icon={editing ? 'checkmark' : 'create-outline'} onPress={editing ? save : () => setEditing(true)} theme={theme} filled={editing} /></View></View>
-      <View style={[styles.profileCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
-        <EffectAvatarStage person={editing ? draft : activeProfile} theme={theme} size={82} effectSize={188} editable onPress={photoMenu} badgeColor={theme.card} />
-        {editing ? <View style={{ width: '100%', marginTop: 18, gap: 10 }}>
+      <View style={[styles.profileCard, profileLayout === 'social' && styles.profileCardSocial, profileLayout === 'compact' && styles.profileCardCompact, { backgroundColor: theme.card, borderColor: theme.border }]}>
+        {editing ? <><ProfileIdentityLayout person={draft} theme={theme} layout={profileLayout} proActive={proActive} plusActive={plusActive} editable onPhoto={photoMenu} showStatus={false} showSocials={profileLayout === 'social'} /><View style={{ width: '100%', marginTop: profileLayout === 'compact' ? 8 : 14, gap: 10 }}>
           <TextInput value={draft.name} onChangeText={name => setDraft({ ...draft, name })} placeholder="Display name" placeholderTextColor={theme.sub} style={[styles.profileInput, { backgroundColor: theme.input, color: theme.text }]} />
           <TextInput value={draft.username} onChangeText={username => setDraft({ ...draft, username })} autoCapitalize="none" placeholder="@username" placeholderTextColor={theme.sub} style={[styles.profileInput, { backgroundColor: theme.input, color: theme.text }]} />
           <TextInput value={draft.bio} onChangeText={bio => setDraft({ ...draft, bio })} placeholder="Short bio" placeholderTextColor={theme.sub} style={[styles.profileInput, { backgroundColor: theme.input, color: theme.text }]} />
           <TextInput value={draft.socials?.instagram || ''} onChangeText={instagram => setDraft({ ...draft, socials: { ...(draft.socials || {}), instagram } })} autoCapitalize="none" placeholder="Instagram @handle" placeholderTextColor={theme.sub} style={[styles.profileInput, { backgroundColor: theme.input, color: theme.text }]} />
           <TextInput value={draft.socials?.spotify || ''} onChangeText={spotify => setDraft({ ...draft, socials: { ...(draft.socials || {}), spotify } })} placeholder="Spotify name" placeholderTextColor={theme.sub} style={[styles.profileInput, { backgroundColor: theme.input, color: theme.text }]} />
           {activeProfile.isAdmin ? <><TextInput value={draft.socials?.web || ''} onChangeText={web => setDraft({ ...draft, socials: { ...(draft.socials || {}), web } })} autoCapitalize="none" placeholder="Website" placeholderTextColor={theme.sub} style={[styles.profileInput, { backgroundColor: theme.input, color: theme.text }]} /><TextInput value={draft.socials?.support || ''} onChangeText={support => setDraft({ ...draft, socials: { ...(draft.socials || {}), support } })} autoCapitalize="none" placeholder="Support URL" placeholderTextColor={theme.sub} style={[styles.profileInput, { backgroundColor: theme.input, color: theme.text }]} /></> : null}
-        </View> : <><View style={styles.profileNameWithBadge}><ProfileDisplayName person={activeProfile} theme={theme} />{activeProfile.isAdmin ? <><CeoBadge /><VerifiedBadge /></> : proActive ? <ProBadge /> : plusActive ? <PlusBadge /> : null}</View><Text style={[styles.profileUser, { color: theme.sub }]}>{activeProfile.username}</Text><Text style={[styles.profileBio, { color: theme.sub }]}>{activeProfile.bio}</Text><StatusBadge person={activeProfile} theme={theme} /></>}
+        </View></> : <ProfileIdentityLayout person={activeProfile} theme={theme} layout={profileLayout} proActive={proActive} plusActive={plusActive} editable onPhoto={photoMenu} showStatus showSocials={profileLayout === 'social'} />}
       </View>
+
+      <SectionTitle theme={theme}>Profile layout</SectionTitle>
+      <Text style={[styles.profileLayoutIntro,{color:theme.sub}]}>Choose how your public LINK identity is arranged.</Text>
+      <ProfileLayoutChooser theme={theme} value={profileLayout} onChange={setProfileLayout}/>
 
       {activeProfile.isAdmin ? <>
         <SectionTitle theme={theme}>LINK Administration</SectionTitle>
@@ -2581,7 +2666,7 @@ function PersonProfileModal({ visible, onClose, theme, person, connected, privac
   const showSocials = privacy?.showSocials !== false;
   const showStatus = privacy?.showStatus !== false;
   const isMuted = moderationState?.mutedUntil === -1 || (moderationState?.mutedUntil || 0) > Date.now();
-  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.profileModal, { backgroundColor: theme.card }]} onPress={() => {}}><View style={styles.rowBetween}><Pill theme={theme}>{person.isAdmin ? 'LINK STAFF' : person.isLocal ? 'LOCAL ACCOUNT' : 'LINK PROFILE'}</Pill><IconButton icon="close" onPress={onClose} theme={theme} /></View><EffectAvatarStage person={person} size={84} effectSize={190} theme={theme} /><View style={styles.profileNameWithBadge}><ProfileDisplayName person={person} theme={theme} />{person.isAdmin ? <><CeoBadge /><VerifiedBadge /></> : proActive ? <ProBadge /> : plusActive ? <PlusBadge /> : null}</View><Text style={[styles.profileUser, { color: theme.sub }]}>{person.username}</Text><Text style={[styles.profileBio, { color: theme.sub }]}>{person.bio}</Text>{showStatus ? <StatusBadge person={person} theme={theme} /> : null}{showSocials ? <View style={[styles.socialBox, { backgroundColor: theme.soft }]}><View style={styles.socialLine}><Ionicons name="logo-instagram" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '700' }}>{person.socials?.instagram || person.username}</Text></View><View style={styles.socialLine}><Ionicons name="musical-notes-outline" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '700' }}>{person.socials?.spotify || person.name}</Text></View>{person.socials?.web ? <View style={styles.socialLine}><Ionicons name="globe-outline" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '700' }}>{person.socials.web}</Text></View> : null}{person.socials?.support ? <View style={styles.socialLine}><Ionicons name="headset-outline" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '700' }}>{person.socials.support}</Text></View> : null}</View> : null}{connected ? <><View style={styles.profileActionRow}><Pressable onPress={() => { onClose(); onChat(); }} style={[styles.profilePrimaryAction, { backgroundColor: theme.inverse }]}><Ionicons name="chatbubble-ellipses" size={18} color={theme.inverseText} /><Text style={[styles.primaryButtonText, { color: theme.inverseText }]}>Message</Text></Pressable><Pressable onPress={onToggleFavorite} style={[styles.profileSquareAction, { backgroundColor: favorite ? 'rgba(108,92,231,.14)' : theme.soft }]}><Ionicons name={favorite ? 'star' : 'star-outline'} size={21} color={favorite ? ACCENT : theme.text} /></Pressable></View><Pressable onPress={onWave} style={[styles.waveButton, { backgroundColor: theme.soft }]}><Ionicons name="hand-left-outline" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '800' }}>Send a wave</Text></Pressable></> : <Pressable onPress={() => { onSendRequest?.(); onClose(); }} style={[styles.widePrimary, { backgroundColor: theme.inverse }]}><Ionicons name="link" size={18} color={theme.inverseText} /><Text style={[styles.primaryButtonText, { color: theme.inverseText }]}>Send LINK request</Text></Pressable>}{viewerIsAdmin && !person.isAdmin ? <View style={[styles.adminModerationBox, { backgroundColor: theme.bg, borderColor: theme.border }]}><View style={styles.rowBetween}><View><Text style={[styles.settingsTitle, { color: theme.text }]}>Admin controls</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>{moderationState?.banned ? 'Account is banned' : isMuted ? 'Account is muted' : 'No active restriction'}</Text></View><Ionicons name="shield-checkmark" size={20} color={moderationState?.banned ? theme.danger : '#0A84FF'} /></View><View style={styles.adminModerationActions}>{moderationState?.banned ? <Pressable onPress={onAdminUnban} style={[styles.adminModerationButton, { backgroundColor: theme.soft }]}><Text style={{ color: theme.text, fontWeight: '900' }}>Unban</Text></Pressable> : <Pressable onPress={onAdminBan} style={[styles.adminModerationButton, { backgroundColor: '#FF3B30' }]}><Text style={{ color: '#fff', fontWeight: '900' }}>Ban</Text></Pressable>}{isMuted ? <Pressable onPress={onAdminUnmute} style={[styles.adminModerationButton, { backgroundColor: theme.soft }]}><Text style={{ color: theme.text, fontWeight: '900' }}>Unmute</Text></Pressable> : <Pressable onPress={onAdminMute} style={[styles.adminModerationButton, { backgroundColor: '#FF9F0A' }]}><Text style={{ color: '#fff', fontWeight: '900' }}>Mute</Text></Pressable>}</View></View> : null}<Pressable onPress={() => Alert.alert('Safety', viewerIsAdmin ? 'Admin moderation is available above. User reporting is prepared for the server-backed build.' : 'Block and report controls are prepared for server-backed moderation in a later build.')} style={[styles.safetyButton, { borderColor: theme.border }]}><Ionicons name="shield-outline" size={17} color={theme.sub} /><Text style={{ color: theme.sub, fontWeight: '700' }}>Safety options</Text></Pressable></Pressable></Pressable></Modal>;
+  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.profileModal, { backgroundColor: theme.card }]} onPress={() => {}}><View style={styles.rowBetween}><Pill theme={theme}>{person.isAdmin ? 'LINK STAFF' : person.isLocal ? 'LOCAL ACCOUNT' : 'LINK PROFILE'}</Pill><IconButton icon="close" onPress={onClose} theme={theme} /></View><ProfileIdentityLayout person={person} theme={theme} layout={person.profileLayout || 'default'} proActive={proActive} plusActive={plusActive} showStatus={showStatus} showSocials={showSocials && (person.profileLayout || 'default') === 'social'} />{showSocials && (person.profileLayout || 'default') !== 'social' ? <View style={[styles.socialBox, { backgroundColor: theme.soft }]}><View style={styles.socialLine}><Ionicons name="logo-instagram" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '700' }}>{person.socials?.instagram || person.username}</Text></View><View style={styles.socialLine}><Ionicons name="musical-notes-outline" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '700' }}>{person.socials?.spotify || person.name}</Text></View>{person.socials?.web ? <View style={styles.socialLine}><Ionicons name="globe-outline" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '700' }}>{person.socials.web}</Text></View> : null}{person.socials?.support ? <View style={styles.socialLine}><Ionicons name="headset-outline" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '700' }}>{person.socials.support}</Text></View> : null}</View> : null}{connected ? <><View style={styles.profileActionRow}><Pressable onPress={() => { onClose(); onChat(); }} style={[styles.profilePrimaryAction, { backgroundColor: theme.inverse }]}><Ionicons name="chatbubble-ellipses" size={18} color={theme.inverseText} /><Text style={[styles.primaryButtonText, { color: theme.inverseText }]}>Message</Text></Pressable><Pressable onPress={onToggleFavorite} style={[styles.profileSquareAction, { backgroundColor: favorite ? 'rgba(108,92,231,.14)' : theme.soft }]}><Ionicons name={favorite ? 'star' : 'star-outline'} size={21} color={favorite ? ACCENT : theme.text} /></Pressable></View><Pressable onPress={onWave} style={[styles.waveButton, { backgroundColor: theme.soft }]}><Ionicons name="hand-left-outline" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '800' }}>Send a wave</Text></Pressable></> : <Pressable onPress={() => { onSendRequest?.(); onClose(); }} style={[styles.widePrimary, { backgroundColor: theme.inverse }]}><Ionicons name="link" size={18} color={theme.inverseText} /><Text style={[styles.primaryButtonText, { color: theme.inverseText }]}>Send LINK request</Text></Pressable>}{viewerIsAdmin && !person.isAdmin ? <View style={[styles.adminModerationBox, { backgroundColor: theme.bg, borderColor: theme.border }]}><View style={styles.rowBetween}><View><Text style={[styles.settingsTitle, { color: theme.text }]}>Admin controls</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>{moderationState?.banned ? 'Account is banned' : isMuted ? 'Account is muted' : 'No active restriction'}</Text></View><Ionicons name="shield-checkmark" size={20} color={moderationState?.banned ? theme.danger : '#0A84FF'} /></View><View style={styles.adminModerationActions}>{moderationState?.banned ? <Pressable onPress={onAdminUnban} style={[styles.adminModerationButton, { backgroundColor: theme.soft }]}><Text style={{ color: theme.text, fontWeight: '900' }}>Unban</Text></Pressable> : <Pressable onPress={onAdminBan} style={[styles.adminModerationButton, { backgroundColor: '#FF3B30' }]}><Text style={{ color: '#fff', fontWeight: '900' }}>Ban</Text></Pressable>}{isMuted ? <Pressable onPress={onAdminUnmute} style={[styles.adminModerationButton, { backgroundColor: theme.soft }]}><Text style={{ color: theme.text, fontWeight: '900' }}>Unmute</Text></Pressable> : <Pressable onPress={onAdminMute} style={[styles.adminModerationButton, { backgroundColor: '#FF9F0A' }]}><Text style={{ color: '#fff', fontWeight: '900' }}>Mute</Text></Pressable>}</View></View> : null}<Pressable onPress={() => Alert.alert('Safety', viewerIsAdmin ? 'Admin moderation is available above. User reporting is prepared for the server-backed build.' : 'Block and report controls are prepared for server-backed moderation in a later build.')} style={[styles.safetyButton, { borderColor: theme.border }]}><Ionicons name="shield-outline" size={17} color={theme.sub} /><Text style={{ color: theme.sub, fontWeight: '700' }}>Safety options</Text></Pressable></Pressable></Pressable></Modal>;
 }
 
 
@@ -2967,6 +3052,7 @@ function MomentViewerModal({ visible, onClose, theme, moment, owner, activeId, o
 
 function WhatsNewModal({ visible, onClose, theme }) {
   const sections=[
+    ['person-circle-outline','Profile layouts','Choose Default, Social or Compact and sync the public profile arrangement across devices.'],
     ['paper-plane-outline','Instant message send','Outgoing messages appear immediately with a subtle lift, fade and micro-scale animation while encryption and upload continue in the background.'],
     ['speedometer-outline','Lower send latency','LINK now uses the cached auth session before inserts and no longer waits for the sender receipt before completing the send flow.'],
     ['navigate-outline','Gesture priority','Message gestures keep priority over app-wide edge navigation, while left-edge back still works elsewhere.'],
@@ -2978,7 +3064,7 @@ function WhatsNewModal({ visible, onClose, theme }) {
     ['diamond-outline','Pro benefits','LINK Pro members can reserve the Netflix 3-month promotional benefit.'],
     ['speedometer-outline','Stability','Realtime refreshes remain coalesced and serialized to prevent request storms.'],
   ];
-  return <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}><EdgeSwipeBack onBack={onClose}><SafeAreaView style={[styles.whatsNewPage,{backgroundColor:theme.bg}]}><View style={[styles.whatsNewHeader,{borderBottomColor:theme.border}]}><IconButton icon="chevron-back" onPress={onClose} theme={theme}/><View style={{flex:1}}><Text style={[styles.bigTitle,{color:theme.text}]}>What's new</Text><Text style={[styles.headerSub,{color:theme.sub}]}>{BUILD}</Text></View></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.whatsNewScroll}><LinearGradient colors={['#111318','#281A48','#101115']} style={styles.whatsNewHero}><View style={styles.whatsNewHeroIcon}><Text style={styles.whatsNewHeroIconText}>L</Text></View><View style={{flex:1}}><Text style={styles.whatsNewHeroEyebrow}>LINK 2.0.2</Text><Text style={styles.whatsNewHeroTitle}>Messages that feel instant.</Text><Text style={styles.whatsNewHeroSub}>Smooth Send · optimistic delivery animation, lower perceived latency and all 2.0 stability fixes preserved.</Text></View></LinearGradient><Text style={[styles.sectionTitle,{color:theme.text,marginTop:22,marginBottom:10}]}>Update highlights</Text><View style={[styles.whatsNewCard,{backgroundColor:theme.card,borderColor:theme.border}]}>{sections.map(([icon,title,body],index)=><View key={title} style={[styles.whatsNewRow,index===sections.length-1&&{borderBottomWidth:0}, {borderBottomColor:theme.border}]}><View style={[styles.whatsNewIcon,{backgroundColor:theme.soft}]}><Ionicons name={icon} size={20} color={ACCENT}/></View><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{title}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{body}</Text></View></View>)}</View><View style={[styles.whatsNewNote,{backgroundColor:theme.soft}]}><Ionicons name="notifications-outline" size={18} color={theme.text}/><Text style={[styles.settingsSub,{color:theme.sub,flex:1}]}>Remote push notifications require a development or production build; Expo Go uses in-app alerts here.</Text></View></ScrollView></SafeAreaView></EdgeSwipeBack></Modal>;
+  return <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}><EdgeSwipeBack onBack={onClose}><SafeAreaView style={[styles.whatsNewPage,{backgroundColor:theme.bg}]}><View style={[styles.whatsNewHeader,{borderBottomColor:theme.border}]}><IconButton icon="chevron-back" onPress={onClose} theme={theme}/><View style={{flex:1}}><Text style={[styles.bigTitle,{color:theme.text}]}>What's new</Text><Text style={[styles.headerSub,{color:theme.sub}]}>{BUILD}</Text></View></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.whatsNewScroll}><LinearGradient colors={['#111318','#281A48','#101115']} style={styles.whatsNewHero}><View style={styles.whatsNewHeroIcon}><Text style={styles.whatsNewHeroIconText}>L</Text></View><View style={{flex:1}}><Text style={styles.whatsNewHeroEyebrow}>LINK 2.0.3</Text><Text style={styles.whatsNewHeroTitle}>Your profile, your layout.</Text><Text style={styles.whatsNewHeroSub}>Profile Layouts · Default, Social and Compact, synced through LINK Production.</Text></View></LinearGradient><Text style={[styles.sectionTitle,{color:theme.text,marginTop:22,marginBottom:10}]}>Update highlights</Text><View style={[styles.whatsNewCard,{backgroundColor:theme.card,borderColor:theme.border}]}>{sections.map(([icon,title,body],index)=><View key={title} style={[styles.whatsNewRow,index===sections.length-1&&{borderBottomWidth:0}, {borderBottomColor:theme.border}]}><View style={[styles.whatsNewIcon,{backgroundColor:theme.soft}]}><Ionicons name={icon} size={20} color={ACCENT}/></View><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{title}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{body}</Text></View></View>)}</View><View style={[styles.whatsNewNote,{backgroundColor:theme.soft}]}><Ionicons name="notifications-outline" size={18} color={theme.text}/><Text style={[styles.settingsSub,{color:theme.sub,flex:1}]}>Remote push notifications require a development or production build; Expo Go uses in-app alerts here.</Text></View></ScrollView></SafeAreaView></EdgeSwipeBack></Modal>;
 }
 
 function ForegroundNotice({ notice, theme, onPress }) {
@@ -4007,6 +4093,37 @@ const styles = StyleSheet.create({
   effectButtonText: { color: '#fff', fontSize: 12, fontWeight: '900' },
   shopFootnote: { minHeight: 60, borderWidth: StyleSheet.hairlineWidth, borderRadius: 18, padding: 13, flexDirection: 'row', gap: 9, alignItems: 'center', marginTop: 14 },
 
+
+  profileCenteredLayout:{width:'100%',alignItems:'center'},
+  profileCompactLayout:{paddingTop:0,paddingBottom:0},
+  profileCardSocial:{alignItems:'stretch',paddingHorizontal:18,paddingVertical:18},
+  profileCardCompact:{paddingTop:13,paddingBottom:15},
+  profileNameWithBadgeCompact:{marginTop:4,gap:6},
+  profileUserCompact:{marginTop:1,fontSize:13},
+  profileBioCompact:{marginTop:5,marginBottom:7,fontSize:12.5},
+  profilePlanBadgeRow:{flexDirection:'row',alignItems:'center',justifyContent:'center',gap:6},
+  profilePlanBadgeRowStart:{justifyContent:'flex-start'},
+  profileSocialLayout:{width:'100%'},
+  profileSocialTop:{flexDirection:'row',alignItems:'center',gap:13},
+  profileSocialIdentity:{flex:1,minWidth:0},
+  profileSocialNameLine:{flexDirection:'row',alignItems:'center',flexWrap:'wrap',gap:7},
+  profileSocialUsername:{fontSize:13.5,fontWeight:'600',marginTop:3},
+  profileSocialStatus:{alignSelf:'flex-start',marginTop:8},
+  profileSocialBio:{fontSize:13.5,lineHeight:19,fontWeight:'600',marginTop:12},
+  profileSocialLinks:{width:'100%',flexDirection:'row',flexWrap:'wrap',gap:7,marginTop:11},
+  profileSocialLinksCompact:{marginTop:8,gap:6},
+  profileSocialChip:{maxWidth:'100%',minHeight:31,paddingHorizontal:9,borderRadius:11,borderWidth:StyleSheet.hairlineWidth,flexDirection:'row',alignItems:'center',gap:6},
+  profileSocialChipText:{fontSize:10.5,fontWeight:'800',maxWidth:155},
+  profileLayoutIntro:{fontSize:11.5,lineHeight:16,marginTop:-7,marginBottom:10},
+  profileLayoutGrid:{flexDirection:'row',gap:8,marginBottom:13},
+  profileLayoutChoice:{flex:1,minWidth:0,borderWidth:StyleSheet.hairlineWidth,borderRadius:19,padding:8},
+  profileLayoutPreview:{height:72,borderRadius:13,padding:9,overflow:'hidden',flexDirection:'row',alignItems:'center',gap:7},
+  profileLayoutMiniAvatar:{width:30,height:30,borderRadius:15,opacity:.92},
+  profileLayoutMiniRight:{flex:1,gap:4},
+  profileLayoutMiniLine:{height:5,borderRadius:3,opacity:.38},
+  profileLayoutChoiceBottom:{flexDirection:'row',alignItems:'center',gap:4,paddingHorizontal:2,paddingTop:8,paddingBottom:2},
+  profileLayoutChoiceTitle:{fontSize:11,fontWeight:'900'},
+  profileLayoutChoiceSub:{fontSize:8.5,lineHeight:11,marginTop:2},
 
   plusBadge: { minHeight: 24, paddingHorizontal: 8, borderRadius: 999, backgroundColor: ACCENT, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 },
   plusBadgeCompact: { minHeight: 20, paddingHorizontal: 6 },

@@ -126,7 +126,7 @@
       <div class="meta">
         <div class="row"><span id="repoDot" class="dot wait"></span><span class="label">Repository</span><span class="value" id="repoValue">Zjišťuji…</span></div>
         <div class="row"><span class="dot"></span><span class="label">Expo SDK</span><span class="value">57</span></div>
-        <div class="row"><span class="dot"></span><span class="label">Build</span><span class="value">LINK 2.0.2 · Smooth Send</span></div>
+        <div class="row"><span class="dot"></span><span class="label">Build</span><span class="value">LINK 2.0.3 · Profile Layouts</span></div>
       </div>
 
       <div class="actions">
@@ -141,7 +141,7 @@
 
   <script>
     (() => {
-      const BUILD = 'LINK 2.0.2 · Smooth Send';
+      const BUILD = 'LINK 2.0.3 · Profile Layouts';
       const SDK_VERSION = '57.0.0';
       const DEFAULT_BRANCH = 'main';
       const DEPENDENCIES = [
@@ -208,7 +208,7 @@
 
       function validateSourceText(text) {
         if (!text.includes('export default')) throw new Error('App.snack.js nevypadá jako Expo entry soubor');
-        if (!text.includes('LINK 2.0.2 · Smooth Send')) throw new Error('Načtený App.snack.js není LINK 2.0.2 build');
+        if (!text.includes('LINK 2.0.3 · Profile Layouts')) throw new Error('Načtený App.snack.js není LINK 2.0.3 build');
         if (text.includes('processLock')) throw new Error('Zdroj obsahuje starý Supabase client build');
         if (text.includes('react-native-url-polyfill') || text.includes('setupURLPolyfill')) throw new Error('Zdroj obsahuje starý URL polyfill build');
         if (!text.includes('@supabase/supabase-js')) throw new Error('App.snack.js nemá Supabase klienta');
@@ -254,7 +254,7 @@
       createBtn.addEventListener('click', async () => {
         createBtn.disabled = true;
         createBtn.textContent = 'Kontroluji App.snack.js…';
-        status.textContent = 'Ověřuji LINK 2.0.2 bez GitHub API…';
+        status.textContent = 'Ověřuji LINK 2.0.3 bez GitHub API…';
 
         const ok = await verifySource();
         if (!ok) {
@@ -268,7 +268,7 @@
 
         const params = new URLSearchParams();
         params.set('name', BUILD);
-        params.set('description', 'LINK 2.0.2 · Smooth Send — instant optimistic messages, subtle Instagram-style send animation, lower send latency, Gesture Polish and LINK 2.0 stability preserved. Generated from GitHub.');
+        params.set('description', 'LINK 2.0.3 · Profile Layouts — Default, Social and Compact public profile layouts synced across devices, with Smooth Send, Gesture Polish and LINK 2.0 stability preserved. Generated from GitHub.');
         params.set('sdkVersion', SDK_VERSION);
         params.set('platform', 'mydevice');
         params.set('supportedPlatforms', 'ios,android,web');
