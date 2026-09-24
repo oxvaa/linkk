@@ -1,4 +1,4 @@
-# LINK 2.0 · Major Update
+# LINK 2.0.1 · Gesture Polish
 
 Major beta build for Expo Snack / Expo Go backed by LINK Production (Supabase).
 
@@ -19,3 +19,11 @@ System remote push is intentionally not faked inside Expo Go. The backend/in-app
 
 ## Netflix note
 The current Pro benefit is a prototype reservation. A real Netflix partnership/redemption integration is required before this can activate a real Netflix subscription.
+
+
+## 2.0.1 Gesture Polish
+- Smooth Instagram-style swipe-to-reply directly on the message bubble
+- Removed permanent purple reply arrows beside messages
+- Message swipe now wins over parent edge-back navigation
+- Narrower, more deliberate global edge-back gesture
+- Swipe reply focuses the composer automatically

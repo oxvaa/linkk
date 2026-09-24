@@ -68,7 +68,12 @@ Object.assign(CS_TRANSLATIONS, {
   "Version info":"Info o verzi",
   "What's new":"Co je nového",
   "Major Update":"Velká aktualizace",
-  "A new chapter for LINK.":"Nová kapitola LINKu.",
+  "Gesture polish for LINK.":"Vyladěná gesta v LINKu.",
+  "Patch update · smoother replies, safer navigation gestures and chat polish.":"Opravná aktualizace · plynulejší odpovědi, bezpečnější navigační gesta a vyladění chatu.",
+  "Gesture priority":"Priorita gest",
+  "Message gestures now take priority over app-wide edge navigation, while left-edge back still works elsewhere.":"Gesta zpráv mají nyní přednost před návratem z levého okraje. Gesto zpět dál funguje všude jinde.",
+  "Smooth swipe-to-reply":"Plynulé přejetí pro odpověď",
+  "Drag the message itself to the right. No permanent reply icons, no fight with the back gesture.":"Potáhni přímo zprávu doprava. Bez trvalých ikon odpovědi a bez konfliktu s gestem zpět.",
   "Navigation & UI":"Navigace a UI",
   "Swipe from the left edge to go back across LINK.":"Přejetím od levého okraje se vrátíš zpět napříč LINKem.",
   "Messages & replies":"Zprávy a odpovědi",
@@ -1040,7 +1045,7 @@ const STORAGE_KEY = '@link_live_backend_v18';
 const DRAFT_PREFIX = '@link_chat_draft_v1';
 const ACCENT = '#6C5CE7';
 const EMPTY_MESSAGES = Object.freeze([]);
-const BUILD = 'LINK 2.0 · Major Update';
+const BUILD = 'LINK 2.0.1 · Gesture Polish';
 
 function NetflixWordmark({ width = 112, height = 31, style }) {
   return (
@@ -1353,16 +1358,19 @@ function initialData(userId = null) {
 }
 
 function EdgeSwipeBack({ onBack, children, enabled = true, style }) {
+  // Important: this responder intentionally does NOT capture the gesture.
+  // Nested controls (especially message bubbles) get first chance to claim a horizontal swipe.
   const panResponder = useMemo(() => PanResponder.create({
-    onMoveShouldSetPanResponderCapture: (_, gesture) => {
+    onMoveShouldSetPanResponder: (_, gesture) => {
       if (!enabled) return false;
-      const fromLeftEdge = gesture.x0 <= 30;
-      const horizontal = Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.25;
-      return fromLeftEdge && horizontal && gesture.dx > 8;
+      const fromLeftEdge = gesture.x0 <= 18;
+      const horizontal = gesture.dx > 14 && Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.6;
+      return fromLeftEdge && horizontal;
     },
-    onPanResponderTerminationRequest: () => false,
+    onPanResponderTerminationRequest: () => true,
     onPanResponderRelease: (_, gesture) => {
-      if (gesture.dx > 72 && Math.abs(gesture.dy) < 90 && gesture.vx > 0.05) onBack?.();
+      const deliberateBackSwipe = gesture.dx > 88 && Math.abs(gesture.dy) < 72 && gesture.vx > 0.08;
+      if (deliberateBackSwipe) onBack?.();
     },
   }), [enabled, onBack]);
 
@@ -2169,17 +2177,42 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
   const outgoingText = outgoingTheme.textColor || '#FFFFFF';
   const overlayColor = outgoingText === '#FFFFFF' ? 'rgba(255,255,255,.16)' : 'rgba(0,0,0,.08)';
   const swipeX = useRef(new Animated.Value(0)).current;
+  const resetReplySwipe = () => Animated.spring(swipeX, {
+    toValue: 0,
+    useNativeDriver: true,
+    stiffness: 430,
+    damping: 34,
+    mass: 0.72,
+    overshootClamping: false,
+  }).start();
   const replyGesture = useMemo(() => PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gesture) => gesture.dx > 7 && Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.45,
-    onPanResponderGrant: () => swipeX.stopAnimation(),
-    onPanResponderMove: (_, gesture) => swipeX.setValue(Math.max(0, Math.min(76, gesture.dx))),
+    // Message swipe wins before the parent edge-back responder, but only for a clear horizontal drag.
+    onMoveShouldSetPanResponderCapture: (_, gesture) => {
+      const horizontal = gesture.dx > 6 && Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.2;
+      return horizontal;
+    },
+    onMoveShouldSetPanResponder: (_, gesture) => {
+      const horizontal = gesture.dx > 6 && Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.2;
+      return horizontal;
+    },
+    onPanResponderGrant: () => {
+      swipeX.stopAnimation();
+      swipeX.setValue(0);
+    },
+    onPanResponderMove: (_, gesture) => {
+      const dx = Math.max(0, gesture.dx);
+      // Instagram-like rubber band: direct movement first, then progressively more resistance.
+      const translated = dx <= 42 ? dx : 42 + (dx - 42) * 0.22;
+      swipeX.setValue(Math.min(62, translated));
+    },
     onPanResponderTerminationRequest: () => false,
     onPanResponderRelease: (_, gesture) => {
-      const shouldReply = gesture.dx > 46 && Math.abs(gesture.dy) < 68;
-      Animated.spring(swipeX,{toValue:0,useNativeDriver:true,speed:22,bounciness:4}).start();
+      const horizontalEnough = Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.12;
+      const shouldReply = horizontalEnough && (gesture.dx >= 38 || (gesture.dx >= 27 && gesture.vx > 0.62));
+      resetReplySwipe();
       if (shouldReply) onSwipeReply?.();
     },
-    onPanResponderTerminate: () => Animated.spring(swipeX,{toValue:0,useNativeDriver:true}).start(),
+    onPanResponderTerminate: resetReplySwipe,
   }), [onSwipeReply, swipeX]);
 
   const content = (
@@ -2213,9 +2246,8 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
   ) : null;
 
   return (
-    <View style={styles.swipeReplyShell} {...replyGesture.panHandlers}>
-      <View pointerEvents="none" style={[styles.swipeReplyCue,{backgroundColor:theme.soft}]}><Ionicons name="arrow-undo" size={17} color={ACCENT}/></View>
-      <Animated.View style={[styles.messageLine, groupMode && styles.groupMessageLine, { justifyContent: mine ? 'flex-end' : 'flex-start', transform:[{translateX:swipeX}] }]}>
+    <View style={styles.swipeReplyShell}>
+      <Animated.View {...replyGesture.panHandlers} style={[styles.messageLine, groupMode && styles.groupMessageLine, { justifyContent: mine ? 'flex-end' : 'flex-start', transform:[{translateX:swipeX}] }]}>
       {groupMode && !mine ? avatarSlot : null}
       <View style={[styles.messageStack, groupMode && styles.groupMessageStack, { alignItems: mine ? 'flex-end' : 'flex-start' }]}>
         {groupMode && showSender ? <Text style={[styles.groupSenderName, mine && styles.groupSenderNameMine, { color: theme.sub }]}>{mine ? 'You' : (sender?.name || 'LINK member')}</Text> : null}
@@ -2251,6 +2283,7 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
   const [draftLoaded,setDraftLoaded]=useState(false);
   const [groupInfoOpen, setGroupInfoOpen] = useState(false);
   const listRef = useRef(null);
+  const composerRef = useRef(null);
   const signalRef = useRef(null);
   const typingTimerRef = useRef(null);
   const remoteTypingTimersRef = useRef({});
@@ -2330,10 +2363,18 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
     setText(prev => prev.replace(/@[a-z0-9_.]*$/i, `${handle} `));
   };
 
+  const beginReply = (message) => {
+    if (!message || message.deletedAt) return;
+    setEditTarget(null);
+    setReplyTo(message);
+    requestAnimationFrame(() => composerRef.current?.focus?.());
+    setTimeout(() => listRef.current?.scrollToEnd?.({ animated: true }), 90);
+  };
+
   const longPress = (m) => {
     const mine = m.senderId === activeProfile.id;
     const buttons = [
-      { text: 'Reply', onPress: () => setReplyTo(m) },
+      { text: 'Reply', onPress: () => beginReply(m) },
       { text: m.pinned ? 'Unpin' : 'Pin', onPress: () => onPin(person.id,m,!m.pinned) },
       { text: 'Forward', onPress: () => onForward(person.id,m) },
       { text: 'React', onPress: () => Alert.alert('React', 'Choose a reaction', ['❤️','😂','🔥','😮','😢','👏'].map(emoji=>({text:emoji,onPress:()=>onReact(person.id,m.id,emoji)})).concat({text:'Cancel',style:'cancel'})) },
@@ -2364,7 +2405,7 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
         </View>
         <Pressable onPress={onOpenEncryptionInfo} style={[styles.metContext, { backgroundColor: theme.soft }]}><Ionicons name="lock-closed" size={13} color={theme.success} /><Text style={[styles.metContextText, { color: theme.sub }]}>Encrypted chat</Text><Ionicons name="information-circle-outline" size={13} color={theme.sub} /></Pressable>
         {silentConfig?.enabled ? <Pressable onPress={onOpenSilent} style={[styles.silentBanner, { backgroundColor: `${chatAccent}14` }]}><Ionicons name="timer" size={14} color={chatAccent} /><Text style={[styles.silentBannerText, { color: chatAccent }]}>Silent Chat · new messages disappear after {formatSilentTimer(silentConfig.timerSeconds)}</Text><Ionicons name="chevron-forward" size={13} color={chatAccent} /></Pressable> : null}
-        {pinnedMessages.length ? <Pressable onPress={() => { const pin=pinnedMessages[pinnedMessages.length-1]; setReplyTo(pin); }} style={[styles.pinnedBanner,{backgroundColor:theme.card,borderBottomColor:theme.border}]}><Ionicons name="pin" size={14} color={chatAccent}/><View style={{flex:1}}><Text style={{color:theme.text,fontWeight:'900',fontSize:11}}>Pinned message</Text><Text numberOfLines={1} style={{color:theme.sub,fontSize:11}}>{pinnedMessages[pinnedMessages.length-1].text || pinnedMessages[pinnedMessages.length-1].type}</Text></View><Text style={{color:theme.sub,fontSize:10}}>{pinnedMessages.length}</Text></Pressable> : null}
+        {pinnedMessages.length ? <Pressable onPress={() => { const pin=pinnedMessages[pinnedMessages.length-1]; beginReply(pin); }} style={[styles.pinnedBanner,{backgroundColor:theme.card,borderBottomColor:theme.border}]}><Ionicons name="pin" size={14} color={chatAccent}/><View style={{flex:1}}><Text style={{color:theme.text,fontWeight:'900',fontSize:11}}>Pinned message</Text><Text numberOfLines={1} style={{color:theme.sub,fontSize:11}}>{pinnedMessages[pinnedMessages.length-1].text || pinnedMessages[pinnedMessages.length-1].type}</Text></View><Text style={{color:theme.sub,fontSize:10}}>{pinnedMessages.length}</Text></Pressable> : null}
         <View style={styles.chatBody}>
           {chatThemeScope === 'full' ? <LinearGradient pointerEvents="none" colors={[theme.bg, `${chatAccent}08`, theme.bg]} locations={[0, .56, 1]} style={StyleSheet.absoluteFill} /> : null}
           <FlatList ref={listRef} data={messages} keyExtractor={m => m.id} contentContainerStyle={styles.messageList} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" onLayout={() => setTimeout(() => listRef.current?.scrollToEnd?.({ animated: false }), 20)} onContentSizeChange={() => listRef.current?.scrollToEnd?.({ animated: false })}
@@ -2373,7 +2414,7 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
               const next = messages[index + 1];
               const sameAsPrev = !!prev && prev.senderId === item.senderId;
               const sameAsNext = !!next && next.senderId === item.senderId;
-              return <ChatMessage message={item} mine={item.senderId === activeProfile.id} theme={theme} profiles={profiles} chatTheme={chatTheme} quoted={messages.find(x => x.id === item.replyTo)} onSwipeReply={() => setReplyTo(item)} onDoubleTap={() => onReact(person.id, item.id, doubleTapEmoji)} onLongPress={() => longPress(item)} groupMode={isGroup} showSender={isGroup && !sameAsPrev} showAvatar={isGroup && !sameAsNext} showMeta={!isGroup || !sameAsNext} />;
+              return <ChatMessage message={item} mine={item.senderId === activeProfile.id} theme={theme} profiles={profiles} chatTheme={chatTheme} quoted={messages.find(x => x.id === item.replyTo)} onSwipeReply={() => beginReply(item)} onDoubleTap={() => onReact(person.id, item.id, doubleTapEmoji)} onLongPress={() => longPress(item)} groupMode={isGroup} showSender={isGroup && !sameAsPrev} showAvatar={isGroup && !sameAsNext} showMeta={!isGroup || !sameAsNext} />;
             }}
             ListEmptyComponent={<View style={styles.emptyChat}><View style={[styles.emptyChatIcon, { backgroundColor: `${chatAccent}18` }]}><Ionicons name={isGroup ? 'people' : 'chatbubble-ellipses'} size={28} color={chatAccent} /></View><Text style={[styles.emptyTitle, { color: theme.text }]}>{isGroup ? 'New Group' : 'New LINK'}</Text><Text style={[styles.emptyBody, { color: theme.sub }]}>{isGroup ? 'Send the first message to the group.' : `Say hi to ${person.name.split(' ')[0]}.`}</Text></View>}
             ListFooterComponent={activeTypingIds.length ? <View style={styles.typingLine}><View style={[styles.typingBubble, { backgroundColor: theme.soft, borderColor: theme.border }]}><Text style={{ color: theme.sub, letterSpacing: 2, fontWeight: '900' }}>•••</Text></View><Text numberOfLines={1} style={{ color: theme.sub, fontSize: 10.5, fontWeight: '700', flex: 1 }}>{activeTypingIds.map(id=>profiles[id]?.name?.split(' ')[0]||'Someone').join(', ')} {activeTypingIds.length>1?'are':'is'} typing…</Text></View> : <View style={styles.typingSpacer} />}
@@ -2382,7 +2423,7 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
         {editTarget ? <View style={[styles.replyComposerBar,{backgroundColor:theme.soft}]}><Ionicons name="create-outline" size={17} color={chatAccent}/><View style={{flex:1}}><Text style={{color:chatAccent,fontWeight:'900',fontSize:11}}>Editing message</Text><Text numberOfLines={1} style={{color:theme.sub,fontSize:12}}>{editTarget.text}</Text></View><Pressable onPress={()=>{setEditTarget(null);setText('');}}><Ionicons name="close" size={19} color={theme.sub}/></Pressable></View> : null}
         {replyTo ? <View style={[styles.replyComposerBar, { backgroundColor: theme.soft }]}><View style={{ flex: 1 }}><Text style={{ color: chatAccent, fontWeight: '800', fontSize: 11 }}>Replying to {replyTo.senderId === activeProfile.id ? 'yourself' : profiles[replyTo.senderId]?.name}</Text><Text numberOfLines={1} style={{ color: theme.sub, fontSize: 12 }}>{replyTo.type === 'text' ? replyTo.text : replyTo.type}</Text></View><Pressable onPress={() => setReplyTo(null)}><Ionicons name="close" size={19} color={theme.sub} /></Pressable></View> : null}
         {mentionSuggestions.length ? <View style={[styles.mentionSuggestBar,{backgroundColor:theme.bg}]}><ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="always" contentContainerStyle={styles.mentionSuggestContent}>{mentionSuggestions.map(member=><Pressable key={member.id} onPress={()=>insertMention(member)} style={[styles.mentionSuggestChip,{backgroundColor:theme.card,borderColor:theme.border}]}><Avatar person={member} size={27} theme={theme}/><View><Text style={[styles.mentionSuggestName,{color:theme.text}]}>{member.name}</Text><Text style={[styles.mentionSuggestUser,{color:theme.sub}]}>{member.username}</Text></View></Pressable>)}</ScrollView></View> : null}
-        <View style={[styles.composerWrap, { backgroundColor: theme.bg }]}><Pressable style={[styles.plusButton, { backgroundColor: theme.soft, borderColor: theme.border }]} onPress={() => Alert.alert('Send', 'Choose an attachment.', [{ text: 'Photo or video', onPress: pickChatPhoto }, { text: 'Voice message', onPress: () => send({ type: 'voice', text: '', duration: '0:08' }) }, {text:'Location card',onPress:()=>send({type:'location',text:'Current location'})},{text:'Contact card',onPress:()=>send({type:'contact',text:activeProfile.name})},{ text: 'Cancel', style: 'cancel' }])}><Ionicons name="add" size={24} color={theme.text} /></Pressable><View style={[styles.composer, { backgroundColor: theme.card, borderColor: theme.border }]}><TextInput value={text} onChangeText={changeText} onFocus={() => setTimeout(() => listRef.current?.scrollToEnd?.({ animated: true }), 80)} placeholder={editTarget?'Edit message':silentConfig?.enabled ? `Silent message · ${formatSilentTimer(silentConfig.timerSeconds)}` : 'Message'} placeholderTextColor={theme.sub} style={[styles.composerInput, { color: theme.text }]} multiline maxLength={1000} /><Pressable onPress={() => send()} style={[styles.sendButton, { backgroundColor: text.trim() ? chatAccent : theme.soft }]}><Ionicons name={editTarget?'checkmark':'arrow-up'} size={19} color={text.trim() ? (chatTheme.textColor || '#fff') : theme.sub} /></Pressable></View></View>
+        <View style={[styles.composerWrap, { backgroundColor: theme.bg }]}><Pressable style={[styles.plusButton, { backgroundColor: theme.soft, borderColor: theme.border }]} onPress={() => Alert.alert('Send', 'Choose an attachment.', [{ text: 'Photo or video', onPress: pickChatPhoto }, { text: 'Voice message', onPress: () => send({ type: 'voice', text: '', duration: '0:08' }) }, {text:'Location card',onPress:()=>send({type:'location',text:'Current location'})},{text:'Contact card',onPress:()=>send({type:'contact',text:activeProfile.name})},{ text: 'Cancel', style: 'cancel' }])}><Ionicons name="add" size={24} color={theme.text} /></Pressable><View style={[styles.composer, { backgroundColor: theme.card, borderColor: theme.border }]}><TextInput ref={composerRef} value={text} onChangeText={changeText} onFocus={() => setTimeout(() => listRef.current?.scrollToEnd?.({ animated: true }), 80)} placeholder={editTarget?'Edit message':silentConfig?.enabled ? `Silent message · ${formatSilentTimer(silentConfig.timerSeconds)}` : 'Message'} placeholderTextColor={theme.sub} style={[styles.composerInput, { color: theme.text }]} multiline maxLength={1000} /><Pressable onPress={() => send()} style={[styles.sendButton, { backgroundColor: text.trim() ? chatAccent : theme.soft }]}><Ionicons name={editTarget?'checkmark':'arrow-up'} size={19} color={text.trim() ? (chatTheme.textColor || '#fff') : theme.sub} /></Pressable></View></View>
       </SafeAreaView>
       {isGroup ? <GroupInfoModal visible={groupInfoOpen} onClose={() => setGroupInfoOpen(false)} theme={theme} group={group} profiles={profiles} activeId={activeProfile.id} onRename={onRenameGroup} onToggleEveryone={onToggleGroupEveryone} onPickAvatar={onPickGroupAvatar} onRotateInvite={onRotateGroupInvite} onToggleInvite={onToggleGroupInvite} onSetRole={onSetGroupRole} onRemoveMember={onRemoveGroupMember} onTransferOwner={onTransferGroupOwner} onLeave={onLeaveGroup} /> : null}
     </KeyboardAvoidingView>
@@ -2869,8 +2910,8 @@ function MomentViewerModal({ visible, onClose, theme, moment, owner, activeId, o
 
 function WhatsNewModal({ visible, onClose, theme }) {
   const sections=[
-    ['navigate-outline','Navigation & UI','Swipe from the left edge to go back across LINK.'],
-    ['arrow-undo-outline','Messages & replies','Swipe a message right to reply instantly, with smoother realtime and read states.'],
+    ['navigate-outline','Gesture priority','Message gestures now take priority over app-wide edge navigation, while left-edge back still works elsewhere.'],
+    ['chatbubble-ellipses-outline','Smooth swipe-to-reply','Drag the message itself to the right. No permanent reply icons, no fight with the back gesture.'],
     ['people-circle-outline','Groups 2.0','Admins, invite codes, avatars, member controls and ownership transfer.'],
     ['aperture-outline','Moments 2.0','Reactions and view counts make Moments more social.'],
     ['notifications-outline','Notifications','Mentions and reactions can appear as lightweight in-app alerts.'],
@@ -2878,7 +2919,7 @@ function WhatsNewModal({ visible, onClose, theme }) {
     ['diamond-outline','Pro benefits','LINK Pro members can reserve the Netflix 3-month promotional benefit.'],
     ['speedometer-outline','Stability','Realtime refreshes remain coalesced and serialized to prevent request storms.'],
   ];
-  return <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}><EdgeSwipeBack onBack={onClose}><SafeAreaView style={[styles.whatsNewPage,{backgroundColor:theme.bg}]}><View style={[styles.whatsNewHeader,{borderBottomColor:theme.border}]}><IconButton icon="chevron-back" onPress={onClose} theme={theme}/><View style={{flex:1}}><Text style={[styles.bigTitle,{color:theme.text}]}>What's new</Text><Text style={[styles.headerSub,{color:theme.sub}]}>{BUILD}</Text></View></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.whatsNewScroll}><LinearGradient colors={['#111318','#281A48','#101115']} style={styles.whatsNewHero}><View style={styles.whatsNewHeroIcon}><Text style={styles.whatsNewHeroIconText}>L</Text></View><View style={{flex:1}}><Text style={styles.whatsNewHeroEyebrow}>LINK 2.0</Text><Text style={styles.whatsNewHeroTitle}>A new chapter for LINK.</Text><Text style={styles.whatsNewHeroSub}>Major Update · messaging, groups, Moments, navigation and stability.</Text></View></LinearGradient><Text style={[styles.sectionTitle,{color:theme.text,marginTop:22,marginBottom:10}]}>Update highlights</Text><View style={[styles.whatsNewCard,{backgroundColor:theme.card,borderColor:theme.border}]}>{sections.map(([icon,title,body],index)=><View key={title} style={[styles.whatsNewRow,index===sections.length-1&&{borderBottomWidth:0}, {borderBottomColor:theme.border}]}><View style={[styles.whatsNewIcon,{backgroundColor:theme.soft}]}><Ionicons name={icon} size={20} color={ACCENT}/></View><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{title}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{body}</Text></View></View>)}</View><View style={[styles.whatsNewNote,{backgroundColor:theme.soft}]}><Ionicons name="notifications-outline" size={18} color={theme.text}/><Text style={[styles.settingsSub,{color:theme.sub,flex:1}]}>Remote push notifications require a development or production build; Expo Go uses in-app alerts here.</Text></View></ScrollView></SafeAreaView></EdgeSwipeBack></Modal>;
+  return <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}><EdgeSwipeBack onBack={onClose}><SafeAreaView style={[styles.whatsNewPage,{backgroundColor:theme.bg}]}><View style={[styles.whatsNewHeader,{borderBottomColor:theme.border}]}><IconButton icon="chevron-back" onPress={onClose} theme={theme}/><View style={{flex:1}}><Text style={[styles.bigTitle,{color:theme.text}]}>What's new</Text><Text style={[styles.headerSub,{color:theme.sub}]}>{BUILD}</Text></View></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.whatsNewScroll}><LinearGradient colors={['#111318','#281A48','#101115']} style={styles.whatsNewHero}><View style={styles.whatsNewHeroIcon}><Text style={styles.whatsNewHeroIconText}>L</Text></View><View style={{flex:1}}><Text style={styles.whatsNewHeroEyebrow}>LINK 2.0.1</Text><Text style={styles.whatsNewHeroTitle}>Gesture polish for LINK.</Text><Text style={styles.whatsNewHeroSub}>Patch update · smoother replies, safer navigation gestures and chat polish.</Text></View></LinearGradient><Text style={[styles.sectionTitle,{color:theme.text,marginTop:22,marginBottom:10}]}>Update highlights</Text><View style={[styles.whatsNewCard,{backgroundColor:theme.card,borderColor:theme.border}]}>{sections.map(([icon,title,body],index)=><View key={title} style={[styles.whatsNewRow,index===sections.length-1&&{borderBottomWidth:0}, {borderBottomColor:theme.border}]}><View style={[styles.whatsNewIcon,{backgroundColor:theme.soft}]}><Ionicons name={icon} size={20} color={ACCENT}/></View><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{title}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{body}</Text></View></View>)}</View><View style={[styles.whatsNewNote,{backgroundColor:theme.soft}]}><Ionicons name="notifications-outline" size={18} color={theme.text}/><Text style={[styles.settingsSub,{color:theme.sub,flex:1}]}>Remote push notifications require a development or production build; Expo Go uses in-app alerts here.</Text></View></ScrollView></SafeAreaView></EdgeSwipeBack></Modal>;
 }
 
 function ForegroundNotice({ notice, theme, onPress }) {
@@ -3922,7 +3963,6 @@ const styles = StyleSheet.create({
   homeProMini:{minHeight:17,paddingHorizontal:5,borderRadius:999,backgroundColor:'rgba(124,92,252,.22)',borderWidth:StyleSheet.hairlineWidth,borderColor:'rgba(166,145,255,.45)',alignItems:'center',justifyContent:'center'},
   homeProMiniText:{color:'#C9BCFF',fontSize:7.5,fontWeight:'900',letterSpacing:.4},
   swipeReplyShell:{position:'relative',overflow:'visible'},
-  swipeReplyCue:{position:'absolute',left:5,top:'50%',marginTop:-16,width:32,height:32,borderRadius:16,alignItems:'center',justifyContent:'center'},
   joinGroupCard:{width:'100%',maxWidth:420,borderRadius:30,borderWidth:StyleSheet.hairlineWidth,padding:18},
   groupAvatarEdit:{position:'relative'},groupAvatarEditBadge:{position:'absolute',right:-2,bottom:-2,width:25,height:25,borderRadius:13,backgroundColor:ACCENT,borderWidth:2,borderColor:'#fff',alignItems:'center',justifyContent:'center'},
   groupInviteCard:{minHeight:72,borderWidth:StyleSheet.hairlineWidth,borderRadius:20,padding:12,flexDirection:'row',alignItems:'center',gap:10},
