@@ -190,81 +190,59 @@
         return;
       }
 
-      let rawAppUrl = null;
-      repoDot.className = 'dot wait';
+      // 2.0.6 launcher hotfix: use the same GitHub Pages origin as the launcher.
+      // This avoids browser CORS / network failures against raw.githubusercontent.com,
+      // jsDelivr and the GitHub API while keeping App.snack.js public for Expo Snack.
+      function pagesSourceUrl(cacheBust = Date.now()) {
+        const url = new URL('./App.snack.js', window.location.href);
+        url.search = '';
+        url.hash = '';
+        url.searchParams.set('build', '206');
+        url.searchParams.set('cb', String(cacheBust));
+        return url.toString();
+      }
+
+      let rawAppUrl = pagesSourceUrl();
+      repoDot.className = 'dot';
       repoValue.textContent = `${repo.owner}/${repo.repo} · ${repo.branch}`;
-      status.textContent = 'Ověřuji přímý GitHub source…';
+      rawBtn.href = rawAppUrl;
+      status.textContent = 'Připraveno. App.snack.js se načte přímo z GitHub Pages.';
 
-      function sourceCandidates(cacheBust = Date.now()) {
-        const owner = encodeURIComponent(repo.owner);
-        const name = encodeURIComponent(repo.repo);
-        const branch = encodeURIComponent(repo.branch);
-        return [
-          `https://raw.githubusercontent.com/${owner}/${name}/${branch}/App.snack.js?cb=${cacheBust}`,
-          `https://cdn.jsdelivr.net/gh/${owner}/${name}@${branch}/App.snack.js?cb=${cacheBust}`,
-          `https://github.com/${owner}/${name}/raw/refs/heads/${branch}/App.snack.js?cb=${cacheBust}`
-        ];
-      }
-
-      function validateSourceText(text) {
-        if (!text.includes('export default')) throw new Error('App.snack.js nevypadá jako Expo entry soubor');
-        if (!text.includes('LINK 2.0.6 · Verified Badge')) throw new Error('Načtený App.snack.js není LINK 2.0.6 build');
-        if (text.includes('processLock')) throw new Error('Zdroj obsahuje starý Supabase client build');
-        if (text.includes('react-native-url-polyfill') || text.includes('setupURLPolyfill')) throw new Error('Zdroj obsahuje starý URL polyfill build');
-        if (!text.includes('@supabase/supabase-js')) throw new Error('App.snack.js nemá Supabase klienta');
-      }
-
-      async function resolveSourceUrl() {
-        const errors = [];
-        for (const candidate of sourceCandidates()) {
-          try {
-            const response = await fetch(candidate, { cache: 'no-store' });
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const source = await response.text();
-            validateSourceText(source);
-            rawAppUrl = candidate;
-            rawBtn.href = rawAppUrl;
-            repoDot.className = 'dot';
-            repoValue.textContent = `${repo.owner}/${repo.repo} · ${repo.branch}`;
-            status.textContent = 'Připraveno. LINK source je ověřen bez GitHub API.';
-            return rawAppUrl;
-          } catch (error) {
-            errors.push(error?.message || String(error));
-          }
-        }
-        throw new Error(errors.filter(Boolean).slice(-2).join(' · ') || 'Source není dostupný');
-      }
-
-      resolveSourceUrl().catch((e) => {
-        repoDot.className = 'dot bad';
-        status.textContent = `App.snack.js se nepodařilo ověřit (${e.message}).`;
-      });
-
-      async function verifySource() {
+      async function verifySameOriginSource(url) {
+        // Same-origin verification is optional. A transient browser/service-worker
+        // fetch failure must never block creating the Snack.
         try {
-          await resolveSourceUrl();
-          return true;
-        } catch (e) {
-          repoDot.className = 'dot bad';
-          status.textContent = `App.snack.js se nepodařilo načíst z GitHubu (${e.message}). Zkontroluj, že repo je public a App.snack.js je v rootu.`;
-          return false;
+          const response = await fetch(url, { cache: 'no-store' });
+          if (!response.ok) return { ok: false, reason: `HTTP ${response.status}` };
+          const source = await response.text();
+          if (!source.includes('export default')) return { ok: false, reason: 'Expo entry nebyl nalezen' };
+          if (!source.includes('LINK 2.0.6 · Verified Badge')) return { ok: false, reason: 'GitHub Pages ještě servíruje starší build' };
+          return { ok: true };
+        } catch (error) {
+          return { ok: false, reason: error?.message || 'ověření nebylo dostupné' };
         }
       }
+
+      // Best-effort check only; it does not disable the Create button.
+      verifySameOriginSource(rawAppUrl).then(result => {
+        if (result.ok) {
+          repoDot.className = 'dot';
+          status.textContent = 'Připraveno. LINK 2.0.6 source je dostupný přes GitHub Pages.';
+        } else {
+          repoDot.className = 'dot wait';
+          status.textContent = `Launcher je připraven. Ověření source bylo přeskočeno (${result.reason}).`;
+        }
+      });
 
       createBtn.addEventListener('click', async () => {
         createBtn.disabled = true;
-        createBtn.textContent = 'Kontroluji App.snack.js…';
-        status.textContent = 'Ověřuji LINK 2.0.6 bez GitHub API…';
-
-        const ok = await verifySource();
-        if (!ok) {
-          createBtn.disabled = false;
-          createBtn.textContent = 'Zkusit znovu';
-          return;
-        }
-
-        status.textContent = 'Otevírám Expo Snack…';
         createBtn.textContent = 'Otevírám Snack…';
+        status.textContent = 'Připravuji čerstvý LINK 2.0.6 source…';
+
+        // New URL on every click so Expo never receives an old cached App.snack.js.
+        rawAppUrl = pagesSourceUrl(Date.now());
+        rawBtn.href = rawAppUrl;
+        status.textContent = 'Otevírám Expo Snack…';
 
         const params = new URLSearchParams();
         params.set('name', BUILD);
