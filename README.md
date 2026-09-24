@@ -1,4 +1,4 @@
-# LINK 2.0.5 · Admin Staff Tools
+# LINK 2.0.6 · Verified Badge
 
 Major beta build for Expo Snack / Expo Go backed by LINK Production (Supabase).
 
@@ -25,3 +25,9 @@ System remote push is intentionally not faked inside Expo Go. The backend/in-app
 
 ## Netflix note
 The current Pro benefit is a prototype reservation. A real Netflix partnership/redemption integration is required before this can activate a real Netflix subscription.
+
+
+## 2.0.6 Verified Badge
+- Replaced generated verified mark with the supplied official-style LINK verified asset.
+- Added `assets/verified-badge.webp` and `assets/verified-badge.png`.
+- Snack single-file build embeds a compact PNG data URI fallback for reliable Expo Go rendering.
