@@ -1,4 +1,4 @@
-# LINK 2.0.3 · Profile Layouts
+# LINK 2.0.4 · Group Avatar Alignment
 
 Major beta build for Expo Snack / Expo Go backed by LINK Production (Supabase).
 
@@ -44,7 +44,7 @@ Launcher no longer calls GitHub API. It verifies App.snack.js directly using raw
 - No database migration required
 
 
-## 2.0.3 Profile Layouts
+## 2.0.4 Group Avatar Alignment
 - Three public profile arrangements: Default, Social and Compact
 - Social layout places the avatar on the left with name, plan badge and username beside it, then bio/status/links below
 - Compact layout keeps the centered LINK identity with much tighter spacing
