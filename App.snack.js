@@ -125,7 +125,7 @@ async function loadLinkSnapshot(base, userId) {
     supabase.from('chats').select('*').order('created_at'),
     supabase.from('chat_members').select('*'),
     supabase.from('chat_keys').select('*').eq('user_id', userId),
-    supabase.from('messages').select('*').or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`).order('created_at'),
+    supabase.from('messages').select('*').or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`).order('created_at', { ascending:false }).limit(600),
     supabase.from('message_reactions').select('*'),
     supabase.from('message_receipts').select('*'),
     supabase.from('message_hides').select('message_id').eq('user_id', userId),
@@ -258,7 +258,7 @@ async function loadLinkSnapshot(base, userId) {
       createdAt:toMs(m.created_at), editedAt:toMs(m.edited_at), deletedAt:toMs(m.deleted_at), pinned:!!pinsByMessage[m.id], pin:pinsByMessage[m.id] || null,
     });
   });
-  for (const key of Object.values(threadForChat)) if (!conversations[key]) conversations[key] = [];
+  for (const key of Object.values(threadForChat)) { if (!conversations[key]) conversations[key] = []; else conversations[key].sort((a,b) => (a.createdAt || 0) - (b.createdAt || 0)); }
 
   const chatThemes = {}, chatThemeScopes = {}, silentChats = {}, chatUserSettings = {};
   for (const chat of chatsQ.data || []) {
@@ -327,9 +327,27 @@ async function loadLinkSnapshot(base, userId) {
 
 function subscribeLink(userId, onChange) {
   let timer = null;
+  let running = false;
+  let queued = false;
+  let closed = false;
+  const run = async () => {
+    if (closed) return;
+    if (running) { queued = true; return; }
+    running = true;
+    try { await onChange?.(); }
+    finally {
+      running = false;
+      if (queued && !closed) {
+        queued = false;
+        clearTimeout(timer);
+        timer = setTimeout(run, 320);
+      }
+    }
+  };
   const kick = () => {
+    if (closed) return;
     clearTimeout(timer);
-    timer = setTimeout(() => onChange?.(), 120);
+    timer = setTimeout(run, 260);
   };
   const channel = supabase.channel(`link-live-${userId}`)
     .on('postgres_changes',{event:'*',schema:'public',table:'profiles'},kick)
@@ -349,7 +367,7 @@ function subscribeLink(userId, onChange) {
     .on('postgres_changes',{event:'*',schema:'public',table:'profile_tiers'},kick)
     .on('postgres_changes',{event:'*',schema:'public',table:'profile_views'},kick)
     .subscribe();
-  return () => { clearTimeout(timer); supabase.removeChannel(channel); };
+  return () => { closed = true; clearTimeout(timer); supabase.removeChannel(channel); };
 }
 
 
@@ -715,11 +733,11 @@ const backendStyles = StyleSheet.create({
   page:{flex:1,backgroundColor:'#F6F7FB'},center:{flex:1,justifyContent:'center',padding:22},logo:{width:58,height:58,borderRadius:20,alignSelf:'center',alignItems:'center',justifyContent:'center',backgroundColor:ACCENT,shadowColor:'#000',shadowOpacity:.12,shadowRadius:20,shadowOffset:{width:0,height:10}},title:{fontSize:38,fontWeight:'950',letterSpacing:-1.4,textAlign:'center',color:'#111318',marginTop:16},sub:{fontSize:15,lineHeight:21,textAlign:'center',color:'#737987',marginTop:5,marginBottom:22},card:{backgroundColor:'#fff',padding:14,borderRadius:28,borderWidth:StyleSheet.hairlineWidth,borderColor:'#E8EAF0',gap:10},input:{height:54,borderRadius:17,backgroundColor:'#F2F3F7',paddingHorizontal:16,fontSize:16,color:'#111318'},primary:{height:54,borderRadius:17,backgroundColor:ACCENT,alignItems:'center',justifyContent:'center',marginTop:3},primaryText:{color:'#fff',fontSize:16,fontWeight:'900'},switchBtn:{height:44,alignItems:'center',justifyContent:'center'},switchText:{color:ACCENT,fontWeight:'800'},foot:{textAlign:'center',fontSize:11,color:'#9AA0AB',marginTop:18},loading:{flex:1,alignItems:'center',justifyContent:'center',backgroundColor:'#F6F7FB'},loadingText:{marginTop:12,color:'#737987',fontWeight:'700'}
 });
 
-const STORAGE_KEY = '@link_live_backend_v16';
+const STORAGE_KEY = '@link_live_backend_v17';
 const DRAFT_PREFIX = '@link_chat_draft_v1';
 const ACCENT = '#6C5CE7';
 const EMPTY_MESSAGES = Object.freeze([]);
-const BUILD = 'LINK 1.2.1 · Glass Messaging';
+const BUILD = 'LINK 1.2.2 · Realtime Stability';
 
 function QRCode({ value, size = 170, color = '#0E0F12', backgroundColor = '#FFFFFF' }) {
   const qr = useMemo(() => {
@@ -1910,12 +1928,10 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
   const latestIncomingId = [...messages].reverse().find(message => message.senderId !== activeProfile.id)?.id || null;
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      markRead();
-      if (chatId) markChatDeliveredRemote(chatId).catch(() => {});
-    }, 20);
+    if (!latestIncomingId) return undefined;
+    const timer = setTimeout(() => markRead(), 70);
     return () => clearTimeout(timer);
-  }, [person.id, chatId, latestIncomingId, messages.length]);
+  }, [person.id, chatId, latestIncomingId]);
   useEffect(() => {
     let disposed = false;
     let localSignal = null;
@@ -2518,6 +2534,9 @@ function LinkApp({ session }) {
   const [doubleTapReactionOpen, setDoubleTapReactionOpen] = useState(false);
   const [decryptedActiveMessages, setDecryptedActiveMessages] = useState([]);
   const chatKeyCacheRef = useRef({});
+  const refreshInFlightRef = useRef(false);
+  const refreshQueuedRef = useRef(false);
+  const refreshPromiseRef = useRef(null);
 
   const activeMode = data.themeSetting === 'system' ? (systemScheme === 'dark' ? 'dark' : 'light') : data.themeSetting;
   const theme = activeMode === 'dark' ? dark : light;
@@ -2573,16 +2592,31 @@ function LinkApp({ session }) {
   }, [activeProfile]);
 
   const refreshRemote = async () => {
-    if (!liveUserId) return;
-    try {
-      const fresh = await loadLinkSnapshot(initialData(liveUserId), liveUserId);
-      setData(fresh);
-      Promise.all(Object.values(fresh.backendChatIds || {}).map(chatId => markChatDeliveredRemote(chatId).catch(() => {}))).catch(() => {});
-      return fresh;
-    } catch (error) {
-      console.warn('LINK backend refresh failed', error);
-      return null;
+    if (!liveUserId) return null;
+    if (refreshInFlightRef.current) {
+      refreshQueuedRef.current = true;
+      return refreshPromiseRef.current;
     }
+    refreshInFlightRef.current = true;
+    const task = (async () => {
+      try {
+        const fresh = await loadLinkSnapshot(initialData(liveUserId), liveUserId);
+        setData(fresh);
+        return fresh;
+      } catch (error) {
+        console.warn('LINK backend refresh failed', error);
+        return null;
+      } finally {
+        refreshInFlightRef.current = false;
+        refreshPromiseRef.current = null;
+        if (refreshQueuedRef.current) {
+          refreshQueuedRef.current = false;
+          setTimeout(() => refreshRemote(), 320);
+        }
+      }
+    })();
+    refreshPromiseRef.current = task;
+    return task;
   };
 
   useEffect(() => {
@@ -2602,10 +2636,7 @@ function LinkApp({ session }) {
           } catch {}
         }
         const remote = await loadLinkSnapshot(base, liveUserId);
-        if (!cancelled) {
-          setData(remote);
-          Promise.all(Object.values(remote.backendChatIds || {}).map(chatId => markChatDeliveredRemote(chatId).catch(() => {}))).catch(() => {});
-        }
+        if (!cancelled) setData(remote);
       } catch (e) {
         console.warn('LINK backend load failed', e);
       } finally {
@@ -2614,7 +2645,13 @@ function LinkApp({ session }) {
     })();
     return () => { cancelled = true; };
   }, [liveUserId]);
-  useEffect(() => { if (hydrated && liveUserId) AsyncStorage.setItem(`${STORAGE_KEY}:${liveUserId}`, JSON.stringify(data)).catch(() => {}); }, [hydrated, liveUserId, data]);
+  useEffect(() => {
+    if (!hydrated || !liveUserId) return undefined;
+    const timer = setTimeout(() => {
+      AsyncStorage.setItem(`${STORAGE_KEY}:${liveUserId}`, JSON.stringify(data)).catch(() => {});
+    }, 900);
+    return () => clearTimeout(timer);
+  }, [hydrated, liveUserId, data]);
   useEffect(() => {
     if (!hydrated || !liveUserId) return undefined;
     return subscribeLink(liveUserId, refreshRemote);
@@ -2851,7 +2888,7 @@ function LinkApp({ session }) {
       });
       return { ...prev, conversations: { ...prev.conversations, [key]: list } };
     });
-    if (chatId) markChatReadRemote(chatId, suppressReceipts).then(refreshRemote).catch(() => {});
+    if (chatId) markChatReadRemote(chatId, suppressReceipts).catch(() => {});
   };
 
   const sendMessage = async (personId, payload) => {
@@ -2878,7 +2915,6 @@ function LinkApp({ session }) {
       const silent = fresh.silentChats?.[key] || data.silentChats?.[key];
       const expiresAt = silent?.enabled ? Date.now() + (silent.timerSeconds || 5 * 60) * 1000 : null;
       await sendMessageRemote(chatId, { type: payload.type || 'text', uri: payload.uri || null, cipher, duration: payload.duration || null, replyTo: payload.replyTo || null, forwardedFrom:payload.forwardedFrom || null, expiresAt });
-      await refreshRemote();
     } catch (error) {
       console.warn('LINK message send failed', error);
       Alert.alert('Message not sent', error?.message || 'LINK could not send this message. Try again.');
@@ -2888,7 +2924,7 @@ function LinkApp({ session }) {
   const reactMessage = (personId, messageId, emoji) => {
     const key = threadKey(data.activeAccountId, personId);
     mutate(prev => ({ ...prev, conversations: { ...prev.conversations, [key]: (prev.conversations[key] || []).map(m => m.id === messageId ? { ...m, reactions: [...(m.reactions || []).filter(r => r.userId !== prev.activeAccountId), { userId: prev.activeAccountId, emoji }] } : m) } }));
-    reactMessageRemote(messageId, emoji).then(refreshRemote).catch(error => Alert.alert('Reaction not saved', error?.message || 'Try again.'));
+    reactMessageRemote(messageId, emoji).catch(error => Alert.alert('Reaction not saved', error?.message || 'Try again.'));
   };
   const deleteMessageForMe = (personId, messageId) => {
     const key = threadKey(data.activeAccountId, personId);
@@ -2915,7 +2951,6 @@ function LinkApp({ session }) {
       const silent = fresh.silentChats?.[key] || data.silentChats?.[key];
       const expiresAt = silent?.enabled ? Date.now() + (silent.timerSeconds || 5 * 60) * 1000 : null;
       await sendMessageRemote(chatId, { type: payload.type || 'text', uri: payload.uri || null, cipher, duration: payload.duration || null, replyTo: payload.replyTo || null, forwardedFrom:payload.forwardedFrom || null, expiresAt });
-      await refreshRemote();
     } catch (error) {
       console.warn('LINK group message send failed', error);
       Alert.alert('Message not sent', error?.message || 'LINK could not send this group message. Try again.');
@@ -2924,7 +2959,7 @@ function LinkApp({ session }) {
   const reactGroupMessage = (groupId, messageId, emoji) => {
     const key = groupThreadKey(groupId);
     mutate(prev => ({ ...prev, conversations: { ...prev.conversations, [key]: (prev.conversations[key] || []).map(m => m.id === messageId ? { ...m, reactions: [...(m.reactions || []).filter(r => r.userId !== prev.activeAccountId), { userId: prev.activeAccountId, emoji }] } : m) } }));
-    reactMessageRemote(messageId, emoji).then(refreshRemote).catch(error => Alert.alert('Reaction not saved', error?.message || 'Try again.'));
+    reactMessageRemote(messageId, emoji).catch(error => Alert.alert('Reaction not saved', error?.message || 'Try again.'));
   };
   const deleteGroupMessageForMe = (groupId, messageId) => {
     const key = groupThreadKey(groupId);

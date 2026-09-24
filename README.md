@@ -1,20 +1,12 @@
-# LINK 1.2.1 — Glass Messaging
+# LINK 1.2.2 — Realtime Stability
 
-Snack/GitHub build for LINK Production.
+Hotfix focused on real multi-user chat performance in Expo Go/Snack.
 
-## What changed
-- Floating Liquid Glass navigation without a solid background strip behind the bar.
-- Refreshed Home / People / Chats / Profile icons.
-- Unread message badge now lives on **Chats** in the bottom navigation.
-- Message arrivals no longer create Notification Center items.
-- Unread state uses local `seenBy`, independent from outward-facing read receipts.
-- Added server-side `mark_chat_read` RPC for reliable read state.
-- Chat marks new messages as seen while the conversation is already open.
-- Typing indicator moved into the message list footer so it no longer covers bubbles.
-- Keyboard opening automatically keeps the conversation scrolled to the newest message.
+- Stops receipt-triggered refresh loops.
+- Serializes/coalesces realtime snapshot refreshes.
+- Removes full snapshot refresh after every message send/read.
+- Debounces AsyncStorage persistence.
+- Reloads only the latest 600 live messages per snapshot.
+- Keeps LINK 1.2.1 Glass Messaging UI and chat badge/read-state fixes.
 
-## GitHub → Snack
-Upload the files to the repository root, commit to `main`, open GitHub Pages and press **Vytvořit nový Snack**.
-The launcher resolves the current commit SHA before opening Snack, avoiding stale `main` CDN cache.
-
-Supabase schema changes for this build are already deployed to LINK Production.
+Supabase backend migration `1.2.2-realtime-stability.sql` has already been applied to LINK Production.
