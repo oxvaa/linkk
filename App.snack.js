@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import {
   ActivityIndicator,
-  Alert,
+  Alert as RNAlert,
   AppState,
   Animated,
   Easing,
@@ -19,8 +19,8 @@ import {
   StatusBar as RNStatusBar,
   StyleSheet,
   Switch,
-  Text,
-  TextInput,
+  Text as RNText,
+  TextInput as RNTextInput,
   TouchableOpacity,
   useColorScheme,
   View,
@@ -33,6 +33,60 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { AESEncryptionKey, AESSealedData, aesDecryptAsync, aesEncryptAsync } from 'expo-crypto';
 import { Ionicons } from '@expo/vector-icons';
 import qrcodeGenerator from 'qrcode-generator';
+
+const SYSTEM_LOCALE = (() => {
+  try { return Intl.DateTimeFormat().resolvedOptions().locale || 'en-US'; }
+  catch { return 'en-US'; }
+})();
+const SYSTEM_LANGUAGE = /^cs(?:-|$)/i.test(SYSTEM_LOCALE) ? 'cs' : 'en';
+let CURRENT_LANGUAGE = SYSTEM_LANGUAGE;
+const AUTH_LANGUAGE_KEY = '@link_auth_language_v1';
+const CS_TRANSLATIONS = {"Home":"Domů","People":"Lidé","Chats":"Chaty","Profile":"Profil","LINK":"LINK","Settings":"Nastavení","Privacy, account and LINK preferences":"Soukromí, účet a nastavení LINKu","Active status":"Aktivní stav","Control your active dot and availability.":"Nastav, jak se ostatním zobrazuje tvoje aktivita.","Account & personal information":"Účet a osobní údaje","Display name":"Zobrazované jméno","Username":"Uživatelské jméno","Email":"E-mail","Account ID":"ID účtu","Privacy":"Soukromí","Profile visibility":"Viditelnost profilu","Choose who can open your full LINK profile.":"Vyber, kdo může otevřít celý tvůj LINK profil.","Everyone":"Všichni","LINKs":"LINKy","Private":"Soukromé","Messages from":"Zprávy od","Who is allowed to start a conversation.":"Kdo s tebou může zahájit konverzaci.","Nobody":"Nikdo","LINK requests":"Žádosti o LINK","Control who can send you a LINK request.":"Nastav, kdo ti může poslat žádost o LINK.","Mutuals":"Společní LINKové","Show activity status":"Zobrazovat aktivní stav","Allow people to see your active dot":"Povolit ostatním vidět tvůj aktivní stav","Read receipts":"Potvrzení o přečtení","Show Seen when you read messages":"Zobrazit Zobrazeno, když si zprávu přečteš","Typing indicators":"Indikátor psaní","Let people know when you are typing":"Ukázat ostatním, když právě píšeš","Profile views":"Zobrazení profilu","Allow your profile visits to count in insights":"Započítávat návštěvy profilu do přehledů","Discoverable by username":"Vyhledatelný podle uživatelského jména","People can find your @username in People":"Lidé tě mohou najít podle @username","Discoverable by email":"Vyhledatelný podle e-mailu","Allow account discovery using your email":"Povolit nalezení účtu podle e-mailu","Sharing":"Sdílení","Share custom status":"Sdílet vlastní status","Show your custom text status to LINKs":"Zobrazit vlastní textový status tvým LINKům","Show socials":"Zobrazit sociální sítě","Display social handles on your profile":"Zobrazit odkazy na sociální sítě na profilu","Moments to LINKs":"Moments pouze pro LINKy","Keep Moments limited to people you LINKed":"Zobrazit Moments jen lidem, se kterými jsi propojený","Notifications":"Oznámení","Messages":"Zprávy","Message and reaction notifications":"Oznámení o zprávách a reakcích","Requests and accepted LINKs":"Žádosti a přijaté LINKy","Moments":"Moments","Moment interactions and replies":"Interakce s Moments a odpovědi","LINK updates":"Novinky LINKu","Product news, drops and feature announcements":"Novinky, dropy a oznámení nových funkcí","Security":"Zabezpečení","Login alerts":"Upozornění na přihlášení","Warn about new LINK sign-ins":"Upozornit na nové přihlášení do LINKu","Appearance":"Vzhled","System":"Podle systému","Light":"Světlý","Dark":"Tmavý","Account":"Účet","Sign out":"Odhlásit se","Use another LINK account on this device.":"Použít na tomto zařízení jiný LINK účet.","Language":"Jazyk","App language":"Jazyk aplikace","Use your device language or choose manually.":"Použij jazyk zařízení nebo ho zvol ručně.","Czech":"Čeština","English":"English","Follow system":"Podle systému","Online":"Online","Do not disturb":"Nerušit","Busy":"Zaneprázdněn","Offline (Ghost)":"Offline (Ghost)","Show a green dot while LINK is open.":"Zobrazit zelenou tečku, když je LINK otevřený.","Red dot · signals that you do not want notifications.":"Červená tečka · dává najevo, že nechceš být rušen.","Orange dot · you are around, but busy.":"Oranžová tečka · jsi online, ale zaneprázdněný.","Appear offline and hide your active dot.":"Vypadat offline a skrýt aktivní stav.","Offline (Ghost) is available with LINK Pro.":"Offline (Ghost) je dostupný s LINK Pro.","Active status, privacy, notifications, security and personal information.":"Aktivní stav, soukromí, oznámení, zabezpečení a osobní údaje.","Privacy, account & app settings":"Soukromí, účet a nastavení aplikace","Your public LINK identity":"Tvoje veřejná identita v LINKu","Your status":"Tvůj status","Choose how you appear across LINK.":"Nastav, jak se zobrazuješ v LINKu.","Custom status":"Vlastní status","Pick any text, icon and color. LINKs see it across the app.":"Vyber text, ikonu a barvu. Tvé LINKy ho uvidí napříč aplikací.","Use custom status":"Použít vlastní status","Status text":"Text statusu","Solid color":"Jednobarevné","Icon":"Ikona","Gradient · 40":"Gradienty · 40","Double Tap":"Dvojité klepnutí","Double Tap reaction":"Reakce dvojitým klepnutím","Double tap any message":"Dvakrát klepni na libovolnou zprávu","Your selected emoji is added instantly. Double tap again after changing it to replace your reaction.":"Vybrané emoji se přidá okamžitě. Po změně emoji dvojitým klepnutím reakci nahradíš.","Save Double Tap reaction":"Uložit reakci","Or paste any emoji":"Nebo vlož libovolné emoji","Direct + group chats · encrypted by default.":"Soukromé i skupinové chaty · šifrované ve výchozím stavu.","New group":"Nová skupina","Archived":"Archivované","Inbox":"Doručené","No chats yet":"Zatím žádné chaty","LINK with someone or create a group.":"Propoj se s někým nebo vytvoř skupinu.","Start the conversation":"Začni konverzaci","Message":"Zpráva","Send":"Odeslat","Reply":"Odpovědět","React":"Reagovat","Forwarded":"Přeposláno","Edited":"Upraveno","Sent":"Odesláno","Delivered":"Doručeno","Read":"Přečteno","Seen":"Zobrazeno","Pinned message":"Připnutá zpráva","Message deleted":"Zpráva byla odstraněna","Editing message":"Úprava zprávy","Mute":"Ztišit","Unmute":"Zapnout zvuk","Archive":"Archivovat","Unarchive":"Vrátit z archivu","Mark unread":"Označit jako nepřečtené","Chat controls":"Nastavení chatu","Safety options":"Bezpečnost","Safety":"Bezpečnost","Members":"Členové","Group settings":"Nastavení skupiny","Group name":"Název skupiny","Creator":"Zakladatel","Only the group creator can change the name.":"Název může měnit pouze zakladatel skupiny.","Manage the conversation and group name.":"Spravuj konverzaci a název skupiny.","Create Group Chat":"Vytvořit skupinový chat","Create an encrypted chat with your LINKs.":"Vytvoř šifrovaný chat se svými LINKy.","Group name (optional)":"Název skupiny (volitelné)","Add more people":"Přidat další lidi","Typing…":"Píše…","is typing…":"píše…","are typing…":"píšou…","Search registered LINK accounts by @username or name.":"Vyhledej registrované LINK účty podle @username nebo jména.","Find a LINK by @username.":"Najdi LINK podle @username.","Search results":"Výsledky vyhledávání","No @username found":"@username nenalezen","Try the exact @username or display name.":"Zkus přesné @username nebo zobrazované jméno.","Incoming requests":"Příchozí žádosti","Accept":"Přijmout","Decline":"Odmítnout","Send LINK request":"Poslat žádost o LINK","LINK request sent":"Žádost o LINK odeslána","Recently linked":"Nedávno propojení","People linked":"Propojení lidé","You have no LINKs yet.":"Zatím nemáš žádné LINKy.","That’s you":"To jsi ty","Linked":"Propojeno","LINKED":"PROPOJENO","Your moment":"Tvůj Moment","New Moment":"Nový Moment","Visible to your LINKs for 24 hours.":"Viditelný tvým LINKům po dobu 24 hodin.","Add a caption…":"Přidat popisek…","Allow camera":"Povolit fotoaparát","Camera access":"Přístup k fotoaparátu","Camera access needed":"Je potřeba přístup k fotoaparátu","Moment · today":"Moment · dnes","Notes":"Poznámky","Your Note":"Tvoje poznámka","Write a note":"Napsat poznámku","Leave a note…":"Napiš poznámku…","Who can see it?":"Kdo ji uvidí?","All LINKs":"Všechny LINKy","Close LINKs":"Blízcí LINKové","Delete Note":"Smazat poznámku","Reply to Note…":"Odpovědět na poznámku…","Reply privately to their Note":"Odpovědět soukromě na poznámku","Show my LINK":"Ukázat můj LINK","Scan LINK":"Naskenovat LINK","Scan a LINK":"Naskenovat LINK","Point your camera at their card.":"Namiř fotoaparát na jejich kartu.","Only LINK QR cards are accepted.":"Přijímány jsou pouze LINK QR kódy.","Scan again":"Skenovat znovu","tap · scan · connect":"klepni · naskenuj · propoj se","scan to send request":"naskenuj a pošli žádost","Share your card or send a request nearby.":"Sdílej svou kartu nebo pošli žádost někomu poblíž.","Active":"Aktivní","ACTIVE":"AKTIVNÍ","Favorite":"Oblíbené","Status":"Status","Short bio":"Krátké bio","Profile photo":"Profilová fotka","Instagram @handle":"Instagram @uživatelské_jméno","Spotify name":"Jméno na Spotify","Website":"Web","Save":"Uložit","LINK account":"LINK účet","Signed in with Supabase Auth":"Přihlášeno přes Supabase Auth","Sign out / use another account":"Odhlásit se / použít jiný účet","This account is synced through LINK Production and can be used on another device.":"Tento účet je synchronizovaný přes LINK Production a můžeš ho použít na jiném zařízení.","Use another account":"Použít jiný účet","Use another LINK account or sign out":"Použít jiný LINK účet nebo se odhlásit","LINK Shop":"LINK Shop","Profile Effects":"Efekty profilu","Animated Profile Effects":"Animované efekty profilu","Animated profile art from LINK Shop":"Animované prvky profilu z LINK Shopu","Use effect":"Použít efekt","Equipped":"Aktivní","EQUIPPED":"AKTIVNÍ","YOUR BALANCE":"TVŮJ ZŮSTATEK","LINK Coins · local prototype balance":"LINK Coins · prototypový zůstatek","No profile effect":"Bez efektu profilu","Standard name":"Standardní jméno","Animated avatar":"Animovaný avatar","Choose GIF / animated image":"Vybrat GIF / animovaný obrázek","Keeps the original animation instead of cropping.":"Zachová původní animaci bez ořezu.","LINK Plus":"LINK Plus","LINK Pro":"LINK Pro","Everything in Plus":"Vše z Plus","Everything in Pro":"Vše z Pro","More identity. More expression. Less limits.":"Více identity. Více možností. Méně limitů.","The full LINK experience.":"Kompletní LINK zážitek.","Cancel anytime":"Kdykoliv zrušitelné","Monthly":"Měsíčně","Annual":"Ročně","month":"měsíc","year":"rok","7 days Free Trial":"7 dní zdarma","Start 7-day Free Trial":"Spustit 7denní zkušební verzi","Cancel LINK Plus":"Zrušit LINK Plus","Cancel LINK Pro":"Zrušit LINK Pro","Silent Chat":"Mizející chat","New messages can disappear automatically.":"Nové zprávy mohou automaticky zmizet.","Disappear after":"Zmizet po","Save Silent Chat":"Uložit mizející chat","30 sec":"30 s","5 min":"5 min","1 hour":"1 hodina","24 hours":"24 hodin","10 sec":"10 s","7 days":"7 dní","Chat Theme":"Motiv chatu","Choose the color of your outgoing messages.":"Vyber barvu svých odchozích zpráv.","Apply theme to":"Použít motiv na","Messages only":"Pouze zprávy","Messages + background":"Zprávy + pozadí","Keep the chat background white/black, or add a subtle color wash behind the conversation.":"Ponech pozadí chatu bílé/černé, nebo přidej jemný barevný odstín.","All caught up":"Všechno máš přečtené","LINK activity for this account":"Aktivita LINK pro tento účet","Send a wave":"Poslat mávnutí","Wave sent 👋":"Mávnutí odesláno 👋","Admin Console":"Admin konzole","Administrator access":"Přístup správce","Admin controls":"Nástroje správce","LINK Administration":"Správa LINKu","LINK moderation · live backend":"Moderace LINKu · živý backend","Ban":"Zablokovat","Unban":"Odblokovat","BANNED":"ZABLOKOVÁN","MUTED":"ZTIŠEN","Account suspended":"Účet pozastaven","Account muted":"Účet ztišen","Ban account?":"Zablokovat účet?","Cancel":"Zrušit","Got it":"Rozumím","Swipe to go back":"Přejetím zpět","On detail pages, swipe right from the left edge to go back. In chat, swipe a message right to reply.":"Na detailních stránkách se vrať přejetím doprava od levého okraje. V chatu přejeď zprávu doprava pro odpověď.","Encrypted chat":"Šifrovaný chat","Encrypted LINK messages":"Šifrované LINK zprávy","LINK encrypts message text with AES-256-GCM before it is stored in the backend. Each conversation has its own protected chat key and Supabase Row Level Security limits access to chat members.":"LINK šifruje text zpráv pomocí AES-256-GCM ještě před uložením do backendu. Každá konverzace má vlastní chráněný klíč a Supabase Row Level Security omezuje přístup pouze na členy chatu.","Security note: this backend beta is not full end-to-end encryption because chat keys are currently stored server-side behind RLS so multiple devices can decrypt the same conversation. True device-only E2EE key exchange should be added before claiming E2EE in production.":"Bezpečnostní poznámka: tato backend beta zatím není plné end-to-end šifrování, protože klíče chatů jsou uložené na serveru za RLS, aby bylo možné stejnou konverzaci dešifrovat na více zařízeních. Před produkčním označením E2EE je potřeba doplnit výměnu klíčů pouze mezi zařízeními.","Account & sign out":"Účet a odhlášení","Personal information":"Osobní údaje","Camera":"Fotoaparát","Photo":"Fotka","Video":"Video","Contact":"Kontakt","Shared location":"Sdílená poloha","Location":"Poloha","GIF":"GIF","Could not open chat":"Chat se nepodařilo otevřít","Message not sent":"Zprávu se nepodařilo odeslat","Message not edited":"Zprávu se nepodařilo upravit","Message not deleted":"Zprávu se nepodařilo smazat","Message not hidden":"Zprávu se nepodařilo skrýt","Reaction not saved":"Reakci se nepodařilo uložit","Pin not changed":"Připnutí se nepodařilo změnit","Chat setting not saved":"Nastavení chatu se nepodařilo uložit","Chat theme not saved":"Motiv chatu se nepodařilo uložit","Silent Chat not saved":"Mizející chat se nepodařilo uložit","Privacy not saved":"Nastavení soukromí se nepodařilo uložit","Profile not saved":"Profil se nepodařilo uložit","Favorite not saved":"Oblíbené se nepodařilo uložit","Moment not posted":"Moment se nepodařilo zveřejnit","Note not saved":"Poznámku se nepodařilo uložit","Note not deleted":"Poznámku se nepodařilo smazat","Wave not sent":"Mávnutí se nepodařilo odeslat","Request not sent":"Žádost se nepodařilo odeslat","Could not update request":"Žádost se nepodařilo aktualizovat","Group not created":"Skupinu se nepodařilo vytvořit","Group name not changed":"Název skupiny se nepodařilo změnit","Setting not changed":"Nastavení se nepodařilo změnit","Ban failed":"Blokování se nezdařilo","Unban failed":"Odblokování se nezdařilo","Mute failed":"Ztišení se nezdařilo","Unmute failed":"Zapnutí zvuku se nezdařilo","LINK Plus not activated":"LINK Plus se nepodařilo aktivovat","LINK Pro not activated":"LINK Pro se nepodařilo aktivovat","Could not cancel Plus":"LINK Plus se nepodařilo zrušit","Could not cancel Pro":"LINK Pro se nepodařilo zrušit","Try again.":"Zkus to znovu.","Check your details":"Zkontroluj údaje","Complete your profile":"Dokonči profil","Verify your email":"Ověř svůj e-mail","Could not create account":"Účet se nepodařilo vytvořit","Could not sign in":"Přihlášení se nezdařilo","Name":"Jméno","Password":"Heslo","Create account":"Vytvořit účet","Sign in":"Přihlásit se","Connecting to LINK…":"Připojuji k LINKu…","Sign in to your real LINK account.":"Přihlas se ke svému LINK účtu.","Create an account that works across devices.":"Vytvoř si účet, který funguje na všech tvých zařízeních.","New to LINK? Create account":"Jsi tu nový? Vytvoř si účet","Already have LINK? Sign in":"Už máš LINK? Přihlas se","LINK Production · Supabase backend":"LINK Production · zabezpečený backend","Real LINK accounts":"Skutečné LINK účty","Welcome back.":"Vítej zpět.","Your LINK starts here.":"Tvůj LINK začíná tady.","Sign in and pick up where you left off.":"Přihlas se a pokračuj přesně tam, kde jsi skončil.","Create your identity, LINK with people and start chatting.":"Vytvoř si identitu, propoj se s lidmi a začni chatovat.","Built in Czechia":"Vytvořeno v Česku","Real accounts":"Skutečné účty","Private chats":"Soukromé chaty","Cross-device":"Na více zařízeních","Log in":"Přihlásit","Register":"Registrace","Continue":"Pokračovat","By continuing, you agree to use LINK responsibly.":"Pokračováním souhlasíš s odpovědným používáním LINKu.","Your account, chats and settings sync through LINK Production.":"Tvůj účet, chaty a nastavení se synchronizují přes LINK Production.","Invalid login credentials":"Nesprávný e-mail nebo heslo.","Email not confirmed":"E-mail zatím není ověřený.","User already registered":"Účet s tímto e-mailem už existuje.","Password should be at least 6 characters":"Heslo musí mít alespoň 6 znaků.","Unable to validate email address: invalid format":"E-mail nemá platný formát.","Enter a valid email and a password with at least 6 characters.":"Zadej platný e-mail a heslo s alespoň 6 znaky.","Add your name and a username with at least 3 characters.":"Doplň jméno a uživatelské jméno s alespoň 3 znaky.","Your LINK account was created. Verify the email, then return here and sign in.":"LINK účet byl vytvořen. Ověř e-mail a potom se vrať a přihlas se.","Name required":"Je potřeba jméno","Username taken":"Uživatelské jméno je obsazené","Group name required":"Je potřeba název skupiny","Camera permission":"Oprávnění fotoaparátu","Photos permission":"Oprávnění k fotkám","Not a LINK card":"Toto není LINK karta","Refresh LINK data":"Obnovit data LINKu","Refresh LINK data?":"Obnovit data LINKu?","Refresh":"Obnovit","Delete":"Smazat","Delete for me":"Smazat pro mě","Unsend for everyone":"Zrušit odeslání všem","Forward":"Přeposlat","Forward to":"Přeposlat komu","Search":"Hledat","Search in chat":"Hledat v chatu","Media & Voice":"Média a hlasové zprávy","Photos & videos":"Fotky a videa","Voice messages":"Hlasové zprávy","Today":"Dnes","Yesterday":"Včera","Close":"Zavřít","Done":"Hotovo","Edit":"Upravit","Save changes":"Uložit změny","Back":"Zpět","Support URL":"Odkaz podpory","Visible when someone opens your LINK profile.":"Viditelné, když někdo otevře tvůj LINK profil.","Special Profile Effect":"Speciální efekt profilu","Name Effect":"Efekt jména","CEO Customization":"CEO úpravy","Staff-only profile tools for @link":"Nástroje profilu pouze pro staff účet @link","Staff-only animated effects, name effects and GIF profile photos.":"Animované efekty, efekty jména a GIF profilové fotky pouze pro staff.","LINK first":"Nejdřív se propojte přes LINK","Chat unlocks after both people accept the LINK.":"Chat se odemkne, až oba přijmete LINK.","All":"Vše","Media":"Média","Voice":"Hlasové","Links":"Odkazy","Files":"Soubory","LINK 1.3 · language, messaging and privacy preferences sync through LINK Production.":"LINK 1.3 · jazyk, zprávy a nastavení soukromí se synchronizují přes LINK Production.","Available":"K dispozici","Outside":"Venku","At work":"V práci","At event":"Na akci","Conversations":"Konverzace","Create & switch":"Vytvořit a přepnout","Create another test identity":"Vytvořit další testovací identitu","Custom":"Vlastní","Emoji":"Emoji","Gradients are rendered directly on your status pill.":"Gradienty se zobrazují přímo na štítku statusu.","LINK Plus unlocks 5 extra premium colors.":"LINK Plus odemyká 5 dalších prémiových barev.","LINK Plus unlocks 5 extra premium icons.":"LINK Plus odemyká 5 dalších prémiových ikon.","LINK Plus · choose your instant reaction.":"LINK Plus · vyber si rychlou reakci.","LINK Pro adds 10-second and 7-day timer presets. Silent Chat itself is available to everyone.":"LINK Pro přidává časovače 10 sekund a 7 dní. Mizející chat je dostupný všem.","LINK member":"Člen LINKu","LINK people you actually meet, then keep the conversation going without random DMs.":"Propoj se s lidmi, které skutečně potkáš, a pokračuj v konverzaci bez náhodných DM.","LINK uses the camera only to scan QR cards and create Moments.":"LINK používá fotoaparát pouze ke skenování QR karet a vytváření Moments.","LOCAL":"LOKÁLNÍ","Messages sent":"Odeslané zprávy","Mutual LINK":"Společný LINK","New Group":"Nová skupina","New local account":"Nový lokální účet","Pro Insights":"Pro přehledy","Profile effects":"Efekty profilu","Prototype subscription entitlement synced through the LINK backend. No real payment is charged; production billing still needs App Store / Google Play subscriptions.":"Prototyp předplatného synchronizovaný přes LINK backend. Žádná skutečná platba se neúčtuje; produkční platby budou vyžadovat předplatné přes App Store / Google Play.","Prototype subscription only. No real payment is charged. The free-trial toggle demonstrates the intended App Store / Google Play flow.":"Pouze prototyp předplatného. Žádná skutečná platba se neúčtuje. Zkušební verze ukazuje plánovaný tok přes App Store / Google Play.","Scanning sends a mutual LINK request. Chat unlocks after acceptance.":"Naskenováním odešleš žádost o LINK. Chat se odemkne po přijetí.","Tap to open":"Klepni pro otevření","Try all Pro features free for 7 days, then continue on the annual plan.":"Vyzkoušej všechny Pro funkce 7 dní zdarma a potom pokračuj s ročním plánem.","You":"Ty","e.g. Studio all night":"např. Celou noc ve studiu","Ban accounts or mute posting and messaging. Changes sync through LINK Production.":"Blokuj účty nebo omez publikování a zprávy. Změny se synchronizují přes LINK Production.","Ban, unban and mute local users. Staff actions are saved on this device.":"Blokuj, odblokuj a ztiš uživatele. Staff akce se ukládají na tomto zařízení.","CEO Profile Lab":"CEO Profile Lab","CLOSE LINKS":"BLÍZCÍ LINKOVÉ","Default":"Výchozí","Red":"Červená","Green":"Zelená","Yellow":"Žlutá","Bright Red":"Jasně červená","Blue & Purple":"Modrá a fialová","Cyan Blue":"Azurově modrá","Cyan Green":"Azurově zelená","Sky Blue (Classic)":"Nebeská modrá (Classic)","Rose Pink":"Růžová","Hot Pink":"Hot Pink","Monochromatic":"Monochromatický","Gold":"Zlatá","Black Crow":"Black Crow","Pink Cryptid":"Pink Cryptid","Digital Scar":"Digital Scar","Ice Glass":"Ice Glass","Riot Cat":"Riot Cat","Skull Spider":"Skull Spider","Starline":"Starline","Widow Bloom":"Widow Bloom","Executive Gold":"Executive Gold","Executive Orbit":"Executive Orbit","Founder Aura":"Founder Aura","CEO Crown":"CEO Crown","Photo or video":"Fotka nebo video","Voice message":"Hlasová zpráva","Location card":"Karta polohy","Contact card":"Karta kontaktu","Choose an attachment.":"Vyber přílohu.","Current location":"Aktuální poloha","New LINK":"Nový LINK","Send the first message to the group.":"Pošli první zprávu do skupiny.","Silent Chat is on":"Mizející chat je zapnutý","Turn on disappearing messages":"Zapnout mizející zprávy","Existing messages stay. Only new messages use the timer.":"Stávající zprávy zůstanou. Časovač platí pouze pro nové zprávy.","LINK Pro · Staff Access":"LINK Pro · Staff přístup","LINK Pro is active":"LINK Pro je aktivní","Unlock LINK Pro":"Odemknout LINK Pro","All Pro tools are unlocked for LINK administration":"Všechny Pro nástroje jsou odemčené pro správu LINKu","Ghost Mode, 7-day Notes, Profile Insights, 30% Shop savings & more":"Ghost Mode, 7denní Poznámky, přehledy profilu, 30% sleva v Shopu a další","LINK Plus · Staff Access":"LINK Plus · Staff přístup","LINK Plus included with Pro":"LINK Plus je součástí Pro","LINK Plus is active":"LINK Plus je aktivní","Upgrade to LINK Plus":"Přejít na LINK Plus","All Plus perks are unlocked for LINK administration":"Všechny Plus výhody jsou odemčené pro správu LINKu","All LINK Plus perks are included in your Pro plan":"Všechny výhody LINK Plus jsou součástí tvého Pro plánu","From 54 Kč/month on annual · better Notes, Shop savings & more":"Od 54 Kč/měsíc při ročním plánu · lepší Poznámky, slevy v Shopu a další","Premium profile tools and practical perks without locking basic LINK features behind a paywall.":"Prémiové nástroje profilu a praktické výhody bez zamykání základních funkcí LINKu za paywall.","Privacy tools, deeper identity, stronger Shop savings and social insights — with every Plus benefit included.":"Nástroje soukromí, výraznější identita, větší slevy v Shopu a sociální přehledy — včetně všech výhod Plus.","This user":"Tento uživatel","This person":"Tento uživatel","Reply sent":"Odpověď odeslána","Welcome to LINK Plus ✦":"Vítej v LINK Plus ✦","LINK Pro trial started ◆":"Zkušební LINK Pro spuštěn ◆","Welcome to LINK Pro ◆":"Vítej v LINK Pro ◆","This clears only the local cache. Your real LINK account, messages and backend data stay online.":"Tím se smaže pouze místní cache. Tvůj skutečný LINK účet, zprávy a data v backendu zůstanou online.","LINK Pro required":"Je potřeba LINK Pro","Status not changed":"Status se nepodařilo změnit","Create a group":"Vytvořit skupinu","Send messages":"Posílat zprávy","Send LINK requests":"Posílat žádosti o LINK","Use this feature":"Používat tuto funkci"};
+const resolveLanguage = (setting = 'system') => setting === 'cs' || setting === 'en' ? setting : SYSTEM_LANGUAGE;
+const translateLiteral = (value) => {
+  if (value == null || CURRENT_LANGUAGE !== 'cs') return value;
+  const source = String(value);
+  const lead = (source.match(/^\s*/) || [''])[0];
+  const tail = (source.match(/\s*$/) || [''])[0];
+  const core = source.trim();
+  if (!core) return source;
+  if (CS_TRANSLATIONS[core]) return `${lead}${CS_TRANSLATIONS[core]}${tail}`;
+  if (/^Active now$/i.test(core)) return `${lead}Aktivní právě teď${tail}`;
+  let m = core.match(/^Active (\d+)m ago$/i); if (m) return `${lead}Aktivní před ${m[1]} min${tail}`;
+  m = core.match(/^(\d+) messages?$/i); if (m) { const n=Number(m[1]); return `${lead}${n} ${n===1?'zpráva':n>=2&&n<=4?'zprávy':'zpráv'}${tail}`; }
+  if (core.includes('Invalid login credentials')) return `${lead}Nesprávný e-mail nebo heslo.${tail}`;
+  if (core.includes('Email not confirmed')) return `${lead}E-mail zatím není ověřený.${tail}`;
+  if (core.includes('User already registered')) return `${lead}Účet s tímto e-mailem už existuje.${tail}`;
+  if (core.includes('rate limit')) return `${lead}Příliš mnoho pokusů. Zkus to znovu za chvíli.${tail}`;
+  let dm = core.match(/^Say hi to (.+)\.$/); if (dm) return `${lead}Napiš první zprávu uživateli ${dm[1]}.${tail}`;
+  dm = core.match(/^Silent message · (.+)$/); if (dm) return `${lead}Mizející zpráva · ${dm[1]}${tail}`;
+  dm = core.match(/^New messages disappear (.+) after sending\.$/); if (dm) return `${lead}Nové zprávy zmizí ${dm[1]} po odeslání.${tail}`;
+  dm = core.match(/^You cannot (.+) while this account is muted\.$/); if (dm) return `${lead}Dokud je účet ztišený, nemůžeš ${dm[1]}.${tail}`;
+  dm = core.match(/^(.+) will lose access until an administrator removes the ban\.$/); if (dm) return `${lead}${dm[1]} ztratí přístup, dokud správce blokaci nezruší.${tail}`;
+  dm = core.match(/^(.+) can accept it on their device\.$/); if (dm) return `${lead}Uživatel ${dm[1]} ji může přijmout na svém zařízení.${tail}`;
+  dm = core.match(/^Your reply was sent privately to (.+)\.$/); if (dm) return `${lead}Tvoje odpověď byla soukromě odeslána uživateli ${dm[1]}.${tail}`;
+  dm = core.match(/^(.+) will see it in LINK\.$/); if (dm) return `${lead}${dm[1]} to uvidí v LINKu.${tail}`;
+  dm = core.match(/^Your (.+) plan is active on this LINK account\.$/); if (dm) return `${lead}Plán ${dm[1]} je na tomto LINK účtu aktivní.${tail}`;
+  dm = core.match(/^Your 7-day free trial is active\. (.+) unlocks the highest LINK tier on this account\.$/); if (dm) return `${lead}Tvoje 7denní zkušební verze je aktivní. ${dm[1]} odemyká nejvyšší úroveň LINKu na tomto účtu.${tail}`;
+  dm = core.match(/^(.+) unlocks the highest LINK tier on this account\.$/); if (dm) return `${lead}${dm[1]} odemyká nejvyšší úroveň LINKu na tomto účtu.${tail}`;
+  dm = core.match(/^(.+) plan · premium perks unlocked$/); if (dm) return `${lead}${dm[1]} plán · prémiové výhody odemčeny${tail}`;
+  dm = core.match(/^Get (.+)$/); if (dm) return `${lead}Získat ${dm[1]}${tail}`;
+  return source;
+};
+function Text({ children, ...props }) {
+  return <RNText {...props}>{React.Children.map(children, child => typeof child === 'string' ? translateLiteral(child) : child)}</RNText>;
+}
+function TextInput(props) {
+  return <RNTextInput {...props} placeholder={typeof props.placeholder === 'string' ? translateLiteral(props.placeholder) : props.placeholder} />;
+}
+const Alert = {
+  alert: (title, message, buttons, options) => RNAlert.alert(
+    typeof title === 'string' ? translateLiteral(title) : title,
+    typeof message === 'string' ? translateLiteral(message) : message,
+    Array.isArray(buttons) ? buttons.map(button => ({ ...button, text: typeof button?.text === 'string' ? translateLiteral(button.text) : button?.text })) : buttons,
+    options
+  ),
+};
 const SUPABASE_URL = 'https://sbszhchbhlvyftdrimjv.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_HG49rojoBc1BLA-b9VTNzw_iTo5GQaf';
 
@@ -53,7 +107,7 @@ if (Platform.OS !== 'web') {
 }
 
 const toMs = value => value ? new Date(value).getTime() : null;
-const timeLabel = value => value ? new Date(value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+const timeLabel = value => value ? new Date(value).toLocaleTimeString(CURRENT_LANGUAGE === 'cs' ? 'cs-CZ' : 'en-US', { hour: '2-digit', minute: '2-digit' }) : '';
 const cleanUsername = value => {
   const core = String(value || '').trim().replace(/^@/, '').replace(/\s+/g, '').replace(/[^a-zA-Z0-9_.]/g, '').toLowerCase();
   return `@${core || 'linkuser'}`;
@@ -295,7 +349,7 @@ async function loadLinkSnapshot(base, userId) {
 
   return {
     ...base,
-    version: 16,
+    version: 18,
     activeAccountId:userId,
     localAccountIds:[userId],
     profiles,
@@ -322,6 +376,7 @@ async function loadLinkSnapshot(base, userId) {
     chatUserSettings,
     profileViews:{ [userId]:(profileViewsQ.data || []).length },
     themeSetting:settings.theme_setting || base.themeSetting || 'system',
+    languageSetting:settings.language_setting || base.languageSetting || 'system',
   };
 }
 
@@ -400,6 +455,7 @@ async function updateSettingsRemote(patch) {
   if (!userId) throw new Error('Not signed in');
   const row = { user_id:userId, updated_at:new Date().toISOString() };
   if ('themeSetting' in patch) row.theme_setting = patch.themeSetting;
+  if ('languageSetting' in patch) { row.language_setting = ['system','cs','en'].includes(patch.languageSetting) ? patch.languageSetting : 'system'; row.language_resolved = resolveLanguage(row.language_setting); }
   if ('showStatus' in patch) row.show_status = !!patch.showStatus;
   if ('showSocials' in patch) row.show_socials = !!patch.showSocials;
   if ('momentsToLinks' in patch) row.moments_to_links = !!patch.momentsToLinks;
@@ -665,9 +721,15 @@ function BackendGate({ children }) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [authLanguage, setAuthLanguage] = useState(SYSTEM_LANGUAGE);
+  CURRENT_LANGUAGE = resolveLanguage(authLanguage);
 
   useEffect(() => {
+    AsyncStorage.getItem(AUTH_LANGUAGE_KEY).then(value => {
+      if (value === 'cs' || value === 'en') setAuthLanguage(value);
+    }).catch(() => {});
     let alive = true;
     supabase.auth.getSession().then(({ data }) => {
       if (alive) { setSession(data.session || null); setReady(true); }
@@ -675,6 +737,12 @@ function BackendGate({ children }) {
     const { data: listener } = supabase.auth.onAuthStateChange((_event, next) => setSession(next || null));
     return () => { alive = false; listener.subscription.unsubscribe(); };
   }, []);
+
+  const chooseAuthLanguage = (language) => {
+    setAuthLanguage(language);
+    CURRENT_LANGUAGE = language;
+    AsyncStorage.setItem(AUTH_LANGUAGE_KEY, language).catch(() => {});
+  };
 
   const submit = async () => {
     const cleanEmail = email.trim().toLowerCase();
@@ -687,9 +755,12 @@ function BackendGate({ children }) {
         const { data, error } = await supabase.auth.signUp({
           email: cleanEmail,
           password,
-          options: { data: { name: name.trim(), username: cleanUsername } },
+          options: { data: { name: name.trim(), username: cleanUsername, language_setting: authLanguage } },
         });
         if (error) throw error;
+        if (data.session?.user?.id) {
+          await supabase.from('user_settings').upsert({ user_id:data.session.user.id, language_setting:authLanguage, language_resolved:authLanguage, updated_at:new Date().toISOString() }, { onConflict:'user_id' });
+        }
         if (!data.session) Alert.alert('Verify your email', 'Your LINK account was created. Verify the email, then return here and sign in.');
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
@@ -700,44 +771,92 @@ function BackendGate({ children }) {
     } finally { setLoading(false); }
   };
 
-  if (!ready) return <View style={backendStyles.loading}><ActivityIndicator size="large" color={ACCENT} /><Text style={backendStyles.loadingText}>Connecting to LINK…</Text></View>;
+  if (!ready) return <View style={backendStyles.loading}><View style={backendStyles.loadingLogo}><Text style={backendStyles.loadingLogoText}>L</Text></View><ActivityIndicator size="small" color={ACCENT} /><Text style={backendStyles.loadingText}>Connecting to LINK…</Text></View>;
   if (session) return children(session);
 
   return (
     <SafeAreaView style={backendStyles.page}>
-      <KeyboardAvoidingView style={backendStyles.center} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <View style={backendStyles.logo}><Ionicons name="link" size={27} color="#fff" /></View>
-        <Text style={backendStyles.title}>LINK</Text>
-        <Text style={backendStyles.sub}>{mode === 'login' ? 'Sign in to your real LINK account.' : 'Create an account that works across devices.'}</Text>
-        <View style={backendStyles.card}>
-          {mode === 'register' ? <>
-            <TextInput style={backendStyles.input} placeholder="Name" placeholderTextColor="#8C919D" value={name} onChangeText={setName} />
-            <TextInput style={backendStyles.input} placeholder="@username" placeholderTextColor="#8C919D" autoCapitalize="none" value={username} onChangeText={setUsername} />
-          </> : null}
-          <TextInput style={backendStyles.input} placeholder="Email" placeholderTextColor="#8C919D" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} />
-          <TextInput style={backendStyles.input} placeholder="Password" placeholderTextColor="#8C919D" secureTextEntry autoCapitalize="none" value={password} onChangeText={setPassword} />
-          <Pressable disabled={loading} onPress={submit} style={[backendStyles.primary, loading && { opacity: .6 }]}>
-            {loading ? <ActivityIndicator color="#fff" /> : <Text style={backendStyles.primaryText}>{mode === 'login' ? 'Sign in' : 'Create account'}</Text>}
-          </Pressable>
-          <Pressable onPress={() => setMode(mode === 'login' ? 'register' : 'login')} style={backendStyles.switchBtn}>
-            <Text style={backendStyles.switchText}>{mode === 'login' ? 'New to LINK? Create account' : 'Already have LINK? Sign in'}</Text>
-          </Pressable>
-        </View>
-        <Text style={backendStyles.foot}>LINK Production · Supabase backend</Text>
+      <RNStatusBar barStyle="dark-content" />
+      <View style={backendStyles.orbOne} pointerEvents="none" />
+      <View style={backendStyles.orbTwo} pointerEvents="none" />
+      <KeyboardAvoidingView style={backendStyles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={backendStyles.scroll}>
+          <View style={backendStyles.topRow}>
+            <View style={backendStyles.originPill}><Text style={backendStyles.originFlag}>🇨🇿</Text><Text style={backendStyles.originText}>Built in Czechia</Text></View>
+            <View style={backendStyles.langPill}>
+              {['cs','en'].map(language => <Pressable key={language} onPress={() => chooseAuthLanguage(language)} style={[backendStyles.langChoice, authLanguage === language && backendStyles.langChoiceActive]}><Text style={[backendStyles.langText, authLanguage === language && backendStyles.langTextActive]}>{language === 'cs' ? 'CZ' : 'EN'}</Text></Pressable>)}
+            </View>
+          </View>
+
+          <View style={backendStyles.brandRow}>
+            <View style={backendStyles.logo}><Text style={backendStyles.logoText}>L</Text></View>
+            <View><Text style={backendStyles.brandName}>LINK</Text><Text style={backendStyles.brandMeta}>SOCIAL · MESSAGING · MOMENTS</Text></View>
+          </View>
+
+          <Text style={backendStyles.heroTitle}>{mode === 'login' ? 'Welcome back.' : 'Your LINK starts here.'}</Text>
+          <Text style={backendStyles.heroSub}>{mode === 'login' ? 'Sign in and pick up where you left off.' : 'Create your identity, LINK with people and start chatting.'}</Text>
+
+          <View style={backendStyles.featureRow}>
+            {[['shield-checkmark','Real accounts'],['chatbubbles','Private chats'],['sync','Cross-device']].map(([icon,label]) => <View key={label} style={backendStyles.featurePill}><Ionicons name={icon} size={14} color="#3C3F49"/><Text style={backendStyles.featureText}>{label}</Text></View>)}
+          </View>
+
+          <View style={backendStyles.card}>
+            <BlurView intensity={52} tint="light" style={StyleSheet.absoluteFill} />
+            <View style={backendStyles.cardTint} pointerEvents="none" />
+            <View style={backendStyles.segmented}>
+              <Pressable onPress={() => setMode('login')} style={[backendStyles.segment, mode === 'login' && backendStyles.segmentActive]}><Text style={[backendStyles.segmentText, mode === 'login' && backendStyles.segmentTextActive]}>Log in</Text></Pressable>
+              <Pressable onPress={() => setMode('register')} style={[backendStyles.segment, mode === 'register' && backendStyles.segmentActive]}><Text style={[backendStyles.segmentText, mode === 'register' && backendStyles.segmentTextActive]}>Register</Text></Pressable>
+            </View>
+
+            {mode === 'register' ? <>
+              <View style={backendStyles.inputRow}><Ionicons name="person-outline" size={19} color="#7C818D"/><TextInput style={backendStyles.input} placeholder="Name" placeholderTextColor="#9297A2" value={name} onChangeText={setName} returnKeyType="next" /></View>
+              <View style={backendStyles.inputRow}><Ionicons name="at-outline" size={19} color="#7C818D"/><TextInput style={backendStyles.input} placeholder="@username" placeholderTextColor="#9297A2" autoCapitalize="none" value={username} onChangeText={setUsername} returnKeyType="next" /></View>
+            </> : null}
+            <View style={backendStyles.inputRow}><Ionicons name="mail-outline" size={19} color="#7C818D"/><TextInput style={backendStyles.input} placeholder="Email" placeholderTextColor="#9297A2" keyboardType="email-address" autoCapitalize="none" value={email} onChangeText={setEmail} returnKeyType="next" /></View>
+            <View style={backendStyles.inputRow}><Ionicons name="lock-closed-outline" size={19} color="#7C818D"/><TextInput style={backendStyles.input} placeholder="Password" placeholderTextColor="#9297A2" secureTextEntry={!passwordVisible} autoCapitalize="none" value={password} onChangeText={setPassword} onSubmitEditing={submit} returnKeyType="go" /><Pressable onPress={() => setPasswordVisible(v => !v)} hitSlop={10}><Ionicons name={passwordVisible ? 'eye-off-outline' : 'eye-outline'} size={20} color="#777D89" /></Pressable></View>
+
+            <Pressable disabled={loading} onPress={submit} style={({pressed}) => [backendStyles.primary, (loading || pressed) && { opacity: .72 }]}>
+              {loading ? <ActivityIndicator color="#fff" /> : <><Text style={backendStyles.primaryText}>{mode === 'login' ? 'Sign in' : 'Create account'}</Text><Ionicons name="arrow-forward" size={18} color="#fff" /></>}
+            </Pressable>
+            <Text style={backendStyles.terms}>By continuing, you agree to use LINK responsibly.</Text>
+          </View>
+
+          <View style={backendStyles.syncCard}>
+            <View style={backendStyles.syncIcon}><Ionicons name="cloud-done-outline" size={19} color={ACCENT}/></View>
+            <View style={backendStyles.flex}><Text style={backendStyles.syncTitle}>LINK Production</Text><Text style={backendStyles.syncText}>Your account, chats and settings sync through LINK Production.</Text></View>
+            <View style={backendStyles.liveDot}/>
+          </View>
+
+          <Text style={backendStyles.foot}>LINK 1.3.0 · Czech First · Backend Beta</Text>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const backendStyles = StyleSheet.create({
-  page:{flex:1,backgroundColor:'#F6F7FB'},center:{flex:1,justifyContent:'center',padding:22},logo:{width:58,height:58,borderRadius:20,alignSelf:'center',alignItems:'center',justifyContent:'center',backgroundColor:ACCENT,shadowColor:'#000',shadowOpacity:.12,shadowRadius:20,shadowOffset:{width:0,height:10}},title:{fontSize:38,fontWeight:'950',letterSpacing:-1.4,textAlign:'center',color:'#111318',marginTop:16},sub:{fontSize:15,lineHeight:21,textAlign:'center',color:'#737987',marginTop:5,marginBottom:22},card:{backgroundColor:'#fff',padding:14,borderRadius:28,borderWidth:StyleSheet.hairlineWidth,borderColor:'#E8EAF0',gap:10},input:{height:54,borderRadius:17,backgroundColor:'#F2F3F7',paddingHorizontal:16,fontSize:16,color:'#111318'},primary:{height:54,borderRadius:17,backgroundColor:ACCENT,alignItems:'center',justifyContent:'center',marginTop:3},primaryText:{color:'#fff',fontSize:16,fontWeight:'900'},switchBtn:{height:44,alignItems:'center',justifyContent:'center'},switchText:{color:ACCENT,fontWeight:'800'},foot:{textAlign:'center',fontSize:11,color:'#9AA0AB',marginTop:18},loading:{flex:1,alignItems:'center',justifyContent:'center',backgroundColor:'#F6F7FB'},loadingText:{marginTop:12,color:'#737987',fontWeight:'700'}
+  flex:{flex:1},page:{flex:1,backgroundColor:'#F5F6FA'},scroll:{flexGrow:1,paddingHorizontal:20,paddingTop:12,paddingBottom:26},
+  orbOne:{position:'absolute',width:310,height:310,borderRadius:155,backgroundColor:'rgba(108,92,231,.11)',top:-115,left:-125},
+  orbTwo:{position:'absolute',width:260,height:260,borderRadius:130,backgroundColor:'rgba(0,122,255,.07)',bottom:40,right:-135},
+  topRow:{flexDirection:'row',alignItems:'center',justifyContent:'space-between',marginBottom:24},
+  originPill:{height:36,paddingHorizontal:12,borderRadius:18,backgroundColor:'rgba(255,255,255,.78)',borderWidth:StyleSheet.hairlineWidth,borderColor:'rgba(20,24,40,.08)',flexDirection:'row',alignItems:'center',gap:7},originFlag:{fontSize:15},originText:{fontSize:11.5,fontWeight:'800',color:'#505561'},
+  langPill:{height:36,padding:3,borderRadius:18,backgroundColor:'rgba(255,255,255,.78)',borderWidth:StyleSheet.hairlineWidth,borderColor:'rgba(20,24,40,.08)',flexDirection:'row'},langChoice:{minWidth:37,borderRadius:15,alignItems:'center',justifyContent:'center'},langChoiceActive:{backgroundColor:'#111318'},langText:{fontSize:11,fontWeight:'900',color:'#777D89'},langTextActive:{color:'#fff'},
+  brandRow:{flexDirection:'row',alignItems:'center',gap:12,marginBottom:30},logo:{width:58,height:58,borderRadius:19,alignItems:'center',justifyContent:'center',backgroundColor:'#111318',shadowColor:'#000',shadowOpacity:.17,shadowRadius:18,shadowOffset:{width:0,height:9}},logoText:{color:'#fff',fontSize:28,fontWeight:'950',letterSpacing:-1.3},brandName:{fontSize:24,fontWeight:'950',letterSpacing:-1,color:'#111318'},brandMeta:{fontSize:8.5,fontWeight:'900',letterSpacing:1.15,color:'#8A909B',marginTop:1},
+  heroTitle:{fontSize:38,lineHeight:41,fontWeight:'950',letterSpacing:-1.6,color:'#111318',maxWidth:360},heroSub:{fontSize:15.5,lineHeight:22,color:'#6E7480',marginTop:9,maxWidth:350},
+  featureRow:{flexDirection:'row',gap:7,marginTop:18,marginBottom:18,flexWrap:'wrap'},featurePill:{height:34,borderRadius:17,paddingHorizontal:11,backgroundColor:'rgba(255,255,255,.72)',borderWidth:StyleSheet.hairlineWidth,borderColor:'rgba(20,24,40,.07)',flexDirection:'row',alignItems:'center',gap:6},featureText:{fontSize:10.5,fontWeight:'800',color:'#505561'},
+  card:{borderRadius:30,borderWidth:1,borderColor:'rgba(255,255,255,.9)',padding:13,gap:10,overflow:'hidden',shadowColor:'#1A1D28',shadowOpacity:.10,shadowRadius:28,shadowOffset:{width:0,height:14},elevation:8},cardTint:{...StyleSheet.absoluteFillObject,backgroundColor:'rgba(255,255,255,.72)'},
+  segmented:{height:46,borderRadius:17,backgroundColor:'rgba(236,238,243,.86)',padding:4,flexDirection:'row',marginBottom:2},segment:{flex:1,borderRadius:14,alignItems:'center',justifyContent:'center'},segmentActive:{backgroundColor:'#fff',shadowColor:'#000',shadowOpacity:.08,shadowRadius:7,shadowOffset:{width:0,height:3}},segmentText:{fontSize:13,fontWeight:'850',color:'#858B96'},segmentTextActive:{color:'#111318'},
+  inputRow:{height:56,borderRadius:18,backgroundColor:'rgba(244,245,248,.95)',borderWidth:StyleSheet.hairlineWidth,borderColor:'rgba(20,24,40,.05)',paddingHorizontal:15,flexDirection:'row',alignItems:'center',gap:10},input:{flex:1,height:'100%',fontSize:16,color:'#111318',paddingVertical:0},
+  primary:{height:56,borderRadius:18,backgroundColor:'#111318',alignItems:'center',justifyContent:'center',flexDirection:'row',gap:8,marginTop:3,shadowColor:'#000',shadowOpacity:.16,shadowRadius:14,shadowOffset:{width:0,height:7}},primaryText:{color:'#fff',fontSize:15.5,fontWeight:'900'},terms:{fontSize:10.5,lineHeight:15,textAlign:'center',color:'#969BA6',paddingHorizontal:12,paddingTop:2,paddingBottom:1},
+  syncCard:{marginTop:14,minHeight:66,borderRadius:22,paddingHorizontal:14,backgroundColor:'rgba(255,255,255,.62)',borderWidth:StyleSheet.hairlineWidth,borderColor:'rgba(20,24,40,.07)',flexDirection:'row',alignItems:'center',gap:11},syncIcon:{width:38,height:38,borderRadius:13,backgroundColor:'rgba(108,92,231,.10)',alignItems:'center',justifyContent:'center'},syncTitle:{fontSize:12.5,fontWeight:'900',color:'#282B31'},syncText:{fontSize:10.5,lineHeight:14,color:'#777D89',marginTop:2},liveDot:{width:8,height:8,borderRadius:4,backgroundColor:'#34C759'},
+  foot:{textAlign:'center',fontSize:10.5,color:'#A0A5AF',marginTop:18,fontWeight:'700'},loading:{flex:1,alignItems:'center',justifyContent:'center',backgroundColor:'#F5F6FA',gap:10},loadingLogo:{width:54,height:54,borderRadius:18,backgroundColor:'#111318',alignItems:'center',justifyContent:'center',marginBottom:6},loadingLogoText:{fontSize:27,fontWeight:'950',color:'#fff'},loadingText:{color:'#737987',fontWeight:'800',fontSize:12}
 });
 
-const STORAGE_KEY = '@link_live_backend_v17';
+const STORAGE_KEY = '@link_live_backend_v18';
 const DRAFT_PREFIX = '@link_chat_draft_v1';
 const ACCENT = '#6C5CE7';
 const EMPTY_MESSAGES = Object.freeze([]);
-const BUILD = 'LINK 1.2.2 · Realtime Stability';
+const BUILD = 'LINK 1.3.0 · Czech First';
 
 function QRCode({ value, size = 170, color = '#0E0F12', backgroundColor = '#FFFFFF' }) {
   const qr = useMemo(() => {
@@ -1009,8 +1128,9 @@ const normalizeUsername = (value = '') => {
 
 function initialData(userId = null) {
   return {
-    version: 16,
+    version: 18,
     themeSetting: 'light',
+    languageSetting: 'system',
     activeAccountId: userId,
     localAccountIds: userId ? [userId] : [],
     profiles: {},
@@ -1636,7 +1756,7 @@ function PresenceStatusModal({ visible, onClose, theme, profile, proActive, onSe
   </Pressable></Pressable></Modal>;
 }
 
-function SettingsHubModal({ visible, onClose, theme, profile, accountEmail, privacy, setPrivacy, themeSetting, setThemeSetting, proActive, onOpenPresence, onSignOut }) {
+function SettingsHubModal({ visible, onClose, theme, profile, accountEmail, privacy, setPrivacy, themeSetting, setThemeSetting, languageSetting, setLanguageSetting, proActive, onOpenPresence, onSignOut }) {
   if (!profile) return null;
   const patch = (next) => setPrivacy({ ...privacy, ...next });
   const shortId = profile.id ? `${profile.id.slice(0,8)}…${profile.id.slice(-4)}` : '—';
@@ -1688,12 +1808,17 @@ function SettingsHubModal({ visible, onClose, theme, profile, accountEmail, priv
           <SettingsRow theme={theme} icon="shield-checkmark-outline" title="Login alerts" subtitle="Warn about new LINK sign-ins" right={<Switch value={privacy.loginAlerts !== false} onValueChange={v=>patch({loginAlerts:v})} trackColor={{false:theme.soft,true:ACCENT}}/>} last/>
         </View>
 
+        <SectionTitle theme={theme}>Language</SectionTitle>
+        <View style={[styles.settingsCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
+          <View style={styles.settingsBlock}><Text style={[styles.settingsTitle,{color:theme.text}]}>App language</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Use your device language or choose manually.</Text><SettingsChoicePills theme={theme} value={languageSetting || 'system'} onChange={setLanguageSetting} options={[{value:'system',label:'Follow system'},{value:'cs',label:'Czech'},{value:'en',label:'English'}]}/></View>
+        </View>
+
         <SectionTitle theme={theme}>Appearance</SectionTitle>
         <View style={styles.themeRow}><ThemeOption mode="system" active={themeSetting==='system'} label="System" icon="phone-portrait-outline" onPress={setThemeSetting} theme={theme}/><ThemeOption mode="light" active={themeSetting==='light'} label="Light" icon="sunny-outline" onPress={setThemeSetting} theme={theme}/><ThemeOption mode="dark" active={themeSetting==='dark'} label="Dark" icon="moon-outline" onPress={setThemeSetting} theme={theme}/></View>
 
         <SectionTitle theme={theme}>Account</SectionTitle>
         <Pressable onPress={onSignOut} style={[styles.settingsDangerCard,{backgroundColor:theme.card,borderColor:theme.border}]}><Ionicons name="log-out-outline" size={20} color={theme.danger}/><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.danger}]}>Sign out</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Use another LINK account on this device.</Text></View></Pressable>
-        <Text style={[styles.settingHint,{color:theme.sub,textAlign:'center',marginTop:14}]}>LINK 1.2 · messaging and privacy preferences sync through LINK Production.</Text>
+        <Text style={[styles.settingHint,{color:theme.sub,textAlign:'center',marginTop:14}]}>LINK 1.3 · language, messaging and privacy preferences sync through LINK Production.</Text>
       </ScrollView>
     </SafeAreaView>
   </Modal>;
@@ -1704,7 +1829,7 @@ function AdminCustomizationModal({ visible, onClose, theme, profile, onUpdate, o
   return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.adminCustomizeCard, { backgroundColor: theme.card }]} onPress={() => {}}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle, { color: theme.text }]}>CEO Customization</Text><Text style={[styles.sheetSub, { color: theme.sub }]}>Staff-only profile tools for @link</Text></View><IconButton icon="close" onPress={onClose} theme={theme} /></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 8 }}><View style={[styles.adminPreviewCard, { backgroundColor: theme.bg, borderColor: theme.border }]}><EffectAvatarStage person={profile} theme={theme} size={78} effectSize={174} /><View style={styles.profileNameWithBadge}><ProfileDisplayName person={profile} theme={theme} /><CeoBadge /><VerifiedBadge /></View><Text style={[styles.profileUser, { color: theme.sub }]}>{profile.username}</Text></View><Text style={[styles.adminCustomizeLabel, { color: theme.text }]}>Special Profile Effect</Text><View style={styles.adminEffectGrid}>{ADMIN_PROFILE_EFFECTS.map(effect => <Pressable key={effect.id} onPress={() => onUpdate({ ...profile, profileEffectId: effect.id })} style={[styles.adminEffectChoice, { backgroundColor: profile.profileEffectId === effect.id ? `${effect.color}18` : theme.soft, borderColor: profile.profileEffectId === effect.id ? effect.color : theme.border }]}><View style={[styles.adminEffectIcon, { backgroundColor: `${effect.color}20` }]}><Ionicons name={effect.adminSpecial === 'crown' ? 'diamond' : effect.adminSpecial === 'aura' ? 'sparkles' : 'planet'} size={20} color={effect.color} /></View><Text style={[styles.adminEffectName, { color: theme.text }]}>{effect.name}</Text>{profile.profileEffectId === effect.id ? <Ionicons name="checkmark-circle" size={17} color={effect.color} /> : null}</Pressable>)}</View><Pressable onPress={() => onUpdate({ ...profile, profileEffectId: null })} style={[styles.adminMiniAction, { backgroundColor: theme.soft }]}><Ionicons name="close-circle-outline" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '800' }}>No profile effect</Text></Pressable><Text style={[styles.adminCustomizeLabel, { color: theme.text, marginTop: 18 }]}>Name Effect</Text><View style={styles.nameEffectGrid}>{CEO_NAME_EFFECTS.map(effect => <Pressable key={effect.id} onPress={() => onUpdate({ ...profile, nameEffectId: effect.id })} style={[styles.nameEffectChoice, { backgroundColor: profile.nameEffectId === effect.id ? theme.inverse : theme.soft, borderColor: profile.nameEffectId === effect.id ? theme.inverse : theme.border }]}><Text style={{ color: profile.nameEffectId === effect.id ? theme.inverseText : theme.text, fontWeight: '900' }}>{effect.name}</Text></Pressable>)}</View><Pressable onPress={() => onUpdate({ ...profile, nameEffectId: null })} style={[styles.adminMiniAction, { backgroundColor: theme.soft }]}><Ionicons name="text-outline" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '800' }}>Standard name</Text></Pressable><Text style={[styles.adminCustomizeLabel, { color: theme.text, marginTop: 18 }]}>Animated avatar</Text><Pressable onPress={onPickGif} style={[styles.adminGifButton, { backgroundColor: theme.inverse }]}><Ionicons name="images-outline" size={18} color={theme.inverseText} /><View style={{ flex: 1 }}><Text style={{ color: theme.inverseText, fontWeight: '900' }}>Choose GIF / animated image</Text><Text style={{ color: theme.inverseText, opacity: .65, fontSize: 11, marginTop: 2 }}>Keeps the original animation instead of cropping.</Text></View><Ionicons name="chevron-forward" size={18} color={theme.inverseText} /></Pressable></ScrollView></Pressable></Pressable></Modal>;
 }
 
-function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setThemeSetting, privacy, setPrivacy, openAccountSwitcher, openCustomStatus, openShop, openPlus, plusSubscription, openPro, proSubscription, insights, openAdminConsole, doubleTapEmoji = '❤️', openDoubleTapReaction, resetDemo, accountEmail, setPresenceMode, onSignOut }) {
+function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setThemeSetting, languageSetting, setLanguageSetting, privacy, setPrivacy, openAccountSwitcher, openCustomStatus, openShop, openPlus, plusSubscription, openPro, proSubscription, insights, openAdminConsole, doubleTapEmoji = '❤️', openDoubleTapReaction, resetDemo, accountEmail, setPresenceMode, onSignOut }) {
   const [editing, setEditing] = useState(false);
   const [adminCustomizeOpen, setAdminCustomizeOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -1833,7 +1958,7 @@ function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setT
     </ScrollView>
     <AdminCustomizationModal visible={adminCustomizeOpen} onClose={() => setAdminCustomizeOpen(false)} theme={theme} profile={activeProfile} onUpdate={updateProfile} onPickGif={pickProfileGif} />
     <PresenceStatusModal visible={presenceOpen} onClose={() => setPresenceOpen(false)} theme={theme} profile={activeProfile} proActive={proActive} onSelect={setPresenceMode} />
-    <SettingsHubModal visible={settingsOpen} onClose={() => setSettingsOpen(false)} theme={theme} profile={activeProfile} accountEmail={accountEmail} privacy={privacy} setPrivacy={setPrivacy} themeSetting={themeSetting} setThemeSetting={setThemeSetting} proActive={proActive} onOpenPresence={() => { setSettingsOpen(false); setTimeout(() => setPresenceOpen(true), 180); }} onSignOut={onSignOut} />
+    <SettingsHubModal visible={settingsOpen} onClose={() => setSettingsOpen(false)} theme={theme} profile={activeProfile} accountEmail={accountEmail} privacy={privacy} setPrivacy={setPrivacy} themeSetting={themeSetting} setThemeSetting={setThemeSetting} languageSetting={languageSetting} setLanguageSetting={setLanguageSetting} proActive={proActive} onOpenPresence={() => { setSettingsOpen(false); setTimeout(() => setPresenceOpen(true), 180); }} onSignOut={onSignOut} />
   </>);
 }
 
@@ -2509,6 +2634,7 @@ function LinkApp({ session }) {
   const liveUserId = session?.user?.id || null;
   const [hydrated, setHydrated] = useState(false);
   const [data, setData] = useState(() => initialData(liveUserId));
+  CURRENT_LANGUAGE = resolveLanguage(data.languageSetting || 'system');
   const [tab, setTab] = useState('home');
   const [activeChatId, setActiveChatId] = useState(null);
   const [activeGroupId, setActiveGroupId] = useState(null);
@@ -2755,6 +2881,12 @@ function LinkApp({ session }) {
   const setThemeSetting = (themeSetting) => {
     mutate(prev => ({ ...prev, themeSetting }));
     updateSettingsRemote({ themeSetting }).catch(() => {});
+  };
+  const setLanguageSetting = (languageSetting) => {
+    CURRENT_LANGUAGE = resolveLanguage(languageSetting);
+    mutate(prev => ({ ...prev, languageSetting }));
+    AsyncStorage.setItem(AUTH_LANGUAGE_KEY, resolveLanguage(languageSetting)).catch(() => {});
+    updateSettingsRemote({ languageSetting }).catch(error => Alert.alert('Settings', error?.message || 'Try again.'));
   };
   const setPrivacy = (next) => {
     mutate(prev => ({ ...prev, privacy: { ...prev.privacy, [prev.activeAccountId]: next } }));
@@ -3178,7 +3310,7 @@ ${text}` });
         {tab === 'people' && <PeopleScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} localAccountIds={data.localAccountIds} requests={data.requests} favoriteIds={favoriteIds} openProfile={openProfileModal} openChat={openChat} sendRequest={sendRequest} onAccept={acceptRequest} onDecline={declineRequest} />}
         {tab === 'link' && <LinkScreen theme={theme} activeProfile={activeProfile} payload={payload} localProfiles={localProfiles} relationships={data.relationships} requests={data.requests} openScanner={() => setScannerOpen(true)} openOwnCard={() => setCardOpen(true)} sendRequest={sendRequest} onAccept={acceptRequest} onDecline={declineRequest} />}
         {tab === 'chats' && <ChatsScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} conversations={data.conversations} favoriteIds={favoriteIds} groups={data.groups || {}} chatUserSettings={data.chatUserSettings || {}} openChat={openChat} openGroup={openGroup} onCreateGroup={() => setGroupCreateOpen(true)} />}
-        {tab === 'profile' && <ProfileScreen theme={theme} activeProfile={activeProfile} updateProfile={updateActiveProfile} themeSetting={data.themeSetting} setThemeSetting={setThemeSetting} privacy={privacy} setPrivacy={setPrivacy} openAccountSwitcher={() => setAccountsOpen(true)} openCustomStatus={() => setCustomStatusOpen(true)} openShop={() => setShopOpen(true)} openPlus={activePro ? () => setProOpen(true) : () => setPlusOpen(true)} plusSubscription={activeSubscription} openPro={() => setProOpen(true)} proSubscription={activeProSubscription} insights={proInsights} openAdminConsole={() => setAdminConsoleOpen(true)} doubleTapEmoji={activeDoubleTapEmoji} openDoubleTapReaction={() => setDoubleTapReactionOpen(true)} resetDemo={resetDemo} accountEmail={session?.user?.email || ''} setPresenceMode={setActivePresenceMode} onSignOut={signOutLink} />}
+        {tab === 'profile' && <ProfileScreen theme={theme} activeProfile={activeProfile} updateProfile={updateActiveProfile} themeSetting={data.themeSetting} setThemeSetting={setThemeSetting} languageSetting={data.languageSetting || 'system'} setLanguageSetting={setLanguageSetting} privacy={privacy} setPrivacy={setPrivacy} openAccountSwitcher={() => setAccountsOpen(true)} openCustomStatus={() => setCustomStatusOpen(true)} openShop={() => setShopOpen(true)} openPlus={activePro ? () => setProOpen(true) : () => setPlusOpen(true)} plusSubscription={activeSubscription} openPro={() => setProOpen(true)} proSubscription={activeProSubscription} insights={proInsights} openAdminConsole={() => setAdminConsoleOpen(true)} doubleTapEmoji={activeDoubleTapEmoji} openDoubleTapReaction={() => setDoubleTapReactionOpen(true)} resetDemo={resetDemo} accountEmail={session?.user?.email || ''} setPresenceMode={setActivePresenceMode} onSignOut={signOutLink} />}
       </View></SafeAreaView><TabBar tab={tab} setTab={setTab} theme={theme} darkMode={activeMode === 'dark'} unreadCount={unreadChatCount} />
 
       <ScannerModal visible={scannerOpen} onClose={() => setScannerOpen(false)} onScanned={onScanned} />
