@@ -319,6 +319,10 @@ async function loadLinkSnapshot(base, userId) {
       isAdmin: ['admin','ceo'].includes(row.role),
       role: row.role,
       verified: !!row.verified,
+      customBadgeEnabled: !!row.custom_badge_enabled,
+      customBadgeText: row.custom_badge_text || null,
+      customBadgeIcon: row.custom_badge_icon || null,
+      customBadgeColor: row.custom_badge_color || '#111318',
       name: row.name,
       username: row.username,
       bio: row.bio || '',
@@ -596,6 +600,16 @@ async function updateProfileRemote(profile) {
     profile_effect_id:profile.profileEffectId || null, name_effect_id:profile.nameEffectId || null, profile_layout:['default','social','compact'].includes(profile.profileLayout) ? profile.profileLayout : 'default', socials:profile.socials || {}, updated_at:new Date().toISOString(),
   };
   const { error } = await supabase.from('profiles').update(row).eq('id',userId);
+  if (error) throw error;
+}
+
+async function setMyAdminBadgeRemote({ enabled, text, icon, color }) {
+  const { error } = await supabase.rpc('set_my_admin_badge', {
+    p_enabled: !!enabled,
+    p_text: text || null,
+    p_icon: icon || null,
+    p_color: color || '#111318',
+  });
   if (error) throw error;
 }
 
@@ -1077,7 +1091,7 @@ const STORAGE_KEY = '@link_live_backend_v18';
 const DRAFT_PREFIX = '@link_chat_draft_v1';
 const ACCENT = '#6C5CE7';
 const EMPTY_MESSAGES = Object.freeze([]);
-const BUILD = 'LINK 2.0.4 · Group Avatar Alignment';
+const BUILD = 'LINK 2.0.5 · Admin Staff Tools';
 
 function NetflixWordmark({ width = 112, height = 31, style }) {
   return (
@@ -1512,6 +1526,16 @@ function ProBadge({ compact = false }) {
   return <View style={[styles.proBadge, compact && styles.plusBadgeCompact]}>
     <Ionicons name="diamond" size={compact ? 10 : 12} color="#fff" />
     <Text style={[styles.plusBadgeText, compact && { fontSize: 9 }]}>PRO</Text>
+  </View>;
+}
+
+function CustomAdminBadge({ person, compact = false }) {
+  const text = String(person?.customBadgeText || 'PRO').slice(0, 18);
+  const icon = person?.customBadgeIcon || 'diamond';
+  const color = person?.customBadgeColor || '#111318';
+  return <View style={[styles.customAdminBadge, compact && styles.plusBadgeCompact, { backgroundColor: color, borderColor: `${color}CC` }]}>
+    <Ionicons name={icon} size={compact ? 10 : 12} color="#fff" />
+    <Text numberOfLines={1} style={[styles.customAdminBadgeText, compact && { fontSize: 8.8 }]}>{text.toUpperCase()}</Text>
   </View>;
 }
 
@@ -2064,7 +2088,7 @@ function SettingsHubModal({ visible, onClose, theme, profile, accountEmail, priv
 
 function AdminCustomizationModal({ visible, onClose, theme, profile, onUpdate, onPickGif }) {
   if (!profile?.isAdmin) return null;
-  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.adminCustomizeCard, { backgroundColor: theme.card }]} onPress={() => {}}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle, { color: theme.text }]}>CEO Customization</Text><Text style={[styles.sheetSub, { color: theme.sub }]}>Staff-only profile tools for @link</Text></View><IconButton icon="close" onPress={onClose} theme={theme} /></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 8 }}><View style={[styles.adminPreviewCard, { backgroundColor: theme.bg, borderColor: theme.border }]}><EffectAvatarStage person={profile} theme={theme} size={78} effectSize={174} /><View style={styles.profileNameWithBadge}><ProfileDisplayName person={profile} theme={theme} /><CeoBadge /><VerifiedBadge /></View><Text style={[styles.profileUser, { color: theme.sub }]}>{profile.username}</Text></View><Text style={[styles.adminCustomizeLabel, { color: theme.text }]}>Special Profile Effect</Text><View style={styles.adminEffectGrid}>{ADMIN_PROFILE_EFFECTS.map(effect => <Pressable key={effect.id} onPress={() => onUpdate({ ...profile, profileEffectId: effect.id })} style={[styles.adminEffectChoice, { backgroundColor: profile.profileEffectId === effect.id ? `${effect.color}18` : theme.soft, borderColor: profile.profileEffectId === effect.id ? effect.color : theme.border }]}><View style={[styles.adminEffectIcon, { backgroundColor: `${effect.color}20` }]}><Ionicons name={effect.adminSpecial === 'crown' ? 'diamond' : effect.adminSpecial === 'aura' ? 'sparkles' : 'planet'} size={20} color={effect.color} /></View><Text style={[styles.adminEffectName, { color: theme.text }]}>{effect.name}</Text>{profile.profileEffectId === effect.id ? <Ionicons name="checkmark-circle" size={17} color={effect.color} /> : null}</Pressable>)}</View><Pressable onPress={() => onUpdate({ ...profile, profileEffectId: null })} style={[styles.adminMiniAction, { backgroundColor: theme.soft }]}><Ionicons name="close-circle-outline" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '800' }}>No profile effect</Text></Pressable><Text style={[styles.adminCustomizeLabel, { color: theme.text, marginTop: 18 }]}>Name Effect</Text><View style={styles.nameEffectGrid}>{CEO_NAME_EFFECTS.map(effect => <Pressable key={effect.id} onPress={() => onUpdate({ ...profile, nameEffectId: effect.id })} style={[styles.nameEffectChoice, { backgroundColor: profile.nameEffectId === effect.id ? theme.inverse : theme.soft, borderColor: profile.nameEffectId === effect.id ? theme.inverse : theme.border }]}><Text style={{ color: profile.nameEffectId === effect.id ? theme.inverseText : theme.text, fontWeight: '900' }}>{effect.name}</Text></Pressable>)}</View><Pressable onPress={() => onUpdate({ ...profile, nameEffectId: null })} style={[styles.adminMiniAction, { backgroundColor: theme.soft }]}><Ionicons name="text-outline" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '800' }}>Standard name</Text></Pressable><Text style={[styles.adminCustomizeLabel, { color: theme.text, marginTop: 18 }]}>Animated avatar</Text><Pressable onPress={onPickGif} style={[styles.adminGifButton, { backgroundColor: theme.inverse }]}><Ionicons name="images-outline" size={18} color={theme.inverseText} /><View style={{ flex: 1 }}><Text style={{ color: theme.inverseText, fontWeight: '900' }}>Choose GIF / animated image</Text><Text style={{ color: theme.inverseText, opacity: .65, fontSize: 11, marginTop: 2 }}>Keeps the original animation instead of cropping.</Text></View><Ionicons name="chevron-forward" size={18} color={theme.inverseText} /></Pressable></ScrollView></Pressable></Pressable></Modal>;
+  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.adminCustomizeCard, { backgroundColor: theme.card }]} onPress={() => {}}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle, { color: theme.text }]}>{profile?.role === 'ceo' ? 'CEO Customization' : 'Staff Customization'}</Text><Text style={[styles.sheetSub, { color: theme.sub }]}>{profile?.role === 'ceo' ? 'Founder-only profile tools for @link' : 'Verified LINK admin profile tools'}</Text></View><IconButton icon="close" onPress={onClose} theme={theme} /></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 8 }}><View style={[styles.adminPreviewCard, { backgroundColor: theme.bg, borderColor: theme.border }]}><EffectAvatarStage person={profile} theme={theme} size={78} effectSize={174} /><View style={styles.profileNameWithBadge}><ProfileDisplayName person={profile} theme={theme} /><ProfilePlanBadgeRow person={profile} proActive={true} /></View><Text style={[styles.profileUser, { color: theme.sub }]}>{profile.username}</Text></View><Text style={[styles.adminCustomizeLabel, { color: theme.text }]}>Special Profile Effect</Text><View style={styles.adminEffectGrid}>{ADMIN_PROFILE_EFFECTS.map(effect => <Pressable key={effect.id} onPress={() => onUpdate({ ...profile, profileEffectId: effect.id })} style={[styles.adminEffectChoice, { backgroundColor: profile.profileEffectId === effect.id ? `${effect.color}18` : theme.soft, borderColor: profile.profileEffectId === effect.id ? effect.color : theme.border }]}><View style={[styles.adminEffectIcon, { backgroundColor: `${effect.color}20` }]}><Ionicons name={effect.adminSpecial === 'crown' ? 'diamond' : effect.adminSpecial === 'aura' ? 'sparkles' : 'planet'} size={20} color={effect.color} /></View><Text style={[styles.adminEffectName, { color: theme.text }]}>{effect.name}</Text>{profile.profileEffectId === effect.id ? <Ionicons name="checkmark-circle" size={17} color={effect.color} /> : null}</Pressable>)}</View><Pressable onPress={() => onUpdate({ ...profile, profileEffectId: null })} style={[styles.adminMiniAction, { backgroundColor: theme.soft }]}><Ionicons name="close-circle-outline" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '800' }}>No profile effect</Text></Pressable><Text style={[styles.adminCustomizeLabel, { color: theme.text, marginTop: 18 }]}>Name Effect</Text><View style={styles.nameEffectGrid}>{CEO_NAME_EFFECTS.map(effect => <Pressable key={effect.id} onPress={() => onUpdate({ ...profile, nameEffectId: effect.id })} style={[styles.nameEffectChoice, { backgroundColor: profile.nameEffectId === effect.id ? theme.inverse : theme.soft, borderColor: profile.nameEffectId === effect.id ? theme.inverse : theme.border }]}><Text style={{ color: profile.nameEffectId === effect.id ? theme.inverseText : theme.text, fontWeight: '900' }}>{effect.name}</Text></Pressable>)}</View><Pressable onPress={() => onUpdate({ ...profile, nameEffectId: null })} style={[styles.adminMiniAction, { backgroundColor: theme.soft }]}><Ionicons name="text-outline" size={17} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '800' }}>Standard name</Text></Pressable><Text style={[styles.adminCustomizeLabel, { color: theme.text, marginTop: 18 }]}>Animated avatar</Text><Pressable onPress={onPickGif} style={[styles.adminGifButton, { backgroundColor: theme.inverse }]}><Ionicons name="images-outline" size={18} color={theme.inverseText} /><View style={{ flex: 1 }}><Text style={{ color: theme.inverseText, fontWeight: '900' }}>Choose GIF / animated image</Text><Text style={{ color: theme.inverseText, opacity: .65, fontSize: 11, marginTop: 2 }}>Keeps the original animation instead of cropping.</Text></View><Ionicons name="chevron-forward" size={18} color={theme.inverseText} /></Pressable></ScrollView></Pressable></Pressable></Modal>;
 }
 
 const PROFILE_LAYOUTS = [
@@ -2074,8 +2098,14 @@ const PROFILE_LAYOUTS = [
 ];
 
 function ProfilePlanBadgeRow({ person, proActive = false, plusActive = false, compact = false, align = 'center' }) {
+  const isCeo = person?.role === 'ceo';
+  const isAdmin = person?.role === 'admin';
+  const adminBadge = isAdmin
+    ? (person?.customBadgeEnabled ? <CustomAdminBadge person={person} compact={compact} /> : <ProBadge compact={compact} />)
+    : null;
   return <View style={[styles.profilePlanBadgeRow, align === 'start' && styles.profilePlanBadgeRowStart]}>
-    {person?.isAdmin ? <><CeoBadge compact={compact} /><VerifiedBadge compact={compact} /></> : proActive ? <ProBadge compact={compact} /> : plusActive ? <PlusBadge compact={compact} /> : null}
+    {isCeo ? <CeoBadge compact={compact} /> : adminBadge || (proActive ? <ProBadge compact={compact} /> : plusActive ? <PlusBadge compact={compact} /> : null)}
+    {person?.verified ? <VerifiedBadge compact={compact} /> : null}
   </View>;
 }
 
@@ -2129,11 +2159,57 @@ function ProfileLayoutChooser({ theme, value = 'default', onChange }) {
   })}</View>;
 }
 
-function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setThemeSetting, languageSetting, setLanguageSetting, privacy, setPrivacy, openAccountSwitcher, openCustomStatus, openShop, openPlus, plusSubscription, openPro, proSubscription, insights, openAdminConsole, doubleTapEmoji = '❤️', openDoubleTapReaction, resetDemo, accountEmail, setPresenceMode, onSignOut }) {
+const ADMIN_BADGE_ICONS = ['diamond','star','flash','flame','shield-checkmark','sparkles','planet','briefcase','heart','rocket','code-slash','musical-notes'];
+const ADMIN_BADGE_COLORS = ['#111318','#6C5CE7','#0A84FF','#34C759','#FF9F0A','#FF3B30','#E50914','#AF52DE'];
+
+function AdminBadgeModal({ visible, onClose, theme, profile, onSave }) {
+  const [custom, setCustom] = useState(!!profile?.customBadgeEnabled);
+  const [label, setLabel] = useState(profile?.customBadgeText || 'LINK ADMIN');
+  const [icon, setIcon] = useState(profile?.customBadgeIcon || 'shield-checkmark');
+  const [color, setColor] = useState(profile?.customBadgeColor || '#111318');
+  const [saving, setSaving] = useState(false);
+  useEffect(() => {
+    if (!visible) return;
+    setCustom(!!profile?.customBadgeEnabled);
+    setLabel(profile?.customBadgeText || 'LINK ADMIN');
+    setIcon(profile?.customBadgeIcon || 'shield-checkmark');
+    setColor(profile?.customBadgeColor || '#111318');
+  }, [visible, profile?.customBadgeEnabled, profile?.customBadgeText, profile?.customBadgeIcon, profile?.customBadgeColor]);
+  if (!profile?.isAdmin || profile?.role === 'ceo') return null;
+  const previewPerson = { ...profile, customBadgeEnabled:custom, customBadgeText:label, customBadgeIcon:icon, customBadgeColor:color };
+  const save = async () => {
+    const clean = label.trim();
+    if (custom && (!clean || clean.length > 18)) return Alert.alert('Custom badge', 'Badge text must be 1–18 characters.');
+    try {
+      setSaving(true);
+      await onSave?.({ enabled:custom, text:clean || 'LINK ADMIN', icon, color });
+      onClose?.();
+    } catch (error) {
+      Alert.alert('Badge not saved', error?.message || 'Try again.');
+    } finally { setSaving(false); }
+  };
+  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <Pressable style={styles.modalBackdrop} onPress={onClose}>
+      <Pressable style={[styles.adminBadgeCard,{backgroundColor:theme.card}]} onPress={()=>{}}>
+        <View style={styles.rowBetween}><View><Text style={[styles.sheetTitle,{color:theme.text}]}>Staff badge</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>Admin-only · choose PRO or your own badge</Text></View><IconButton icon="close" onPress={onClose} theme={theme}/></View>
+        <View style={[styles.adminBadgePreview,{backgroundColor:theme.bg,borderColor:theme.border}]}><Avatar person={profile} size={58} theme={theme}/><View style={{flex:1}}><View style={styles.inlineNameRow}><Text style={[styles.personName,{color:theme.text}]}>{profile.name}</Text><ProfilePlanBadgeRow person={previewPerson} proActive compact/></View><Text style={[styles.personSub,{color:theme.sub}]}>{profile.username}</Text></View></View>
+        <Text style={[styles.adminCustomizeLabel,{color:theme.text}]}>Badge style</Text>
+        <View style={styles.adminBadgeModeRow}><Pressable onPress={()=>setCustom(false)} style={[styles.adminBadgeMode,{backgroundColor:!custom?theme.inverse:theme.soft,borderColor:!custom?theme.inverse:theme.border}]}><Ionicons name="diamond" size={16} color={!custom?theme.inverseText:theme.text}/><Text style={{color:!custom?theme.inverseText:theme.text,fontWeight:'900'}}>LINK PRO</Text></Pressable><Pressable onPress={()=>setCustom(true)} style={[styles.adminBadgeMode,{backgroundColor:custom?theme.inverse:theme.soft,borderColor:custom?theme.inverse:theme.border}]}><Ionicons name="color-wand" size={16} color={custom?theme.inverseText:theme.text}/><Text style={{color:custom?theme.inverseText:theme.text,fontWeight:'900'}}>Custom</Text></Pressable></View>
+        {custom ? <><TextInput value={label} onChangeText={setLabel} maxLength={18} placeholder="Badge text" placeholderTextColor={theme.sub} style={[styles.adminBadgeInput,{backgroundColor:theme.input,color:theme.text,borderColor:theme.border}]}/><Text style={[styles.adminCustomizeLabel,{color:theme.text}]}>Icon</Text><View style={styles.adminBadgeIconGrid}>{ADMIN_BADGE_ICONS.map(name=><Pressable key={name} onPress={()=>setIcon(name)} style={[styles.adminBadgeIconChoice,{backgroundColor:icon===name?`${ACCENT}18`:theme.soft,borderColor:icon===name?ACCENT:theme.border}]}><Ionicons name={name} size={20} color={icon===name?ACCENT:theme.text}/></Pressable>)}</View><Text style={[styles.adminCustomizeLabel,{color:theme.text}]}>Color</Text><View style={styles.adminBadgeColorRow}>{ADMIN_BADGE_COLORS.map(value=><Pressable key={value} onPress={()=>setColor(value)} style={[styles.adminBadgeColorChoice,{backgroundColor:value,borderColor:color===value?'#fff':value}]}>{color===value?<Ionicons name="checkmark" size={15} color="#fff"/>:null}</Pressable>)}</View></> : <View style={[styles.adminBadgeInfo,{backgroundColor:theme.soft}]}><Ionicons name="diamond" size={18} color={theme.text}/><Text style={[styles.settingsSub,{color:theme.sub,flex:1}]}>Your staff account will show the standard LINK PRO badge plus verification.</Text></View>}
+        <Pressable disabled={saving} onPress={save} style={[styles.widePrimary,{backgroundColor:theme.inverse,opacity:saving?.6:1,marginTop:18}]}><Ionicons name={saving?'sync':'checkmark'} size={18} color={theme.inverseText}/><Text style={[styles.primaryButtonText,{color:theme.inverseText}]}>{saving?'Saving…':'Save badge'}</Text></Pressable>
+      </Pressable>
+    </Pressable>
+  </Modal>;
+}
+
+function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setThemeSetting, languageSetting, setLanguageSetting, privacy, setPrivacy, openAccountSwitcher, openCustomStatus, openShop, openPlus, plusSubscription, openPro, proSubscription, insights, openAdminConsole, doubleTapEmoji = '❤️', openDoubleTapReaction, resetDemo, accountEmail, setPresenceMode, onSignOut, onSaveAdminBadge }) {
   const [editing, setEditing] = useState(false);
   const [adminCustomizeOpen, setAdminCustomizeOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [presenceOpen, setPresenceOpen] = useState(false);
+  const [adminBadgeOpen, setAdminBadgeOpen] = useState(false);
+  const [draft, setDraft] = useState(activeProfile);
+  useEffect(() => setDraft(activeProfile), [activeProfile]);
   const profileLayout = (editing ? draft?.profileLayout : activeProfile?.profileLayout) || 'default';
   const setProfileLayout = (layout) => {
     if (editing) setDraft(prev => ({ ...prev, profileLayout: layout }));
@@ -2141,8 +2217,6 @@ function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setT
   };
   const proActive = !!activeProfile?.isAdmin || subscriptionIsActive(proSubscription);
   const plusActive = !!activeProfile?.isAdmin || subscriptionIsActive(plusSubscription) || proActive;
-  const [draft, setDraft] = useState(activeProfile);
-  useEffect(() => setDraft(activeProfile), [activeProfile]);
   const save = () => {
     if (!draft.name.trim()) return Alert.alert('Name required', 'Add a display name first.');
     updateProfile({ ...draft, username: normalizeUsername(draft.username) }); setEditing(false);
@@ -2205,8 +2279,9 @@ function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setT
 
       {activeProfile.isAdmin ? <>
         <SectionTitle theme={theme}>LINK Administration</SectionTitle>
-        <Pressable onPress={openAdminConsole} style={[styles.adminEntryCard, { backgroundColor: theme.card, borderColor: theme.border }]}><View style={[styles.adminEntryIcon, { backgroundColor: '#111318' }]}><Ionicons name="shield-checkmark" size={22} color="#fff" /></View><View style={{ flex: 1 }}><View style={styles.inlineNameRow}><Text style={[styles.settingsTitle, { color: theme.text }]}>Admin Console</Text><CeoBadge compact /><VerifiedBadge compact /></View><Text style={[styles.settingsSub, { color: theme.sub }]}>Ban, unban and mute local users. Staff actions are saved on this device.</Text></View><Ionicons name="chevron-forward" size={20} color={theme.sub} /></Pressable>
-        <Pressable onPress={() => setAdminCustomizeOpen(true)} style={[styles.adminEntryCard, { backgroundColor: theme.card, borderColor: theme.border }]}><View style={[styles.adminEntryIcon, { backgroundColor: '#0A84FF' }]}><Ionicons name="color-wand" size={22} color="#fff" /></View><View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>CEO Profile Lab</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>Staff-only animated effects, name effects and GIF profile photos.</Text></View><Ionicons name="chevron-forward" size={20} color={theme.sub} /></Pressable>
+        <Pressable onPress={openAdminConsole} style={[styles.adminEntryCard, { backgroundColor: theme.card, borderColor: theme.border }]}><View style={[styles.adminEntryIcon, { backgroundColor: '#111318' }]}><Ionicons name="shield-checkmark" size={22} color="#fff" /></View><View style={{ flex: 1 }}><View style={styles.inlineNameRow}><Text style={[styles.settingsTitle, { color: theme.text }]}>Admin Console</Text><ProfilePlanBadgeRow person={activeProfile} proActive compact align="start" /></View><Text style={[styles.settingsSub, { color: theme.sub }]}>Server-protected moderation tools for LINK staff only.</Text></View><Ionicons name="chevron-forward" size={20} color={theme.sub} /></Pressable>
+        {activeProfile.role === 'admin' ? <Pressable onPress={() => setAdminBadgeOpen(true)} style={[styles.adminEntryCard, { backgroundColor: theme.card, borderColor: theme.border }]}><View style={[styles.adminEntryIcon, { backgroundColor: activeProfile.customBadgeColor || '#6C5CE7' }]}><Ionicons name={activeProfile.customBadgeEnabled ? (activeProfile.customBadgeIcon || 'shield-checkmark') : 'diamond'} size={22} color="#fff" /></View><View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>Staff Badge</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>{activeProfile.customBadgeEnabled ? `${activeProfile.customBadgeText || 'Custom'} · custom staff identity` : 'LINK PRO · tap to create a custom badge'}</Text></View><Ionicons name="chevron-forward" size={20} color={theme.sub} /></Pressable> : null}
+        <Pressable onPress={() => setAdminCustomizeOpen(true)} style={[styles.adminEntryCard, { backgroundColor: theme.card, borderColor: theme.border }]}><View style={[styles.adminEntryIcon, { backgroundColor: '#0A84FF' }]}><Ionicons name="color-wand" size={22} color="#fff" /></View><View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>{activeProfile.role === 'ceo' ? 'CEO Profile Lab' : 'Staff Profile Lab'}</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>Staff-only animated effects, name effects and GIF profile photos.</Text></View><Ionicons name="chevron-forward" size={20} color={theme.sub} /></Pressable>
       </> : null}
 
       <SectionTitle theme={theme} action={activeProfile.isAdmin ? 'Staff access' : proActive ? 'Manage' : 'See plans'} onAction={activeProfile.isAdmin ? undefined : openPro}>LINK Pro</SectionTitle>
@@ -2265,6 +2340,7 @@ function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setT
       <Pressable onPress={resetDemo} style={[styles.resetButton, { borderColor: theme.border }]}><Ionicons name="refresh" size={18} color={theme.danger} /><Text style={{ color: theme.danger, fontWeight: '800' }}>Refresh LINK data</Text></Pressable>
     </ScrollView>
     <AdminCustomizationModal visible={adminCustomizeOpen} onClose={() => setAdminCustomizeOpen(false)} theme={theme} profile={activeProfile} onUpdate={updateProfile} onPickGif={pickProfileGif} />
+    <AdminBadgeModal visible={adminBadgeOpen} onClose={() => setAdminBadgeOpen(false)} theme={theme} profile={activeProfile} onSave={onSaveAdminBadge} />
     <PresenceStatusModal visible={presenceOpen} onClose={() => setPresenceOpen(false)} theme={theme} profile={activeProfile} proActive={proActive} onSelect={setPresenceMode} />
     <SettingsHubModal visible={settingsOpen} onClose={() => setSettingsOpen(false)} theme={theme} profile={activeProfile} accountEmail={accountEmail} privacy={privacy} setPrivacy={setPrivacy} themeSetting={themeSetting} setThemeSetting={setThemeSetting} languageSetting={languageSetting} setLanguageSetting={setLanguageSetting} proActive={proActive} onOpenPresence={() => { setSettingsOpen(false); setTimeout(() => setPresenceOpen(true), 180); }} onSignOut={onSignOut} />
   </>);
@@ -2272,7 +2348,6 @@ function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setT
 
 function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply, onDoubleTap, quoted, chatTheme, groupMode = false, showSender = false, showAvatar = false, showMeta = true }) {
   const reactions = message.reactions || [];
-  const [bubbleHeight, setBubbleHeight] = useState(42);
   const lastTapRef = useRef(0);
   const handleTap = () => { const now = Date.now(); if (now - lastTapRef.current < 320) { lastTapRef.current = 0; onDoubleTap?.(); } else { lastTapRef.current = now; } };
   const handleLongPress = () => { lastTapRef.current = 0; onLongPress?.(); };
@@ -2379,7 +2454,7 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
 
   const sender = profiles[message.senderId];
   const avatarSlot = groupMode ? (
-    <View style={[styles.groupMessageAvatarSlot, mine ? styles.groupMessageAvatarRight : styles.groupMessageAvatarLeft, { marginTop: (showSender ? 25 : 0) + Math.max(0, (bubbleHeight - 28) / 2) }]}>
+    <View style={[styles.groupMessageAvatarSlot, mine ? styles.groupMessageAvatarRight : styles.groupMessageAvatarLeft]}>
       {showAvatar ? <Avatar person={sender || { id: message.senderId, name: 'LINK member' }} size={28} theme={theme} /> : null}
     </View>
   ) : null;
@@ -2391,7 +2466,7 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
       <View style={[styles.messageStack, groupMode && styles.groupMessageStack, { alignItems: mine ? 'flex-end' : 'flex-start' }]}>
         {groupMode && showSender ? <Text style={[styles.groupSenderName, mine && styles.groupSenderNameMine, { color: theme.sub }]}>{mine ? 'You' : (sender?.name || 'LINK member')}</Text> : null}
         <Pressable onPress={handleTap} onLongPress={handleLongPress} delayLongPress={420} style={[styles.bubblePressable, mine ? styles.outgoingPressable : styles.incomingPressable]}>
-          <View style={styles.bubbleShell} onLayout={(event) => { const h = event.nativeEvent.layout.height; if (Math.abs(h - bubbleHeight) > 1) setBubbleHeight(h); }}>
+          <View style={styles.bubbleShell}>
             {mine
               ? (outgoingTheme.colors.length > 1
                   ? <LinearGradient colors={outgoingTheme.colors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={mineBubbleStyle}>{content}</LinearGradient>
@@ -2650,7 +2725,8 @@ function CreateAccountModal({ visible, onClose, theme, onCreate, existingProfile
   return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><View style={styles.modalBackdrop}><View style={[styles.sheetCard, { backgroundColor: theme.card }]}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle, { color: theme.text }]}>New local account</Text><Text style={[styles.sheetSub, { color: theme.sub }]}>Create another test identity</Text></View><IconButton icon="close" onPress={onClose} theme={theme} /></View><View style={{ gap: 10, marginTop: 18 }}><TextInput value={name} onChangeText={setName} placeholder="Display name" placeholderTextColor={theme.sub} style={[styles.profileInput, { backgroundColor: theme.input, color: theme.text }]} /><TextInput value={username} onChangeText={setUsername} autoCapitalize="none" placeholder="@username" placeholderTextColor={theme.sub} style={[styles.profileInput, { backgroundColor: theme.input, color: theme.text }]} /><TextInput value={bio} onChangeText={setBio} placeholder="Short bio" placeholderTextColor={theme.sub} style={[styles.profileInput, { backgroundColor: theme.input, color: theme.text }]} /></View><Pressable onPress={submit} style={[styles.createAccountButton, { backgroundColor: theme.inverse }]}><Text style={{ color: theme.inverseText, fontWeight: '800' }}>Create & switch</Text></Pressable></View></View></Modal>;
 }
 
-function AdminConsoleModal({ visible, onClose, theme, profiles, moderation, onBan, onUnban, onMute, onUnmute }) {
+function AdminConsoleModal({ visible, authorized = false, onClose, theme, profiles, moderation, onBan, onUnban, onMute, onUnmute }) {
+  if (!authorized) return null;
   const users = Object.values(profiles || {}).filter(person => !person.isAdmin);
   const openMute = (person) => Alert.alert('Mute ' + person.name, 'Choose how long they cannot send messages, Notes, Moments, waves or LINK requests.', [
     { text: '15 minutes', onPress: () => onMute(person.id, 15 * 60 * 1000) }, { text: '1 hour', onPress: () => onMute(person.id, 60 * 60 * 1000) }, { text: '24 hours', onPress: () => onMute(person.id, 24 * 60 * 60 * 1000) }, { text: 'Indefinitely', style: 'destructive', onPress: () => onMute(person.id, -1) }, { text: 'Cancel', style: 'cancel' },
@@ -3053,6 +3129,9 @@ function MomentViewerModal({ visible, onClose, theme, moment, owner, activeId, o
 
 function WhatsNewModal({ visible, onClose, theme }) {
   const sections=[
+    ['shield-checkmark-outline','Verified admin staff','Dominik now has server-authorized Admin Console access and a verified LINK identity.'],
+    ['pricetag-outline','Custom staff badge','Admins can switch between the standard LINK PRO badge and a custom text, icon and color badge.'],
+    ['lock-closed-outline','Admin security','Role, verification and staff badge fields are protected server-side; normal accounts cannot unlock admin tools.'],
     ['person-circle-outline','Profile layouts','Choose Default, Social or Compact and sync the public profile arrangement across devices.'],
     ['paper-plane-outline','Instant message send','Outgoing messages appear immediately with a subtle lift, fade and micro-scale animation while encryption and upload continue in the background.'],
     ['speedometer-outline','Lower send latency','LINK now uses the cached auth session before inserts and no longer waits for the sender receipt before completing the send flow.'],
@@ -3065,7 +3144,7 @@ function WhatsNewModal({ visible, onClose, theme }) {
     ['diamond-outline','Pro benefits','LINK Pro members can reserve the Netflix 3-month promotional benefit.'],
     ['speedometer-outline','Stability','Realtime refreshes remain coalesced and serialized to prevent request storms.'],
   ];
-  return <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}><EdgeSwipeBack onBack={onClose}><SafeAreaView style={[styles.whatsNewPage,{backgroundColor:theme.bg}]}><View style={[styles.whatsNewHeader,{borderBottomColor:theme.border}]}><IconButton icon="chevron-back" onPress={onClose} theme={theme}/><View style={{flex:1}}><Text style={[styles.bigTitle,{color:theme.text}]}>What's new</Text><Text style={[styles.headerSub,{color:theme.sub}]}>{BUILD}</Text></View></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.whatsNewScroll}><LinearGradient colors={['#111318','#281A48','#101115']} style={styles.whatsNewHero}><View style={styles.whatsNewHeroIcon}><Text style={styles.whatsNewHeroIconText}>L</Text></View><View style={{flex:1}}><Text style={styles.whatsNewHeroEyebrow}>LINK 2.0.4</Text><Text style={styles.whatsNewHeroTitle}>Group chats, visually aligned.</Text><Text style={styles.whatsNewHeroSub}>Profile photos now stay vertically centered with the message bubble itself, not the timestamp row.</Text></View></LinearGradient><Text style={[styles.sectionTitle,{color:theme.text,marginTop:22,marginBottom:10}]}>Update highlights</Text><View style={[styles.whatsNewCard,{backgroundColor:theme.card,borderColor:theme.border}]}>{sections.map(([icon,title,body],index)=><View key={title} style={[styles.whatsNewRow,index===sections.length-1&&{borderBottomWidth:0}, {borderBottomColor:theme.border}]}><View style={[styles.whatsNewIcon,{backgroundColor:theme.soft}]}><Ionicons name={icon} size={20} color={ACCENT}/></View><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{title}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{body}</Text></View></View>)}</View><View style={[styles.whatsNewNote,{backgroundColor:theme.soft}]}><Ionicons name="notifications-outline" size={18} color={theme.text}/><Text style={[styles.settingsSub,{color:theme.sub,flex:1}]}>Remote push notifications require a development or production build; Expo Go uses in-app alerts here.</Text></View></ScrollView></SafeAreaView></EdgeSwipeBack></Modal>;
+  return <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}><EdgeSwipeBack onBack={onClose}><SafeAreaView style={[styles.whatsNewPage,{backgroundColor:theme.bg}]}><View style={[styles.whatsNewHeader,{borderBottomColor:theme.border}]}><IconButton icon="chevron-back" onPress={onClose} theme={theme}/><View style={{flex:1}}><Text style={[styles.bigTitle,{color:theme.text}]}>What's new</Text><Text style={[styles.headerSub,{color:theme.sub}]}>{BUILD}</Text></View></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.whatsNewScroll}><LinearGradient colors={['#111318','#281A48','#101115']} style={styles.whatsNewHero}><View style={styles.whatsNewHeroIcon}><Text style={styles.whatsNewHeroIconText}>L</Text></View><View style={{flex:1}}><Text style={styles.whatsNewHeroEyebrow}>LINK 2.0.5</Text><Text style={styles.whatsNewHeroTitle}>Staff identity, locked down.</Text><Text style={styles.whatsNewHeroSub}>Verified admin accounts · server-protected tools · custom staff badges.</Text></View></LinearGradient><Text style={[styles.sectionTitle,{color:theme.text,marginTop:22,marginBottom:10}]}>Update highlights</Text><View style={[styles.whatsNewCard,{backgroundColor:theme.card,borderColor:theme.border}]}>{sections.map(([icon,title,body],index)=><View key={title} style={[styles.whatsNewRow,index===sections.length-1&&{borderBottomWidth:0}, {borderBottomColor:theme.border}]}><View style={[styles.whatsNewIcon,{backgroundColor:theme.soft}]}><Ionicons name={icon} size={20} color={ACCENT}/></View><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{title}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{body}</Text></View></View>)}</View><View style={[styles.whatsNewNote,{backgroundColor:theme.soft}]}><Ionicons name="notifications-outline" size={18} color={theme.text}/><Text style={[styles.settingsSub,{color:theme.sub,flex:1}]}>Remote push notifications require a development or production build; Expo Go uses in-app alerts here.</Text></View></ScrollView></SafeAreaView></EdgeSwipeBack></Modal>;
 }
 
 function ForegroundNotice({ notice, theme, onPress }) {
@@ -3364,6 +3443,19 @@ function LinkApp({ session }) {
     mutate(prev => ({ ...prev, profiles: { ...prev.profiles, [prev.activeAccountId]: { ...next, id: prev.activeAccountId, isLocal: false, isSelf: true } } }));
     updateProfileRemote(next).then(refreshRemote).catch(error => Alert.alert('Profile not saved', error?.message || 'Try again.'));
   };
+  const saveActiveAdminBadge = async (config) => {
+    if (!activeProfile?.isAdmin || activeProfile?.role === 'ceo') throw new Error('LINK admin access required');
+    await setMyAdminBadgeRemote(config);
+    mutate(prev => ({ ...prev, profiles: { ...prev.profiles, [prev.activeAccountId]: {
+      ...prev.profiles[prev.activeAccountId],
+      customBadgeEnabled: !!config.enabled,
+      customBadgeText: config.text || prev.profiles[prev.activeAccountId]?.customBadgeText || 'LINK ADMIN',
+      customBadgeIcon: config.icon || prev.profiles[prev.activeAccountId]?.customBadgeIcon || 'shield-checkmark',
+      customBadgeColor: config.color || prev.profiles[prev.activeAccountId]?.customBadgeColor || '#111318',
+    } } }));
+    refreshRemote().catch(() => {});
+  };
+
   const setThemeSetting = (themeSetting) => {
     mutate(prev => ({ ...prev, themeSetting }));
     updateSettingsRemote({ themeSetting }).catch(() => {});
@@ -3950,7 +4042,7 @@ ${text}` });
         {tab === 'people' && <PeopleScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} localAccountIds={data.localAccountIds} requests={data.requests} favoriteIds={favoriteIds} openProfile={openProfileModal} openChat={openChat} sendRequest={sendRequest} onAccept={acceptRequest} onDecline={declineRequest} />}
         {tab === 'link' && <LinkScreen theme={theme} activeProfile={activeProfile} payload={payload} localProfiles={localProfiles} relationships={data.relationships} requests={data.requests} openScanner={() => setScannerOpen(true)} openOwnCard={() => setCardOpen(true)} sendRequest={sendRequest} onAccept={acceptRequest} onDecline={declineRequest} />}
         {tab === 'chats' && <ChatsScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} conversations={data.conversations} favoriteIds={favoriteIds} groups={data.groups || {}} chatUserSettings={data.chatUserSettings || {}} openChat={openChat} openGroup={openGroup} onCreateGroup={() => setGroupCreateOpen(true)} onJoinGroup={() => setGroupJoinOpen(true)} />}
-        {tab === 'profile' && <ProfileScreen theme={theme} activeProfile={activeProfile} updateProfile={updateActiveProfile} themeSetting={data.themeSetting} setThemeSetting={setThemeSetting} languageSetting={data.languageSetting || 'system'} setLanguageSetting={setLanguageSetting} privacy={privacy} setPrivacy={setPrivacy} openAccountSwitcher={() => setAccountsOpen(true)} openCustomStatus={() => setCustomStatusOpen(true)} openShop={() => setShopOpen(true)} openPlus={activePro ? () => setProOpen(true) : () => setPlusOpen(true)} plusSubscription={activeSubscription} openPro={() => setProOpen(true)} proSubscription={activeProSubscription} insights={proInsights} openAdminConsole={() => setAdminConsoleOpen(true)} doubleTapEmoji={activeDoubleTapEmoji} openDoubleTapReaction={() => setDoubleTapReactionOpen(true)} resetDemo={resetDemo} accountEmail={session?.user?.email || ''} setPresenceMode={setActivePresenceMode} onSignOut={signOutLink} />}
+        {tab === 'profile' && <ProfileScreen theme={theme} activeProfile={activeProfile} updateProfile={updateActiveProfile} themeSetting={data.themeSetting} setThemeSetting={setThemeSetting} languageSetting={data.languageSetting || 'system'} setLanguageSetting={setLanguageSetting} privacy={privacy} setPrivacy={setPrivacy} openAccountSwitcher={() => setAccountsOpen(true)} openCustomStatus={() => setCustomStatusOpen(true)} openShop={() => setShopOpen(true)} openPlus={activePro ? () => setProOpen(true) : () => setPlusOpen(true)} plusSubscription={activeSubscription} openPro={() => setProOpen(true)} proSubscription={activeProSubscription} insights={proInsights} openAdminConsole={() => setAdminConsoleOpen(true)} doubleTapEmoji={activeDoubleTapEmoji} openDoubleTapReaction={() => setDoubleTapReactionOpen(true)} resetDemo={resetDemo} accountEmail={session?.user?.email || ''} setPresenceMode={setActivePresenceMode} onSignOut={signOutLink} onSaveAdminBadge={saveActiveAdminBadge} />}
       </View></SafeAreaView><TabBar tab={tab} setTab={setTab} theme={theme} darkMode={activeMode === 'dark'} unreadCount={unreadChatCount} /></EdgeSwipeBack>
       <ForegroundNotice notice={foregroundNotice} theme={theme} onPress={() => { setForegroundNotice(null); setNotificationsOpen(true); }} />
 
@@ -3962,7 +4054,7 @@ ${text}` });
       <CreateGroupModal visible={groupCreateOpen} onClose={() => setGroupCreateOpen(false)} theme={theme} activeProfile={activeProfile} profiles={data.profiles} connectedIds={connectedIds} onCreate={createGroup} />
       <JoinGroupModal visible={groupJoinOpen} onClose={() => setGroupJoinOpen(false)} theme={theme} onJoin={joinGroup} />
       <WhatsNewModal visible={whatsNewOpen} onClose={() => setWhatsNewOpen(false)} theme={theme} />
-      <AdminConsoleModal visible={adminConsoleOpen} onClose={() => setAdminConsoleOpen(false)} theme={theme} profiles={data.profiles} moderation={data.moderation || {}} onBan={adminBan} onUnban={adminUnban} onMute={adminMute} onUnmute={adminUnmute} />
+      <AdminConsoleModal visible={adminConsoleOpen} authorized={!!activeProfile?.isAdmin} onClose={() => setAdminConsoleOpen(false)} theme={theme} profiles={data.profiles} moderation={data.moderation || {}} onBan={adminBan} onUnban={adminUnban} onMute={adminMute} onUnmute={adminUnmute} />
       <PersonProfileModal visible={!!profileModalId} onClose={() => setProfileModalId(null)} theme={theme} person={profileModalPerson} connected={(data.relationships[data.activeAccountId] || []).includes(profileModalId)} privacy={profileModalPrivacy} plusActive={profileModalPlusActive} proActive={profileModalProActive} favorite={favoriteIds.includes(profileModalId)} onToggleFavorite={() => profileModalId && toggleFavorite(profileModalId)} onWave={() => profileModalId && sendWave(profileModalId)} onChat={() => profileModalPerson && openChat(profileModalPerson)} onSendRequest={() => profileModalId && sendRequest(profileModalId)} viewerIsAdmin={!!activeProfile.isAdmin} moderationState={profileModalModeration} onAdminBan={() => profileModalId && adminBan(profileModalId)} onAdminUnban={() => profileModalId && adminUnban(profileModalId)} onAdminMute={() => profileModalPerson && Alert.alert('Mute ' + profileModalPerson.name, 'Choose duration.', [{ text: '15 minutes', onPress: () => adminMute(profileModalId, 15 * 60 * 1000) }, { text: '1 hour', onPress: () => adminMute(profileModalId, 60 * 60 * 1000) }, { text: '24 hours', onPress: () => adminMute(profileModalId, 24 * 60 * 60 * 1000) }, { text: 'Indefinitely', style: 'destructive', onPress: () => adminMute(profileModalId, -1) }, { text: 'Cancel', style: 'cancel' }])} onAdminUnmute={() => profileModalId && adminUnmute(profileModalId)} />
       <MomentComposerModal visible={momentComposerOpen} onClose={() => setMomentComposerOpen(false)} theme={theme} activeProfile={activeProfile} onPost={postMoment} />
       <MomentViewerModal visible={!!momentViewId} onClose={() => setMomentViewId(null)} theme={theme} moment={momentView} owner={momentView ? data.profiles[momentView.ownerId] : null} activeId={data.activeAccountId} onReact={reactMoment} />
@@ -4042,7 +4134,7 @@ const styles = StyleSheet.create({
   settingsCard: { borderWidth: StyleSheet.hairlineWidth, borderRadius: 22, overflow: 'hidden' }, settingsRow: { flexDirection: 'row', gap: 12, alignItems: 'center', padding: 14 }, settingsIcon: { width: 38, height: 38, borderRadius: 13, alignItems: 'center', justifyContent: 'center' }, settingsTitle: { fontWeight: '900', fontSize: 14 }, settingsSub: { fontSize: 11.5, lineHeight: 16, marginTop: 2 }, resetButton: { marginTop: 22, marginBottom: 18, height: 48, borderRadius: 16, borderWidth: StyleSheet.hairlineWidth, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 8 },
   tabBarShell: { position: 'absolute', left: 0, right: 0, bottom: Platform.OS === 'ios' ? 18 : 10, height: 72, paddingHorizontal: 15, backgroundColor: 'transparent', zIndex: 120, elevation: 30 }, tabGlass: { flex: 1, borderRadius: 32, borderWidth: StyleSheet.hairlineWidth, overflow: 'hidden', shadowOpacity: .18, shadowRadius: 26, shadowOffset: { width: 0, height: 12 }, elevation: 18 }, tabInner: { flex: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 6, paddingVertical: 5 }, tabItem: { flex: 1, height: 60, alignItems: 'center', justifyContent: 'center' }, tabActiveCapsule: { minWidth: 57, minHeight: 50, borderRadius: 20, borderWidth: StyleSheet.hairlineWidth, borderColor: 'transparent', alignItems: 'center', justifyContent: 'center', gap: 2, paddingHorizontal: 7 }, tabIconWrap: { position: 'relative', minWidth: 28, minHeight: 25, alignItems: 'center', justifyContent: 'center' }, tabUnreadBadge: { position: 'absolute', right: -11, top: -7, minWidth: 18, height: 18, borderRadius: 9, paddingHorizontal: 4, backgroundColor: '#FF3B30', borderWidth: 1.5, borderColor: '#fff', alignItems: 'center', justifyContent: 'center' }, tabUnreadBadgeText: { color: '#fff', fontSize: 9, fontWeight: '900', lineHeight: 11 }, tabLabel: { fontSize: 8.5, fontWeight: '800', letterSpacing: -.1 }, centerTabGlass: { width: 51, height: 51, borderRadius: 20, borderWidth: 1, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: .22, shadowRadius: 15, shadowOffset: { width: 0, height: 7 } }, glassHighlight: { position: 'absolute', left: 22, right: 22, top: 1, height: 1, borderRadius: 999, opacity: .92 },
   chatHeader: { height: 78, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, borderBottomWidth: StyleSheet.hairlineWidth, overflow: 'hidden' }, chatHeaderSide: { width: 88, flexDirection: 'row', alignItems: 'center' }, chatHeaderRight: { justifyContent: 'flex-end', gap: 3 }, chatHeaderPersonCenter: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4 }, chatHeaderIdentity: { flexDirection: 'row', alignItems: 'center', gap: 3, maxWidth: 150 }, chatHeaderName: { fontWeight: '800', fontSize: 12.5, letterSpacing: -.2 }, chatHeaderStatus: { fontSize: 10.5, marginTop: 2, fontWeight: '800' }, metContext: { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 7, marginTop: 8 }, metContextText: { fontSize: 10.5, fontWeight: '700' },
-  chatBody: { flex: 1, overflow: 'hidden' }, messageList: { paddingHorizontal: 14, paddingTop: 18, paddingBottom: 20, flexGrow: 1 }, messageLine: { flexDirection: 'row', marginVertical: 2.5 }, groupMessageLine: { alignItems: 'flex-start', marginVertical: 1.2 }, messageStack: { maxWidth: '84%' }, groupMessageStack: { maxWidth: '78%' }, groupMessageAvatarSlot: { width: 32, height: 28, justifyContent: 'center' }, groupMessageAvatarLeft: { alignItems: 'flex-start', marginRight: 5 }, groupMessageAvatarRight: { alignItems: 'flex-end', marginLeft: 5 }, groupMessageTightSpacer: { height: 1 }, bubblePressable: { position: 'relative' }, incomingPressable: { paddingLeft: 4 }, outgoingPressable: { paddingRight: 4 }, bubbleShell: { position: 'relative' }, bubble: { borderRadius: 22, paddingHorizontal: 16, paddingTop: 10.5, paddingBottom: 10.5, overflow: 'hidden', minHeight: 42, justifyContent: 'center' }, outgoingBubble: { borderRadius: 22 }, incomingBubble: { borderRadius: 22 }, outgoingTail: { display: 'none' }, incomingTail: { display: 'none' }, bubbleText: { fontSize: 17, lineHeight: 22.5, letterSpacing: -.2 }, messageMetaOutside: { minHeight: 16, flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 3, paddingHorizontal: 10 }, bubbleTime: { fontSize: 10, fontWeight: '600' }, replyQuote: { borderLeftWidth: 2, paddingLeft: 7, marginBottom: 7, maxWidth: 220 }, groupSenderName: { fontSize: 11, fontWeight: '800', marginLeft: 10, marginBottom: 4, marginTop: 8 }, groupSenderNameMine: { marginLeft: 0, marginRight: 10 }, reactionBadge: { position: 'absolute', bottom: -12, right: 7, borderRadius: 999, paddingHorizontal: 7, paddingVertical: 3, borderWidth: StyleSheet.hairlineWidth, shadowColor: '#000', shadowOpacity: .08, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
+  chatBody: { flex: 1, overflow: 'hidden' }, messageList: { paddingHorizontal: 14, paddingTop: 18, paddingBottom: 20, flexGrow: 1 }, messageLine: { flexDirection: 'row', marginVertical: 2.5 }, groupMessageLine: { alignItems: 'flex-end', marginVertical: 1.2 }, messageStack: { maxWidth: '84%' }, groupMessageStack: { maxWidth: '78%' }, groupMessageAvatarSlot: { width: 32, minHeight: 28, justifyContent: 'flex-end' }, groupMessageAvatarLeft: { alignItems: 'flex-start', marginRight: 5 }, groupMessageAvatarRight: { alignItems: 'flex-end', marginLeft: 5 }, groupMessageTightSpacer: { height: 1 }, bubblePressable: { position: 'relative' }, incomingPressable: { paddingLeft: 4 }, outgoingPressable: { paddingRight: 4 }, bubbleShell: { position: 'relative' }, bubble: { borderRadius: 22, paddingHorizontal: 16, paddingTop: 10.5, paddingBottom: 10.5, overflow: 'hidden', minHeight: 42, justifyContent: 'center' }, outgoingBubble: { borderRadius: 22 }, incomingBubble: { borderRadius: 22 }, outgoingTail: { display: 'none' }, incomingTail: { display: 'none' }, bubbleText: { fontSize: 17, lineHeight: 22.5, letterSpacing: -.2 }, messageMetaOutside: { minHeight: 16, flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 3, paddingHorizontal: 10 }, bubbleTime: { fontSize: 10, fontWeight: '600' }, replyQuote: { borderLeftWidth: 2, paddingLeft: 7, marginBottom: 7, maxWidth: 220 }, groupSenderName: { fontSize: 11, fontWeight: '800', marginLeft: 10, marginBottom: 4, marginTop: 8 }, groupSenderNameMine: { marginLeft: 0, marginRight: 10 }, reactionBadge: { position: 'absolute', bottom: -12, right: 7, borderRadius: 999, paddingHorizontal: 7, paddingVertical: 3, borderWidth: StyleSheet.hairlineWidth, shadowColor: '#000', shadowOpacity: .08, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
   photoMessage: { width: 205, height: 154, borderRadius: 17, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }, photoMessageImage: { width: '100%', height: '100%' }, voiceMessage: { width: 205, flexDirection: 'row', alignItems: 'center', gap: 9, paddingVertical: 3 }, voicePlay: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' }, voiceWave:{flex:1,height:24,flexDirection:'row',alignItems:'center',justifyContent:'space-between'},
   richMessageCard:{minWidth:190,maxWidth:225,flexDirection:'row',alignItems:'center',gap:10,padding:11,borderRadius:15}, forwardedLabel:{flexDirection:'row',alignItems:'center',gap:4,marginBottom:4}, deletedMessage:{flexDirection:'row',alignItems:'center',gap:7}, pinnedBanner:{minHeight:44,paddingHorizontal:14,paddingVertical:7,flexDirection:'row',alignItems:'center',gap:9,borderBottomWidth:StyleSheet.hairlineWidth},
   emptyChat: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 120 }, emptyChatIcon: { width: 58, height: 58, borderRadius: 20, alignItems: 'center', justifyContent: 'center' }, typingLine: { minHeight: 42, paddingHorizontal: 4, paddingTop: 7, paddingBottom: 9, flexDirection: 'row', alignItems: 'center', gap: 8 }, typingBubble: { paddingHorizontal: 11, paddingVertical: 7, borderRadius: 15, borderWidth: StyleSheet.hairlineWidth }, typingSpacer: { height: 6 }, replyComposerBar: { marginHorizontal: 10, marginBottom: 4, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 8, flexDirection: 'row', alignItems: 'center', gap: 10 },
@@ -4130,6 +4222,18 @@ const styles = StyleSheet.create({
   plusBadgeCompact: { minHeight: 20, paddingHorizontal: 6 },
   plusBadgeText: { color: '#fff', fontSize: 10, fontWeight: '900', letterSpacing: .45 },
   profileNameWithBadge: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: 8, marginTop: 14 },
+  customAdminBadge: { minHeight: 24, maxWidth: 150, paddingHorizontal: 9, borderRadius: 999, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, borderWidth: StyleSheet.hairlineWidth, shadowColor: '#000', shadowOpacity: .12, shadowRadius: 5, shadowOffset: { width: 0, height: 2 } },
+  customAdminBadgeText: { color: '#fff', fontSize: 9.5, fontWeight: '900', letterSpacing: .55 },
+  adminBadgeCard: { width: '100%', maxWidth: 450, maxHeight: '90%', borderRadius: 30, padding: 18 },
+  adminBadgePreview: { minHeight: 86, borderRadius: 22, borderWidth: StyleSheet.hairlineWidth, padding: 13, flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 16 },
+  adminBadgeModeRow: { flexDirection: 'row', gap: 8 },
+  adminBadgeMode: { flex: 1, minHeight: 46, borderRadius: 15, borderWidth: StyleSheet.hairlineWidth, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7 },
+  adminBadgeInput: { minHeight: 50, borderRadius: 16, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: 13, fontSize: 15, fontWeight: '800', marginTop: 12 },
+  adminBadgeIconGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  adminBadgeIconChoice: { width: 45, height: 45, borderRadius: 14, borderWidth: StyleSheet.hairlineWidth, alignItems: 'center', justifyContent: 'center' },
+  adminBadgeColorRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 9 },
+  adminBadgeColorChoice: { width: 34, height: 34, borderRadius: 17, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
+  adminBadgeInfo: { minHeight: 58, borderRadius: 16, padding: 12, flexDirection: 'row', alignItems: 'center', gap: 9, marginTop: 12 },
   ceoBadge: { minHeight: 24, paddingHorizontal: 9, borderRadius: 999, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(255,255,255,.18)' }, ceoBadgeText: { color: '#fff', fontSize: 9.5, fontWeight: '900', letterSpacing: .55 }, verifiedBadge: { position: 'relative', alignItems: 'center', justifyContent: 'center', shadowColor: '#0095F6', shadowOpacity: .18, shadowRadius: 4, shadowOffset: { width: 0, height: 1 } }, verifiedBadgeCompact: { width: 18, height: 18 }, verifiedPetal: { position: 'absolute', backgroundColor: '#0095F6' }, verifiedCore: { position: 'absolute', backgroundColor: '#0095F6', alignItems: 'center', justifyContent: 'center' },
   adminEntryCard: { minHeight: 82, borderWidth: StyleSheet.hairlineWidth, borderRadius: 24, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 10 }, adminEntryIcon: { width: 48, height: 48, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
   adminCustomizeCard: { width: '100%', maxWidth: 460, maxHeight: '88%', borderRadius: 30, padding: 18 }, adminPreviewCard: { borderWidth: StyleSheet.hairlineWidth, borderRadius: 26, padding: 14, alignItems: 'center', marginTop: 16 }, adminCustomizeLabel: { fontSize: 15, fontWeight: '900', marginTop: 16, marginBottom: 9 }, adminEffectGrid: { gap: 8 }, adminEffectChoice: { minHeight: 58, borderRadius: 17, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: 11, flexDirection: 'row', alignItems: 'center', gap: 10 }, adminEffectIcon: { width: 38, height: 38, borderRadius: 13, alignItems: 'center', justifyContent: 'center' }, adminEffectName: { flex: 1, fontSize: 13, fontWeight: '900' }, adminMiniAction: { minHeight: 42, borderRadius: 14, marginTop: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 7 }, nameEffectGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 }, nameEffectChoice: { minHeight: 42, borderRadius: 14, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: 12, alignItems: 'center', justifyContent: 'center' }, adminGifButton: { minHeight: 66, borderRadius: 18, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 8 },

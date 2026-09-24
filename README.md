@@ -1,53 +1,27 @@
-# LINK 2.0.4 · Group Avatar Alignment
+# LINK 2.0.5 · Admin Staff Tools
 
 Major beta build for Expo Snack / Expo Go backed by LINK Production (Supabase).
 
-## Highlights
-- app-wide left-edge back gesture on main navigation and full-screen pages
-- animated swipe-right-to-reply in chat
-- Groups 2.0: admins, invite codes, group avatar, remove members, leave group, ownership transfer
-- @mentions with in-app notifications
-- Moments 2.0: reactions + view counts
-- compact LINK Pro × Netflix promo on Home using vector brand asset
-- Version info → What’s new page
-- foreground in-app activity alerts
-- Czech/English localization preserved
-- LINK 1.2.2 realtime coalescing / anti-request-storm logic preserved
+## 2.0.5 highlights
+- server-authorized Admin Console access for designated LINK staff accounts
+- verified staff identity support
+- Admin Staff Badge: switch between standard LINK PRO and a custom badge
+- custom badge text, icon and accent color
+- staff badge settings sync through LINK Production
+- server-side protection for role, verification and custom badge fields
+- ordinary user accounts cannot unlock Admin Console or staff badge tools
+- previous LINK 2.0 features remain included: Profile Layouts, Smooth Send, gesture polish, Groups 2.0, Moments 2.0 and Czech/English support
+
+## Security
+Staff authorization is stored in LINK Production and is not hard-coded into the public app source. The downloadable project intentionally contains no staff email address or secret admin token.
+
+Admin/CEO-only controls are enforced both in the UI and by Supabase RLS/RPC checks. A normal account cannot become admin by editing local state or calling the custom badge RPC directly.
+
+## Verified badge
+The build uses LINK's existing vector VerifiedBadge component. If a different exact badge artwork is required, replace the visual asset/component without changing the server-side `verified` flag.
 
 ## Push note
 System remote push is intentionally not faked inside Expo Go. The backend/in-app notification layer is ready; device push should be completed in an Expo development/production build.
 
 ## Netflix note
 The current Pro benefit is a prototype reservation. A real Netflix partnership/redemption integration is required before this can activate a real Netflix subscription.
-
-
-## 2.0.1 Gesture Polish
-- Smooth Instagram-style swipe-to-reply directly on the message bubble
-- Removed permanent purple reply arrows beside messages
-- Message swipe now wins over parent edge-back navigation
-- Narrower, more deliberate global edge-back gesture
-- Swipe reply focuses the composer automatically
-
-
-## Launcher 403 hotfix
-Launcher no longer calls GitHub API. It verifies App.snack.js directly using raw/CDN fallbacks to avoid GitHub API HTTP 403.
-
-
-## 2.0.2 Smooth Send
-- Outgoing messages render optimistically the instant Send is tapped
-- Subtle Instagram-style fade + upward lift + micro-scale entrance animation
-- Tiny `Sending…` state changes to Sent / Delivered / Read after backend confirmation
-- Failed sends stay visible as `Not sent` instead of silently disappearing
-- Cached Supabase auth session removes an unnecessary pre-send network round trip
-- Sender receipt is completed asynchronously after the message insert
-- Direct and group chats use the same stable optimistic send pipeline
-- No database migration required
-
-
-## 2.0.4 Group Avatar Alignment
-- Three public profile arrangements: Default, Social and Compact
-- Social layout places the avatar on the left with name, plan badge and username beside it, then bio/status/links below
-- Compact layout keeps the centered LINK identity with much tighter spacing
-- Layout choice syncs through `profiles.profile_layout` in LINK Production
-- Other users see the selected layout when opening the profile
-- Existing Smooth Send and Gesture Polish behavior is preserved
