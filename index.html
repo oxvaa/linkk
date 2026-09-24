@@ -126,7 +126,7 @@
       <div class="meta">
         <div class="row"><span id="repoDot" class="dot wait"></span><span class="label">Repository</span><span class="value" id="repoValue">Zjišťuji…</span></div>
         <div class="row"><span class="dot"></span><span class="label">Expo SDK</span><span class="value">57</span></div>
-        <div class="row"><span class="dot"></span><span class="label">Build</span><span class="value">LINK 2.0.6 · Verified Badge</span></div>
+        <div class="row"><span class="dot"></span><span class="label">Build</span><span class="value">LINK 2.0.7 · Group & Staff Polish</span></div>
       </div>
 
       <div class="actions">
@@ -141,7 +141,7 @@
 
   <script>
     (() => {
-      const BUILD = 'LINK 2.0.6 · Verified Badge';
+      const BUILD = 'LINK 2.0.7 · Group & Staff Polish';
       const SDK_VERSION = '57.0.0';
       const DEFAULT_BRANCH = 'main';
       const DEPENDENCIES = [
@@ -216,7 +216,7 @@
           if (!response.ok) return { ok: false, reason: `HTTP ${response.status}` };
           const source = await response.text();
           if (!source.includes('export default')) return { ok: false, reason: 'Expo entry nebyl nalezen' };
-          if (!source.includes('LINK 2.0.6 · Verified Badge')) return { ok: false, reason: 'GitHub Pages ještě servíruje starší build' };
+          if (!source.includes('LINK 2.0.7 · Group & Staff Polish')) return { ok: false, reason: 'GitHub Pages ještě servíruje starší build' };
           return { ok: true };
         } catch (error) {
           return { ok: false, reason: error?.message || 'ověření nebylo dostupné' };
@@ -227,7 +227,7 @@
       verifySameOriginSource(rawAppUrl).then(result => {
         if (result.ok) {
           repoDot.className = 'dot';
-          status.textContent = 'Připraveno. LINK 2.0.6 source je dostupný přes GitHub Pages.';
+          status.textContent = 'Připraveno. LINK 2.0.7 source je dostupný přes GitHub Pages.';
         } else {
           repoDot.className = 'dot wait';
           status.textContent = `Launcher je připraven. Ověření source bylo přeskočeno (${result.reason}).`;
@@ -237,7 +237,7 @@
       createBtn.addEventListener('click', async () => {
         createBtn.disabled = true;
         createBtn.textContent = 'Otevírám Snack…';
-        status.textContent = 'Připravuji čerstvý LINK 2.0.6 source…';
+        status.textContent = 'Připravuji čerstvý LINK 2.0.7 source…';
 
         // New URL on every click so Expo never receives an old cached App.snack.js.
         rawAppUrl = pagesSourceUrl(Date.now());
@@ -246,7 +246,7 @@
 
         const params = new URLSearchParams();
         params.set('name', BUILD);
-        params.set('description', 'LINK 2.0.6 · Verified Badge — server-authorized Admin Console, verified staff identity, custom staff badge text/icon/color, protected role and verification fields, plus all LINK 2.0 stability features. Generated from GitHub.');
+        params.set('description', 'LINK 2.0.7 · Group & Staff Polish — server-authorized Admin Console, verified staff identity, custom staff badge text/icon/color, protected role and verification fields, plus all LINK 2.0 stability features. Generated from GitHub.');
         params.set('sdkVersion', SDK_VERSION);
         params.set('platform', 'mydevice');
         params.set('supportedPlatforms', 'ios,android,web');

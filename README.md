@@ -1,4 +1,4 @@
-# LINK 2.0.6 · Verified Badge
+# LINK 2.0.7 · Verified Badge
 
 Major beta build for Expo Snack / Expo Go backed by LINK Production (Supabase).
 
@@ -31,3 +31,9 @@ The current Pro benefit is a prototype reservation. A real Netflix partnership/r
 - Replaced generated verified mark with the supplied official-style LINK verified asset.
 - Added `assets/verified-badge.webp` and `assets/verified-badge.png`.
 - Snack single-file build embeds a compact PNG data URI fallback for reliable Expo Go rendering.
+
+
+## 2.0.7
+- Group avatars appear only on incoming messages and are centered against the bubble.
+- Staff identity manager can target exact @username, set/remove custom badge and toggle verified.
+- Server-side staff authorization prevents normal users from using these controls.
