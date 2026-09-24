@@ -41,7 +41,27 @@ const SYSTEM_LOCALE = (() => {
 const SYSTEM_LANGUAGE = /^cs(?:-|$)/i.test(SYSTEM_LOCALE) ? 'cs' : 'en';
 let CURRENT_LANGUAGE = SYSTEM_LANGUAGE;
 const AUTH_LANGUAGE_KEY = '@link_auth_language_v1';
+const NETFLIX_BENEFIT_KEY = 'netflix_3m_2026';
+const NETFLIX_LOGO_URI = 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/512px-Netflix_2015_logo.svg.png';
 const CS_TRANSLATIONS = {"Home":"Domů","People":"Lidé","Chats":"Chaty","Profile":"Profil","LINK":"LINK","Settings":"Nastavení","Privacy, account and LINK preferences":"Soukromí, účet a nastavení LINKu","Active status":"Aktivní stav","Control your active dot and availability.":"Nastav, jak se ostatním zobrazuje tvoje aktivita.","Account & personal information":"Účet a osobní údaje","Display name":"Zobrazované jméno","Username":"Uživatelské jméno","Email":"E-mail","Account ID":"ID účtu","Privacy":"Soukromí","Profile visibility":"Viditelnost profilu","Choose who can open your full LINK profile.":"Vyber, kdo může otevřít celý tvůj LINK profil.","Everyone":"Všichni","LINKs":"LINKy","Private":"Soukromé","Messages from":"Zprávy od","Who is allowed to start a conversation.":"Kdo s tebou může zahájit konverzaci.","Nobody":"Nikdo","LINK requests":"Žádosti o LINK","Control who can send you a LINK request.":"Nastav, kdo ti může poslat žádost o LINK.","Mutuals":"Společní LINKové","Show activity status":"Zobrazovat aktivní stav","Allow people to see your active dot":"Povolit ostatním vidět tvůj aktivní stav","Read receipts":"Potvrzení o přečtení","Show Seen when you read messages":"Zobrazit Zobrazeno, když si zprávu přečteš","Typing indicators":"Indikátor psaní","Let people know when you are typing":"Ukázat ostatním, když právě píšeš","Profile views":"Zobrazení profilu","Allow your profile visits to count in insights":"Započítávat návštěvy profilu do přehledů","Discoverable by username":"Vyhledatelný podle uživatelského jména","People can find your @username in People":"Lidé tě mohou najít podle @username","Discoverable by email":"Vyhledatelný podle e-mailu","Allow account discovery using your email":"Povolit nalezení účtu podle e-mailu","Sharing":"Sdílení","Share custom status":"Sdílet vlastní status","Show your custom text status to LINKs":"Zobrazit vlastní textový status tvým LINKům","Show socials":"Zobrazit sociální sítě","Display social handles on your profile":"Zobrazit odkazy na sociální sítě na profilu","Moments to LINKs":"Moments pouze pro LINKy","Keep Moments limited to people you LINKed":"Zobrazit Moments jen lidem, se kterými jsi propojený","Notifications":"Oznámení","Messages":"Zprávy","Message and reaction notifications":"Oznámení o zprávách a reakcích","Requests and accepted LINKs":"Žádosti a přijaté LINKy","Moments":"Moments","Moment interactions and replies":"Interakce s Moments a odpovědi","LINK updates":"Novinky LINKu","Product news, drops and feature announcements":"Novinky, dropy a oznámení nových funkcí","Security":"Zabezpečení","Login alerts":"Upozornění na přihlášení","Warn about new LINK sign-ins":"Upozornit na nové přihlášení do LINKu","Appearance":"Vzhled","System":"Podle systému","Light":"Světlý","Dark":"Tmavý","Account":"Účet","Sign out":"Odhlásit se","Use another LINK account on this device.":"Použít na tomto zařízení jiný LINK účet.","Language":"Jazyk","App language":"Jazyk aplikace","Use your device language or choose manually.":"Použij jazyk zařízení nebo ho zvol ručně.","Czech":"Čeština","English":"English","Follow system":"Podle systému","Online":"Online","Do not disturb":"Nerušit","Busy":"Zaneprázdněn","Offline (Ghost)":"Offline (Ghost)","Show a green dot while LINK is open.":"Zobrazit zelenou tečku, když je LINK otevřený.","Red dot · signals that you do not want notifications.":"Červená tečka · dává najevo, že nechceš být rušen.","Orange dot · you are around, but busy.":"Oranžová tečka · jsi online, ale zaneprázdněný.","Appear offline and hide your active dot.":"Vypadat offline a skrýt aktivní stav.","Offline (Ghost) is available with LINK Pro.":"Offline (Ghost) je dostupný s LINK Pro.","Active status, privacy, notifications, security and personal information.":"Aktivní stav, soukromí, oznámení, zabezpečení a osobní údaje.","Privacy, account & app settings":"Soukromí, účet a nastavení aplikace","Your public LINK identity":"Tvoje veřejná identita v LINKu","Your status":"Tvůj status","Choose how you appear across LINK.":"Nastav, jak se zobrazuješ v LINKu.","Custom status":"Vlastní status","Pick any text, icon and color. LINKs see it across the app.":"Vyber text, ikonu a barvu. Tvé LINKy ho uvidí napříč aplikací.","Use custom status":"Použít vlastní status","Status text":"Text statusu","Solid color":"Jednobarevné","Icon":"Ikona","Gradient · 40":"Gradienty · 40","Double Tap":"Dvojité klepnutí","Double Tap reaction":"Reakce dvojitým klepnutím","Double tap any message":"Dvakrát klepni na libovolnou zprávu","Your selected emoji is added instantly. Double tap again after changing it to replace your reaction.":"Vybrané emoji se přidá okamžitě. Po změně emoji dvojitým klepnutím reakci nahradíš.","Save Double Tap reaction":"Uložit reakci","Or paste any emoji":"Nebo vlož libovolné emoji","Direct + group chats · encrypted by default.":"Soukromé i skupinové chaty · šifrované ve výchozím stavu.","New group":"Nová skupina","Archived":"Archivované","Inbox":"Doručené","No chats yet":"Zatím žádné chaty","LINK with someone or create a group.":"Propoj se s někým nebo vytvoř skupinu.","Start the conversation":"Začni konverzaci","Message":"Zpráva","Send":"Odeslat","Reply":"Odpovědět","React":"Reagovat","Forwarded":"Přeposláno","Edited":"Upraveno","Sent":"Odesláno","Delivered":"Doručeno","Read":"Přečteno","Seen":"Zobrazeno","Pinned message":"Připnutá zpráva","Message deleted":"Zpráva byla odstraněna","Editing message":"Úprava zprávy","Mute":"Ztišit","Unmute":"Zapnout zvuk","Archive":"Archivovat","Unarchive":"Vrátit z archivu","Mark unread":"Označit jako nepřečtené","Chat controls":"Nastavení chatu","Safety options":"Bezpečnost","Safety":"Bezpečnost","Members":"Členové","Group settings":"Nastavení skupiny","Group name":"Název skupiny","Creator":"Zakladatel","Only the group creator can change the name.":"Název může měnit pouze zakladatel skupiny.","Manage the conversation and group name.":"Spravuj konverzaci a název skupiny.","Create Group Chat":"Vytvořit skupinový chat","Create an encrypted chat with your LINKs.":"Vytvoř šifrovaný chat se svými LINKy.","Group name (optional)":"Název skupiny (volitelné)","Add more people":"Přidat další lidi","Typing…":"Píše…","is typing…":"píše…","are typing…":"píšou…","Search registered LINK accounts by @username or name.":"Vyhledej registrované LINK účty podle @username nebo jména.","Find a LINK by @username.":"Najdi LINK podle @username.","Search results":"Výsledky vyhledávání","No @username found":"@username nenalezen","Try the exact @username or display name.":"Zkus přesné @username nebo zobrazované jméno.","Incoming requests":"Příchozí žádosti","Accept":"Přijmout","Decline":"Odmítnout","Send LINK request":"Poslat žádost o LINK","LINK request sent":"Žádost o LINK odeslána","Recently linked":"Nedávno propojení","People linked":"Propojení lidé","You have no LINKs yet.":"Zatím nemáš žádné LINKy.","That’s you":"To jsi ty","Linked":"Propojeno","LINKED":"PROPOJENO","Your moment":"Tvůj Moment","New Moment":"Nový Moment","Visible to your LINKs for 24 hours.":"Viditelný tvým LINKům po dobu 24 hodin.","Add a caption…":"Přidat popisek…","Allow camera":"Povolit fotoaparát","Camera access":"Přístup k fotoaparátu","Camera access needed":"Je potřeba přístup k fotoaparátu","Moment · today":"Moment · dnes","Notes":"Poznámky","Your Note":"Tvoje poznámka","Write a note":"Napsat poznámku","Leave a note…":"Napiš poznámku…","Who can see it?":"Kdo ji uvidí?","All LINKs":"Všechny LINKy","Close LINKs":"Blízcí LINKové","Delete Note":"Smazat poznámku","Reply to Note…":"Odpovědět na poznámku…","Reply privately to their Note":"Odpovědět soukromě na poznámku","Show my LINK":"Ukázat můj LINK","Scan LINK":"Naskenovat LINK","Scan a LINK":"Naskenovat LINK","Point your camera at their card.":"Namiř fotoaparát na jejich kartu.","Only LINK QR cards are accepted.":"Přijímány jsou pouze LINK QR kódy.","Scan again":"Skenovat znovu","tap · scan · connect":"klepni · naskenuj · propoj se","scan to send request":"naskenuj a pošli žádost","Share your card or send a request nearby.":"Sdílej svou kartu nebo pošli žádost někomu poblíž.","Active":"Aktivní","ACTIVE":"AKTIVNÍ","Favorite":"Oblíbené","Status":"Status","Short bio":"Krátké bio","Profile photo":"Profilová fotka","Instagram @handle":"Instagram @uživatelské_jméno","Spotify name":"Jméno na Spotify","Website":"Web","Save":"Uložit","LINK account":"LINK účet","Signed in with Supabase Auth":"Přihlášeno přes Supabase Auth","Sign out / use another account":"Odhlásit se / použít jiný účet","This account is synced through LINK Production and can be used on another device.":"Tento účet je synchronizovaný přes LINK Production a můžeš ho použít na jiném zařízení.","Use another account":"Použít jiný účet","Use another LINK account or sign out":"Použít jiný LINK účet nebo se odhlásit","LINK Shop":"LINK Shop","Profile Effects":"Efekty profilu","Animated Profile Effects":"Animované efekty profilu","Animated profile art from LINK Shop":"Animované prvky profilu z LINK Shopu","Use effect":"Použít efekt","Equipped":"Aktivní","EQUIPPED":"AKTIVNÍ","YOUR BALANCE":"TVŮJ ZŮSTATEK","LINK Coins · local prototype balance":"LINK Coins · prototypový zůstatek","No profile effect":"Bez efektu profilu","Standard name":"Standardní jméno","Animated avatar":"Animovaný avatar","Choose GIF / animated image":"Vybrat GIF / animovaný obrázek","Keeps the original animation instead of cropping.":"Zachová původní animaci bez ořezu.","LINK Plus":"LINK Plus","LINK Pro":"LINK Pro","Everything in Plus":"Vše z Plus","Everything in Pro":"Vše z Pro","More identity. More expression. Less limits.":"Více identity. Více možností. Méně limitů.","The full LINK experience.":"Kompletní LINK zážitek.","Cancel anytime":"Kdykoliv zrušitelné","Monthly":"Měsíčně","Annual":"Ročně","month":"měsíc","year":"rok","7 days Free Trial":"7 dní zdarma","Start 7-day Free Trial":"Spustit 7denní zkušební verzi","Cancel LINK Plus":"Zrušit LINK Plus","Cancel LINK Pro":"Zrušit LINK Pro","Silent Chat":"Mizející chat","New messages can disappear automatically.":"Nové zprávy mohou automaticky zmizet.","Disappear after":"Zmizet po","Save Silent Chat":"Uložit mizející chat","30 sec":"30 s","5 min":"5 min","1 hour":"1 hodina","24 hours":"24 hodin","10 sec":"10 s","7 days":"7 dní","Chat Theme":"Motiv chatu","Choose the color of your outgoing messages.":"Vyber barvu svých odchozích zpráv.","Apply theme to":"Použít motiv na","Messages only":"Pouze zprávy","Messages + background":"Zprávy + pozadí","Keep the chat background white/black, or add a subtle color wash behind the conversation.":"Ponech pozadí chatu bílé/černé, nebo přidej jemný barevný odstín.","All caught up":"Všechno máš přečtené","LINK activity for this account":"Aktivita LINK pro tento účet","Send a wave":"Poslat mávnutí","Wave sent 👋":"Mávnutí odesláno 👋","Admin Console":"Admin konzole","Administrator access":"Přístup správce","Admin controls":"Nástroje správce","LINK Administration":"Správa LINKu","LINK moderation · live backend":"Moderace LINKu · živý backend","Ban":"Zablokovat","Unban":"Odblokovat","BANNED":"ZABLOKOVÁN","MUTED":"ZTIŠEN","Account suspended":"Účet pozastaven","Account muted":"Účet ztišen","Ban account?":"Zablokovat účet?","Cancel":"Zrušit","Got it":"Rozumím","Swipe to go back":"Přejetím zpět","On detail pages, swipe right from the left edge to go back. In chat, swipe a message right to reply.":"Na detailních stránkách se vrať přejetím doprava od levého okraje. V chatu přejeď zprávu doprava pro odpověď.","Encrypted chat":"Šifrovaný chat","Encrypted LINK messages":"Šifrované LINK zprávy","LINK encrypts message text with AES-256-GCM before it is stored in the backend. Each conversation has its own protected chat key and Supabase Row Level Security limits access to chat members.":"LINK šifruje text zpráv pomocí AES-256-GCM ještě před uložením do backendu. Každá konverzace má vlastní chráněný klíč a Supabase Row Level Security omezuje přístup pouze na členy chatu.","Security note: this backend beta is not full end-to-end encryption because chat keys are currently stored server-side behind RLS so multiple devices can decrypt the same conversation. True device-only E2EE key exchange should be added before claiming E2EE in production.":"Bezpečnostní poznámka: tato backend beta zatím není plné end-to-end šifrování, protože klíče chatů jsou uložené na serveru za RLS, aby bylo možné stejnou konverzaci dešifrovat na více zařízeních. Před produkčním označením E2EE je potřeba doplnit výměnu klíčů pouze mezi zařízeními.","Account & sign out":"Účet a odhlášení","Personal information":"Osobní údaje","Camera":"Fotoaparát","Photo":"Fotka","Video":"Video","Contact":"Kontakt","Shared location":"Sdílená poloha","Location":"Poloha","GIF":"GIF","Could not open chat":"Chat se nepodařilo otevřít","Message not sent":"Zprávu se nepodařilo odeslat","Message not edited":"Zprávu se nepodařilo upravit","Message not deleted":"Zprávu se nepodařilo smazat","Message not hidden":"Zprávu se nepodařilo skrýt","Reaction not saved":"Reakci se nepodařilo uložit","Pin not changed":"Připnutí se nepodařilo změnit","Chat setting not saved":"Nastavení chatu se nepodařilo uložit","Chat theme not saved":"Motiv chatu se nepodařilo uložit","Silent Chat not saved":"Mizející chat se nepodařilo uložit","Privacy not saved":"Nastavení soukromí se nepodařilo uložit","Profile not saved":"Profil se nepodařilo uložit","Favorite not saved":"Oblíbené se nepodařilo uložit","Moment not posted":"Moment se nepodařilo zveřejnit","Note not saved":"Poznámku se nepodařilo uložit","Note not deleted":"Poznámku se nepodařilo smazat","Wave not sent":"Mávnutí se nepodařilo odeslat","Request not sent":"Žádost se nepodařilo odeslat","Could not update request":"Žádost se nepodařilo aktualizovat","Group not created":"Skupinu se nepodařilo vytvořit","Group name not changed":"Název skupiny se nepodařilo změnit","Setting not changed":"Nastavení se nepodařilo změnit","Ban failed":"Blokování se nezdařilo","Unban failed":"Odblokování se nezdařilo","Mute failed":"Ztišení se nezdařilo","Unmute failed":"Zapnutí zvuku se nezdařilo","LINK Plus not activated":"LINK Plus se nepodařilo aktivovat","LINK Pro not activated":"LINK Pro se nepodařilo aktivovat","Could not cancel Plus":"LINK Plus se nepodařilo zrušit","Could not cancel Pro":"LINK Pro se nepodařilo zrušit","Try again.":"Zkus to znovu.","Check your details":"Zkontroluj údaje","Complete your profile":"Dokonči profil","Verify your email":"Ověř svůj e-mail","Could not create account":"Účet se nepodařilo vytvořit","Could not sign in":"Přihlášení se nezdařilo","Name":"Jméno","Password":"Heslo","Create account":"Vytvořit účet","Sign in":"Přihlásit se","Connecting to LINK…":"Připojuji k LINKu…","Sign in to your real LINK account.":"Přihlas se ke svému LINK účtu.","Create an account that works across devices.":"Vytvoř si účet, který funguje na všech tvých zařízeních.","New to LINK? Create account":"Jsi tu nový? Vytvoř si účet","Already have LINK? Sign in":"Už máš LINK? Přihlas se","LINK Production · Supabase backend":"LINK Production · zabezpečený backend","Real LINK accounts":"Skutečné LINK účty","Welcome back.":"Vítej zpět.","Your LINK starts here.":"Tvůj LINK začíná tady.","Sign in and pick up where you left off.":"Přihlas se a pokračuj přesně tam, kde jsi skončil.","Create your identity, LINK with people and start chatting.":"Vytvoř si identitu, propoj se s lidmi a začni chatovat.","Built in Czechia":"Vytvořeno v Česku","Real accounts":"Skutečné účty","Private chats":"Soukromé chaty","Cross-device":"Na více zařízeních","Log in":"Přihlásit","Register":"Registrace","Continue":"Pokračovat","By continuing, you agree to use LINK responsibly.":"Pokračováním souhlasíš s odpovědným používáním LINKu.","Your account, chats and settings sync through LINK Production.":"Tvůj účet, chaty a nastavení se synchronizují přes LINK Production.","Invalid login credentials":"Nesprávný e-mail nebo heslo.","Email not confirmed":"E-mail zatím není ověřený.","User already registered":"Účet s tímto e-mailem už existuje.","Password should be at least 6 characters":"Heslo musí mít alespoň 6 znaků.","Unable to validate email address: invalid format":"E-mail nemá platný formát.","Enter a valid email and a password with at least 6 characters.":"Zadej platný e-mail a heslo s alespoň 6 znaky.","Add your name and a username with at least 3 characters.":"Doplň jméno a uživatelské jméno s alespoň 3 znaky.","Your LINK account was created. Verify the email, then return here and sign in.":"LINK účet byl vytvořen. Ověř e-mail a potom se vrať a přihlas se.","Name required":"Je potřeba jméno","Username taken":"Uživatelské jméno je obsazené","Group name required":"Je potřeba název skupiny","Camera permission":"Oprávnění fotoaparátu","Photos permission":"Oprávnění k fotkám","Not a LINK card":"Toto není LINK karta","Refresh LINK data":"Obnovit data LINKu","Refresh LINK data?":"Obnovit data LINKu?","Refresh":"Obnovit","Delete":"Smazat","Delete for me":"Smazat pro mě","Unsend for everyone":"Zrušit odeslání všem","Forward":"Přeposlat","Forward to":"Přeposlat komu","Search":"Hledat","Search in chat":"Hledat v chatu","Media & Voice":"Média a hlasové zprávy","Photos & videos":"Fotky a videa","Voice messages":"Hlasové zprávy","Today":"Dnes","Yesterday":"Včera","Close":"Zavřít","Done":"Hotovo","Edit":"Upravit","Save changes":"Uložit změny","Back":"Zpět","Support URL":"Odkaz podpory","Visible when someone opens your LINK profile.":"Viditelné, když někdo otevře tvůj LINK profil.","Special Profile Effect":"Speciální efekt profilu","Name Effect":"Efekt jména","CEO Customization":"CEO úpravy","Staff-only profile tools for @link":"Nástroje profilu pouze pro staff účet @link","Staff-only animated effects, name effects and GIF profile photos.":"Animované efekty, efekty jména a GIF profilové fotky pouze pro staff.","LINK first":"Nejdřív se propojte přes LINK","Chat unlocks after both people accept the LINK.":"Chat se odemkne, až oba přijmete LINK.","All":"Vše","Media":"Média","Voice":"Hlasové","Links":"Odkazy","Files":"Soubory","LINK 1.3 · language, messaging and privacy preferences sync through LINK Production.":"LINK 1.3 · jazyk, zprávy a nastavení soukromí se synchronizují přes LINK Production.","Available":"K dispozici","Outside":"Venku","At work":"V práci","At event":"Na akci","Conversations":"Konverzace","Create & switch":"Vytvořit a přepnout","Create another test identity":"Vytvořit další testovací identitu","Custom":"Vlastní","Emoji":"Emoji","Gradients are rendered directly on your status pill.":"Gradienty se zobrazují přímo na štítku statusu.","LINK Plus unlocks 5 extra premium colors.":"LINK Plus odemyká 5 dalších prémiových barev.","LINK Plus unlocks 5 extra premium icons.":"LINK Plus odemyká 5 dalších prémiových ikon.","LINK Plus · choose your instant reaction.":"LINK Plus · vyber si rychlou reakci.","LINK Pro adds 10-second and 7-day timer presets. Silent Chat itself is available to everyone.":"LINK Pro přidává časovače 10 sekund a 7 dní. Mizející chat je dostupný všem.","LINK member":"Člen LINKu","LINK people you actually meet, then keep the conversation going without random DMs.":"Propoj se s lidmi, které skutečně potkáš, a pokračuj v konverzaci bez náhodných DM.","LINK uses the camera only to scan QR cards and create Moments.":"LINK používá fotoaparát pouze ke skenování QR karet a vytváření Moments.","LOCAL":"LOKÁLNÍ","Messages sent":"Odeslané zprávy","Mutual LINK":"Společný LINK","New Group":"Nová skupina","New local account":"Nový lokální účet","Pro Insights":"Pro přehledy","Profile effects":"Efekty profilu","Prototype subscription entitlement synced through the LINK backend. No real payment is charged; production billing still needs App Store / Google Play subscriptions.":"Prototyp předplatného synchronizovaný přes LINK backend. Žádná skutečná platba se neúčtuje; produkční platby budou vyžadovat předplatné přes App Store / Google Play.","Prototype subscription only. No real payment is charged. The free-trial toggle demonstrates the intended App Store / Google Play flow.":"Pouze prototyp předplatného. Žádná skutečná platba se neúčtuje. Zkušební verze ukazuje plánovaný tok přes App Store / Google Play.","Scanning sends a mutual LINK request. Chat unlocks after acceptance.":"Naskenováním odešleš žádost o LINK. Chat se odemkne po přijetí.","Tap to open":"Klepni pro otevření","Try all Pro features free for 7 days, then continue on the annual plan.":"Vyzkoušej všechny Pro funkce 7 dní zdarma a potom pokračuj s ročním plánem.","You":"Ty","e.g. Studio all night":"např. Celou noc ve studiu","Ban accounts or mute posting and messaging. Changes sync through LINK Production.":"Blokuj účty nebo omez publikování a zprávy. Změny se synchronizují přes LINK Production.","Ban, unban and mute local users. Staff actions are saved on this device.":"Blokuj, odblokuj a ztiš uživatele. Staff akce se ukládají na tomto zařízení.","CEO Profile Lab":"CEO Profile Lab","CLOSE LINKS":"BLÍZCÍ LINKOVÉ","Default":"Výchozí","Red":"Červená","Green":"Zelená","Yellow":"Žlutá","Bright Red":"Jasně červená","Blue & Purple":"Modrá a fialová","Cyan Blue":"Azurově modrá","Cyan Green":"Azurově zelená","Sky Blue (Classic)":"Nebeská modrá (Classic)","Rose Pink":"Růžová","Hot Pink":"Hot Pink","Monochromatic":"Monochromatický","Gold":"Zlatá","Black Crow":"Black Crow","Pink Cryptid":"Pink Cryptid","Digital Scar":"Digital Scar","Ice Glass":"Ice Glass","Riot Cat":"Riot Cat","Skull Spider":"Skull Spider","Starline":"Starline","Widow Bloom":"Widow Bloom","Executive Gold":"Executive Gold","Executive Orbit":"Executive Orbit","Founder Aura":"Founder Aura","CEO Crown":"CEO Crown","Photo or video":"Fotka nebo video","Voice message":"Hlasová zpráva","Location card":"Karta polohy","Contact card":"Karta kontaktu","Choose an attachment.":"Vyber přílohu.","Current location":"Aktuální poloha","New LINK":"Nový LINK","Send the first message to the group.":"Pošli první zprávu do skupiny.","Silent Chat is on":"Mizející chat je zapnutý","Turn on disappearing messages":"Zapnout mizející zprávy","Existing messages stay. Only new messages use the timer.":"Stávající zprávy zůstanou. Časovač platí pouze pro nové zprávy.","LINK Pro · Staff Access":"LINK Pro · Staff přístup","LINK Pro is active":"LINK Pro je aktivní","Unlock LINK Pro":"Odemknout LINK Pro","All Pro tools are unlocked for LINK administration":"Všechny Pro nástroje jsou odemčené pro správu LINKu","Ghost Mode, 7-day Notes, Profile Insights, 30% Shop savings & more":"Ghost Mode, 7denní Poznámky, přehledy profilu, 30% sleva v Shopu a další","LINK Plus · Staff Access":"LINK Plus · Staff přístup","LINK Plus included with Pro":"LINK Plus je součástí Pro","LINK Plus is active":"LINK Plus je aktivní","Upgrade to LINK Plus":"Přejít na LINK Plus","All Plus perks are unlocked for LINK administration":"Všechny Plus výhody jsou odemčené pro správu LINKu","All LINK Plus perks are included in your Pro plan":"Všechny výhody LINK Plus jsou součástí tvého Pro plánu","From 54 Kč/month on annual · better Notes, Shop savings & more":"Od 54 Kč/měsíc při ročním plánu · lepší Poznámky, slevy v Shopu a další","Premium profile tools and practical perks without locking basic LINK features behind a paywall.":"Prémiové nástroje profilu a praktické výhody bez zamykání základních funkcí LINKu za paywall.","Privacy tools, deeper identity, stronger Shop savings and social insights — with every Plus benefit included.":"Nástroje soukromí, výraznější identita, větší slevy v Shopu a sociální přehledy — včetně všech výhod Plus.","This user":"Tento uživatel","This person":"Tento uživatel","Reply sent":"Odpověď odeslána","Welcome to LINK Plus ✦":"Vítej v LINK Plus ✦","LINK Pro trial started ◆":"Zkušební LINK Pro spuštěn ◆","Welcome to LINK Pro ◆":"Vítej v LINK Pro ◆","This clears only the local cache. Your real LINK account, messages and backend data stay online.":"Tím se smaže pouze místní cache. Tvůj skutečný LINK účet, zprávy a data v backendu zůstanou online.","LINK Pro required":"Je potřeba LINK Pro","Status not changed":"Status se nepodařilo změnit","Create a group":"Vytvořit skupinu","Send messages":"Posílat zprávy","Send LINK requests":"Posílat žádosti o LINK","Use this feature":"Používat tuto funkci"};
+Object.assign(CS_TRANSLATIONS, {
+  "Netflix · 3 months free":"Netflix · 3 měsíce zdarma",
+  "Exclusive LINK Pro benefit":"Exkluzivní benefit LINK Pro",
+  "3 months of Netflix on us.":"3 měsíce Netflixu od nás.",
+  "Available to active LINK Pro members.":"Dostupné pro aktivní členy LINK Pro.",
+  "Activate benefit":"Aktivovat benefit",
+  "Benefit reserved":"Benefit rezervován",
+  "Your Netflix benefit is reserved in LINK.":"Tvůj Netflix benefit je v LINKu rezervován.",
+  "Netflix activation code integration is required before this can redeem a real Netflix subscription.":"Pro skutečnou aktivaci předplatného Netflix je potřeba partnerská integrace aktivačních kódů.",
+  "Pro exclusive":"Exkluzivně pro Pro",
+  "One claim per LINK account":"Jedna aktivace na LINK účet",
+  "3 months":"3 měsíce",
+  "Unlock with LINK Pro":"Odemkni s LINK Pro",
+  "Could not activate benefit":"Benefit se nepodařilo aktivovat",
+  "Netflix benefit":"Netflix benefit",
+  "This benefit is available to active LINK Pro members.":"Tento benefit je dostupný aktivním členům LINK Pro.",
+  "Netflix is a trademark of Netflix, Inc.":"Netflix je ochranná známka společnosti Netflix, Inc."
+});
 const resolveLanguage = (setting = 'system') => setting === 'cs' || setting === 'en' ? setting : SYSTEM_LANGUAGE;
 const translateLiteral = (value) => {
   if (value == null || CURRENT_LANGUAGE !== 'cs') return value;
@@ -169,7 +189,7 @@ async function signedChatUrl(path) {
 }
 
 async function loadLinkSnapshot(base, userId) {
-  const [profilesQ, settingsQ, entitlementsQ, tiersQ, moderationQ, connectionsQ, chatsQ, membersQ, keysQ, messagesQ, reactionsQ, receiptsQ, hidesQ, pinsQ, chatUserSettingsQ, momentsQ, notesQ, favoritesQ, notificationsQ, profileViewsQ] = await Promise.all([
+  const [profilesQ, settingsQ, entitlementsQ, tiersQ, moderationQ, connectionsQ, chatsQ, membersQ, keysQ, messagesQ, reactionsQ, receiptsQ, hidesQ, pinsQ, chatUserSettingsQ, momentsQ, notesQ, favoritesQ, notificationsQ, profileViewsQ, benefitsQ] = await Promise.all([
     supabase.from('profiles').select('*'),
     supabase.from('user_settings').select('*').eq('user_id', userId).maybeSingle(),
     supabase.from('entitlements').select('*').eq('user_id', userId).maybeSingle(),
@@ -190,9 +210,10 @@ async function loadLinkSnapshot(base, userId) {
     supabase.from('favorites').select('*').eq('user_id', userId),
     supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(80),
     supabase.from('profile_views').select('id').eq('viewed_user_id', userId),
+    supabase.from('pro_benefit_claims').select('*').eq('user_id', userId),
   ]);
   if (profilesQ.error) throw profilesQ.error;
-  const optionalQueries = { settingsQ, entitlementsQ, tiersQ, moderationQ, connectionsQ, chatsQ, membersQ, keysQ, messagesQ, reactionsQ, receiptsQ, hidesQ, pinsQ, chatUserSettingsQ, momentsQ, notesQ, favoritesQ, notificationsQ, profileViewsQ };
+  const optionalQueries = { settingsQ, entitlementsQ, tiersQ, moderationQ, connectionsQ, chatsQ, membersQ, keysQ, messagesQ, reactionsQ, receiptsQ, hidesQ, pinsQ, chatUserSettingsQ, momentsQ, notesQ, favoritesQ, notificationsQ, profileViewsQ, benefitsQ };
   Object.entries(optionalQueries).forEach(([name, q]) => { if (q?.error) console.warn(`LINK optional backend query failed: ${name}`, q.error.message); });
 
   const profiles = {};
@@ -346,10 +367,21 @@ async function loadLinkSnapshot(base, userId) {
   subscriptions[userId] = plusUntil ? {active:plusUntil>Date.now(),expiresAt:plusUntil,plan:ent.plus_plan || 'monthly'} : null;
   proSubscriptions[userId] = proUntil ? {active:proUntil>Date.now(),expiresAt:proUntil,plan:ent.pro_plan || 'monthly',trial:!!(trialUntil && trialUntil>Date.now()),trialEndsAt:trialUntil} : null;
   const notifications = (notificationsQ.data || []).filter(n => !['message','group_message'].includes(n.type)).map(n => ({ id:n.id, type:n.type, title:n.title, body:n.body, time:timeLabel(n.created_at), read:!!n.read, actorId:n.actor_id, chatId:n.chat_id, createdAt:toMs(n.created_at) }));
+  const benefitClaims = {};
+  for (const row of benefitsQ.data || []) {
+    benefitClaims[row.benefit_key] = {
+      id: row.id,
+      key: row.benefit_key,
+      status: row.status,
+      claimedAt: toMs(row.claimed_at),
+      activatedAt: toMs(row.activated_at),
+      metadata: row.metadata || {},
+    };
+  }
 
   return {
     ...base,
-    version: 18,
+    version: 19,
     activeAccountId:userId,
     localAccountIds:[userId],
     profiles,
@@ -368,6 +400,7 @@ async function loadLinkSnapshot(base, userId) {
     ownedEffects:{ [userId]:ent.owned_effects || [] },
     subscriptions,
     proSubscriptions,
+    benefitClaims,
     moderation,
     chatKeys,
     silentChats,
@@ -421,6 +454,7 @@ function subscribeLink(userId, onChange) {
     .on('postgres_changes',{event:'*',schema:'public',table:'entitlements'},kick)
     .on('postgres_changes',{event:'*',schema:'public',table:'profile_tiers'},kick)
     .on('postgres_changes',{event:'*',schema:'public',table:'profile_views'},kick)
+    .on('postgres_changes',{event:'*',schema:'public',table:'pro_benefit_claims'},kick)
     .subscribe();
   return () => { closed = true; clearTimeout(timer); supabase.removeChannel(channel); };
 }
@@ -706,6 +740,12 @@ async function cancelPrototypePlanRemote(tier) {
   if (error) throw error;
 }
 
+async function claimProBenefitRemote(benefitKey) {
+  const { data, error } = await supabase.rpc('claim_pro_benefit',{ p_benefit_key:benefitKey });
+  if (error) throw error;
+  return data;
+}
+
 async function purchaseEffectRemote(effectId) {
   const { data,error } = await supabase.rpc('purchase_profile_effect',{p_effect_id:effectId});
   if (error) throw error;
@@ -827,7 +867,7 @@ function BackendGate({ children }) {
             <View style={backendStyles.liveDot}/>
           </View>
 
-          <Text style={backendStyles.foot}>LINK 1.3.0 · Czech First · Backend Beta</Text>
+          <Text style={backendStyles.foot}>LINK 1.3.1 · Pro Benefits · Backend Beta</Text>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -856,7 +896,7 @@ const STORAGE_KEY = '@link_live_backend_v18';
 const DRAFT_PREFIX = '@link_chat_draft_v1';
 const ACCENT = '#6C5CE7';
 const EMPTY_MESSAGES = Object.freeze([]);
-const BUILD = 'LINK 1.3.0 · Czech First';
+const BUILD = 'LINK 1.3.1 · Pro Benefits';
 
 function QRCode({ value, size = 170, color = '#0E0F12', backgroundColor = '#FFFFFF' }) {
   const qr = useMemo(() => {
@@ -1128,7 +1168,7 @@ const normalizeUsername = (value = '') => {
 
 function initialData(userId = null) {
   return {
-    version: 18,
+    version: 19,
     themeSetting: 'light',
     languageSetting: 'system',
     activeAccountId: userId,
@@ -1149,6 +1189,7 @@ function initialData(userId = null) {
     ownedEffects: userId ? { [userId]: [] } : {},
     subscriptions: {},
     proSubscriptions: {},
+    benefitClaims: {},
     moderation: {},
     chatKeys: {},
     silentChats: {},
@@ -2487,9 +2528,10 @@ function LinkPlusModal({ visible, onClose, theme, subscription, onActivate, onCa
 }
 
 
-function LinkProModal({ visible, onClose, theme, subscription, onActivate, onCancel }) {
+function LinkProModal({ visible, onClose, theme, subscription, benefitClaim, onClaimNetflix, onActivate, onCancel }) {
   const [selected, setSelected] = useState('annual');
   const [trialEnabled, setTrialEnabled] = useState(true);
+  const [claimingBenefit, setClaimingBenefit] = useState(false);
   const active = subscriptionIsActive(subscription);
   const plan = active ? LINK_PRO_PLANS[subscription.plan] : LINK_PRO_PLANS[selected];
   const monthlyEquivalent = Math.round(LINK_PRO_PLANS.annual.price / 12);
@@ -2517,6 +2559,45 @@ function LinkProModal({ visible, onClose, theme, subscription, onActivate, onCan
               {active && subscription?.trialEndsAt && subscription?.trial && subscription.trialEndsAt > Date.now() ? <Text style={[styles.plusRenewText, { color: '#C8BBFF' }]}>Free trial ends {new Date(subscription.trialEndsAt).toLocaleDateString()}</Text> : null}
               {active && subscription?.expiresAt && !subscription?.trial ? <Text style={[styles.plusRenewText, { color: 'rgba(255,255,255,.62)' }]}>Renews / expires {new Date(subscription.expiresAt).toLocaleDateString()}</Text> : null}
             </View>
+
+            <LinearGradient colors={['#090909','#17100F','#090909']} start={{x:0,y:0}} end={{x:1,y:1}} style={styles.netflixBenefitCard}>
+              <View style={styles.netflixBenefitGlow} />
+              <View style={styles.netflixBenefitTop}>
+                <View style={styles.netflixLogoWrap}>
+                  <Image source={{ uri: NETFLIX_LOGO_URI }} style={styles.netflixLogo} resizeMode="contain" />
+                </View>
+                <View style={styles.netflixProPill}><Ionicons name="diamond" size={11} color="#fff" /><Text style={styles.netflixProPillText}>LINK PRO</Text></View>
+              </View>
+              <Text style={styles.netflixEyebrow}>PRO EXCLUSIVE</Text>
+              <Text style={styles.netflixBenefitTitle}>3 months of Netflix on us.</Text>
+              <Text style={styles.netflixBenefitBody}>Available to active LINK Pro members.</Text>
+              <View style={styles.netflixBenefitMeta}>
+                <View style={styles.netflixBenefitMetaItem}><Ionicons name="calendar-outline" size={15} color="#E50914" /><Text style={styles.netflixBenefitMetaText}>3 months</Text></View>
+                <View style={styles.netflixBenefitMetaItem}><Ionicons name="person-outline" size={15} color="#E50914" /><Text style={styles.netflixBenefitMetaText}>One claim per LINK account</Text></View>
+              </View>
+              <Pressable
+                disabled={!active || !!benefitClaim || claimingBenefit}
+                onPress={async () => {
+                  if (!active) return;
+                  try {
+                    setClaimingBenefit(true);
+                    await onClaimNetflix?.();
+                  } finally {
+                    setClaimingBenefit(false);
+                  }
+                }}
+                style={[
+                  styles.netflixBenefitButton,
+                  { opacity: !active || !!benefitClaim ? .62 : 1 },
+                  benefitClaim && styles.netflixBenefitButtonClaimed,
+                ]}
+              >
+                {claimingBenefit ? <ActivityIndicator color="#fff" /> : <Ionicons name={benefitClaim ? 'checkmark-circle' : active ? 'play' : 'lock-closed'} size={18} color="#fff" />}
+                <Text style={styles.netflixBenefitButtonText}>{benefitClaim ? 'Benefit reserved' : active ? 'Activate benefit' : 'Unlock with LINK Pro'}</Text>
+              </Pressable>
+              {benefitClaim ? <Text style={styles.netflixBenefitReservedText}>Your Netflix benefit is reserved in LINK.</Text> : null}
+              <Text style={styles.netflixBenefitLegal}>Netflix activation code integration is required before this can redeem a real Netflix subscription. Netflix is a trademark of Netflix, Inc.</Text>
+            </LinearGradient>
 
             {!active ? <>
               <View style={styles.plusPlanRow}>
@@ -2679,6 +2760,7 @@ function LinkApp({ session }) {
   const activeSubscription = data.subscriptions?.[data.activeAccountId] || null;
   const activeProSubscription = data.proSubscriptions?.[data.activeAccountId] || null;
   const activePro = !!activeProfile?.isAdmin || subscriptionIsActive(activeProSubscription);
+  const activeNetflixClaim = data.benefitClaims?.[NETFLIX_BENEFIT_KEY] || null;
   const activePlus = !!activeProfile?.isAdmin || subscriptionIsActive(activeSubscription) || activePro;
   const activeRestriction = data.moderation?.[data.activeAccountId] || { banned: false, mutedUntil: null };
   const activeChatPerson = activeChatId ? data.profiles[activeChatId] : null;
@@ -3248,6 +3330,20 @@ ${text}` });
     } catch (error) { Alert.alert('LINK Pro not activated', error?.message || 'Try again.'); }
   };
 
+  const claimNetflixBenefit = async () => {
+    if (!activePro) {
+      Alert.alert('LINK Pro required', 'This benefit is available to active LINK Pro members.');
+      return;
+    }
+    try {
+      await claimProBenefitRemote(NETFLIX_BENEFIT_KEY);
+      await refreshRemote();
+      Alert.alert('Netflix benefit', 'Your Netflix benefit is reserved in LINK.\n\nNetflix activation code integration is required before this can redeem a real Netflix subscription.');
+    } catch (error) {
+      Alert.alert('Could not activate benefit', error?.message || 'Try again.');
+    }
+  };
+
   const cancelPro = () => {
     Alert.alert('Cancel LINK Pro?', 'Your Pro prototype entitlement will be disabled for this LINK account.', [
       { text: 'Keep Pro', style: 'cancel' },
@@ -3328,7 +3424,7 @@ ${text}` });
       <ShopModal visible={shopOpen} onClose={() => setShopOpen(false)} theme={theme} profile={activeProfile} balance={activeWallet} ownedIds={activeOwnedEffects} plusActive={activePlus} proActive={activePro} onPurchase={purchaseEffect} onEquip={equipEffect} onRemove={removeEffect} />
       <LinkPlusModal visible={plusOpen} onClose={() => setPlusOpen(false)} theme={theme} subscription={activeSubscription} onActivate={activatePlus} onCancel={cancelPlus} />
       <DoubleTapReactionModal visible={doubleTapReactionOpen} onClose={() => setDoubleTapReactionOpen(false)} theme={theme} currentEmoji={activeDoubleTapEmoji} onSave={saveDoubleTapReaction} />
-      <LinkProModal visible={proOpen} onClose={() => setProOpen(false)} theme={theme} subscription={activeProSubscription} onActivate={activatePro} onCancel={cancelPro} />
+      <LinkProModal visible={proOpen} onClose={() => setProOpen(false)} theme={theme} subscription={activeProSubscription} benefitClaim={activeNetflixClaim} onClaimNetflix={claimNetflixBenefit} onActivate={activatePro} onCancel={cancelPro} />
       <SilentChatModal visible={silentChatOpen} onClose={() => setSilentChatOpen(false)} theme={theme} config={activeSilentConfig} proActive={activePro} onSave={saveSilentConfig} />
       <EncryptionInfoModal visible={encryptionInfoOpen} onClose={() => setEncryptionInfoOpen(false)} theme={theme} />
       <ChatThemeModal visible={chatThemeOpen} onClose={() => setChatThemeOpen(false)} theme={theme} currentId={activeChatThemeId} currentScope={activeChatThemeScope} plusActive={activePlus} proActive={activePro} onSelect={saveChatTheme} onSelectScope={saveChatThemeScope} />
@@ -3501,6 +3597,24 @@ const styles = StyleSheet.create({
   proHero: { borderRadius: 30, padding: 22, marginTop: 8, overflow: 'hidden' },
   trialToggleCard: { minHeight: 78, borderWidth: StyleSheet.hairlineWidth, borderRadius: 22, padding: 13, marginTop: 12, flexDirection: 'row', alignItems: 'center', gap: 12 },
   trialIcon: { width: 44, height: 44, borderRadius: 15, alignItems: 'center', justifyContent: 'center' },
+  netflixBenefitCard: { borderRadius: 28, padding: 18, marginTop: 14, overflow: 'hidden', borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(229,9,20,.34)' },
+  netflixBenefitGlow: { position: 'absolute', width: 180, height: 180, borderRadius: 90, backgroundColor: 'rgba(229,9,20,.16)', right: -55, top: -62 },
+  netflixBenefitTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  netflixLogoWrap: { width: 108, height: 34, justifyContent: 'center' },
+  netflixLogo: { width: 104, height: 30 },
+  netflixProPill: { minHeight: 28, paddingHorizontal: 10, borderRadius: 999, backgroundColor: 'rgba(124,92,252,.20)', borderWidth: StyleSheet.hairlineWidth, borderColor: 'rgba(124,92,252,.60)', flexDirection: 'row', alignItems: 'center', gap: 5 },
+  netflixProPillText: { color: '#fff', fontSize: 9, fontWeight: '900', letterSpacing: .65 },
+  netflixEyebrow: { color: '#E50914', fontSize: 9.5, fontWeight: '900', letterSpacing: 1.1, marginTop: 22 },
+  netflixBenefitTitle: { color: '#fff', fontSize: 27, lineHeight: 30, fontWeight: '900', letterSpacing: -.8, marginTop: 6, maxWidth: 315 },
+  netflixBenefitBody: { color: 'rgba(255,255,255,.68)', fontSize: 12.5, lineHeight: 18, marginTop: 8 },
+  netflixBenefitMeta: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 16 },
+  netflixBenefitMetaItem: { minHeight: 34, borderRadius: 12, paddingHorizontal: 10, backgroundColor: 'rgba(255,255,255,.06)', flexDirection: 'row', alignItems: 'center', gap: 6 },
+  netflixBenefitMetaText: { color: 'rgba(255,255,255,.82)', fontSize: 10.5, fontWeight: '800' },
+  netflixBenefitButton: { minHeight: 50, borderRadius: 16, marginTop: 17, backgroundColor: '#E50914', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, shadowColor: '#E50914', shadowOpacity: .24, shadowRadius: 14, shadowOffset: { width: 0, height: 6 } },
+  netflixBenefitButtonClaimed: { backgroundColor: '#2A2D34', shadowOpacity: 0 },
+  netflixBenefitButtonText: { color: '#fff', fontSize: 13.5, fontWeight: '900' },
+  netflixBenefitReservedText: { color: '#fff', fontSize: 11, fontWeight: '800', textAlign: 'center', marginTop: 10 },
+  netflixBenefitLegal: { color: 'rgba(255,255,255,.38)', fontSize: 9.5, lineHeight: 14, textAlign: 'center', marginTop: 10, paddingHorizontal: 3 },
   silentCard: { width: '100%', maxWidth: 430, borderRadius: 30, padding: 19 },
   silentHero: { borderRadius: 22, padding: 14, marginTop: 18, flexDirection: 'row', alignItems: 'center', gap: 12 },
   silentHeroIcon: { width: 46, height: 46, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
