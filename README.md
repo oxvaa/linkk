@@ -20,3 +20,6 @@ Major LINK beta update for Expo Snack / Expo Go backed by LINK Production on Sup
 Upload this repository to GitHub, enable GitHub Pages, open `index.html`, then choose **Vytvořit nový Snack**. The launcher loads `App.snack.js` from the same GitHub Pages origin and adds a cache-buster.
 
 Remote system push notifications still require a development / production build and are not simulated as real OS push inside Expo Go.
+
+## Shared Test Session
+The GitHub Pages launcher now includes **Testovat s kamarády**. This opens a fresh unsaved Snack session. Keep that Snack unsaved, open **My Device**, and share its QR with testers. Testers only need Expo Go and their own Expo login.

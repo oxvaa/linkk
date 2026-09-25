@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#f5f5f7" />
-  <title>LINK — Expo Snack Generator</title>
+  <title>LINK 3.0 — Developer & Shared Test Launcher</title>
   <style>
     :root {
       color-scheme: light;
@@ -130,12 +130,18 @@
       </div>
 
       <div class="actions">
-        <button id="createBtn" class="primary" type="button">Vytvořit nový Snack</button>
+        <button id="testBtn" class="primary" type="button">👥 Testovat s kamarády</button>
+        <button id="createBtn" class="secondary" type="button">🛠 Developer mode</button>
         <a id="rawBtn" class="action secondary" href="#" target="_blank" rel="noopener">Otevřít App.snack.js</a>
       </div>
 
+      <div id="testHint" style="display:none;margin-top:14px;padding:14px 15px;border-radius:16px;background:rgba(108,92,231,.09);border:1px solid rgba(108,92,231,.18);font-size:13px;line-height:1.45;color:#555b66;text-align:left">
+        <strong style="color:#101114">Shared Test Session</strong><br>
+        Otevře se čerstvý neuložený Snack. <strong>Neklikej v něm na Save.</strong> Otevři <strong>My Device</strong> a pošli QR kamarádům. Oni se přihlásí do Expo Go svým vlastním účtem a jen QR naskenují.
+      </div>
+
       <div id="status" class="status">Připravuji GitHub source URL…</div>
-      <div class="tiny">Po klepnutí se otevře nový Expo Snack s LINK aplikací a potřebnými dependencies. V Snacku ho pak můžeš normálně uložit do svého Expo účtu.</div>
+      <div class="tiny">Developer mode můžeš normálně uložit. Shared Test Session nech neuloženou, aby QR nebyl svázaný s vlastníkem Expo účtu.</div>
     </section>
   </main>
 
@@ -162,6 +168,8 @@
       const repoDot = document.getElementById('repoDot');
       const status = document.getElementById('status');
       const createBtn = document.getElementById('createBtn');
+      const testBtn = document.getElementById('testBtn');
+      const testHint = document.getElementById('testHint');
       const rawBtn = document.getElementById('rawBtn');
 
       function getRepoInfo() {
@@ -186,6 +194,7 @@
         repoValue.textContent = 'Nelze automaticky určit';
         status.textContent = 'Otevři tuto stránku přes GitHub Pages, nebo přidej ?owner=TVUJ_GITHUB&repo=NAZEV_REPA do URL.';
         createBtn.disabled = true;
+        testBtn.disabled = true;
         rawBtn.style.pointerEvents = 'none';
         rawBtn.style.opacity = '.5';
         return;
@@ -235,29 +244,44 @@
         }
       });
 
-      createBtn.addEventListener('click', async () => {
+      function openFreshSnack(mode) {
+        const shared = mode === 'shared';
         createBtn.disabled = true;
-        createBtn.textContent = 'Otevírám Snack…';
-        status.textContent = 'Připravuji čerstvý LINK 3.0 source…';
+        testBtn.disabled = true;
+        testHint.style.display = shared ? 'block' : 'none';
+        if (shared) {
+          testBtn.textContent = 'Otevírám Shared Test Session…';
+          status.textContent = 'Vytvářím čerstvou NEULOŽENOU session pro společný QR…';
+        } else {
+          createBtn.textContent = 'Otevírám Developer mode…';
+          status.textContent = 'Připravuji čerstvý LINK 3.0 source…';
+        }
 
-        // New URL on every click so Expo never receives an old cached App.snack.js.
+        // A unique source URL forces a completely fresh Snack document every time.
+        // No Snack id / owner is supplied here — ownership is added only if the user later presses Save.
         rawAppUrl = pagesSourceUrl(Date.now());
         rawBtn.href = rawAppUrl;
-        status.textContent = 'Otevírám Expo Snack…';
 
         const params = new URLSearchParams();
-        params.set('name', BUILD);
-        params.set('description', 'LINK 3.0 · NEXT — Home 3.0, Chats 3.0, real voice messages, View Once, GIFs/stickers, link previews, Moments 3.0, Groups 3.0, LINK Now, unified search, safety, Staff Center and stability upgrades. Generated from GitHub.');
+        params.set('name', shared ? 'LINK 3.0 · Shared Test Session' : BUILD);
+        params.set('description', shared
+          ? 'LINK 3.0 shared unsaved test session. Keep this Snack UNSAVED and share only the My Device QR with testers.'
+          : 'LINK 3.0 · NEXT — Home 3.0, Chats 3.0, real voice messages, View Once, GIFs/stickers, link previews, Moments 3.0, Groups 3.0, LINK Now, unified search, safety, Staff Center and stability upgrades. Generated from GitHub.');
         params.set('sdkVersion', SDK_VERSION);
         params.set('platform', 'mydevice');
         params.set('supportedPlatforms', 'ios,android,web');
         params.set('theme', 'light');
         params.set('preview', 'true');
+        params.set('waitForData', 'true');
         params.set('sourceUrl', rawAppUrl);
         params.set('dependencies', DEPENDENCIES.join(','));
+        // Deliberately DO NOT pass a saved Snack id. This must stay an anonymous fresh Snack until explicitly saved.
 
         window.location.href = `https://snack.expo.dev/?${params.toString()}`;
-      });
+      }
+
+      testBtn.addEventListener('click', () => openFreshSnack('shared'));
+      createBtn.addEventListener('click', () => openFreshSnack('developer'));
     })();
   </script>
 </body>
