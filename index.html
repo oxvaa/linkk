@@ -126,7 +126,7 @@
       <div class="meta">
         <div class="row"><span id="repoDot" class="dot wait"></span><span class="label">Repository</span><span class="value" id="repoValue">Zjišťuji…</span></div>
         <div class="row"><span class="dot"></span><span class="label">Expo SDK</span><span class="value">57</span></div>
-        <div class="row"><span class="dot"></span><span class="label">Build</span><span class="value">LINK 2.0.7 · Group & Staff Polish</span></div>
+        <div class="row"><span class="dot"></span><span class="label">Build</span><span class="value">LINK 3.0 · NEXT</span></div>
       </div>
 
       <div class="actions">
@@ -141,7 +141,7 @@
 
   <script>
     (() => {
-      const BUILD = 'LINK 2.0.7 · Group & Staff Polish';
+      const BUILD = 'LINK 3.0 · NEXT';
       const SDK_VERSION = '57.0.0';
       const DEFAULT_BRANCH = 'main';
       const DEPENDENCIES = [
@@ -152,6 +152,7 @@
         'expo-blur@~57.0.3',
         'expo-crypto@~57.0.3',
         'expo-linear-gradient@~57.0.2',
+        'expo-audio@~57.0.5',
         'qrcode-generator@^1.4.4',
         'react-native-svg@15.15.4',
         '@supabase/supabase-js@2.49.8'
@@ -190,14 +191,14 @@
         return;
       }
 
-      // 2.0.6 launcher hotfix: use the same GitHub Pages origin as the launcher.
+      // LINK 3.0 launcher: use the same GitHub Pages origin as the launcher.
       // This avoids browser CORS / network failures against raw.githubusercontent.com,
       // jsDelivr and the GitHub API while keeping App.snack.js public for Expo Snack.
       function pagesSourceUrl(cacheBust = Date.now()) {
         const url = new URL('./App.snack.js', window.location.href);
         url.search = '';
         url.hash = '';
-        url.searchParams.set('build', '206');
+        url.searchParams.set('build', '300');
         url.searchParams.set('cb', String(cacheBust));
         return url.toString();
       }
@@ -216,7 +217,7 @@
           if (!response.ok) return { ok: false, reason: `HTTP ${response.status}` };
           const source = await response.text();
           if (!source.includes('export default')) return { ok: false, reason: 'Expo entry nebyl nalezen' };
-          if (!source.includes('LINK 2.0.7 · Group & Staff Polish')) return { ok: false, reason: 'GitHub Pages ještě servíruje starší build' };
+          if (!source.includes('LINK 3.0 · NEXT')) return { ok: false, reason: 'GitHub Pages ještě servíruje starší build' };
           return { ok: true };
         } catch (error) {
           return { ok: false, reason: error?.message || 'ověření nebylo dostupné' };
@@ -227,7 +228,7 @@
       verifySameOriginSource(rawAppUrl).then(result => {
         if (result.ok) {
           repoDot.className = 'dot';
-          status.textContent = 'Připraveno. LINK 2.0.7 source je dostupný přes GitHub Pages.';
+          status.textContent = 'Připraveno. LINK 3.0 source je dostupný přes GitHub Pages.';
         } else {
           repoDot.className = 'dot wait';
           status.textContent = `Launcher je připraven. Ověření source bylo přeskočeno (${result.reason}).`;
@@ -237,7 +238,7 @@
       createBtn.addEventListener('click', async () => {
         createBtn.disabled = true;
         createBtn.textContent = 'Otevírám Snack…';
-        status.textContent = 'Připravuji čerstvý LINK 2.0.7 source…';
+        status.textContent = 'Připravuji čerstvý LINK 3.0 source…';
 
         // New URL on every click so Expo never receives an old cached App.snack.js.
         rawAppUrl = pagesSourceUrl(Date.now());
@@ -246,7 +247,7 @@
 
         const params = new URLSearchParams();
         params.set('name', BUILD);
-        params.set('description', 'LINK 2.0.7 · Group & Staff Polish — server-authorized Admin Console, verified staff identity, custom staff badge text/icon/color, protected role and verification fields, plus all LINK 2.0 stability features. Generated from GitHub.');
+        params.set('description', 'LINK 3.0 · NEXT — Home 3.0, Chats 3.0, real voice messages, View Once, GIFs/stickers, link previews, Moments 3.0, Groups 3.0, LINK Now, unified search, safety, Staff Center and stability upgrades. Generated from GitHub.');
         params.set('sdkVersion', SDK_VERSION);
         params.set('platform', 'mydevice');
         params.set('supportedPlatforms', 'ios,android,web');
