@@ -217,8 +217,8 @@ Object.assign(CS_TRANSLATIONS, {
   "Group theme":"Motiv skupiny",
   "Invite expires":"Platnost pozvánky",
   "Activity":"Aktivita",
-  "Welcome to LINK 3.0":"Vítej v LINK 3.0",
-  "NEXT is built around real people, faster chats and your identity.":"NEXT staví na skutečných lidech, rychlejších chatech a tvé identitě.",
+  "Welcome to LINK 3.5":"Vítej v LINK 3.5",
+  "Pulse brings safer messaging, richer presence and private Circles.":"NEXT staví na skutečných lidech, rychlejších chatech a tvé identitě.",
   "Your identity":"Tvoje identita",
   "LINK Now":"LINK Now",
   "Meet. Scan. LINK.":"Potkej. Naskenuj. Propoj.",
@@ -323,6 +323,87 @@ Object.assign(CS_TRANSLATIONS, {
   "Open reports":"Otevřená hlášení",
   "Review":"Zkontrolovat",
   "Reviewed":"Zkontrolováno"
+});
+
+
+Object.assign(CS_TRANSLATIONS, {
+  "LINK 3.5 · identity, circles and beta health":"LINK 3.5 · identita, kruhy a stav bety",
+  "LINK Circles":"LINK Circles",
+  "Create a Circle":"Vytvořit Circle",
+  "Share Moments and status with a hand-picked group.":"Sdílej Moments a status jen s vybranou skupinou.",
+  "Create Circle":"Vytvořit Circle",
+  "members":"členů",
+  "Pinned CTA":"Připnuté tlačítko",
+  "Add one action button to your public profile.":"Přidej na veřejný profil jedno akční tlačítko.",
+  "Visit my site":"Navštívit můj web",
+  "Now playing":"Právě poslouchám",
+  "Track":"Skladba",
+  "Artist":"Interpret",
+  "Save Profile 3.5":"Uložit Profil 3.5",
+  "Presence & message effects":"Presence a efekty zpráv",
+  "Custom presence icon, animated badge and bubble finish.":"Vlastní ikona aktivity, animovaný badge a vzhled bublin.",
+  "Presence icon":"Ikona aktivity",
+  "Badge animation":"Animace badge",
+  "Bubble effect":"Efekt bublin",
+  "Save Pro style":"Uložit Pro styl",
+  "Recent profile visitors":"Poslední návštěvníci profilu",
+  "No recent visitors yet.":"Zatím žádní nedávní návštěvníci.",
+  "Beta Health":"Beta Health",
+  "Realtime":"Realtime",
+  "Queue":"Fronta",
+  "Latency":"Odezva",
+  "Send diagnostics":"Odeslat diagnostiku",
+  "LINK Official":"LINK Official",
+  "Official LINK communication":"Oficiální komunikace LINKu",
+  "This is a verified system channel. Only LINK Staff can publish here. Replies are disabled for everyone.":"Toto je ověřený systémový kanál. Publikovat může pouze LINK Staff. Odpovědi jsou pro všechny vypnuté.",
+  "Verified system channel · read only":"Ověřený systémový kanál · pouze ke čtení",
+  "No official messages yet":"Zatím žádné oficiální zprávy",
+  "Important LINK updates will appear here.":"Důležité novinky LINKu se zobrazí tady.",
+  "Replies are disabled":"Odpovědi jsou vypnuté",
+  "Publish to everyone":"Odeslat všem",
+  "Official broadcast":"Oficiální zpráva",
+  "Send a read-only message as LINK Official to every registered LINK account.":"Pošli všem registrovaným LINK účtům zprávu pouze ke čtení jménem LINK Official.",
+  "Message title":"Nadpis zprávy",
+  "Message body":"Text zprávy",
+  "Button label (optional)":"Text tlačítka (volitelné)",
+  "Messaging Reliability":"Spolehlivost zpráv",
+  "Only real connectivity failures enter the offline queue. Server errors stay visible with Retry.":"Do offline fronty jdou jen skutečné chyby připojení. Serverové chyby zůstávají viditelné s možností Opakovat.",
+  "Presence 2.0":"Presence 2.0",
+  "Typing, recording, uploading, Active now and last active — with separate privacy controls.":"Psaní, nahrávání hlasu, upload, Aktivní teď a naposledy aktivní — se samostatným nastavením soukromí.",
+  "Circles":"Circles",
+  "Create private groups for Moments and status. Pro gets a higher Circle limit.":"Vytvářej soukromé skupiny pro Moments a status. Pro má vyšší limit Circles.",
+  "Moments 3.5":"Moments 3.5",
+  "Circle audiences, mentions, reposts, archive and faster Highlight flows.":"Publikum Circle, zmínky, reposty, archiv a rychlejší Highlights.",
+  "Groups 3.5":"Skupiny 3.5",
+  "Announcements, slow mode, member permissions, admin notes and join questions.":"Oznámení, slow mode, oprávnění členů, admin poznámky a vstupní otázky.",
+  "Profile 3.5":"Profil 3.5",
+  "Pinned CTA, Now Playing, visitor insights and two new profile layouts.":"Připnuté CTA, Právě poslouchám, návštěvníci profilu a dva nové layouty.",
+  "Pro 3.5":"Pro 3.5",
+  "Custom presence icons, badge motion and message bubble effects.":"Vlastní ikony aktivity, animace badge a efekty bublin.",
+  "Search 2.0":"Vyhledávání 2.0",
+  "People, groups and loaded messages stay searchable from one place.":"Lidi, skupiny a načtené zprávy vyhledáš na jednom místě.",
+  "Beta diagnostics":"Diagnostika bety",
+  "Latency, realtime state, queue size and tester diagnostics make bugs easier to trace.":"Odezva, stav realtime, velikost fronty a diagnostika testerů usnadní hledání chyb.",
+  "LINK Official is a server-controlled read-only channel with a gold verified badge.":"LINK Official je serverově řízený kanál pouze ke čtení se zlatým verified badgem.",
+  "Show last active":"Zobrazovat naposledy aktivní",
+  "Let LINKs see when you were last active":"Povolit LINKům vidět, kdy jsi byl naposledy aktivní",
+  "Recording voice…":"Nahrává hlas…",
+  "Uploading…":"Nahrává…",
+  "Active now":"Aktivní teď",
+  "Message not sent":"Zprávu se nepodařilo odeslat",
+  "Retry":"Opakovat",
+  "Slow mode":"Slow mode",
+  "Announcements only":"Pouze oznámení",
+  "Members can send media":"Členové mohou posílat média",
+  "Members can create polls":"Členové mohou vytvářet ankety",
+  "Join question":"Vstupní otázka",
+  "Private admin notes":"Soukromé poznámky adminů",
+  "Save Group 3.5":"Uložit Group 3.5",
+  "Answer join question (optional)":"Odpověď na vstupní otázku (volitelné)",
+  "Repost":"Repost",
+  "Archive Moment":"Archivovat Moment",
+  "All LINKs":"Všechny LINKy",
+  "Circle":"Circle"
 });
 
 const translateLiteral = (value) => {
@@ -451,7 +532,7 @@ async function signedChatUrl(path) {
 }
 
 async function loadLinkSnapshot(base, userId) {
-  const [profilesQ, settingsQ, entitlementsQ, tiersQ, moderationQ, connectionsQ, chatsQ, membersQ, keysQ, messagesQ, reactionsQ, receiptsQ, hidesQ, pinsQ, chatUserSettingsQ, momentsQ, momentReactionsQ, momentViewsQ, notesQ, favoritesQ, notificationsQ, profileViewsQ, benefitsQ, linkNowQ, joinRequestsQ, pollsQ, pollVotesQ, highlightsQ, blocksQ, devicesQ, viewOnceQ, staffAuditQ, reportsQ] = await Promise.all([
+  const [profilesQ, settingsQ, entitlementsQ, tiersQ, moderationQ, connectionsQ, chatsQ, membersQ, keysQ, messagesQ, reactionsQ, receiptsQ, hidesQ, pinsQ, chatUserSettingsQ, momentsQ, momentReactionsQ, momentViewsQ, notesQ, favoritesQ, notificationsQ, profileViewsQ, benefitsQ, linkNowQ, joinRequestsQ, pollsQ, pollVotesQ, highlightsQ, blocksQ, devicesQ, viewOnceQ, staffAuditQ, reportsQ, presenceActivityQ, circlesQ, circleMembersQ, proStyleQ, officialQ, officialReadsQ, groupAdminNotesQ] = await Promise.all([
     supabase.from('profiles').select('*'),
     supabase.from('user_settings').select('*').eq('user_id', userId).maybeSingle(),
     supabase.from('entitlements').select('*').eq('user_id', userId).maybeSingle(),
@@ -467,13 +548,13 @@ async function loadLinkSnapshot(base, userId) {
     supabase.from('message_hides').select('message_id').eq('user_id', userId),
     supabase.from('message_pins').select('*').order('created_at'),
     supabase.from('chat_user_settings').select('*').eq('user_id', userId),
-    supabase.from('moments').select('*').gt('expires_at', new Date().toISOString()).order('created_at', { ascending: false }),
+    supabase.from('moments').select('*').eq('archived',false).gt('expires_at', new Date().toISOString()).order('created_at', { ascending: false }),
     supabase.from('moment_reactions').select('*'),
     supabase.from('moment_views').select('*'),
     supabase.from('notes').select('*').gt('expires_at', new Date().toISOString()).order('created_at', { ascending: false }),
     supabase.from('favorites').select('*').eq('user_id', userId),
     supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(100),
-    supabase.from('profile_views').select('id').eq('viewed_user_id', userId),
+    supabase.from('profile_views').select('id,viewer_id,viewed_at').eq('viewed_user_id', userId).order('viewed_at',{ascending:false}).limit(60),
     supabase.from('pro_benefit_claims').select('*').eq('user_id', userId),
     supabase.from('link_now_statuses').select('*').gt('expires_at',new Date().toISOString()),
     supabase.from('group_join_requests').select('*').order('created_at',{ascending:false}),
@@ -485,9 +566,16 @@ async function loadLinkSnapshot(base, userId) {
     supabase.from('message_view_once_receipts').select('*').eq('user_id',userId),
     supabase.from('staff_audit_logs').select('*').order('created_at',{ascending:false}).limit(80),
     supabase.from('safety_reports').select('*').order('created_at',{ascending:false}).limit(80),
+    supabase.from('presence_activity').select('*').gt('expires_at',new Date().toISOString()),
+    supabase.from('circles').select('*').order('created_at'),
+    supabase.from('circle_members').select('*'),
+    supabase.from('profile_pro_style').select('*'),
+    supabase.from('official_announcements').select('*').eq('published',true).order('priority',{ascending:false}).order('created_at',{ascending:false}).limit(100),
+    supabase.from('official_announcement_reads').select('*').eq('user_id',userId),
+    supabase.from('group_admin_notes').select('*'),
   ]);
   if (profilesQ.error) throw profilesQ.error;
-  const optionalQueries = { settingsQ,entitlementsQ,tiersQ,moderationQ,connectionsQ,chatsQ,membersQ,keysQ,messagesQ,reactionsQ,receiptsQ,hidesQ,pinsQ,chatUserSettingsQ,momentsQ,momentReactionsQ,momentViewsQ,notesQ,favoritesQ,notificationsQ,profileViewsQ,benefitsQ,linkNowQ,joinRequestsQ,pollsQ,pollVotesQ,highlightsQ,blocksQ,devicesQ,viewOnceQ,staffAuditQ,reportsQ };
+  const optionalQueries = { settingsQ,entitlementsQ,tiersQ,moderationQ,connectionsQ,chatsQ,membersQ,keysQ,messagesQ,reactionsQ,receiptsQ,hidesQ,pinsQ,chatUserSettingsQ,momentsQ,momentReactionsQ,momentViewsQ,notesQ,favoritesQ,notificationsQ,profileViewsQ,benefitsQ,linkNowQ,joinRequestsQ,pollsQ,pollVotesQ,highlightsQ,blocksQ,devicesQ,viewOnceQ,staffAuditQ,reportsQ,presenceActivityQ,circlesQ,circleMembersQ,proStyleQ,officialQ,officialReadsQ,groupAdminNotesQ };
   Object.entries(optionalQueries).forEach(([name,q])=>{ if(q?.error) console.warn(`LINK 3 optional query failed: ${name}`,q.error.message); });
 
   const profiles={};
@@ -495,6 +583,7 @@ async function loadLinkSnapshot(base, userId) {
     id:row.id,isLocal:false,isSelf:row.id===userId,isAdmin:['admin','ceo'].includes(row.role),role:row.role,verified:!!row.verified,
     customBadgeEnabled:!!row.custom_badge_enabled,customBadgeText:row.custom_badge_text||null,customBadgeIcon:row.custom_badge_icon||null,customBadgeColor:row.custom_badge_color||'#111318',
     name:row.name,username:row.username,bio:row.bio||'',photoUri:row.avatar_url||null,coverUri:row.cover_url||null,profileAccent:row.profile_accent||'#6C5CE7',
+    profileCtaLabel:row.profile_cta_label||'',profileCtaUrl:row.profile_cta_url||'',nowPlaying:row.now_playing||{},
     status:row.status,statusIcon:row.status_icon,statusColor:row.status_color,statusGradient:row.status_gradient,profileEffectId:row.profile_effect_id,nameEffectId:row.name_effect_id,profileLayout:row.profile_layout||'default',socials:row.socials||{},
     presenceMode:row.presence_mode||'online',presenceVisible:row.presence_visible!==false,lastActiveAt:toMs(row.last_active_at),createdAt:toMs(row.created_at),profileVisibility:row.profile_visibility||'links',discoverableByUsername:row.discoverable_by_username!==false,messagesFrom:row.messages_from||'links',linkRequestsFrom:row.link_requests_from||'everyone',profileViewsEnabled:row.profile_views_enabled!==false,
   };
@@ -508,7 +597,7 @@ async function loadLinkSnapshot(base, userId) {
   for(const chat of chatsQ.data||[]){
     const members=(membersByChat[chat.id]||[]).map(x=>x.user_id);
     if(chat.kind==='direct'){ const other=members.find(id=>id!==userId); if(other){const key=threadKey(userId,other);backendChatIds[key]=chat.id;threadForChat[chat.id]=key;} }
-    else { const key=groupThreadKey(chat.id),memberRows=membersByChat[chat.id]||[];backendChatIds[key]=chat.id;threadForChat[chat.id]=key;groups[chat.id]={id:chat.id,name:chat.name||'New Group',description:chat.description||'',ownerId:chat.created_by,memberIds:members,memberRoles:Object.fromEntries(memberRows.map(r=>[r.user_id,r.role||'member'])),everyoneCanEditName:!!chat.everyone_can_edit_name,avatarUrl:chat.avatar_url||null,inviteCode:chat.invite_code||null,inviteEnabled:chat.invite_enabled!==false,inviteExpiresAt:toMs(chat.invite_expires_at),joinApprovalRequired:!!chat.join_approval_required,groupThemeId:chat.group_theme_id||'default',createdAt:toMs(chat.created_at)}; }
+    else { const key=groupThreadKey(chat.id),memberRows=membersByChat[chat.id]||[];backendChatIds[key]=chat.id;threadForChat[chat.id]=key;groups[chat.id]={id:chat.id,name:chat.name||'New Group',description:chat.description||'',ownerId:chat.created_by,memberIds:members,memberRoles:Object.fromEntries(memberRows.map(r=>[r.user_id,r.role||'member'])),everyoneCanEditName:!!chat.everyone_can_edit_name,avatarUrl:chat.avatar_url||null,inviteCode:chat.invite_code||null,inviteEnabled:chat.invite_enabled!==false,inviteExpiresAt:toMs(chat.invite_expires_at),joinApprovalRequired:!!chat.join_approval_required,groupThemeId:chat.group_theme_id||'default',slowModeSeconds:chat.slow_mode_seconds||0,announcementsOnly:!!chat.announcements_only,allowMemberMedia:chat.allow_member_media!==false,allowMemberPolls:chat.allow_member_polls!==false,joinQuestion:chat.join_question||'',createdAt:toMs(chat.created_at)}; }
   }
   const chatKeys={},keyByChat={}; for(const row of keysQ.data||[])keyByChat[row.chat_id]=row.wrapped_key; for(const [chatId,key] of Object.entries(threadForChat))if(keyByChat[chatId])chatKeys[key]=keyByChat[chatId];
   const reactionsByMessage={}; for(const r of reactionsQ.data||[])(reactionsByMessage[r.message_id] ||= []).push({userId:r.user_id,emoji:r.emoji});
@@ -524,19 +613,27 @@ async function loadLinkSnapshot(base, userId) {
   const signedMoments=await Promise.all((momentsQ.data||[]).map(m=>signedMomentUrl(m.image_url))),momentReactions={},momentViewers={};
   for(const row of momentReactionsQ.data||[])(momentReactions[row.moment_id] ||= []).push({userId:row.user_id,emoji:row.emoji,createdAt:toMs(row.created_at)});
   for(const row of momentViewsQ.data||[])(momentViewers[row.moment_id] ||= []).push(row.user_id);
-  const moments=(momentsQ.data||[]).map((m,i)=>({id:m.id,ownerId:m.owner_id,imageUri:signedMoments[i],caption:m.caption||'',emoji:m.emoji,audience:m.audience||'links',musicTitle:m.music_title||'',musicArtist:m.music_artist||'',createdAt:toMs(m.created_at),expiresAt:toMs(m.expires_at),reactions:momentReactions[m.id]||[],viewerIds:momentViewers[m.id]||[],viewCount:(momentViewers[m.id]||[]).length}));
-  const notes=(notesQ.data||[]).map(n=>({id:n.id,ownerId:n.owner_id,text:n.text,emoji:n.emoji,audience:n.audience,createdAt:toMs(n.created_at),expiresAt:toMs(n.expires_at)}));
+  const moments=(momentsQ.data||[]).map((m,i)=>({id:m.id,ownerId:m.owner_id,imageUri:signedMoments[i],caption:m.caption||'',emoji:m.emoji,audience:m.audience||'links',circleId:m.circle_id||null,mentionedUserIds:m.mentioned_user_ids||[],repostOf:m.repost_of||null,archived:!!m.archived,musicTitle:m.music_title||'',musicArtist:m.music_artist||'',createdAt:toMs(m.created_at),expiresAt:toMs(m.expires_at),reactions:momentReactions[m.id]||[],viewerIds:momentViewers[m.id]||[],viewCount:(momentViewers[m.id]||[]).length}));
+  const notes=(notesQ.data||[]).map(n=>({id:n.id,ownerId:n.owner_id,text:n.text,emoji:n.emoji,audience:n.audience,circleId:n.circle_id||null,createdAt:toMs(n.created_at),expiresAt:toMs(n.expires_at)}));
   const settings=settingsQ.data||{},ent=entitlementsQ.data||{},moderation={}; for(const row of moderationQ.data||[])moderation[row.user_id]={banned:!!row.banned,mutedUntil:row.muted_until?toMs(row.muted_until):null,reason:row.reason||null};
   const plusUntil=toMs(ent.plus_until),proUntil=toMs(ent.pro_until),trialUntil=toMs(ent.pro_trial_until),subscriptions={},proSubscriptions={};
   for(const row of tiersQ.data||[]){const pu=toMs(row.plus_until),pr=toMs(row.pro_until);if(pu)subscriptions[row.user_id]={active:pu>Date.now(),expiresAt:pu,plan:'monthly'};if(pr)proSubscriptions[row.user_id]={active:pr>Date.now(),expiresAt:pr,plan:'monthly'};}
   subscriptions[userId]=plusUntil?{active:plusUntil>Date.now(),expiresAt:plusUntil,plan:ent.plus_plan||'monthly'}:null; proSubscriptions[userId]=proUntil?{active:proUntil>Date.now(),expiresAt:proUntil,plan:ent.pro_plan||'monthly',trial:!!(trialUntil&&trialUntil>Date.now()),trialEndsAt:trialUntil}:null;
   const notifications=(notificationsQ.data||[]).filter(n=>!['message','group_message'].includes(n.type)).map(n=>({id:n.id,type:n.type,title:n.title,body:n.body,time:timeLabel(n.created_at),read:!!n.read,actorId:n.actor_id,chatId:n.chat_id,createdAt:toMs(n.created_at)}));
   const benefitClaims={}; for(const row of benefitsQ.data||[])benefitClaims[row.benefit_key]={id:row.id,key:row.benefit_key,status:row.status,claimedAt:toMs(row.claimed_at),activatedAt:toMs(row.activated_at),metadata:row.metadata||{}};
-  const linkNow={}; for(const row of linkNowQ.data||[])linkNow[row.user_id]={text:row.text,icon:row.icon,color:row.color,expiresAt:toMs(row.expires_at),updatedAt:toMs(row.updated_at)};
+  const linkNow={}; for(const row of linkNowQ.data||[])linkNow[row.user_id]={text:row.text,icon:row.icon,color:row.color,expiresAt:toMs(row.expires_at),updatedAt:toMs(row.updated_at),audience:row.audience||'links',circleId:row.circle_id||null};
   const groupPolls={}; const votesByPoll={}; for(const v of pollVotesQ.data||[])(votesByPoll[v.poll_id] ||= []).push({userId:v.user_id,optionIndex:v.option_index}); for(const poll of pollsQ.data||[])(groupPolls[poll.chat_id] ||= []).push({id:poll.id,creatorId:poll.creator_id,question:poll.question,options:poll.options||[],closesAt:toMs(poll.closes_at),createdAt:toMs(poll.created_at),votes:votesByPoll[poll.id]||[]});
   const profileHighlights={}; for(const h of highlightsQ.data||[])(profileHighlights[h.owner_id] ||= []).push({id:h.id,momentId:h.moment_id,title:h.title,emoji:h.cover_emoji,createdAt:toMs(h.created_at)});
+  const presenceActivity={}; for(const a of presenceActivityQ.data||[]){presenceActivity[a.user_id]={kind:a.kind,chatId:a.chat_id||null,expiresAt:toMs(a.expires_at),updatedAt:toMs(a.updated_at)};if(profiles[a.user_id])profiles[a.user_id]={...profiles[a.user_id],presenceActivityKind:a.kind,presenceActivityUntil:toMs(a.expires_at)};}
+  const circleMembersById={}; for(const m of circleMembersQ.data||[])(circleMembersById[m.circle_id] ||= []).push(m.user_id);
+  const circles=(circlesQ.data||[]).map(c=>({id:c.id,ownerId:c.owner_id,name:c.name,emoji:c.emoji,color:c.color,createdAt:toMs(c.created_at),memberIds:circleMembersById[c.id]||[]}));
+  const proStyle={}; for(const p of proStyleQ.data||[]){proStyle[p.user_id]={presenceIcon:p.presence_icon||null,badgeAnimation:p.badge_animation||'none',bubbleEffect:p.bubble_effect||'none',appIconPreference:p.app_icon_preference||'default'};if(profiles[p.user_id])profiles[p.user_id]={...profiles[p.user_id],proStyle:proStyle[p.user_id]};}
+  const officialReads={}; for(const r of officialReadsQ.data||[])officialReads[r.announcement_id]=toMs(r.read_at);
+  const officialAnnouncements=(officialQ.data||[]).map(a=>({id:a.id,title:a.title||'LINK Official',body:a.body,actionLabel:a.action_label||'',actionUrl:a.action_url||'',createdBy:a.created_by||null,createdAt:toMs(a.created_at),expiresAt:toMs(a.expires_at),priority:a.priority||0,read:!!officialReads[a.id]}));
+  const groupAdminNotes={}; for(const n of groupAdminNotesQ.data||[])groupAdminNotes[n.chat_id]={note:n.note||'',updatedBy:n.updated_by||null,updatedAt:toMs(n.updated_at)};
+  const recentProfileVisitors=(profileViewsQ.data||[]).map(v=>({viewerId:v.viewer_id||null,viewedAt:toMs(v.viewed_at)})).filter(v=>v.viewerId).slice(-30).reverse();
 
-  return {...base,version:30,activeAccountId:userId,localAccountIds:[userId],profiles,relationships,requests,groups,conversations,backendChatIds,doubleTapReactions:{[userId]:settings.double_tap_emoji||'❤️'},moments,notes,notifications:{[userId]:notifications},favorites:{[userId]:(favoritesQ.data||[]).map(x=>x.favorite_user_id)},privacy:{[userId]:{showStatus:settings.show_status??true,showSocials:settings.show_socials??true,momentsToLinks:settings.moments_to_links??true,ghostMode:settings.ghost_mode??false,showActivityStatus:settings.show_activity_status??true,profileVisibility:settings.profile_visibility||'links',messagesFrom:settings.messages_from||'links',linkRequestsFrom:settings.link_requests_from||'everyone',readReceipts:settings.read_receipts??true,typingIndicators:settings.typing_indicators??true,profileViewsEnabled:settings.profile_views_enabled??true,discoverableByUsername:settings.discoverable_by_username??true,discoverableByEmail:settings.discoverable_by_email??false,notificationsMessages:settings.notifications_messages??true,notificationsRequests:settings.notifications_requests??true,notificationsMoments:settings.notifications_moments??true,notificationsProduct:settings.notifications_product??false,loginAlerts:settings.login_alerts??true}},wallets:{[userId]:ent.coins??2200},ownedEffects:{[userId]:ent.owned_effects||[]},subscriptions,proSubscriptions,benefitClaims,moderation,chatKeys,silentChats,chatThemes,chatThemeScopes,chatUserSettings,profileViews:{[userId]:(profileViewsQ.data||[]).length},themeSetting:settings.theme_setting||base.themeSetting||'system',languageSetting:settings.language_setting||base.languageSetting||'system',onboardingComplete:settings.onboarding_complete!==false,linkNow,groupJoinRequests:(joinRequestsQ.data||[]).map(r=>({id:r.id,chatId:r.chat_id,userId:r.user_id,status:r.status,createdAt:toMs(r.created_at)})),groupPolls,profileHighlights,blockedUserIds,devices:(devicesQ.data||[]).map(d=>({id:d.id,label:d.device_label,platform:d.platform,version:d.app_version,lastSeenAt:toMs(d.last_seen_at),createdAt:toMs(d.created_at)})),viewOnceViewed:viewedOnce,staffAudit:(staffAuditQ.data||[]).map(a=>({id:a.id,actorId:a.actor_id,targetId:a.target_user_id,action:a.action,metadata:a.metadata||{},createdAt:toMs(a.created_at)})),safetyReports:(reportsQ.data||[]).map(r=>({id:r.id,reporterId:r.reporter_id,targetId:r.reported_user_id,category:r.category,details:r.details,status:r.status,createdAt:toMs(r.created_at)}))};
+  return {...base,version:35,activeAccountId:userId,localAccountIds:[userId],profiles,relationships,requests,groups,conversations,backendChatIds,doubleTapReactions:{[userId]:settings.double_tap_emoji||'❤️'},moments,notes,notifications:{[userId]:notifications},favorites:{[userId]:(favoritesQ.data||[]).map(x=>x.favorite_user_id)},privacy:{[userId]:{showStatus:settings.show_status??true,showSocials:settings.show_socials??true,momentsToLinks:settings.moments_to_links??true,ghostMode:settings.ghost_mode??false,showActivityStatus:settings.show_activity_status??true,profileVisibility:settings.profile_visibility||'links',messagesFrom:settings.messages_from||'links',linkRequestsFrom:settings.link_requests_from||'everyone',readReceipts:settings.read_receipts??true,typingIndicators:settings.typing_indicators??true,profileViewsEnabled:settings.profile_views_enabled??true,discoverableByUsername:settings.discoverable_by_username??true,discoverableByEmail:settings.discoverable_by_email??false,notificationsMessages:settings.notifications_messages??true,notificationsRequests:settings.notifications_requests??true,notificationsMoments:settings.notifications_moments??true,notificationsProduct:settings.notifications_product??false,loginAlerts:settings.login_alerts??true,showLastActive:settings.show_last_active??true}},wallets:{[userId]:ent.coins??2200},ownedEffects:{[userId]:ent.owned_effects||[]},subscriptions,proSubscriptions,benefitClaims,moderation,chatKeys,silentChats,chatThemes,chatThemeScopes,chatUserSettings,profileViews:{[userId]:(profileViewsQ.data||[]).length},themeSetting:settings.theme_setting||base.themeSetting||'system',languageSetting:settings.language_setting||base.languageSetting||'system',onboardingComplete:settings.onboarding_complete!==false,linkNow,groupJoinRequests:(joinRequestsQ.data||[]).map(r=>({id:r.id,chatId:r.chat_id,userId:r.user_id,status:r.status,answer:r.answer||'',createdAt:toMs(r.created_at)})),groupPolls,profileHighlights,blockedUserIds,devices:(devicesQ.data||[]).map(d=>({id:d.id,label:d.device_label,platform:d.platform,version:d.app_version,lastSeenAt:toMs(d.last_seen_at),createdAt:toMs(d.created_at)})),viewOnceViewed:viewedOnce,staffAudit:(staffAuditQ.data||[]).map(a=>({id:a.id,actorId:a.actor_id,targetId:a.target_user_id,action:a.action,metadata:a.metadata||{},createdAt:toMs(a.created_at)})),safetyReports:(reportsQ.data||[]).map(r=>({id:r.id,reporterId:r.reporter_id,targetId:r.reported_user_id,category:r.category,details:r.details,status:r.status,createdAt:toMs(r.created_at)})),presenceActivity,circles,proStyle,officialAnnouncements,officialReads,groupAdminNotes,recentProfileVisitors};
 }
 
 function subscribeLink(userId,onChange){
@@ -570,6 +667,13 @@ function subscribeLink(userId,onChange){
     .on('postgres_changes',{event:'*',schema:'public',table:'group_poll_votes'},slow)
     .on('postgres_changes',{event:'*',schema:'public',table:'profile_highlights'},slow)
     .on('postgres_changes',{event:'*',schema:'public',table:'blocked_users'},fast)
+    .on('postgres_changes',{event:'*',schema:'public',table:'presence_activity'},fast)
+    .on('postgres_changes',{event:'*',schema:'public',table:'circles'},slow)
+    .on('postgres_changes',{event:'*',schema:'public',table:'circle_members'},slow)
+    .on('postgres_changes',{event:'*',schema:'public',table:'profile_pro_style'},slow)
+    .on('postgres_changes',{event:'*',schema:'public',table:'official_announcements'},fast)
+    .on('postgres_changes',{event:'*',schema:'public',table:'official_announcement_reads'},slow)
+    .on('postgres_changes',{event:'*',schema:'public',table:'group_admin_notes'},slow)
     .subscribe();
   return()=>{closed=true;clearTimeout(fastTimer);clearTimeout(slowTimer);supabase.removeChannel(channel);};
 }
@@ -594,7 +698,7 @@ async function updateProfileRemote(profile) {
   const row = {
     username:cleanUsername(profile.username), name:String(profile.name || 'LINK user').trim().slice(0,60), bio:String(profile.bio || '').slice(0,180), avatar_url:avatar,
     status:profile.status || 'Available', status_icon:profile.statusIcon || 'checkmark-circle', status_color:profile.statusColor || '#34C759', status_gradient:profile.statusGradient || null,
-    profile_effect_id:profile.profileEffectId || null, name_effect_id:profile.nameEffectId || null, profile_layout:['default','social','compact'].includes(profile.profileLayout) ? profile.profileLayout : 'default', socials:profile.socials || {}, cover_url:cover, profile_accent:/^#[0-9A-Fa-f]{6}$/.test(profile.profileAccent||'')?profile.profileAccent:'#6C5CE7', updated_at:new Date().toISOString(),
+    profile_effect_id:profile.profileEffectId || null, name_effect_id:profile.nameEffectId || null, profile_layout:['default','social','compact','spotlight','minimal'].includes(profile.profileLayout) ? profile.profileLayout : 'default', socials:profile.socials || {}, cover_url:cover, profile_accent:/^#[0-9A-Fa-f]{6}$/.test(profile.profileAccent||'')?profile.profileAccent:'#6C5CE7', profile_cta_label:String(profile.profileCtaLabel||'').slice(0,40)||null, profile_cta_url:String(profile.profileCtaUrl||'').slice(0,600)||null, now_playing:profile.nowPlaying||{}, updated_at:new Date().toISOString(),
   };
   const { error } = await supabase.from('profiles').update(row).eq('id',userId);
   if (error) throw error;
@@ -611,8 +715,8 @@ async function setMyAdminBadgeRemote({ enabled, text, icon, color }) {
 }
 
 
-async function setLinkNowRemote({ text, icon='sparkles', color='#6C5CE7', minutes=60 }) {
-  const { error } = await supabase.rpc('set_link_now', { p_text:text, p_icon:icon, p_color:color, p_minutes:minutes });
+async function setLinkNowRemote({ text, icon='sparkles', color='#6C5CE7', minutes=60, audience='links', circleId=null }) {
+  const { error } = await supabase.rpc('set_link_now', { p_text:text, p_icon:icon, p_color:color, p_minutes:minutes, p_audience:audience, p_circle_id:circleId || null });
   if (error) throw error;
 }
 async function clearLinkNowRemote() {
@@ -690,6 +794,7 @@ async function updateSettingsRemote(patch) {
   if ('ghostMode' in patch) row.ghost_mode = !!patch.ghostMode;
   if ('doubleTapEmoji' in patch) row.double_tap_emoji = patch.doubleTapEmoji || '❤️';
   if ('showActivityStatus' in patch) row.show_activity_status = !!patch.showActivityStatus;
+  if ('showLastActive' in patch) row.show_last_active = !!patch.showLastActive;
   if ('profileVisibility' in patch) row.profile_visibility = patch.profileVisibility || 'links';
   if ('messagesFrom' in patch) row.messages_from = patch.messagesFrom || 'links';
   if ('linkRequestsFrom' in patch) row.link_requests_from = patch.linkRequestsFrom || 'everyone';
@@ -938,21 +1043,22 @@ async function toggleFavoriteRemote(personId, isFavorite) {
   }
 }
 
-async function postMomentRemote({ imageUri, caption, emoji, expiresAt, audience='links', musicTitle='', musicArtist='' }) {
+async function postMomentRemote({ imageUri, caption, emoji, expiresAt, audience='links', musicTitle='', musicArtist='', circleId=null, mentionedUserIds=[] }) {
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
   if (!userId) throw new Error('Not signed in');
   const imagePath = imageUri ? await uploadMomentMedia(userId,imageUri) : null;
-  const { error } = await supabase.from('moments').insert({owner_id:userId,image_url:imagePath,caption:caption || '',emoji:emoji || null,expires_at:new Date(expiresAt || Date.now()+86400000).toISOString()});
+  const row={owner_id:userId,image_url:imagePath,caption:caption || '',emoji:emoji || null,expires_at:new Date(expiresAt || Date.now()+86400000).toISOString(),audience:['links','close','circle'].includes(audience)?audience:'links',music_title:musicTitle||null,music_artist:musicArtist||null,circle_id:audience==='circle'?circleId:null,mentioned_user_ids:Array.isArray(mentionedUserIds)?mentionedUserIds:[]};
+  const { error } = await supabase.from('moments').insert(row);
   if (error) throw error;
 }
 
-async function saveNoteRemote({ text, emoji, audience, expiresAt }) {
+async function saveNoteRemote({ text, emoji, audience, circleId=null, expiresAt }) {
   const { data: auth } = await supabase.auth.getUser();
   const userId = auth.user?.id;
   if (!userId) throw new Error('Not signed in');
   await supabase.from('notes').delete().eq('owner_id',userId);
-  const { error } = await supabase.from('notes').insert({owner_id:userId,text,emoji:emoji || null,audience:audience || 'links',expires_at:new Date(expiresAt).toISOString()});
+  const { error } = await supabase.from('notes').insert({owner_id:userId,text,emoji:emoji || null,audience:audience || 'links',circle_id:audience==='circle'?circleId:null,expires_at:new Date(expiresAt).toISOString()});
   if (error) throw error;
 }
 
@@ -1164,7 +1270,7 @@ const DRAFT_PREFIX = '@link_chat_draft_v1';
 const DEVICE_ID_KEY = '@link_device_id_v3';
 const ACCENT = '#6C5CE7';
 const EMPTY_MESSAGES = Object.freeze([]);
-const BUILD = 'LINK 3.0 · NEXT';
+const BUILD = 'LINK 3.5 · Pulse';
 const VERIFIED_BADGE_DATA_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAaPElEQVR42u19e3Sd1XXnb59zvvu+0pVlIxtLsqGkaTFpkjaTmax0Epukaya80gmR0mTSNOCHsGsgCe1KZ6ZZkpJO/2ExKS3YyMYhD0ITuU0KE5LpZIpNu5KWlDZhBidACGBLljGS9bjve7/v7D1/fN+VhTFIsu69upLvXgtY2PL1PWf/zn78zj57A01pSlOa0pSmNKUpTWlKU5rSlItI6KJarQjhMBTWgXAUgP8vAFuBrQDGIegBg0ia0FhNSu8Xg35RC/4z/aLQLwYi1LQAK/2095Kt/FL3UHaDaLwFJFcSy2aBrAUAUjQhoONC9FPlxP/vid+lU7OfMyx6NVuF1QmAYdEVxXfsy1wSCqsbifAhYftOCkVbyJgAJK/eBfE8iFtMg9Q/K6hvIZ/+1vG9HS+f+5lNADTyqR8AYZB40z2n13Ms8WkQblLh2DpYCy4XAOsxCPzq5UsFDAraKBWKAlqDi/kJEL6MbP6LI7euG0O/KAxAVpM1WD0A6BeFQWIA6L4/u1OM/rwKRdZLIQexrhesVYGI5gGRAGAAQtoYiibApeIrYHdgZHvL/nP/riYAGsjkXz70i1YvtOEghaM9UsxBPNcDoOdV+huDwZJxDEXi4GLhb2zupR1jt155ZrW4hJUPgOFhjd5eu/6esU1OrPURFYn9GmenPUA0SFVnfQEQVCJluFT4meQmbhjd2/38agDBygZAYIovvfdMl4lGjlIocjkX0i5ATm1iDPZUtMWwVxpBObttpK/jFyvdHagVq/wgR3/z/eNJHXYepVDkcs7PeDVTvp8vGi6kPWXCXXDij3YePLHGB2K/agKgWhbJJ24UhkVjWDREFPpFvYaUOQyFQeIc60MqnnwLF9IuSJnaf8MABJH4myHJr2KQGFsG6Dzkkzq7jmE9Zw3UWBu+7Ga8XwEDClsg8/pTP83T2AKFXip3HZj8hEq0fYVzMy4Ap84myFWJlMPpqT0jfWv2Y1hCOAYGwPO6hGHROAYCBhiDg3xxAmB4WAM9OFfpl381c4nnOmutLbVoIg1wEeHwZCGdHh/f25Gt/NymB6ZSbPWzpM1a8UoAqL7WTERgHAFLxgje/OLO5OnKb20YklgoVLwE1rYBNuJZsDaUMQ5NvPCJxDgwh0cYFg0cBnp77cUBgAonH5ySS7+U71LC7yfC1RB+GwRdgLSSDgFEAFuIdV0hmiBSPwepJ8gWHwb09RRv/SxnpiyU0ssCYmarkm2a8+l7mPCghvmgwP47sPyyQNYpbUJQGhCBeC4ApEnRiJD+iUAeY6jvj90cGznfvqxOAMxJmzoPpd+rlN4tIteocDwJAOKVIV4ZYOufMIJAQFCKSBnACYOMhhTyEOsGFN6yuzEBiEhrUDQOeNZfh/UAsXKWbiaC0iATApmQj59SLkOkv8ss+0e3xx4/d49WDwDmULSd+85chWj0TxSpD5ITBhcyAHsWpAQQBQG9lriRykayAEJLIXdquEgILFD5/kK+CTvHbRAEIIYwQRmtokmIWwKEH2Zr/3h0R/LpelLOVBflBwvpPDRzh1LOF8iJRLkww/6GkHrNRl00IgIRBhGpaKsSt1hgtp8b3Z6869y9W5kACBbQedeJKFKpB3Qs+RHOpQFrl89vN6owW2itVbwFNpcZxsz0J0fv6C7UGgRUU+UPgDZtfinE3P5dFU9u48y0C4FpPPPdMAZBQPBUMuVwLnNUpqevGU13lWrpDmqXOg0c1RgktuXWr6h4chunp3yKtqn8NziORAA5nJ5yVTy5FYkWn2g6XDs91UYZQSTbdd/Ep1Rr+xc5O+3WlKJdnebAJ5oy03eM7Gr7H7XKDqoPgCCCvfRg+k3amKcg7MB6qnnyL8AdaMNQ2lNl723H+5LPot/PpBrbBWw5TCASBb5ThWMRWBdN5V+gO/BcKCcSZnh3vYo9bFgLEJipjYdm/q3WoX8St2QBNKP9pZkCplBMoVz6zRM7W35QbVdQk+BCMX+KnIif5zZlyQkiGQcs/OnGtgBBvnrZwZc7PESeh9IJWE+a5n/pGwvSBEgeMG8a2REfqyY3UD0LMOCbeovQb6lYSwLWtU3lVycYAHtWRVtiAu8/zt3rhnQBzOp9AEnzeVVVMSAAhITf7wfakMYDwKB/EUKEt4vnElZyuVnjiRKvTCJ4G/pFNV4QKEIASfe+6RQgXWLLgKBp/qsWBoDEK4OAzvXdmfaze94oABjwlc0O2gG0gi2a6q8yJ8AWIEqEgHVz97yhYgAtkoA22q+jbwaAVU4GhEyIrCdJPw443HgAEAPl670Z/9UqIRBd0VlPVT6yumXUootgPxZsaqvaygeELYzlEgDgGBqJBxjw/+OpKYDzQSHkxWEGRAQQru16fTJIrOtSCJNVTS+qkwIOCACsQ3xCQKdJG/i1b6td+SzQDlEorsiECMK1qegVgLQBhMbL5fwrwZlrJAtAguFh/S995JLgZ2RCgKxyAAgzRRIE9kZQyvWIdUdUrFVB2KvB38ZkQiDIz0/1bcyjX1TjUcHregj9/UqAf4RWWNWRoDCTE1biedOK5IMndrX9lQBXc7n0jIqlTA1AIDAaQvRP6BeFrdXTW/UAcPSYwuAgu7bwIBfyLoj0KlW+kHZISBXhFW84vqPtx1fcLeHRnanni/nT22w5/6SKt1UXBERKigWmUuFrGCTGeCMBoPIQcvCqcse+U5eEIy23AMKrU/ki0A5DGyCf/cjIrjX/gCNinr+dShgWPb73spcjmeL7uJh7TCXaDCButSAgbBmx5K7O/RMb0Uvl8z6YrTsAKr5okLjzUHp7KJr6CYVjn4X1wlh9/YcESlsVimop5W4a2bPuERwRg23kn/ResugX9fzta9Ph7Ng1XMx+WyVSDkSqYQkIbI2KxG+jSOwnnfen92CQ/M5li2l/d/7s8gIl6Myx5u7nWhKJSw9QNP4RKeYhXtkDkVllRx8AeSreajgz/ZmRvrYvYuhJB33vcM97KAYhAKHzUPpLOp78JGdmqvOETcQj7RiKxsHFwrdlamLH6B3dk0upEqKlKP/Se0e7dGzNwyoSfTtnqtyWpbHEVYlWh7PTfzKys+1zrzr5r+cWBwYIg4PcdTB9JxznNnglA6mKy51tVyPFwjF4M9ef2LXhxQsFweK/UL8o9PbajQdGOnU09ZhyIm/n7LQLIrM6lS+uSrQ6NjO9f2Rn2+fQLwbbYOcJ2qTSNKI8/cIALE+SMlQVsoiIQGQ4O+VRKLxFTMtjm/af2lxxQbUFQBB0XDksCaVav6NCsSs4P+2t2pp/YU8lUo7NpL85uqttD4ZFYwB23grd/n6FHvCG/pOx0Jpf+j45znrxytUtjyNlOD/jKSeymZ3Eo5cPTbbO1VFtABC0ZUlPTR1S8eRbuTBdn7Ysy6b8NsO5zN+OnvzXj6Nf1IJaxooQtgwQBkCmMzmsool3STFrQar6BTKkDBdmPBVPXOkCD1zIK6KF/3Dltc+ByU/oZFsvZ2dcQK3ekx9LGS5mnyhP5W7EwFY7a9rf+A8SBo76+9Q582WVSF7L2SkPVMOHsKQMZ6dd1dL2nzoPTGxHL1m/60g1g8DArHTejzZC+hkyTvuytGWphzBbFUtqdss/89zp95zq2zix4FZwQXDYeWDqz3Qydbt/SOrRu0iYTAhi7ZSby/7qy7dtmFgYYBdqAQaOahAJJP0ZlWhZJ26RV6XyhS1F4prd0qjLpQ+c6ts4gWHRC1L+0JMOtpHXOTT5uUD5HurWuIqUuCVW8WS7icXuAJFg4KiujgUIatC79023iYOfQ5s18JbruVcNK42EmZyIAmiSC/n3ju5pf3rBqVXACXQOTe7RibZ7uZD2IKzrWhfhs5QQttNcxJvGbm09s5D3A/Of4qAGnR25UcVb2+GVeVmUXykzq8m9uzBph0BUQDF9w+ie9qfRL2ZByj8ixlf+K7+jool7uZC24Dorv5IeemXW8ZY2isiH5+puqS6Ag/jmI7Asy8LwMgsZhwCAnDDNfqfq6F6gjEAbsaVMz4ndHT9AvxgM0vwUbn/g8/ed/g8qnPyauCUG2+V7CU0EWCsE7n2V7i7YBQQmZP3dY+tMNPoL0k4S1q3vc69Z04wc2+I1JOo61dL6h5ye9oAlUs4Vfj8cM14u/bsnb1nz4Lws36zyjxgMbvM690+8kyKxx0g4Jp4b9DxarhhGBNoQrJcte8VfOr1nwyvzuQEzb94P2FAk9lZEYkkp5biuCxRmMmEFUI7LhWtH+9b8PYC/7zowFVXJ1F6/K/iFgkAAIquiSeNlp24/ecuaB4NAbv4bPD828DYMjf8KhWLfIVBcvDLXJNdfrBtgjymSSIRK9FYA36/o8MJcwDHfQgjJVWQcQMB1V76ivC1mrxvtW/P4bwyJg2HRI7vabuVc+h6VSBngAm/biFyVaDWcm/z8yb41f/66lzvnSs+wRi/Zzv0TG42Jfo+UWSduwS678s/imskYQGjLXB1emAWYpTdo8yJYgyoqX+VtKXvdyd3rjuKImH/ZRi5ECMOiR3rp1q77Z6ASF2QJXBVvdTgzfc/Irvb+wOzPr3yfD7Dd+463SSjyXRWKbOZ8urE6ntEsDi5byI/Ps2lH/c8UWVe3Aq+K8kkVvOzMDWN71x95lV8m8nvrXSgIhD2VbHM4m/n6yK62WzEset7LnbNkmGza/GLE8pqHdST+a5yb8qAakAoXgEi1z9Xh0oggUlIn5QuFokoUFb1C7oaxvev/7rxBGZE/4HFY9MiO1oW7g7P8/vdGWv/X70ECfh8L4PcDjt1y+zd1NPHvOTflrYZ7kHkAsDVYP0/U3vyLQDsCwRkpF357bM/a//OGEfliQVDh9wvZH3o282H09DAGsCh+v/PgzAM6lrwh4PcbV/kECGRirg6XFAOQyIsV01I7IJBVkYSx2TMHR/vW/u2mB16MHN9GxXkCuYW5A2arYi1GSvljwvb6U30b8xhbKL8PjW3bvM6D03fpROvvcXbGBTXwJZhUdEYvLd0CBI0ISNPT4rkA1fLNv2gupFlFErd1Dk1+7PhNlxUx9OT8Gz2fJZjl94snvGLpA6M7U5OL5fe7Dkz+Vx1v/Ux9+f0LPv1KPA8gOTZXhxcGgB4/7XOtfoqL+TSUo2r3BIoIzATrxVQ49mDn0JnfQd873KWAQETK5EQ0rD1DpeIHxn6/fWSx/H7XfeO3qHjqv3M+7Ze8NbKICJRRUsxmy27hqbk6vDAABFWnp/paJgB5QoWiUlUa9jxEhnhlEVsWFY4/tDQQZP7cpFIhEeS8cvr6E7vX/nSx/H730JkeirXu50J2efj9xQurUFSE6Een92x4ZSEviBYSAyhf6fqb0Oq3aj6jgRTBehBQBQQY7Wv/xoKImkpMIKJGiG7v+lIWXC4+PnbL+n9cML8fBJ7dQxPvl0js63BLDPbUiqh3FAG0JgGGX627eWmDeVKg2etg+Tm0U5/rYGGBNkI6RFzKfWzBIKisy788lDkEzvyWK+D3u+4bfwfC8SMkHPdr+ZRaAcqv0XUwkaD/iDmxJzUlgvtUNE6A1H6kiW8JSKy7eHeAoL16ZVzbQpQ/LBqD27xL/+KVX0Yo/igRJVaM8v0lWxWLE4kcHLu19Qz6j5iFVAQtsiRspo1A9S0JW5olWJgEIOn6i+OXUrz9H2BClweFnCvlfSOTcSDWTocJv/L8zckql4QRCQ5Dje5MTULsH1A4qoA6DTaatQTlC7EEC1b+5UOTrYiteZSc6OVSWFHKBwBLkZgS6372+e0t4ziMBT8fX/gJDqpNR3at+arNTA2rRKsDsFt3EESqCILAsl1x93NhVzsPq0jibVyY8VbUOBthz7/Ymvqb0b72+xf7QmhxJrwHjH5RLW3uds5lnlLRlFOjhgivDwKvSpagwu8PEpdiHd9QscR7Vxy/L+ypaKvhQvZnjuCTs28XFiGLA0BgVn7a25Hl3Mx1XM4/r2Kpaj6DrpM7CEbQ9pLtOjh9SCVafptzK+yRi7CnYq2G3eJxVfaueaFvzcxC/f6FAwDwJ1sOD+uTt3eN2sL01ewWfzz7DFpY6gqCSPyhzv1nPrpoEByBxiB5XQcm71SJ1pv9+v0V8rxNRCDiqUSbEbd0jIqZq4/vbntpwfT2kgEA+HNuh4f12O93juTSo1sln/umSqQMmTBV6T38wt1BLP5Q54FFgCDg9zcOTf6RSrT9wYrg988q3yPjkEqkDBcL3+bJifec2LP+hfo/Dz8nggaAzkPp7aScL6hwZAPnZuplBv0U0YQU53MfG93d/pdvmCIGv7fxwJmdJtZ2gIsZD8x6pbS1V/FWcKkwIdbrH93Rsm9RJFdNAFAJpoKxsB37Tl0SjrZ8Rpg/DbYO6jKZdIEgCCjejUMTN+pI8q/ELdllLeFe5CqhjSVS93Ixf+fo7rUnqzVetnqL7386hMGrypv2n9rM4ZbnYF2Dus0mngOCUu5jo7vOAUFwD7Bx3/jVKpb4Htgz8FxaQf0MmJwwbCH96yd3dzyFYQmhl8rV+ODqRb1btzDQr6yOflxHYw5npuvXKmb2AgmswvGHOg+cweiu9r/EETEYh6CXvO6hV35dQolvE3NIPJdXVDMLEaZwxCivvAMit2Ggejey1aNyxw8LBgeZgHfBMlDvJ0RnA0MfBPvPfBTbyPNLuU5fIU7iUSJqEa/EK4ffn7XTSsouwPJuEOA3qajWR1cHogSQ/MaQOKfVzLPKCV+2bC+IZ91BWMHNf9grqKMmrn8EE/Ip3pU4tLry4odt1qB4xYs715+u1uCo6iio3++HM47cWoJ0iPWWb2JIYAlgXbDg6yosPwoud3jFTiwnIlhPSDsJlyPdAIDDh6uiu+p2CzfcBqhYMN1i+XwsKRLPFSIVVk7YV/5KM/uvEwgq4g7/f6szL6C6m0I2Aq3REAMjiQjCIl5xNSg/WJMGiyQAAMeONt7EEPLAvu4bJcAmWm2dTEjpqh6uqm6OJcrCesHAyObY2OrHghYMygAAtmxtoHbxwfAC5eIMgBl/YkhTYVVPBd0itOaX/V843EAWgEgAoRN7UtMAjZAOXRwTQ+qZBiqHxHPTrps/4ceAPdw4AACAfvjRH/GPyTi1fT9w8R1/JicMAp451bdxojGHR1fACvwdIFStyZZN8U0AGQOAjgYutwGHRwf0ZDjs/G/OZzLQjr5oJofVPplRUi6Chb7lB4CNODyaSDAs+oVPJF8B+DsqkgAItqm9pYf+FI4Rlwv/enKs5Z8hQtUcHl2T2zpmdTe5xY82B0hWBQDwexiqu/zCDzEAqlZ1VX0FBcMkOg+ceVjH19zAuamVVmPfWKc/EtdcyP5kdKzt3wDgpVT/1CUIxLEegQgxzB9yKV+EdtCMBS7w6CslEIZSZi8GycOW6h/Y6gMg6Fk/tqv1OZQL/0XFEhoEr6nQRYunEi2Gi7k/PbGz5QdLKfysLwCAYILWETNyy9o/s9npYZVMOZA6vSJaFYefXX9Sycx3Rnet+WNf+bXhVWoXpAXFops2I8Sc+66Kx7dxZtqFwKyUKtxl0DwAuCqRcjiXe9yzM9ecGru0WI3iz/pagEpaOAA5fhMVZXryWs7lvqESKQdKEZib6eF5Aj6AWCVTji3kHilPZa491bcxP7uXtVJTHRY2S1t2HZz5NJnQFygUiXNuKqCLSV3UFsHvaCIUTWqwBVv3T0e3J/8bgCXX/DcGAOa4AwwSd++fuFKi8c8TcCM5EXAxC/8KGQJAQUD+t5oLChGAJMgmBITG69cTzPMDVdbwOt/Pn3vA/ppEUyRBpB1IufgjWy7+0cm+tiOzNHoNT359ATDLEZyNZLsfyL9bRHZD5FoViacAQLwyxHMBtph9Z0hEIAXSBmRCgNGQQg5ibQCMZa8+ERARaQcUjkJcF+KVAOu99kKMoKEMyImAjIGUihCRJ4j43hMv3fl1DA5yraL9xgBAxaxV0kUA3V+TDSgX3idkr4bg7RDphnCKtKNABGELYVsk0Dhp/SyDnhDX+59K4+Mq1rKXM1PLV+nLbFWyTXMufS8UfQPa9JC17xaRN5E2LWRCZwuShCFuEcwyRYRnCepxED1y4ubYD88l0eq5BFpGk6lwGK/htS/9ykw7gHZTliQDWqCLovWUmpqYGL2ju1D5ucsOvtzhUfwZUtQinkt1jyNEBMYRiGQM480v7kyenv1uD0mH5+a7yPU6RFQCCqJAGRi8XDbxkVP/mSbOYxkZy1BGs/x+VIJevFu2yrymz7ce/j+DVO4amu5TLa33cXZ6GZ53i5+uZWf2jOxM7cewhHAMvKBWdBL0J9hyWOp94hsPAK8XMG457H+3Yz3+qTg3Fw58ZeeBqYd1IlXfBs6VruPZ6UdHdrVd9xq/LUJ+3X7P2erdLVsFxyC1zOlXBwAWTTRNtzA7P1Sh6K9yYab2IBD2VLTFcLnwnLB91+ho6zQwAAwOrsgKqJVbMh2couM3tU1TLnMtu8XjKtZqatqzqKJ8rzQCL3/N6M7UpB/QDq7Y8reVT8AE5rf7wKnL4LQ+QuHoVX67eNFVewEc5Ph+Z478M5LPXj+6t+P5eqdsTQtwPgna153YteFFFMbfw8XcX/vtakJ+u5qlXEUH/XjIOKSSKSOl3MM2N/Wbq0X5q8MCzM0QKtzCodwuUfR5FYl2SCEH8co2WOr8tLMPGAYgpI2haAJcKo6L8MDozfGqtGVpAqDWGcQg8aZ7Tq+XeOJTInSTikQvgbXgcgFgj1/N0JGffktgEbVRKhQFtAYX82cAfFlKhS9Wsy1LEwB1igsAoGPfqUtCoZYPkZYPCfM7yYm2+iXWc2iXyqg1z4O4xTRAT5KibxHkr4/flHj53M9cTbJ6b+EqnUDnKG3TA9n1LPIWMK4UyGYSWQcApGhCQMeF6KfE9P9GdsTHXgWmHvBqOvUXl4gQ+sXM3kEsNJ7oF3MxPG6hiw4Mh6HOjlM9GvzGVn+62jikedqb0pSmNKUpTWlKU5rSlKY0pSmrWP4/oYd7obpyFeUAAAAASUVORK5CYII=';
 
 function NetflixWordmark({ width = 112, height = 31, style }) {
@@ -1443,9 +1549,106 @@ const normalizeUsername = (value = '') => {
   return `@${clean || 'linkuser'}`;
 };
 
+
+function isNetworkLikeError(error) {
+  const message = String(error?.message || error || '').toLowerCase();
+  return /network|fetch|timeout|timed out|connection|offline|socket|internet/.test(message);
+}
+
+async function setPresenceActivityRemote(kind='active', chatId=null, seconds=8) {
+  const { error } = await supabase.rpc('set_presence_activity',{p_kind:kind,p_chat_id:chatId||null,p_seconds:seconds});
+  if (error) throw error;
+}
+
+async function createCircleRemote(name, emoji='✨', color='#6C5CE7') {
+  const { data, error } = await supabase.rpc('create_circle',{p_name:name,p_emoji:emoji,p_color:color});
+  if (error) throw error;
+  return data;
+}
+async function addCircleMemberRemote(circleId,userId) {
+  const { error } = await supabase.from('circle_members').upsert({circle_id:circleId,user_id:userId},{onConflict:'circle_id,user_id'});
+  if (error) throw error;
+}
+async function removeCircleMemberRemote(circleId,userId) {
+  const { error } = await supabase.from('circle_members').delete().eq('circle_id',circleId).eq('user_id',userId);
+  if (error) throw error;
+}
+async function deleteCircleRemote(circleId) {
+  const { error } = await supabase.from('circles').delete().eq('id',circleId);
+  if (error) throw error;
+}
+
+async function repostMomentRemote(momentId, caption='') {
+  const { data, error } = await supabase.rpc('repost_moment',{p_moment_id:momentId,p_caption:caption||''});
+  if (error) throw error;
+  return data;
+}
+async function archiveMomentRemote(momentId, archived=true) {
+  const { error } = await supabase.from('moments').update({archived:!!archived}).eq('id',momentId);
+  if (error) throw error;
+}
+
+async function updateGroupV35Remote(chatId, config={}) {
+  const { error } = await supabase.rpc('update_group_v35',{
+    p_chat_id:chatId,
+    p_slow:Number(config.slowModeSeconds||0),
+    p_announcements:!!config.announcementsOnly,
+    p_media:config.allowMemberMedia!==false,
+    p_polls:config.allowMemberPolls!==false,
+    p_join_question:config.joinQuestion||null,
+    p_admin_note:config.adminNote||''
+  });
+  if (error) throw error;
+}
+async function joinGroupV35Remote(code, answer='') {
+  const { data, error } = await supabase.rpc('join_group_v35',{p_code:code,p_answer:answer||''});
+  if (error) throw error;
+  return data;
+}
+
+async function setProStyleRemote(config={}) {
+  const { error } = await supabase.rpc('set_pro_style',{
+    p_presence_icon:config.presenceIcon||null,
+    p_badge:config.badgeAnimation||'none',
+    p_bubble:config.bubbleEffect||'none',
+    p_app_icon:config.appIconPreference||'default'
+  });
+  if (error) throw error;
+}
+
+async function staffSendOfficialRemote({title='LINK Official',body,actionLabel='',actionUrl='',priority=0}) {
+  const { data, error } = await supabase.rpc('staff_send_official_message',{
+    p_title:title||'LINK Official',
+    p_body:String(body||'').trim(),
+    p_action_label:actionLabel||null,
+    p_action_url:actionUrl||null,
+    p_priority:Number(priority||0)
+  });
+  if (error) throw error;
+  return data;
+}
+async function markOfficialReadRemote(announcementId) {
+  const { data:auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId || !announcementId) return;
+  const { error } = await supabase.from('official_announcement_reads').upsert({announcement_id:announcementId,user_id:userId,read_at:new Date().toISOString()},{onConflict:'announcement_id,user_id'});
+  if (error) throw error;
+}
+
+async function sendDiagnosticsRemote({build=BUILD,platform=Platform.OS,latencyMs=null,realtimeState='unknown',queueCount=0,lastError=null}={}) {
+  const { data:auth } = await supabase.auth.getUser();
+  const userId = auth.user?.id;
+  if (!userId) return;
+  const { error } = await supabase.from('client_diagnostics').insert({
+    user_id:userId,build,platform,latency_ms:latencyMs==null?null:Math.max(0,Math.round(latencyMs)),
+    realtime_state:realtimeState||'unknown',queue_count:Number(queueCount||0),last_error:lastError?String(lastError).slice(0,1200):null
+  });
+  if (error) throw error;
+}
+
 function initialData(userId = null) {
   return {
-    version: 30,
+    version: 35,
     themeSetting: 'light',
     languageSetting: 'system',
     onboardingComplete: true,
@@ -1462,7 +1665,7 @@ function initialData(userId = null) {
     notes: [],
     notifications: userId ? { [userId]: [] } : {},
     favorites: userId ? { [userId]: [] } : {},
-    privacy: userId ? { [userId]: { showStatus: true, showSocials: true, momentsToLinks: true, ghostMode: false, showActivityStatus: true, profileVisibility: 'links', messagesFrom: 'links', linkRequestsFrom: 'everyone', readReceipts: true, typingIndicators: true, profileViewsEnabled: true, discoverableByUsername: true, discoverableByEmail: false, notificationsMessages: true, notificationsRequests: true, notificationsMoments: true, notificationsProduct: false, loginAlerts: true } } : {},
+    privacy: userId ? { [userId]: { showStatus: true, showSocials: true, momentsToLinks: true, ghostMode: false, showActivityStatus: true, profileVisibility: 'links', messagesFrom: 'links', linkRequestsFrom: 'everyone', readReceipts: true, typingIndicators: true, profileViewsEnabled: true, discoverableByUsername: true, discoverableByEmail: false, notificationsMessages: true, notificationsRequests: true, notificationsMoments: true, notificationsProduct: false, loginAlerts: true, showLastActive: true } } : {},
     wallets: userId ? { [userId]: 0 } : {},
     ownedEffects: userId ? { [userId]: [] } : {},
     subscriptions: {},
@@ -1485,6 +1688,14 @@ function initialData(userId = null) {
     viewOnceViewed: {},
     staffAudit: [],
     offlineOutbox: [],
+    presenceActivity: {},
+    circles: [],
+    proStyle: {},
+    officialAnnouncements: [],
+    officialReads: {},
+    groupAdminNotes: {},
+    recentProfileVisitors: [],
+    diagnostics: { realtimeState:'connecting', lastError:null, lastLatencyMs:null },
   };
 }
 
@@ -1520,7 +1731,7 @@ function Avatar({ person, size = 48, theme, accent = ACCENT, showPresence = true
       <View style={[styles.avatar, { width: size, height: size, borderRadius: radius, backgroundColor: isOwn ? accent : theme.soft, overflow: 'hidden' }]}>
         {person?.photoUri ? <Image source={{ uri: person.photoUri }} style={{ width: size, height: size }} resizeMode="cover" /> : <Text style={{ color: isOwn ? '#fff' : theme.text, fontWeight: '900', fontSize: size * 0.31 }}>{initialsFor(person?.name)}</Text>}
       </View>
-      {showPresence && person?.presenceVisible !== false && person?.presenceMode !== 'ghost' ? <View style={{ position: 'absolute', right: -1, bottom: -1, width: dotSize, height: dotSize, borderRadius: dotSize / 2, backgroundColor: dotColor, borderWidth: Math.max(2, Math.round(size * .055)), borderColor: theme.card || theme.bg }} /> : null}
+      {showPresence && person?.presenceVisible !== false && person?.presenceMode !== 'ghost' ? <View style={{ position: 'absolute', right: -1, bottom: -1, width: dotSize, height: dotSize, borderRadius: dotSize / 2, backgroundColor: dotColor, borderWidth: Math.max(2, Math.round(size * .055)), borderColor: theme.card || theme.bg,alignItems:'center',justifyContent:'center' }}>{live&&person?.proStyle?.presenceIcon?<Ionicons name={person.proStyle.presenceIcon} size={Math.max(6,Math.round(dotSize*.5))} color="#fff"/>:null}</View> : null}
     </View>
   );
 }
@@ -1631,6 +1842,15 @@ function VerifiedBadge({ compact = false }) {
   const size = compact ? 18 : 22;
   return <View accessibilityLabel="Verified" style={[styles.verifiedBadge, { width: size, height: size }]}>
     <Image source={{ uri: VERIFIED_BADGE_DATA_URI }} style={{ width: size, height: size }} resizeMode="contain" />
+  </View>;
+}
+
+function GoldVerifiedBadge({ compact = false }) {
+  const size = compact ? 18 : 23;
+  const checkSize = compact ? 10 : 13;
+  return <View accessibilityLabel="LINK Official verified" style={[styles.verifiedBadge,{width:size,height:size,alignItems:'center',justifyContent:'center'}]}>
+    <Image source={{ uri: VERIFIED_BADGE_DATA_URI }} style={{ width:size,height:size,tintColor:'#F5B942' }} resizeMode="contain" />
+    <Ionicons name="checkmark" size={checkSize} color="#111318" style={{position:'absolute'}}/>
   </View>;
 }
 
@@ -1764,7 +1984,7 @@ function HomeScreen({ theme, activeProfile, connectedProfiles, conversations, ac
   const recent=connectedProfiles.map(person=>{const list=conversations[threadKey(activeId,person.id)]||[];return {person,last:list[list.length-1],count:list.filter(m=>m.senderId!==activeId&&!(m.seenBy||m.readBy||[]).includes(activeId)).length};}).filter(x=>x.last).sort((a,b)=>(b.last?.createdAt||0)-(a.last?.createdAt||0)).slice(0,4);
   return <ScrollView contentContainerStyle={styles.screenScroll} showsVerticalScrollIndicator={false}>
     <View style={styles.topHeader}><AccountChip person={activeProfile} theme={theme} onPress={openAccountSwitcher}/><View style={styles.headerActionRow}><IconButton icon="search-outline" theme={theme} onPress={openSearch}/><IconButton icon="notifications-outline" theme={theme} badge={unreadNotifs} onPress={openNotifications}/></View></View>
-    <View style={[styles.nextHero,{backgroundColor:theme.card,borderColor:theme.border}]}><View style={styles.rowBetween}><View style={styles.versionRow}><Pill theme={theme} tone="accent">LINK 3.0 · NEXT</Pill><Pressable onPress={openWhatsNew} style={[styles.versionInfoButton,{backgroundColor:theme.soft,borderColor:theme.border}]}><Ionicons name="sparkles" size={14} color={theme.text}/><Text style={[styles.versionInfoText,{color:theme.text}]}>What's new</Text></Pressable></View><Ionicons name="infinite" size={20} color={activeProfile?.profileAccent||ACCENT}/></View><Text style={[styles.nextHeroTitle,{color:theme.text}]}>Your people.{`\n`}Right now.</Text><Text style={[styles.heroBody,{color:theme.sub}]}>Moments, Notes, active LINKs and recent conversations — without burying the things you actually use.</Text><View style={styles.nextQuickRow}><Pressable onPress={openOwnCard} style={[styles.nextQuickPrimary,{backgroundColor:theme.inverse}]}><Ionicons name="qr-code" size={18} color={theme.inverseText}/><Text style={{color:theme.inverseText,fontWeight:'900'}}>My LINK</Text></Pressable><Pressable onPress={openScanner} style={[styles.nextQuickIcon,{backgroundColor:theme.soft}]}><Ionicons name="scan" size={20} color={theme.text}/></Pressable><Pressable onPress={openLinkNow} style={[styles.nextQuickIcon,{backgroundColor:`${activeProfile?.profileAccent||ACCENT}18`}]}><Ionicons name="radio" size={20} color={activeProfile?.profileAccent||ACCENT}/></Pressable></View></View>
+    <View style={[styles.nextHero,{backgroundColor:theme.card,borderColor:theme.border}]}><View style={styles.rowBetween}><View style={styles.versionRow}><Pill theme={theme} tone="accent">LINK 3.5 · Pulse</Pill><Pressable onPress={openWhatsNew} style={[styles.versionInfoButton,{backgroundColor:theme.soft,borderColor:theme.border}]}><Ionicons name="sparkles" size={14} color={theme.text}/><Text style={[styles.versionInfoText,{color:theme.text}]}>What's new</Text></Pressable></View><Ionicons name="infinite" size={20} color={activeProfile?.profileAccent||ACCENT}/></View><Text style={[styles.nextHeroTitle,{color:theme.text}]}>Your people.{`\n`}Right now.</Text><Text style={[styles.heroBody,{color:theme.sub}]}>Moments, Notes, active LINKs and recent conversations — without burying the things you actually use.</Text><View style={styles.nextQuickRow}><Pressable onPress={openOwnCard} style={[styles.nextQuickPrimary,{backgroundColor:theme.inverse}]}><Ionicons name="qr-code" size={18} color={theme.inverseText}/><Text style={{color:theme.inverseText,fontWeight:'900'}}>My LINK</Text></Pressable><Pressable onPress={openScanner} style={[styles.nextQuickIcon,{backgroundColor:theme.soft}]}><Ionicons name="scan" size={20} color={theme.text}/></Pressable><Pressable onPress={openLinkNow} style={[styles.nextQuickIcon,{backgroundColor:`${activeProfile?.profileAccent||ACCENT}18`}]}><Ionicons name="radio" size={20} color={activeProfile?.profileAccent||ACCENT}/></Pressable></View></View>
 
     <SectionTitle theme={theme} action="Set yours" onAction={openLinkNow}>LINK Now</SectionTitle>
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.nowStrip}>{[{id:activeId,person:activeProfile,now:linkNow[activeId]},...connectedProfiles.map(person=>({id:person.id,person,now:linkNow[person.id]}))].filter(x=>x.now&&x.now.expiresAt>Date.now()).map(x=><View key={x.id} style={[styles.nowCard,{backgroundColor:theme.card,borderColor:theme.border}]}><Avatar person={x.person} size={38} theme={theme}/><View style={{flex:1,minWidth:0}}><View style={styles.inlineNameRow}><Text numberOfLines={1} style={[styles.nowName,{color:theme.text}]}>{x.id===activeId?'You':x.person.name}</Text>{x.person.verified?<VerifiedBadge compact/>:null}</View><Text numberOfLines={2} style={[styles.nowText,{color:theme.sub}]}>{x.now.text}</Text></View><Ionicons name={x.now.icon||'sparkles'} size={18} color={x.now.color||ACCENT}/></View>)}</ScrollView>
@@ -1898,8 +2118,10 @@ function GroupAvatar({ group, profiles, theme, size = 52 }) {
   return <View style={[styles.groupAvatarStack, { width: size, height: size }]}>{members.map((person, i) => <View key={person.id} style={[styles.groupAvatarMini, offsets[i], { borderColor: theme.bg }]}><Avatar person={person} size={mini} theme={theme} /></View>)}</View>;
 }
 
-function ChatsScreen({ theme, activeId, profiles, connectedIds, conversations, favoriteIds, groups = {}, chatUserSettings = {}, openChat, openGroup, onCreateGroup, onJoinGroup }) {
+function ChatsScreen({ theme, activeId, profiles, connectedIds, conversations, favoriteIds, groups = {}, chatUserSettings = {}, openChat, openGroup, onCreateGroup, onJoinGroup, officialAnnouncements = [], onOpenOfficial }) {
   const [showArchived,setShowArchived]=useState(false);
+  const officialUnread=(officialAnnouncements||[]).filter(a=>!a.read).length;
+  const officialLatest=(officialAnnouncements||[])[0]||null;
   const directRows = connectedIds.map(id => {
     const person = profiles[id];
     const convo = conversations[threadKey(activeId, id)] || [];
@@ -1924,6 +2146,7 @@ function ChatsScreen({ theme, activeId, profiles, connectedIds, conversations, f
     <View style={styles.flexOne}>
       <View style={styles.simpleHeader}><View style={{ flex: 1 }}><Text style={[styles.bigTitle, { color: theme.text }]}>{showArchived?'Archived':'Chats'}</Text><Text style={[styles.headerSub, { color: theme.sub }]}>Direct + group chats · encrypted by default.</Text></View>{archivedCount?<Pressable onPress={()=>setShowArchived(v=>!v)} style={[styles.newGroupButton,{backgroundColor:theme.soft,marginRight:7}]}><Ionicons name={showArchived?'chatbubbles':'archive'} size={15} color={theme.text}/><Text style={{color:theme.text,fontWeight:'900',fontSize:11}}>{showArchived?'Inbox':archivedCount}</Text></Pressable>:null}<Pressable onPress={onJoinGroup} style={[styles.newGroupButton,{backgroundColor:theme.soft,marginRight:7}]}><Ionicons name="enter-outline" size={15} color={theme.text}/><Text style={{color:theme.text,fontWeight:'900',fontSize:11}}>Join</Text></Pressable><Pressable onPress={onCreateGroup} style={[styles.newGroupButton, { backgroundColor: theme.inverse }]}><Ionicons name="people" size={16} color={theme.inverseText} /><Text style={{ color: theme.inverseText, fontWeight: '900', fontSize: 11 }}>New group</Text></Pressable></View>
       <FlatList data={rows} keyExtractor={x => `${x.type}_${x.id}`} contentContainerStyle={styles.listPad} showsVerticalScrollIndicator={false}
+        ListHeaderComponent={!showArchived?<Pressable onPress={onOpenOfficial} style={({pressed})=>[styles.officialChatRow,{backgroundColor:theme.card,borderColor:theme.border,opacity:pressed ? .72 : 1}]}><View style={{position:'relative'}}><OfficialAvatar theme={theme} size={52}/>{officialUnread?<View style={styles.unreadDot}/>:null}</View><View style={{flex:1,minWidth:0}}><View style={styles.rowBetween}><View style={styles.inlineNameRow}><Text style={[styles.personName,{color:theme.text}]}>LINK Official</Text><GoldVerifiedBadge compact/></View><Text style={[styles.metaText,{color:theme.sub}]}>{officialLatest?.createdAt?new Date(officialLatest.createdAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):''}</Text></View><Text numberOfLines={1} style={[styles.chatPreview,{color:officialUnread?theme.text:theme.sub,fontWeight:officialUnread?'800':'400'}]}>{officialLatest?.body||'Official product and safety updates from LINK.'}</Text></View>{officialUnread?<View style={styles.unreadCount}><Text style={styles.unreadCountText}>{officialUnread}</Text></View>:null}</Pressable>:null}
         renderItem={({ item }) => (
           <Pressable onPress={() => item.type === 'group' ? openGroup(item.group) : openChat(item.person)} style={({ pressed }) => [styles.chatRow, { borderBottomColor: theme.border, opacity: pressed ? .72 : 1 }]}>
             <View>{item.type === 'group' ? <GroupAvatar group={item.group} profiles={profiles} theme={theme} size={52} /> : <Avatar person={item.person} size={52} theme={theme} />}{item.unread ? <View style={styles.unreadDot} /> : null}</View>
@@ -1961,27 +2184,72 @@ function CreateGroupModal({ visible, onClose, theme, activeProfile, profiles, co
 
 function JoinGroupModal({ visible, onClose, theme, onJoin }) {
   const [code,setCode]=useState('');
+  const [answer,setAnswer]=useState('');
   const [loading,setLoading]=useState(false);
-  useEffect(()=>{ if(visible){setCode('');setLoading(false);} },[visible]);
-  const submit=async()=>{
-    const clean=code.trim().toLowerCase();
-    if(!clean) return Alert.alert('Invite code','Enter the invite code first.');
-    setLoading(true);
-    try { await onJoin?.(clean); onClose(); }
-    catch(error){ Alert.alert('Could not join group',error?.message || 'Check the invite code and try again.'); }
-    finally { setLoading(false); }
-  };
-  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><EdgeSwipeBack onBack={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.joinGroupCard,{backgroundColor:theme.card,borderColor:theme.border}]} onPress={()=>{}}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle,{color:theme.text}]}>Join group</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>Enter a LINK group invite code.</Text></View><IconButton icon="close" onPress={onClose} theme={theme}/></View><View style={[styles.groupNameInputWrap,{backgroundColor:theme.input,borderColor:theme.border,marginTop:18}]}><Ionicons name="key-outline" size={18} color={theme.sub}/><TextInput value={code} onChangeText={setCode} autoCapitalize="none" autoCorrect={false} placeholder="Invite code" placeholderTextColor={theme.sub} style={[styles.groupNameInput,{color:theme.text}]} returnKeyType="go" onSubmitEditing={submit}/></View><Pressable disabled={loading} onPress={submit} style={[styles.groupCreateButton,{backgroundColor:theme.inverse,opacity:loading ? .65 : 1}]}>{loading?<ActivityIndicator color={theme.inverseText}/>:<><Ionicons name="enter" size={18} color={theme.inverseText}/><Text style={{color:theme.inverseText,fontWeight:'900'}}>Join group</Text></>}</Pressable></Pressable></Pressable></EdgeSwipeBack></Modal>;
+  useEffect(()=>{ if(visible){setCode('');setAnswer('');setLoading(false);} },[visible]);
+  const submit=async()=>{const clean=code.trim().toLowerCase();if(!clean)return Alert.alert('Invite code','Enter the invite code first.');setLoading(true);try{await onJoin?.(clean,answer.trim());onClose();}catch(error){Alert.alert('Could not join group',error?.message||'Check the invite code and try again.');}finally{setLoading(false);}};
+  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><EdgeSwipeBack onBack={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.joinGroupCard,{backgroundColor:theme.card,borderColor:theme.border}]} onPress={()=>{}}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle,{color:theme.text}]}>Join group</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>Enter an invite code. If the group asks a question, your answer is sent with the request.</Text></View><IconButton icon="close" onPress={onClose} theme={theme}/></View><View style={[styles.groupNameInputWrap,{backgroundColor:theme.input,borderColor:theme.border,marginTop:18}]}><Ionicons name="key-outline" size={18} color={theme.sub}/><TextInput value={code} onChangeText={setCode} autoCapitalize="none" autoCorrect={false} placeholder="Invite code" placeholderTextColor={theme.sub} style={[styles.groupNameInput,{color:theme.text}]}/></View><TextInput value={answer} onChangeText={setAnswer} multiline maxLength={500} placeholder="Answer join question (optional)" placeholderTextColor={theme.sub} style={[styles.nextTextInput,{backgroundColor:theme.input,color:theme.text,borderColor:theme.border,minHeight:76}]}/><Pressable disabled={loading} onPress={submit} style={[styles.groupCreateButton,{backgroundColor:theme.inverse,opacity:loading ? .65 : 1}]}>{loading?<ActivityIndicator color={theme.inverseText}/>:<><Ionicons name="enter" size={18} color={theme.inverseText}/><Text style={{color:theme.inverseText,fontWeight:'900'}}>Join group</Text></>}</Pressable></Pressable></Pressable></EdgeSwipeBack></Modal>;
 }
 
-
-function GroupInfoModal({ visible,onClose,theme,group,profiles,activeId,onRename,onToggleEveryone,onPickAvatar,onRotateInvite,onToggleInvite,onSetRole,onRemoveMember,onTransferOwner,onLeave,onUpdateV3,joinRequests=[],onResolveJoin }){
-  const [draftName,setDraftName]=useState(group?.name||''); const [description,setDescription]=useState(group?.description||''); const [themeId,setThemeId]=useState(group?.groupThemeId||'default'); const [approval,setApproval]=useState(!!group?.joinApprovalRequired);
-  useEffect(()=>{if(visible){setDraftName(group?.name||'');setDescription(group?.description||'');setThemeId(group?.groupThemeId||'default');setApproval(!!group?.joinApprovalRequired);}},[visible,group?.id,group?.name,group?.description,group?.groupThemeId,group?.joinApprovalRequired]);
-  if(!group)return null; const myRole=group.memberRoles?.[activeId]||(group.ownerId===activeId?'owner':'member'); const isOwner=myRole==='owner'; const canManage=['owner','admin'].includes(myRole); const canEditName=canManage||!!group.everyoneCanEditName; const members=(group.memberIds||[]).map(id=>profiles[id]).filter(Boolean); const pending=joinRequests.filter(r=>r.chatId===group.id&&r.status==='pending');
-  const saveName=()=>{const clean=draftName.trim();if(canEditName&&clean)onRename?.(clean);}; const shareInvite=async()=>{if(!group.inviteCode)return onRotateInvite?.();try{await Share.share({message:`LINK Group · ${group.name}\nInvite code: ${group.inviteCode}`});}catch{}};
+function GroupInfoModal({ visible,onClose,theme,group,profiles,activeId,onRename,onToggleEveryone,onPickAvatar,onRotateInvite,onToggleInvite,onSetRole,onRemoveMember,onTransferOwner,onLeave,onUpdateV3,onUpdateV35,adminNote='',joinRequests=[],onResolveJoin }){
+  const [draftName,setDraftName]=useState(group?.name||'');
+  const [description,setDescription]=useState(group?.description||'');
+  const [themeId,setThemeId]=useState(group?.groupThemeId||'default');
+  const [approval,setApproval]=useState(!!group?.joinApprovalRequired);
+  const [slowMode,setSlowMode]=useState(group?.slowModeSeconds||0);
+  const [announcementsOnly,setAnnouncementsOnly]=useState(!!group?.announcementsOnly);
+  const [allowMedia,setAllowMedia]=useState(group?.allowMemberMedia!==false);
+  const [allowPolls,setAllowPolls]=useState(group?.allowMemberPolls!==false);
+  const [joinQuestion,setJoinQuestion]=useState(group?.joinQuestion||'');
+  const [note,setNote]=useState(adminNote||'');
+  useEffect(()=>{if(visible){setDraftName(group?.name||'');setDescription(group?.description||'');setThemeId(group?.groupThemeId||'default');setApproval(!!group?.joinApprovalRequired);setSlowMode(group?.slowModeSeconds||0);setAnnouncementsOnly(!!group?.announcementsOnly);setAllowMedia(group?.allowMemberMedia!==false);setAllowPolls(group?.allowMemberPolls!==false);setJoinQuestion(group?.joinQuestion||'');setNote(adminNote||'');}},[visible,group?.id,group?.name,group?.description,group?.groupThemeId,group?.joinApprovalRequired,group?.slowModeSeconds,group?.announcementsOnly,group?.allowMemberMedia,group?.allowMemberPolls,group?.joinQuestion,adminNote]);
+  if(!group)return null;
+  const myRole=group.memberRoles?.[activeId]||(group.ownerId===activeId?'owner':'member');
+  const isOwner=myRole==='owner';
+  const canManage=['owner','admin'].includes(myRole);
+  const canEditName=canManage||!!group.everyoneCanEditName;
+  const members=(group.memberIds||[]).map(id=>profiles[id]).filter(Boolean);
+  const pending=joinRequests.filter(r=>r.chatId===group.id&&r.status==='pending');
+  const saveName=()=>{const clean=draftName.trim();if(canEditName&&clean)onRename?.(clean);};
+  const save35=()=>{onUpdateV3?.({description,theme:themeId,joinApproval:approval,inviteMinutes:0});onUpdateV35?.({slowModeSeconds:Number(slowMode)||0,announcementsOnly,allowMemberMedia:allowMedia,allowMemberPolls:allowPolls,joinQuestion,adminNote:note});};
+  const shareInvite=async()=>{if(!group.inviteCode)return onRotateInvite?.();try{await Share.share({message:`LINK Group · ${group.name}\nInvite code: ${group.inviteCode}`});}catch{}};
   const manageMember=(person)=>{if(!canManage||person.id===activeId)return;const role=group.memberRoles?.[person.id]||'member';if(role==='owner')return;const actions=[];if(isOwner){if(role!=='admin')actions.push({text:'Make admin',onPress:()=>onSetRole?.(person.id,'admin')});if(role==='admin')actions.push({text:'Remove admin',onPress:()=>onSetRole?.(person.id,'member')});actions.push({text:role==='moderator'?'Remove moderator':'Make moderator',onPress:()=>onSetRole?.(person.id,role==='moderator'?'member':'moderator')});actions.push({text:'Transfer ownership',onPress:()=>onTransferOwner?.(person.id)});}else if(role==='member')actions.push({text:'Make moderator',onPress:()=>onSetRole?.(person.id,'moderator')});if(!(myRole==='admin'&&role==='admin'))actions.push({text:'Remove from group',style:'destructive',onPress:()=>onRemoveMember?.(person.id)});actions.push({text:'Cancel',style:'cancel'});Alert.alert(person.name,`Group ${role}`,actions);};
-  return <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}><EdgeSwipeBack onBack={onClose}><View style={styles.modalBackdrop}><View style={[styles.groupInfoCard,{backgroundColor:theme.card}]}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle,{color:theme.text}]}>Group 3.0</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>Roles, polls, invites and identity.</Text></View><IconButton icon="close" onPress={onClose} theme={theme}/></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom:10}}><View style={styles.groupInfoHero}><Pressable disabled={!canManage} onPress={onPickAvatar} style={styles.groupAvatarEdit}><GroupAvatar group={group} profiles={profiles} theme={theme} size={72}/>{canManage?<View style={styles.groupAvatarEditBadge}><Ionicons name="camera" size={13} color="#fff"/></View>:null}</Pressable><View style={{flex:1}}><Text style={[styles.groupInfoTitle,{color:theme.text}]}>{group.name}</Text><Text style={[styles.groupInfoSub,{color:theme.sub}]}>{members.length} members · {myRole}</Text></View></View><Text style={[styles.groupPickerLabel,{color:theme.text}]}>Group name</Text><View style={[styles.groupNameInputWrap,{backgroundColor:theme.input,borderColor:theme.border}]}><TextInput value={draftName} onChangeText={setDraftName} editable={canEditName} style={[styles.groupNameInput,{color:theme.text}]}/>{canEditName?<Pressable onPress={saveName} style={[styles.groupNameSave,{backgroundColor:theme.inverse}]}><Text style={{color:theme.inverseText,fontWeight:'900'}}>Save</Text></Pressable>:null}</View>{canManage?<><Text style={[styles.groupPickerLabel,{color:theme.text}]}>Description</Text><TextInput value={description} onChangeText={setDescription} maxLength={240} multiline placeholder="What is this group for?" placeholderTextColor={theme.sub} style={[styles.nextTextInput,{backgroundColor:theme.input,color:theme.text,borderColor:theme.border,minHeight:76}]}/><Text style={[styles.groupPickerLabel,{color:theme.text}]}>Group theme</Text><View style={styles.settingsChoiceRow}>{['default','midnight','aurora','rose'].map(v=><Pressable key={v} onPress={()=>setThemeId(v)} style={[styles.settingsChoicePill,{backgroundColor:themeId===v?theme.inverse:theme.soft,borderColor:themeId===v?theme.inverse:theme.border}]}><Text style={{color:themeId===v?theme.inverseText:theme.text,fontWeight:'900'}}>{v}</Text></Pressable>)}</View><View style={[styles.groupPermissionCard,{backgroundColor:theme.soft,borderColor:theme.border,marginTop:10}]}><Ionicons name="person-add-outline" size={20} color={theme.text}/><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>Approve join requests</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Invite codes create a request instead of instant entry.</Text></View><Switch value={approval} onValueChange={setApproval}/></View><Pressable onPress={()=>onUpdateV3?.({description,theme:themeId,joinApproval:approval,inviteMinutes:0})} style={[styles.widePrimary,{backgroundColor:theme.inverse,marginTop:10}]}><Text style={[styles.primaryButtonText,{color:theme.inverseText}]}>Save Group 3.0 settings</Text></Pressable></>:null}{isOwner?<View style={[styles.groupPermissionCard,{backgroundColor:theme.soft,borderColor:theme.border}]}><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>Everyone can rename</Text></View><Switch value={!!group.everyoneCanEditName} onValueChange={onToggleEveryone}/></View>:null}<Text style={[styles.groupPickerLabel,{color:theme.text}]}>Invite</Text><View style={[styles.groupInviteCard,{backgroundColor:theme.soft,borderColor:theme.border}]}><Ionicons name="link-outline" size={19} color={theme.text}/><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{group.inviteCode||'No invite'}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{group.inviteExpiresAt?`Expires ${new Date(group.inviteExpiresAt).toLocaleString()}`:group.inviteEnabled?'No expiry':'Disabled'}</Text></View>{canManage?<Pressable onPress={group.inviteCode?shareInvite:onRotateInvite}><Ionicons name="share-outline" size={18} color={theme.text}/></Pressable>:null}</View>{canManage?<View style={styles.groupAdminActions}><Pressable onPress={onRotateInvite} style={[styles.groupAdminAction,{backgroundColor:theme.soft}]}><Text style={{color:theme.text,fontWeight:'800'}}>Rotate</Text></Pressable><Pressable onPress={()=>onToggleInvite?.(!group.inviteEnabled)} style={[styles.groupAdminAction,{backgroundColor:theme.soft}]}><Text style={{color:theme.text,fontWeight:'800'}}>{group.inviteEnabled?'Disable':'Enable'}</Text></Pressable></View>:null}{canManage&&pending.length?<><Text style={[styles.groupPickerLabel,{color:theme.text}]}>Join requests</Text>{pending.map(r=>{const person=profiles[r.userId];if(!person)return null;return <View key={r.id} style={[styles.groupMemberRow,{borderBottomColor:theme.border}]}><Avatar person={person} size={40} theme={theme}/><View style={{flex:1}}><Text style={[styles.personName,{color:theme.text}]}>{person.name}</Text><Text style={[styles.personSub,{color:theme.sub}]}>{person.username}</Text></View><Pressable onPress={()=>onResolveJoin?.(r.id,true)}><Ionicons name="checkmark-circle" size={24} color={theme.success}/></Pressable><Pressable onPress={()=>onResolveJoin?.(r.id,false)}><Ionicons name="close-circle" size={24} color={theme.danger}/></Pressable></View>})}</>:null}<Text style={[styles.groupPickerLabel,{color:theme.text}]}>Members</Text>{members.map(person=>{const role=group.memberRoles?.[person.id]||(person.id===group.ownerId?'owner':'member');return <Pressable key={person.id} disabled={!canManage||person.id===activeId} onPress={()=>manageMember(person)} style={[styles.groupMemberRow,{borderBottomColor:theme.border}]}><Avatar person={person} size={42} theme={theme}/><View style={{flex:1}}><View style={styles.inlineNameRow}><Text style={[styles.personName,{color:theme.text}]}>{person.name}</Text>{person.verified?<VerifiedBadge compact/>:null}</View><Text style={[styles.personSub,{color:theme.sub}]}>{person.username}</Text></View>{role!=='member'?<View style={[styles.ownerPill,{backgroundColor:theme.soft}]}><Text style={[styles.ownerPillText,{color:theme.text}]}>{role}</Text></View>:null}</Pressable>})}<Pressable onPress={onLeave} style={[styles.groupLeaveButton,{borderColor:theme.border}]}><Ionicons name="exit-outline" size={18} color={theme.danger}/><Text style={{color:theme.danger,fontWeight:'900'}}>Leave group</Text></Pressable></ScrollView></View></View></EdgeSwipeBack></Modal>;
+  return <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}><EdgeSwipeBack onBack={onClose}><View style={styles.modalBackdrop}><View style={[styles.groupInfoCard,{backgroundColor:theme.card}]}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle,{color:theme.text}]}>Group 3.5</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>Roles, permissions, slow mode and join controls.</Text></View><IconButton icon="close" onPress={onClose} theme={theme}/></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom:12}}>
+    <View style={styles.groupInfoHero}><Pressable disabled={!canManage} onPress={onPickAvatar} style={styles.groupAvatarEdit}><GroupAvatar group={group} profiles={profiles} theme={theme} size={72}/>{canManage?<View style={styles.groupAvatarEditBadge}><Ionicons name="camera" size={13} color="#fff"/></View>:null}</Pressable><View style={{flex:1}}><Text style={[styles.groupInfoTitle,{color:theme.text}]}>{group.name}</Text><Text style={[styles.groupInfoSub,{color:theme.sub}]}>{members.length} members · {myRole}</Text></View></View>
+
+    <Text style={[styles.groupPickerLabel,{color:theme.text}]}>Group name</Text>
+    <View style={[styles.groupNameInputWrap,{backgroundColor:theme.input,borderColor:theme.border}]}><TextInput value={draftName} onChangeText={setDraftName} editable={canEditName} style={[styles.groupNameInput,{color:theme.text}]}/>{canEditName?<Pressable onPress={saveName} style={[styles.groupNameSave,{backgroundColor:theme.inverse}]}><Text style={{color:theme.inverseText,fontWeight:'900'}}>Save</Text></Pressable>:null}</View>
+
+    {canManage?<><Text style={[styles.groupPickerLabel,{color:theme.text}]}>Description</Text><TextInput value={description} onChangeText={setDescription} maxLength={240} multiline placeholder="What is this group for?" placeholderTextColor={theme.sub} style={[styles.nextTextInput,{backgroundColor:theme.input,color:theme.text,borderColor:theme.border,minHeight:76}]}/>
+    <Text style={[styles.groupPickerLabel,{color:theme.text}]}>Group theme</Text><View style={styles.settingsChoiceRow}>{['default','midnight','aurora','rose'].map(v=><Pressable key={v} onPress={()=>setThemeId(v)} style={[styles.settingsChoicePill,{backgroundColor:themeId===v?theme.inverse:theme.soft,borderColor:themeId===v?theme.inverse:theme.border}]}><Text style={{color:themeId===v?theme.inverseText:theme.text,fontWeight:'900'}}>{v}</Text></Pressable>)}</View>
+
+    <SectionTitle theme={theme}>Permissions</SectionTitle>
+    <View style={[styles.settingsCard,{backgroundColor:theme.soft,borderColor:theme.border}]}>
+      <SettingsRow theme={theme} icon="megaphone-outline" title="Announcements only" subtitle="Only owner, admins and moderators can post" right={<Switch value={announcementsOnly} onValueChange={setAnnouncementsOnly}/>}/>
+      <SettingsRow theme={theme} icon="images-outline" title="Members can send media" subtitle="Photos, video and voice" right={<Switch value={allowMedia} onValueChange={setAllowMedia}/>}/>
+      <SettingsRow theme={theme} icon="stats-chart-outline" title="Members can create polls" subtitle="Disable to limit polls to group staff" right={<Switch value={allowPolls} onValueChange={setAllowPolls}/>} last/>
+    </View>
+    <Text style={[styles.groupPickerLabel,{color:theme.text}]}>Slow mode</Text><View style={styles.settingsChoiceRow}>{[[0,'Off'],[10,'10s'],[30,'30s'],[60,'1m'],[300,'5m']].map(([v,l])=><Pressable key={v} onPress={()=>setSlowMode(v)} style={[styles.settingsChoicePill,{backgroundColor:Number(slowMode)===v?theme.inverse:theme.soft,borderColor:Number(slowMode)===v?theme.inverse:theme.border}]}><Text style={{color:Number(slowMode)===v?theme.inverseText:theme.text,fontWeight:'900'}}>{l}</Text></Pressable>)}</View>
+
+    <SectionTitle theme={theme}>Join requests</SectionTitle>
+    <View style={[styles.groupPermissionCard,{backgroundColor:theme.soft,borderColor:theme.border,marginTop:0}]}><Ionicons name="person-add-outline" size={20} color={theme.text}/><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>Approve new members</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Invite codes create a request instead of instant entry.</Text></View><Switch value={approval} onValueChange={setApproval}/></View>
+    {approval?<TextInput value={joinQuestion} onChangeText={setJoinQuestion} maxLength={240} placeholder="Question before joining (optional)" placeholderTextColor={theme.sub} style={[styles.nextTextInput,{backgroundColor:theme.input,color:theme.text,borderColor:theme.border,minHeight:68}]}/>:null}
+
+    <SectionTitle theme={theme}>Admin notes</SectionTitle>
+    <TextInput value={note} onChangeText={setNote} multiline maxLength={1500} placeholder="Private notes for group admins…" placeholderTextColor={theme.sub} style={[styles.nextTextInput,{backgroundColor:theme.input,color:theme.text,borderColor:theme.border,minHeight:86}]}/>
+    <Pressable onPress={save35} style={[styles.widePrimary,{backgroundColor:theme.inverse,marginTop:12}]}><Text style={[styles.primaryButtonText,{color:theme.inverseText}]}>Save Group 3.5 settings</Text></Pressable>
+    </>:null}
+
+    {isOwner?<View style={[styles.groupPermissionCard,{backgroundColor:theme.soft,borderColor:theme.border}]}><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>Everyone can rename</Text></View><Switch value={!!group.everyoneCanEditName} onValueChange={onToggleEveryone}/></View>:null}
+
+    <Text style={[styles.groupPickerLabel,{color:theme.text}]}>Invite</Text><View style={[styles.groupInviteCard,{backgroundColor:theme.soft,borderColor:theme.border}]}><Ionicons name="link-outline" size={19} color={theme.text}/><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{group.inviteCode||'No invite'}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{group.inviteExpiresAt?`Expires ${new Date(group.inviteExpiresAt).toLocaleString()}`:group.inviteEnabled?'No expiry':'Disabled'}</Text></View>{canManage?<Pressable onPress={group.inviteCode?shareInvite:onRotateInvite}><Ionicons name="share-outline" size={18} color={theme.text}/></Pressable>:null}</View>
+    {canManage?<View style={styles.groupAdminActions}><Pressable onPress={onRotateInvite} style={[styles.groupAdminAction,{backgroundColor:theme.soft}]}><Text style={{color:theme.text,fontWeight:'800'}}>Rotate</Text></Pressable><Pressable onPress={()=>onToggleInvite?.(!group.inviteEnabled)} style={[styles.groupAdminAction,{backgroundColor:theme.soft}]}><Text style={{color:theme.text,fontWeight:'800'}}>{group.inviteEnabled?'Disable':'Enable'}</Text></Pressable></View>:null}
+
+    {canManage&&pending.length?<><Text style={[styles.groupPickerLabel,{color:theme.text}]}>Join requests</Text>{pending.map(r=>{const person=profiles[r.userId];if(!person)return null;return <View key={r.id} style={[styles.groupMemberRow,{borderBottomColor:theme.border}]}><Avatar person={person} size={40} theme={theme}/><View style={{flex:1}}><Text style={[styles.personName,{color:theme.text}]}>{person.name}</Text><Text style={[styles.personSub,{color:theme.sub}]}>{person.username}</Text>{r.answer?<Text numberOfLines={2} style={[styles.settingsSub,{color:theme.sub,marginTop:3}]}>“{r.answer}”</Text>:null}</View><Pressable onPress={()=>onResolveJoin?.(r.id,true)}><Ionicons name="checkmark-circle" size={24} color={theme.success}/></Pressable><Pressable onPress={()=>onResolveJoin?.(r.id,false)}><Ionicons name="close-circle" size={24} color={theme.danger}/></Pressable></View>})}</>:null}
+
+    <Text style={[styles.groupPickerLabel,{color:theme.text}]}>Members</Text>{members.map(person=>{const role=group.memberRoles?.[person.id]||(person.id===group.ownerId?'owner':'member');return <Pressable key={person.id} disabled={!canManage||person.id===activeId} onPress={()=>manageMember(person)} style={[styles.groupMemberRow,{borderBottomColor:theme.border}]}><Avatar person={person} size={42} theme={theme}/><View style={{flex:1}}><View style={styles.inlineNameRow}><Text style={[styles.personName,{color:theme.text}]}>{person.name}</Text>{person.verified?<VerifiedBadge compact/>:null}</View><Text style={[styles.personSub,{color:theme.sub}]}>{person.username}</Text></View>{role!=='member'?<View style={[styles.ownerPill,{backgroundColor:theme.soft}]}><Text style={[styles.ownerPillText,{color:theme.text}]}>{role}</Text></View>:null}</Pressable>})}
+    <Pressable onPress={onLeave} style={[styles.groupLeaveButton,{borderColor:theme.border}]}><Ionicons name="exit-outline" size={18} color={theme.danger}/><Text style={{color:theme.danger,fontWeight:'900'}}>Leave group</Text></Pressable>
+  </ScrollView></View></View></EdgeSwipeBack></Modal>;
 }
 
 function ThemeOption({ mode, active, label, icon, onPress, theme }) {
@@ -2041,6 +2309,7 @@ function SettingsHubModal({ visible, onClose, theme, profile, accountEmail, priv
           <View style={[styles.settingsBlock,{borderTopWidth:StyleSheet.hairlineWidth,borderTopColor:theme.border}]}><Text style={[styles.settingsTitle,{color:theme.text}]}>Messages from</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Who is allowed to start a conversation.</Text><SettingsChoicePills theme={theme} value={privacy.messagesFrom || 'links'} onChange={v=>patch({messagesFrom:v})} options={[{value:'everyone',label:'Everyone'},{value:'links',label:'LINKs'},{value:'nobody',label:'Nobody'}]}/></View>
           <View style={[styles.settingsBlock,{borderTopWidth:StyleSheet.hairlineWidth,borderTopColor:theme.border}]}><Text style={[styles.settingsTitle,{color:theme.text}]}>LINK requests</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Control who can send you a LINK request.</Text><SettingsChoicePills theme={theme} value={privacy.linkRequestsFrom || 'everyone'} onChange={v=>patch({linkRequestsFrom:v})} options={[{value:'everyone',label:'Everyone'},{value:'mutuals',label:'Mutuals'},{value:'nobody',label:'Nobody'}]}/></View>
           <SettingsRow theme={theme} icon="radio-button-on-outline" title="Show activity status" subtitle="Allow people to see your active dot" right={<Switch value={privacy.showActivityStatus !== false} onValueChange={v=>patch({showActivityStatus:v})} trackColor={{false:theme.soft,true:'#34C759'}}/>}/>
+          <SettingsRow theme={theme} icon="time-outline" title="Show last active" subtitle="Let LINKs see when you were last active" right={<Switch value={privacy.showLastActive !== false} onValueChange={v=>patch({showLastActive:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
           <SettingsRow theme={theme} icon="checkmark-done-outline" title="Read receipts" subtitle="Show Seen when you read messages" right={<Switch value={privacy.readReceipts !== false} onValueChange={v=>patch({readReceipts:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
           <SettingsRow theme={theme} icon="chatbubble-ellipses-outline" title="Typing indicators" subtitle="Let people know when you are typing" right={<Switch value={privacy.typingIndicators !== false} onValueChange={v=>patch({typingIndicators:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
           <SettingsRow theme={theme} icon="analytics-outline" title="Profile views" subtitle="Allow your profile visits to count in insights" right={<Switch value={privacy.profileViewsEnabled !== false} onValueChange={v=>patch({profileViewsEnabled:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
@@ -2078,7 +2347,7 @@ function SettingsHubModal({ visible, onClose, theme, profile, accountEmail, priv
 
         <SectionTitle theme={theme}>Account</SectionTitle>
         <Pressable onPress={onSignOut} style={[styles.settingsDangerCard,{backgroundColor:theme.card,borderColor:theme.border}]}><Ionicons name="log-out-outline" size={20} color={theme.danger}/><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.danger}]}>Sign out</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Use another LINK account on this device.</Text></View></Pressable>
-        <Text style={[styles.settingHint,{color:theme.sub,textAlign:'center',marginTop:14}]}>LINK 3.0 · NEXT · preferences sync through LINK Production.</Text>
+        <Text style={[styles.settingHint,{color:theme.sub,textAlign:'center',marginTop:14}]}>LINK 3.5 · Pulse · preferences sync through LINK Production.</Text>
       </ScrollView>
     </SafeAreaView></EdgeSwipeBack>
   </Modal>;
@@ -2093,17 +2362,35 @@ const PROFILE_LAYOUTS = [
   { id: 'default', name: 'Default', subtitle: 'Classic centered profile', icon: 'person-circle-outline' },
   { id: 'social', name: 'Social', subtitle: 'Photo left · identity and links beside it', icon: 'grid-outline' },
   { id: 'compact', name: 'Compact', subtitle: 'Tighter spacing · same LINK character', icon: 'contract-outline' },
+  { id: 'spotlight', name: 'Spotlight', subtitle: 'Big identity · CTA and Now Playing', icon: 'sparkles-outline' },
+  { id: 'minimal', name: 'Minimal', subtitle: 'Clean left-aligned identity', icon: 'remove-outline' },
 ];
 
 function ProfilePlanBadgeRow({ person, proActive = false, plusActive = false, compact = false, align = 'center' }) {
   const isCeo = person?.role === 'ceo';
   const isAdmin = person?.role === 'admin';
+  const motion = person?.proStyle?.badgeAnimation || 'none';
+  const anim = useRef(new Animated.Value(0)).current;
+  useEffect(()=>{
+    anim.stopAnimation();
+    anim.setValue(0);
+    if (motion==='none') return;
+    const loop=Animated.loop(Animated.sequence([
+      Animated.timing(anim,{toValue:1,duration:motion==='pulse'?900:1250,useNativeDriver:true}),
+      Animated.timing(anim,{toValue:0,duration:motion==='pulse'?900:1250,useNativeDriver:true}),
+    ]));
+    loop.start();
+    return ()=>loop.stop();
+  },[motion]);
   const customBadge = person?.customBadgeEnabled ? <CustomAdminBadge person={person} compact={compact} /> : null;
   const primaryBadge = isCeo
     ? <CeoBadge compact={compact} />
     : customBadge || (isAdmin ? <ProBadge compact={compact} /> : proActive ? <ProBadge compact={compact} /> : plusActive ? <PlusBadge compact={compact} /> : null);
+  const animatedPrimary = primaryBadge && motion!=='none'
+    ? <Animated.View style={{opacity:motion==='shimmer'?anim.interpolate({inputRange:[0,1],outputRange:[.72,1]}):1,transform:[{scale:motion==='pulse'?anim.interpolate({inputRange:[0,1],outputRange:[1,1.055]}):1}]}}>{primaryBadge}</Animated.View>
+    : primaryBadge;
   return <View style={[styles.profilePlanBadgeRow, align === 'start' && styles.profilePlanBadgeRowStart]}>
-    {primaryBadge}
+    {animatedPrimary}
     {person?.verified ? <VerifiedBadge compact={compact} /> : null}
   </View>;
 }
@@ -2120,7 +2407,10 @@ function ProfileSocialLinks({ person, theme, compact = false }) {
 }
 
 function ProfileIdentityLayout({ person, theme, layout = 'default', proActive = false, plusActive = false, editable = false, onPhoto, showStatus = true, showSocials = false }) {
-  const mode = ['default','social','compact'].includes(layout) ? layout : 'default';
+  const mode = ['default','social','compact','spotlight','minimal'].includes(layout) ? layout : 'default';
+  const cta = person?.profileCtaLabel && person?.profileCtaUrl ? <Pressable onPress={()=>Linking.openURL(person.profileCtaUrl).catch(()=>{})} style={[styles.profileCta,{backgroundColor:theme.inverse}]}><Text style={{color:theme.inverseText,fontWeight:'900'}}>{person.profileCtaLabel}</Text><Ionicons name="arrow-forward" size={15} color={theme.inverseText}/></Pressable> : null;
+  const playing = person?.nowPlaying?.title ? <View style={[styles.nowPlayingCard,{backgroundColor:theme.soft,borderColor:theme.border}]}><Ionicons name="musical-notes" size={18} color={person.profileAccent||ACCENT}/><View style={{flex:1,minWidth:0}}><Text numberOfLines={1} style={{color:theme.text,fontWeight:'900',fontSize:11.5}}>{person.nowPlaying.title}</Text><Text numberOfLines={1} style={{color:theme.sub,fontSize:10,marginTop:1}}>{person.nowPlaying.artist||'Now playing'}</Text></View></View> : null;
+
   if (mode === 'social') {
     return <View style={styles.profileSocialLayout}>
       <View style={styles.profileSocialTop}>
@@ -2132,8 +2422,14 @@ function ProfileIdentityLayout({ person, theme, layout = 'default', proActive = 
         </View>
       </View>
       {!!person.bio && <Text style={[styles.profileSocialBio,{color:theme.text}]}>{person.bio}</Text>}
-      {showSocials ? <ProfileSocialLinks person={person} theme={theme}/> : null}
+      {playing}{showSocials ? <ProfileSocialLinks person={person} theme={theme}/> : null}{cta}
     </View>;
+  }
+  if(mode==='minimal'){
+    return <View style={styles.profileMinimalLayout}><View style={styles.profileSocialTop}><EffectAvatarStage person={person} theme={theme} size={66} effectSize={86} editable={editable} onPress={onPhoto} badgeColor={theme.card}/><View style={{flex:1,minWidth:0}}><View style={styles.inlineNameRow}><ProfileDisplayName person={person} theme={theme}/><ProfilePlanBadgeRow person={person} proActive={proActive} plusActive={plusActive} compact align="start"/></View><Text style={[styles.profileUser,{color:theme.sub,marginTop:2}]}>{person.username}</Text>{showStatus?<View style={{marginTop:7}}><StatusBadge person={person} theme={theme} compact/></View>:null}</View></View>{!!person.bio?<Text style={[styles.profileBio,{color:theme.text,textAlign:'left',marginTop:10,marginBottom:8}]}>{person.bio}</Text>:null}{playing}{showSocials?<ProfileSocialLinks person={person} theme={theme} compact/>:null}{cta}</View>;
+  }
+  if(mode==='spotlight'){
+    return <View style={styles.profileSpotlightLayout}><LinearGradient colors={[`${person.profileAccent||ACCENT}22`,'transparent']} style={StyleSheet.absoluteFill}/><EffectAvatarStage person={person} theme={theme} size={88} effectSize={168} editable={editable} onPress={onPhoto} badgeColor={theme.card}/><View style={styles.profileNameWithBadge}><ProfileDisplayName person={person} theme={theme}/><ProfilePlanBadgeRow person={person} proActive={proActive} plusActive={plusActive}/></View><Text style={[styles.profileUser,{color:theme.sub}]}>{person.username}</Text>{!!person.bio?<Text style={[styles.profileBio,{color:theme.sub}]}>{person.bio}</Text>:null}{showStatus?<StatusBadge person={person} theme={theme}/>:null}{playing}{showSocials?<ProfileSocialLinks person={person} theme={theme}/>:null}{cta}</View>;
   }
   const compact = mode === 'compact';
   return <View style={[styles.profileCenteredLayout, compact && styles.profileCompactLayout]}>
@@ -2142,7 +2438,7 @@ function ProfileIdentityLayout({ person, theme, layout = 'default', proActive = 
     <Text style={[styles.profileUser, compact && styles.profileUserCompact,{color:theme.sub}]}>{person.username}</Text>
     {!!person.bio && <Text style={[styles.profileBio, compact && styles.profileBioCompact,{color:theme.sub}]}>{person.bio}</Text>}
     {showStatus ? <StatusBadge person={person} theme={theme}/> : null}
-    {showSocials ? <ProfileSocialLinks person={person} theme={theme} compact={compact}/> : null}
+    {playing}{showSocials ? <ProfileSocialLinks person={person} theme={theme} compact={compact}/> : null}{cta}
   </View>;
 }
 
@@ -2219,14 +2515,14 @@ function AdminBadgeModal({ visible, onClose, theme, profile, profiles, onSave, o
           <Text style={[styles.adminCustomizeLabel,{color:theme.text}]}>Badge style</Text>
           <View style={styles.adminBadgeModeRow}><Pressable onPress={()=>setCustom(false)} style={[styles.adminBadgeMode,{backgroundColor:!custom?theme.inverse:theme.soft,borderColor:!custom?theme.inverse:theme.border}]}><Ionicons name="close-circle-outline" size={16} color={!custom?theme.inverseText:theme.text}/><Text style={{color:!custom?theme.inverseText:theme.text,fontWeight:'900'}}>{mode==='self'?'LINK PRO':'Default'}</Text></Pressable><Pressable onPress={()=>setCustom(true)} style={[styles.adminBadgeMode,{backgroundColor:custom?theme.inverse:theme.soft,borderColor:custom?theme.inverse:theme.border}]}><Ionicons name="color-wand" size={16} color={custom?theme.inverseText:theme.text}/><Text style={{color:custom?theme.inverseText:theme.text,fontWeight:'900'}}>Custom</Text></Pressable></View>
           {custom?<><TextInput value={label} onChangeText={setLabel} maxLength={18} placeholder="Badge text" placeholderTextColor={theme.sub} style={[styles.adminBadgeInput,{backgroundColor:theme.input,color:theme.text,borderColor:theme.border}]}/><Text style={[styles.adminCustomizeLabel,{color:theme.text}]}>Icon</Text><View style={styles.adminBadgeIconGrid}>{ADMIN_BADGE_ICONS.map(name=><Pressable key={name} onPress={()=>setIcon(name)} style={[styles.adminBadgeIconChoice,{backgroundColor:icon===name?`${ACCENT}18`:theme.soft,borderColor:icon===name?ACCENT:theme.border}]}><Ionicons name={name} size={20} color={icon===name?ACCENT:theme.text}/></Pressable>)}</View><Text style={[styles.adminCustomizeLabel,{color:theme.text}]}>Color</Text><View style={styles.adminBadgeColorRow}>{ADMIN_BADGE_COLORS.map(value=><Pressable key={value} onPress={()=>setColor(value)} style={[styles.adminBadgeColorChoice,{backgroundColor:value,borderColor:color===value?'#fff':value}]}>{color===value?<Ionicons name="checkmark" size={15} color="#fff"/>:null}</Pressable>)}</View></>:<View style={[styles.adminBadgeInfo,{backgroundColor:theme.soft}]}><Ionicons name="shield-checkmark-outline" size={18} color={theme.text}/><Text style={[styles.settingsSub,{color:theme.sub,flex:1}]}>{mode==='self'?'Your staff account will use the standard LINK PRO badge.':'Custom badge will be removed; verification is managed separately above.'}</Text></View>}
-          <Pressable disabled={saving} onPress={save} style={[styles.widePrimary,{backgroundColor:theme.inverse,opacity:saving?.6:1,marginTop:18}]}><Ionicons name={saving?'sync':'checkmark'} size={18} color={theme.inverseText}/><Text style={[styles.primaryButtonText,{color:theme.inverseText}]}>{saving?'Saving…':'Save changes'}</Text></Pressable>
+          <Pressable disabled={saving} onPress={save} style={[styles.widePrimary,{backgroundColor:theme.inverse,opacity:saving ? .6 : 1,marginTop:18}]}><Ionicons name={saving?'sync':'checkmark'} size={18} color={theme.inverseText}/><Text style={[styles.primaryButtonText,{color:theme.inverseText}]}>{saving?'Saving…':'Save changes'}</Text></Pressable>
         </ScrollView>:mode==='user'?<View style={[styles.adminBadgeInfo,{backgroundColor:theme.soft,marginTop:14}]}><Ionicons name="search" size={18} color={theme.text}/><Text style={[styles.settingsSub,{color:theme.sub,flex:1}]}>Enter an exact @username to manage badge and verification.</Text></View>:null}
       </Pressable>
     </Pressable>
   </Modal>;
 }
 
-function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setThemeSetting, languageSetting, setLanguageSetting, privacy, setPrivacy, openAccountSwitcher, openCustomStatus, openShop, openPlus, plusSubscription, openPro, proSubscription, insights, openAdminConsole, doubleTapEmoji = '❤️', openDoubleTapReaction, resetDemo, accountEmail, setPresenceMode, onSignOut, onSaveAdminBadge, profiles, onSaveStaffIdentity, openSafety, highlights=[], onDeleteHighlight }) {
+function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setThemeSetting, languageSetting, setLanguageSetting, privacy, setPrivacy, openAccountSwitcher, openCustomStatus, openShop, openPlus, plusSubscription, openPro, proSubscription, insights, openAdminConsole, doubleTapEmoji = '❤️', openDoubleTapReaction, resetDemo, accountEmail, setPresenceMode, onSignOut, onSaveAdminBadge, profiles, onSaveStaffIdentity, openSafety, openPulseHub, highlights=[], onDeleteHighlight }) {
   const [editing, setEditing] = useState(false);
   const [adminCustomizeOpen, setAdminCustomizeOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -2302,6 +2598,7 @@ function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setT
 
       {highlights.length ? <><SectionTitle theme={theme}>Highlights</SectionTitle><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.highlightRow}>{highlights.map(h=><Pressable key={h.id} onLongPress={()=>onDeleteHighlight?.(h.id)} style={styles.highlightItem}><View style={[styles.highlightBubble,{backgroundColor:theme.soft,borderColor:theme.border}]}><Text style={{fontSize:24}}>{h.emoji||'✨'}</Text></View><Text numberOfLines={1} style={[styles.highlightLabel,{color:theme.text}]}>{h.title}</Text></Pressable>)}</ScrollView></> : null}
       <Pressable onPress={openSafety} style={[styles.settingsEntryCard,{backgroundColor:theme.card,borderColor:theme.border,marginTop:12}]}><View style={[styles.settingsIcon,{backgroundColor:theme.soft}]}><Ionicons name="shield-checkmark-outline" size={20} color={theme.text}/></View><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>Account & Safety</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Password, email, devices, blocked people and reports.</Text></View><Ionicons name="chevron-forward" size={19} color={theme.sub}/></Pressable>
+      <Pressable onPress={openPulseHub} style={[styles.settingsEntryCard,{backgroundColor:theme.card,borderColor:theme.border,marginTop:10}]}><View style={[styles.settingsIcon,{backgroundColor:`${ACCENT}18`}]}><Ionicons name="pulse-outline" size={20} color={ACCENT}/></View><View style={{flex:1}}><View style={styles.inlineNameRow}><Text style={[styles.settingsTitle,{color:theme.text}]}>Pulse Center</Text><Pill theme={theme} tone="accent">3.5</Pill></View><Text style={[styles.settingsSub,{color:theme.sub}]}>Circles, Profile 3.5, Pro style, visitors and Beta Health.</Text></View><Ionicons name="chevron-forward" size={19} color={theme.sub}/></Pressable>
 
       <SectionTitle theme={theme}>Profile layout</SectionTitle>
       <Text style={[styles.profileLayoutIntro,{color:theme.sub}]}>Choose how your public LINK identity is arranged.</Text>
@@ -2378,6 +2675,109 @@ function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setT
 
 
 
+
+function OfficialAvatar({theme,size=48}) {
+  return <View style={{width:size,height:size,borderRadius:size/2,backgroundColor:'#111318',alignItems:'center',justifyContent:'center',borderWidth:StyleSheet.hairlineWidth,borderColor:'rgba(245,185,66,.55)'}}>
+    <Text style={{color:'#fff',fontSize:size*.42,fontWeight:'950',letterSpacing:-1}}>L</Text>
+    <View style={{position:'absolute',right:-2,bottom:-2}}><GoldVerifiedBadge compact={size<50}/></View>
+  </View>;
+}
+
+function OfficialProfileModal({visible,onClose,theme}) {
+  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.pulseSheet,{backgroundColor:theme.card,borderColor:theme.border}]} onPress={()=>{}}>
+    <View style={styles.rowBetween}><Text style={[styles.sheetTitle,{color:theme.text}]}>LINK Official</Text><IconButton icon="close" onPress={onClose} theme={theme}/></View>
+    <View style={{alignItems:'center',paddingVertical:22}}><OfficialAvatar theme={theme} size={84}/><View style={[styles.inlineNameRow,{marginTop:15}]}><Text style={[styles.profileName,{color:theme.text}]}>LINK Official</Text><GoldVerifiedBadge/></View><Text style={[styles.profileUser,{color:theme.sub}]}>@linkofficial</Text></View>
+    <View style={[styles.officialInfoCard,{backgroundColor:theme.soft,borderColor:theme.border}]}><Ionicons name="megaphone-outline" size={20} color="#F5B942"/><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>Official messages from LINK</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Product news, safety notices and important account information. This profile is read-only and cannot receive replies.</Text></View></View>
+    <View style={[styles.officialReadOnly,{backgroundColor:theme.input,borderColor:theme.border}]}><Ionicons name="lock-closed" size={16} color={theme.sub}/><Text style={{color:theme.sub,fontWeight:'800',fontSize:12}}>You cannot message LINK Official</Text></View>
+  </Pressable></Pressable></Modal>;
+}
+
+function OfficialChatScreen({theme,announcements=[],onBack,onMarkRead}) {
+  const [profileOpen,setProfileOpen]=useState(false);
+  useEffect(()=>{announcements.filter(a=>!a.read).forEach(a=>onMarkRead?.(a.id));},[announcements.map(a=>`${a.id}:${a.read}`).join('|')]);
+  const sorted=[...announcements].sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+  return <View style={[styles.flexOne,{backgroundColor:theme.bg}]}>
+    <SafeAreaView style={styles.flexOne}>
+      <View style={[styles.chatHeader,{borderBottomColor:theme.border,backgroundColor:theme.bg}]}>
+        <View style={styles.chatHeaderSide}><IconButton icon="chevron-back" onPress={onBack} theme={theme}/></View>
+        <Pressable onPress={()=>setProfileOpen(true)} style={styles.chatHeaderPersonCenter}><OfficialAvatar theme={theme} size={34}/><View style={styles.inlineNameRow}><Text style={[styles.chatHeaderName,{color:theme.text}]}>LINK Official</Text><GoldVerifiedBadge compact/></View></Pressable>
+        <View style={[styles.chatHeaderSide,styles.chatHeaderRight]}><Ionicons name="lock-closed-outline" size={20} color={theme.sub}/></View>
+      </View>
+      <View style={[styles.officialSecurityPill,{backgroundColor:theme.soft}]}><Ionicons name="shield-checkmark" size={14} color="#F5B942"/><Text style={{color:theme.sub,fontSize:10.5,fontWeight:'800'}}>Verified system channel · read only</Text></View>
+      <FlatList data={sorted} keyExtractor={x=>x.id} contentContainerStyle={{padding:16,paddingBottom:120}} renderItem={({item})=><View style={styles.officialMessageRow}>
+        <OfficialAvatar theme={theme} size={34}/>
+        <View style={[styles.officialMessageBubble,{backgroundColor:theme.card,borderColor:theme.border}]}>
+          <View style={styles.inlineNameRow}><Text style={{color:theme.text,fontWeight:'950',fontSize:12.5}}>LINK Official</Text><GoldVerifiedBadge compact/></View>
+          {!!item.title && item.title!=='LINK Official'?<Text style={{color:theme.text,fontWeight:'950',fontSize:16,marginTop:7}}>{item.title}</Text>:null}
+          <Text style={{color:theme.text,fontSize:14.5,lineHeight:20,marginTop:5}}>{item.body}</Text>
+          {item.actionUrl?<Pressable onPress={()=>Linking.openURL(item.actionUrl).catch(()=>{})} style={[styles.officialAction,{backgroundColor:'#111318'}]}><Text style={{color:'#fff',fontWeight:'900'}}>{item.actionLabel||'Open'}</Text><Ionicons name="open-outline" size={15} color="#fff"/></Pressable>:null}
+          <Text style={[styles.metaText,{color:theme.sub,marginLeft:0,marginTop:8}]}>{item.createdAt?new Date(item.createdAt).toLocaleString():''}</Text>
+        </View>
+      </View>} ListEmptyComponent={<View style={styles.emptyState}><Ionicons name="megaphone-outline" size={42} color={theme.sub}/><Text style={[styles.emptyTitle,{color:theme.text}]}>No official messages yet</Text><Text style={[styles.emptyBody,{color:theme.sub}]}>Important LINK updates will appear here.</Text></View>}/>
+      <View style={[styles.officialComposer,{backgroundColor:theme.bg,borderTopColor:theme.border}]}><View style={[styles.officialReadOnly,{backgroundColor:theme.input,borderColor:theme.border,flex:1,margin:0}]}><Ionicons name="lock-closed" size={16} color={theme.sub}/><Text style={{color:theme.sub,fontWeight:'800'}}>Replies are disabled</Text></View></View>
+    </SafeAreaView>
+    <OfficialProfileModal visible={profileOpen} onClose={()=>setProfileOpen(false)} theme={theme}/>
+  </View>;
+}
+
+function PulseHubModal({visible,onClose,theme,activeProfile,connectedProfiles=[],circles=[],proStyle={},proActive=false,visitors=[],profiles={},diagnostics={},queueCount=0,onCreateCircle,onToggleCircleMember,onDeleteCircle,onSaveProStyle,onUpdateProfile,onSendDiagnostics}) {
+  const [circleName,setCircleName]=useState('');
+  const [circleEmoji,setCircleEmoji]=useState('✨');
+  const [circleColor,setCircleColor]=useState('#6C5CE7');
+  const [presenceIcon,setPresenceIcon]=useState(proStyle?.presenceIcon||'sparkles');
+  const [badgeAnimation,setBadgeAnimation]=useState(proStyle?.badgeAnimation||'none');
+  const [bubbleEffect,setBubbleEffect]=useState(proStyle?.bubbleEffect||'none');
+  const [appIconPreference,setAppIconPreference]=useState(proStyle?.appIconPreference||'default');
+  const [ctaLabel,setCtaLabel]=useState(activeProfile?.profileCtaLabel||'');
+  const [ctaUrl,setCtaUrl]=useState(activeProfile?.profileCtaUrl||'');
+  const [track,setTrack]=useState(activeProfile?.nowPlaying?.title||'');
+  const [artist,setArtist]=useState(activeProfile?.nowPlaying?.artist||'');
+  useEffect(()=>{if(visible){setPresenceIcon(proStyle?.presenceIcon||'sparkles');setBadgeAnimation(proStyle?.badgeAnimation||'none');setBubbleEffect(proStyle?.bubbleEffect||'none');setAppIconPreference(proStyle?.appIconPreference||'default');setCtaLabel(activeProfile?.profileCtaLabel||'');setCtaUrl(activeProfile?.profileCtaUrl||'');setTrack(activeProfile?.nowPlaying?.title||'');setArtist(activeProfile?.nowPlaying?.artist||'');}},[visible,proStyle?.presenceIcon,proStyle?.badgeAnimation,proStyle?.bubbleEffect,proStyle?.appIconPreference,activeProfile?.id]);
+  const myCircles=circles.filter(c=>c.ownerId===activeProfile?.id);
+  const visitorPeople=visitors.map(v=>profiles[v.viewerId]).filter(Boolean).slice(0,8);
+  return <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}><SafeAreaView style={[styles.flexOne,{backgroundColor:theme.bg}]}>
+    <View style={[styles.settingsHubHeader,{borderBottomColor:theme.border}]}><View style={{flex:1}}><Text style={[styles.bigTitle,{color:theme.text}]}>Pulse</Text><Text style={[styles.headerSub,{color:theme.sub}]}>LINK 3.5 · identity, circles and beta health</Text></View><IconButton icon="close" onPress={onClose} theme={theme}/></View>
+    <ScrollView contentContainerStyle={{padding:18,paddingBottom:50}}>
+      <SectionTitle theme={theme}>LINK Circles</SectionTitle>
+      <View style={[styles.pulseCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
+        <Text style={[styles.settingsTitle,{color:theme.text}]}>Create a Circle</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Share Moments and status with a hand-picked group.</Text>
+        <View style={{flexDirection:'row',gap:8,marginTop:12}}><TextInput value={circleEmoji} onChangeText={setCircleEmoji} maxLength={2} style={[styles.pulseEmojiInput,{backgroundColor:theme.input,color:theme.text,borderColor:theme.border}]}/><TextInput value={circleName} onChangeText={setCircleName} placeholder="Besties, Work, Festival…" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text,flex:1}]}/></View>
+        <View style={styles.settingsChoiceRow}>{['#6C5CE7','#FF375F','#34C759','#0A84FF','#FF9F0A'].map(c=><Pressable key={c} onPress={()=>setCircleColor(c)} style={[styles.pulseColorDot,{backgroundColor:c,borderColor:circleColor===c?'#fff':c,transform:[{scale:circleColor===c?1.12:1}]}]}/>)}</View>
+        <Pressable onPress={()=>{if(!circleName.trim())return;onCreateCircle?.({name:circleName.trim(),emoji:circleEmoji||'✨',color:circleColor});setCircleName('');}} style={[styles.widePrimary,{backgroundColor:theme.inverse,marginTop:12}]}><Ionicons name="add" size={18} color={theme.inverseText}/><Text style={[styles.primaryButtonText,{color:theme.inverseText}]}>Create Circle</Text></Pressable>
+      </View>
+      {myCircles.map(circle=><View key={circle.id} style={[styles.pulseCard,{backgroundColor:theme.card,borderColor:theme.border,marginTop:9}]}><View style={styles.rowBetween}><View style={styles.inlineNameRow}><View style={[styles.circleIcon,{backgroundColor:`${circle.color}20`}]}><Text style={{fontSize:20}}>{circle.emoji}</Text></View><View><Text style={[styles.settingsTitle,{color:theme.text}]}>{circle.name}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{circle.memberIds.length} members</Text></View></View><Pressable onPress={()=>onDeleteCircle?.(circle.id)}><Ionicons name="trash-outline" size={18} color={theme.danger}/></Pressable></View><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap:7,marginTop:12}}>{connectedProfiles.map(person=>{const active=circle.memberIds.includes(person.id);return <Pressable key={person.id} onPress={()=>onToggleCircleMember?.(circle.id,person.id,!active)} style={[styles.circlePersonChip,{backgroundColor:active?`${circle.color}18`:theme.soft,borderColor:active?circle.color:theme.border}]}><Avatar person={person} size={26} theme={theme}/><Text style={{color:theme.text,fontWeight:'800',fontSize:10.5}}>{person.name.split(' ')[0]}</Text>{active?<Ionicons name="checkmark-circle" size={14} color={circle.color}/>:null}</Pressable>})}</ScrollView></View>)}
+
+      <SectionTitle theme={theme}>Profile 3.5</SectionTitle>
+      <View style={[styles.pulseCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
+        <Text style={[styles.settingsTitle,{color:theme.text}]}>Pinned CTA</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Add one action button to your public profile.</Text>
+        <TextInput value={ctaLabel} onChangeText={setCtaLabel} placeholder="Visit my site" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text,marginTop:10}]}/>
+        <TextInput value={ctaUrl} onChangeText={setCtaUrl} autoCapitalize="none" placeholder="https://…" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text,marginTop:8}]}/>
+        <Text style={[styles.settingsTitle,{color:theme.text,marginTop:16}]}>Now playing</Text>
+        <TextInput value={track} onChangeText={setTrack} placeholder="Track" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text,marginTop:8}]}/>
+        <TextInput value={artist} onChangeText={setArtist} placeholder="Artist" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text,marginTop:8}]}/>
+        <Pressable onPress={()=>onUpdateProfile?.({...activeProfile,profileCtaLabel:ctaLabel.trim(),profileCtaUrl:ctaUrl.trim(),nowPlaying:track.trim()?{title:track.trim(),artist:artist.trim()}:{} })} style={[styles.widePrimary,{backgroundColor:theme.inverse,marginTop:12}]}><Text style={[styles.primaryButtonText,{color:theme.inverseText}]}>Save Profile 3.5</Text></Pressable>
+      </View>
+
+      <SectionTitle theme={theme}>Pro 3.5</SectionTitle>
+      <View style={[styles.pulseCard,{backgroundColor:theme.card,borderColor:theme.border,opacity:proActive?1:.72}]}>
+        <View style={styles.inlineNameRow}><Ionicons name="diamond" size={18} color={ACCENT}/><Text style={[styles.settingsTitle,{color:theme.text}]}>Presence & message effects</Text>{!proActive?<ProBadge compact/>:null}</View>
+        <Text style={[styles.settingsSub,{color:theme.sub}]}>Custom presence icon, animated badge and bubble finish.</Text>
+        <Text style={[styles.groupPickerLabel,{color:theme.text}]}>Presence icon</Text><View style={styles.settingsChoiceRow}>{['sparkles','flame','planet','musical-notes','game-controller'].map(icon=><Pressable key={icon} disabled={!proActive} onPress={()=>setPresenceIcon(icon)} style={[styles.nowIconChoice,{backgroundColor:presenceIcon===icon?`${ACCENT}18`:theme.soft,borderColor:presenceIcon===icon?ACCENT:theme.border}]}><Ionicons name={icon} size={19} color={presenceIcon===icon?ACCENT:theme.text}/></Pressable>)}</View>
+        <Text style={[styles.groupPickerLabel,{color:theme.text}]}>Badge animation</Text><View style={styles.settingsChoiceRow}>{['none','pulse','shimmer'].map(v=><Pressable key={v} disabled={!proActive} onPress={()=>setBadgeAnimation(v)} style={[styles.settingsChoicePill,{backgroundColor:badgeAnimation===v?theme.inverse:theme.soft,borderColor:badgeAnimation===v?theme.inverse:theme.border}]}><Text style={{color:badgeAnimation===v?theme.inverseText:theme.text,fontWeight:'900'}}>{v}</Text></Pressable>)}</View>
+        <Text style={[styles.groupPickerLabel,{color:theme.text}]}>Bubble effect</Text><View style={styles.settingsChoiceRow}>{['none','soft','glow'].map(v=><Pressable key={v} disabled={!proActive} onPress={()=>setBubbleEffect(v)} style={[styles.settingsChoicePill,{backgroundColor:bubbleEffect===v?theme.inverse:theme.soft,borderColor:bubbleEffect===v?theme.inverse:theme.border}]}><Text style={{color:bubbleEffect===v?theme.inverseText:theme.text,fontWeight:'900'}}>{v}</Text></Pressable>)}</View>
+        <Text style={[styles.groupPickerLabel,{color:theme.text}]}>App icon preference</Text><View style={styles.settingsChoiceRow}>{['default','black','white','violet','pro'].map(v=><Pressable key={v} disabled={!proActive} onPress={()=>setAppIconPreference(v)} style={[styles.settingsChoicePill,{backgroundColor:appIconPreference===v?theme.inverse:theme.soft,borderColor:appIconPreference===v?theme.inverse:theme.border}]}><Text style={{color:appIconPreference===v?theme.inverseText:theme.text,fontWeight:'900'}}>{v}</Text></Pressable>)}</View><Text style={[styles.settingsSub,{color:theme.sub}]}>Saved now; alternate app icons apply when LINK moves to a native development/production build.</Text>
+        <Pressable disabled={!proActive} onPress={()=>onSaveProStyle?.({presenceIcon,badgeAnimation,bubbleEffect,appIconPreference})} style={[styles.widePrimary,{backgroundColor:proActive?theme.inverse:theme.soft,marginTop:12}]}><Text style={[styles.primaryButtonText,{color:proActive?theme.inverseText:theme.sub}]}>Save Pro style</Text></Pressable>
+      </View>
+
+      <SectionTitle theme={theme}>Profile visitors</SectionTitle>
+      <View style={[styles.pulseCard,{backgroundColor:theme.card,borderColor:theme.border}]}>{proActive?visitorPeople.length?visitorPeople.map(person=><View key={person.id} style={[styles.groupMemberRow,{borderBottomColor:theme.border}]}><Avatar person={person} size={38} theme={theme}/><View style={{flex:1}}><View style={styles.inlineNameRow}><Text style={[styles.personName,{color:theme.text}]}>{person.name}</Text>{person.verified?<VerifiedBadge compact/>:null}</View><Text style={[styles.personSub,{color:theme.sub}]}>{person.username}</Text></View></View>):<Text style={{color:theme.sub}}>No recent visitors yet.</Text>:<View style={styles.inlineNameRow}><Ionicons name="lock-closed" size={18} color={theme.sub}/><Text style={{color:theme.sub,fontWeight:'800'}}>LINK Pro required for visitor details.</Text></View>}</View>
+
+      <SectionTitle theme={theme}>Beta Health</SectionTitle>
+      <View style={[styles.pulseCard,{backgroundColor:'#111318',borderColor:'#252830'}]}><View style={styles.healthGrid}><View style={styles.healthMetric}><Text style={styles.healthValue}>{diagnostics.realtimeState||'connected'}</Text><Text style={styles.healthLabel}>Realtime</Text></View><View style={styles.healthMetric}><Text style={styles.healthValue}>{diagnostics.lastLatencyMs==null?'—':`${diagnostics.lastLatencyMs} ms`}</Text><Text style={styles.healthLabel}>Latency</Text></View><View style={styles.healthMetric}><Text style={styles.healthValue}>{queueCount}</Text><Text style={styles.healthLabel}>Queue</Text></View></View>{diagnostics.lastError?<Text numberOfLines={3} style={styles.healthError}>{diagnostics.lastError}</Text>:null}<Pressable onPress={onSendDiagnostics} style={[styles.widePrimary,{backgroundColor:'#fff',marginTop:12}]}><Ionicons name="pulse" size={18} color="#111318"/><Text style={{color:'#111318',fontWeight:'900'}}>Send diagnostics</Text></Pressable></View>
+    </ScrollView>
+  </SafeAreaView></Modal>;
+}
+
 function firstUrlFromText(value='') {
   const match=String(value||'').match(/https?:\/\/[^\s]+/i);
   return match?.[0] || null;
@@ -2402,7 +2802,7 @@ function VoiceMessageContent({ uri, duration, mine, theme, accent, overlayColor,
   return <View style={styles.voiceMessage}><Pressable onPress={toggle} style={[styles.voicePlay,{backgroundColor:mine?overlayColor:theme.soft}]}><Ionicons name={playing?'pause':'play'} size={16} color={mine?textColor:theme.text}/></Pressable><View style={styles.voiceWave}>{[7,14,10,18,12,20,8,16,11,19,9,14,18,8].map((h,i)=><View key={i} style={{width:2,height:h,borderRadius:2,backgroundColor:mine?textColor:accent,opacity:i/14<=progress?1:.34}}/>)}</View><Text style={{color:mine?textColor:theme.text,fontSize:11,fontWeight:'700'}}>{playing?`${Math.floor(current/60)}:${String(Math.floor(current%60)).padStart(2,'0')}`:label}</Text></View>;
 }
 
-function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply, onDoubleTap, onViewOnce, quoted, chatTheme, groupMode = false, showSender = false, showAvatar = false, showMeta = true }) {
+function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply, onDoubleTap, onViewOnce, onRetry, quoted, chatTheme, bubbleEffect='none', groupMode = false, showSender = false, showAvatar = false, showMeta = true }) {
   const reactions = message.reactions || [];
   const lastTapRef = useRef(0);
   const handleTap = () => { if(message.viewOnce&&!mine&&!message.viewOnceViewed){onViewOnce?.(message);return;} const now = Date.now(); if (now - lastTapRef.current < 320) { lastTapRef.current = 0; onDoubleTap?.(); } else { lastTapRef.current = now; } };
@@ -2513,7 +2913,7 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
     </>
   );
 
-  const mineBubbleStyle = [styles.bubble, styles.outgoingBubble];
+  const mineBubbleStyle = [styles.bubble, styles.outgoingBubble, bubbleEffect==='glow'&&styles.proBubbleGlow, bubbleEffect==='soft'&&styles.proBubbleSoft];
   const incomingBubbleStyle = [styles.bubble, styles.incomingBubble, { backgroundColor: theme.soft }];
 
   const sender = profiles[message.senderId];
@@ -2548,7 +2948,7 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
           {mine ? message.sendState === 'sending'
             ? <><ActivityIndicator size={9} color={theme.sub} /><Text style={[styles.bubbleTime,{color:theme.sub}]}>Sending…</Text></>
             : message.sendState === 'failed'
-              ? <><Ionicons name="alert-circle" size={12} color={theme.danger} /><Text style={[styles.bubbleTime,{color:theme.danger}]}>Not sent</Text></>
+              ? <Pressable onPress={onRetry} style={styles.messageRetry}><Ionicons name="refresh-circle" size={13} color={theme.danger} /><Text style={[styles.bubbleTime,{color:theme.danger,fontWeight:'900'}]}>Retry</Text></Pressable>
               : <><Ionicons name={(message.readBy?.length > 1 || message.deliveredBy?.length > 1) ? 'checkmark-done' : 'checkmark'} size={12} color={message.readBy?.length > 1 ? outgoingTheme.colors[0] : theme.sub} /><Text style={[styles.bubbleTime,{color:message.readBy?.length > 1 ? outgoingTheme.colors[0] : theme.sub}]}>{message.readBy?.length > 1 ? 'Read' : message.deliveredBy?.length > 1 ? 'Delivered' : 'Sent'}</Text></> : null}
         </View> : <View style={styles.groupMessageTightSpacer} />}
       </View>
@@ -2559,7 +2959,7 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
 
 function GroupPollCard({poll,activeId,theme,onVote}){const counts=(poll.options||[]).map((_,i)=>(poll.votes||[]).filter(v=>v.optionIndex===i).length),total=counts.reduce((a,b)=>a+b,0),mine=(poll.votes||[]).find(v=>v.userId===activeId)?.optionIndex;return <View style={[styles.pollCard,{backgroundColor:theme.card,borderColor:theme.border}]}><View style={styles.inlineNameRow}><Ionicons name="stats-chart" size={16} color={ACCENT}/><Text style={[styles.settingsTitle,{color:theme.text,flex:1}]}>{poll.question}</Text></View>{(poll.options||[]).map((option,i)=>{const pct=total?Math.round(counts[i]/total*100):0;return <Pressable key={i} onPress={()=>onVote?.(poll.id,i)} style={[styles.pollOption,{backgroundColor:mine===i?`${ACCENT}16`:theme.soft,borderColor:mine===i?ACCENT:theme.border}]}><View style={[styles.pollFill,{width:`${pct}%`,backgroundColor:`${ACCENT}16`}]} /><Text style={{color:theme.text,fontWeight:'800',flex:1}}>{option}</Text><Text style={{color:theme.sub,fontWeight:'800'}}>{pct}%</Text></Pressable>})}<Text style={[styles.metaText,{color:theme.sub,marginTop:6}]}>{total} votes</Text></View>}
 
-function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, typingEnabled = true, onBack, onSend, onReact, onEdit, onDeleteForMe, onDeleteEveryone, onPin, onForward, onOpenProfile, markRead, silentConfig, onOpenSilent, onOpenEncryptionInfo, chatThemeId = 'default', chatThemeScope = 'messages', onOpenTheme, chatPrefs = {}, onSavePrefs, isGroup = false, group = null, groupMembers = [], onRenameGroup, onToggleGroupEveryone, onPickGroupAvatar, onRotateGroupInvite, onToggleGroupInvite, onSetGroupRole, onRemoveGroupMember, onTransferGroupOwner, onLeaveGroup, onUpdateGroupV3, groupJoinRequests=[], onResolveGroupJoin, doubleTapEmoji = '❤️', onLoadEarlier, onMarkViewOnce, groupPolls=[], onOpenPoll, onVotePoll }) {
+function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, typingEnabled = true, proBubbleEffect='none', onBack, onSend, onRetryMessage, onReact, onEdit, onDeleteForMe, onDeleteEveryone, onPin, onForward, onOpenProfile, markRead, silentConfig, onOpenSilent, onOpenEncryptionInfo, chatThemeId = 'default', chatThemeScope = 'messages', onOpenTheme, chatPrefs = {}, onSavePrefs, isGroup = false, group = null, groupMembers = [], onRenameGroup, onToggleGroupEveryone, onPickGroupAvatar, onRotateGroupInvite, onToggleGroupInvite, onSetGroupRole, onRemoveGroupMember, onTransferGroupOwner, onLeaveGroup, onUpdateGroupV3, onUpdateGroupV35, groupAdminNote='', groupJoinRequests=[], onResolveGroupJoin, doubleTapEmoji = '❤️', onLoadEarlier, onMarkViewOnce, groupPolls=[], onOpenPoll, onVotePoll }) {
   const [text, setText] = useState('');
   const [replyTo, setReplyTo] = useState(null);
   const [editTarget, setEditTarget] = useState(null);
@@ -2614,10 +3014,12 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
   useEffect(() => { if(!draftLoaded)return undefined; const timer=setTimeout(() => AsyncStorage.setItem(draftKey,text).catch(()=>{}),180); return()=>clearTimeout(timer); }, [draftKey,text,draftLoaded]);
   const changeText = (value) => {
     setText(value);
+    const isTyping=!!value.trim();
+    if(chatId) setPresenceActivityRemote(isTyping?'typing':'active',chatId,isTyping?5:8).catch(()=>{});
     if (!typingEnabled || !signalRef.current) return;
-    signalRef.current.sendTyping?.(!!value.trim());
+    signalRef.current.sendTyping?.(isTyping);
     clearTimeout(typingTimerRef.current);
-    typingTimerRef.current=setTimeout(()=>signalRef.current?.sendTyping?.(false),1400);
+    typingTimerRef.current=setTimeout(()=>{signalRef.current?.sendTyping?.(false);if(chatId)setPresenceActivityRemote('active',chatId,8).catch(()=>{});},1400);
   };
   const send = (extra = {}) => {
     const clean = text.trim();
@@ -2637,7 +3039,7 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
       const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!permission.granted) return Alert.alert('Photos permission', 'Allow photo access to send images in chat.');
       const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images','videos'], quality: 0.72, videoMaxDuration:60 });
-      if (!result.canceled && result.assets?.[0]?.uri) { const asset=result.assets[0]; const isGif=asset.mimeType==='image/gif'||/\.gif($|\?)/i.test(asset.fileName||asset.uri||''); send({ type:asset.type==='video'?'video':isGif?'gif':'photo', text:'', uri:asset.uri, duration:asset.duration?Math.round(asset.duration/1000):null }); }
+      if (!result.canceled && result.assets?.[0]?.uri) { const asset=result.assets[0]; const isGif=asset.mimeType==='image/gif'||/\.gif($|\?)/i.test(asset.fileName||asset.uri||''); if(chatId)setPresenceActivityRemote('uploading',chatId,15).catch(()=>{}); send({ type:asset.type==='video'?'video':isGif?'gif':'photo', text:'', uri:asset.uri, duration:asset.duration?Math.round(asset.duration/1000):null }); }
     } catch { Alert.alert('Photo', 'Could not open your photo library.'); }
   };
 
@@ -2646,12 +3048,12 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
       const permission=await AudioModule.requestRecordingPermissionsAsync();
       if(!permission.granted)return Alert.alert('Microphone','Allow microphone access to record a voice message.');
       await setAudioModeAsync({playsInSilentMode:true,allowsRecording:true});
-      await audioRecorder.prepareToRecordAsync(); audioRecorder.record(); setRecordingBusy(true);
+      await audioRecorder.prepareToRecordAsync(); audioRecorder.record(); setRecordingBusy(true); if(chatId)setPresenceActivityRemote('recording',chatId,120).catch(()=>{});
     }catch(error){setRecordingBusy(false);Alert.alert('Voice message',error?.message||'Could not start recording.');}
   };
   const stopVoiceRecording=async(cancel=false)=>{
     try{
-      await audioRecorder.stop(); const uri=audioRecorder.uri; const secs=Math.max(1,Math.round((recorderState.durationMillis||0)/1000)); setRecordingBusy(false);
+      await audioRecorder.stop(); const uri=audioRecorder.uri; const secs=Math.max(1,Math.round((recorderState.durationMillis||0)/1000)); setRecordingBusy(false); if(chatId)setPresenceActivityRemote('active',chatId,8).catch(()=>{});
       if(!cancel&&uri) send({type:'voice',text:'',uri,duration:secs});
     }catch(error){setRecordingBusy(false);if(!cancel)Alert.alert('Voice message',error?.message||'Could not finish recording.');}
   };
@@ -2697,7 +3099,7 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
           <View style={styles.chatHeaderSide}><IconButton icon="chevron-back" onPress={onBack} theme={theme} /></View>
           <Pressable onPress={() => isGroup ? setGroupInfoOpen(true) : onOpenProfile(person)} style={styles.chatHeaderPersonCenter}>
             {isGroup ? <GroupAvatar group={group || { memberIds: groupMembers.map(p => p.id) }} profiles={profiles} theme={theme} size={34} /> : <Avatar person={person} size={34} theme={theme} />}
-            <View style={styles.chatHeaderIdentity}><Text numberOfLines={1} style={[styles.chatHeaderName,{color:theme.text}]}>{person.name}</Text>{!isGroup&&person?.verified?<VerifiedBadge compact/>:null}<Ionicons name="chevron-down" size={12} color={theme.sub}/></View>
+            <View style={{alignItems:'center',minWidth:0}}><View style={styles.chatHeaderIdentity}><Text numberOfLines={1} style={[styles.chatHeaderName,{color:theme.text}]}>{person.name}</Text>{!isGroup&&person?.verified?<VerifiedBadge compact/>:null}<Ionicons name="chevron-down" size={12} color={theme.sub}/></View>{!isGroup?<Text numberOfLines={1} style={[styles.chatHeaderStatus,{color:theme.sub}]}>{person?.presenceActivityKind==='recording'?'Recording voice…':person?.presenceActivityKind==='uploading'?'Uploading…':person?.presenceActivityKind==='typing'?'Typing…':presenceIsLive(person)?'Active now':person?.lastActiveAt?`Active ${new Date(person.lastActiveAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`:'Offline'}</Text>:null}</View>
           </Pressable>
           <View style={[styles.chatHeaderSide, styles.chatHeaderRight]}><IconButton icon="color-palette-outline" onPress={onOpenTheme} theme={theme} /><IconButton icon={silentConfig?.enabled ? "timer" : "timer-outline"} onPress={onOpenSilent} theme={theme} filled={!!silentConfig?.enabled} /><IconButton icon="ellipsis-horizontal" onPress={() => Alert.alert('Chat controls', chatPrefs.mutedUntil>Date.now()?'Notifications muted':'Notifications on', [
             {text:chatPrefs.mutedUntil>Date.now()?'Unmute':'Mute for 8 hours',onPress:()=>onSavePrefs?.({...chatPrefs,mutedUntil:chatPrefs.mutedUntil>Date.now()?null:Date.now()+8*60*60*1000})},
@@ -2717,7 +3119,7 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
               const next = messages[index + 1];
               const sameAsPrev = !!prev && prev.senderId === item.senderId;
               const sameAsNext = !!next && next.senderId === item.senderId;
-              return <ChatMessage message={item} mine={item.senderId === activeProfile.id} theme={theme} profiles={profiles} chatTheme={chatTheme} quoted={messages.find(x => x.id === item.replyTo)} onSwipeReply={() => beginReply(item)} onDoubleTap={() => onReact(person.id, item.id, doubleTapEmoji)} onLongPress={() => longPress(item)} onViewOnce={()=>onMarkViewOnce?.(item)} groupMode={isGroup} showSender={isGroup && !sameAsPrev} showAvatar={isGroup && !sameAsNext} showMeta={!isGroup || !sameAsNext} />;
+              return <ChatMessage message={item} mine={item.senderId === activeProfile.id} theme={theme} profiles={profiles} chatTheme={chatTheme} bubbleEffect={item.senderId===activeProfile.id?proBubbleEffect:'none'} quoted={messages.find(x => x.id === item.replyTo)} onSwipeReply={() => beginReply(item)} onDoubleTap={() => onReact(person.id, item.id, doubleTapEmoji)} onLongPress={() => longPress(item)} onViewOnce={()=>onMarkViewOnce?.(item)} onRetry={()=>onRetryMessage?.(item)} groupMode={isGroup} showSender={isGroup && !sameAsPrev} showAvatar={isGroup && !sameAsNext} showMeta={!isGroup || !sameAsNext} />;
             }}
             ListHeaderComponent={messages.length>=45&&onLoadEarlier?<Pressable onPress={onLoadEarlier} style={[styles.loadEarlier,{backgroundColor:theme.soft}]}><Ionicons name="time-outline" size={14} color={theme.sub}/><Text style={{color:theme.sub,fontSize:11,fontWeight:'800'}}>Load earlier messages</Text></Pressable>:null}
             ListEmptyComponent={<View style={styles.emptyChat}><View style={[styles.emptyChatIcon, { backgroundColor: `${chatAccent}18` }]}><Ionicons name={isGroup ? 'people' : 'chatbubble-ellipses'} size={28} color={chatAccent} /></View><Text style={[styles.emptyTitle, { color: theme.text }]}>{isGroup ? 'New Group' : 'New LINK'}</Text><Text style={[styles.emptyBody, { color: theme.sub }]}>{isGroup ? 'Send the first message to the group.' : `Say hi to ${person.name.split(' ')[0]}.`}</Text></View>}
@@ -2730,7 +3132,7 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
         {recordingBusy?<View style={[styles.recordingBar,{backgroundColor:theme.soft}]}><View style={styles.recordingDot}/><Text style={{color:theme.text,fontWeight:'900',flex:1}}>Recording · {Math.max(0,Math.floor((recorderState.durationMillis||0)/1000))}s</Text><Pressable onPress={()=>stopVoiceRecording(true)}><Text style={{color:theme.danger,fontWeight:'900'}}>Cancel</Text></Pressable></View>:null}
         <View style={[styles.composerWrap, { backgroundColor: theme.bg }]}><Pressable style={[styles.plusButton, { backgroundColor: theme.soft, borderColor: theme.border }]} onPress={() => Alert.alert('Send', 'Choose an attachment.', [{ text: 'Photo / video / GIF', onPress: pickChatPhoto }, { text: 'Sticker', onPress:()=>Alert.alert('Sticker','Choose a sticker',[...['🔥','💜','😂','👀'].map(emoji=>({text:emoji,onPress:()=>send({type:'sticker',text:emoji})})),{text:'Cancel',style:'cancel'}]) }, { text: 'Voice message', onPress: startVoiceRecording }, { text:'View Once photo', onPress: async()=>{ try{ const permission=await ImagePicker.requestMediaLibraryPermissionsAsync(); if(!permission.granted)return; const result=await ImagePicker.launchImageLibraryAsync({mediaTypes:['images'],quality:.72}); if(!result.canceled&&result.assets?.[0]?.uri)send({type:'photo',text:'',uri:result.assets[0].uri,viewOnce:true}); }catch{} } }, {text:'Location card',onPress:()=>send({type:'location',text:'Current location'})}, ...(isGroup?[{text:'Poll',onPress:onOpenPoll}]:[]),{text:'Contact card',onPress:()=>send({type:'contact',text:activeProfile.name})},{ text: 'Cancel', style: 'cancel' }])}><Ionicons name="add" size={24} color={theme.text} /></Pressable><View style={[styles.composer, { backgroundColor: theme.card, borderColor: theme.border }]}><TextInput ref={composerRef} value={text} onChangeText={changeText} onFocus={() => setTimeout(() => listRef.current?.scrollToEnd?.({ animated: true }), 80)} placeholder={editTarget?'Edit message':silentConfig?.enabled ? `Silent message · ${formatSilentTimer(silentConfig.timerSeconds)}` : 'Message'} placeholderTextColor={theme.sub} style={[styles.composerInput, { color: theme.text }]} multiline maxLength={1000} /><Pressable onPress={()=>{ if(recordingBusy) stopVoiceRecording(false); else if(text.trim()||editTarget) send(); else startVoiceRecording(); }} onLongPress={()=>recordingBusy&&stopVoiceRecording(true)} style={[styles.sendButton,{backgroundColor:(text.trim()||recordingBusy)?chatAccent:theme.soft}]}><Ionicons name={recordingBusy?'stop':editTarget?'checkmark':text.trim()?'arrow-up':'mic'} size={19} color={(text.trim()||recordingBusy)?(chatTheme.textColor||'#fff'):theme.sub}/></Pressable></View></View>
       </SafeAreaView>
-      {isGroup ? <GroupInfoModal visible={groupInfoOpen} onClose={() => setGroupInfoOpen(false)} theme={theme} group={group} profiles={profiles} activeId={activeProfile.id} onRename={onRenameGroup} onToggleEveryone={onToggleGroupEveryone} onPickAvatar={onPickGroupAvatar} onRotateInvite={onRotateGroupInvite} onToggleInvite={onToggleGroupInvite} onSetRole={onSetGroupRole} onRemoveMember={onRemoveGroupMember} onTransferOwner={onTransferGroupOwner} onLeave={onLeaveGroup} onUpdateV3={onUpdateGroupV3} joinRequests={groupJoinRequests} onResolveJoin={onResolveGroupJoin} /> : null}
+      {isGroup ? <GroupInfoModal visible={groupInfoOpen} onClose={() => setGroupInfoOpen(false)} theme={theme} group={group} profiles={profiles} activeId={activeProfile.id} onRename={onRenameGroup} onToggleEveryone={onToggleGroupEveryone} onPickAvatar={onPickGroupAvatar} onRotateInvite={onRotateGroupInvite} onToggleInvite={onToggleGroupInvite} onSetRole={onSetGroupRole} onRemoveMember={onRemoveGroupMember} onTransferOwner={onTransferGroupOwner} onLeave={onLeaveGroup} onUpdateV3={onUpdateGroupV3} onUpdateV35={onUpdateGroupV35} adminNote={groupAdminNote} joinRequests={groupJoinRequests} onResolveJoin={onResolveGroupJoin} /> : null}
     </KeyboardAvoidingView>
     </EdgeSwipeBack>
   );
@@ -2784,19 +3186,64 @@ function ViewOnceMediaModal({visible,onClose,uri}){
   return <Modal visible={visible} animationType="fade" presentationStyle="fullScreen" onRequestClose={onClose}><SafeAreaView style={{flex:1,backgroundColor:'#000'}}><View style={{height:64,flexDirection:'row',alignItems:'center',justifyContent:'space-between',paddingHorizontal:18}}><Text style={{color:'#fff',fontWeight:'900',fontSize:14}}>View Once</Text><Pressable onPress={onClose} style={{width:40,height:40,borderRadius:20,backgroundColor:'rgba(255,255,255,.12)',alignItems:'center',justifyContent:'center'}}><Ionicons name="close" size={25} color="#fff"/></Pressable></View><View style={{flex:1,alignItems:'center',justifyContent:'center',padding:12}}>{uri?<Image source={{uri}} style={{width:'100%',height:'100%',borderRadius:24}} resizeMode="contain"/>:<ActivityIndicator color="#fff"/>}</View><Text style={{color:'rgba(255,255,255,.55)',textAlign:'center',paddingBottom:18,fontSize:11}}>This media cannot be opened again after you close it.</Text></SafeAreaView></Modal>;
 }
 
-function LinkNowModal({visible,onClose,theme,current,onSave,onClear}){
-  const [text,setText]=useState(current?.text||''); const [icon,setIcon]=useState(current?.icon||'sparkles'); const [minutes,setMinutes]=useState(60);
-  useEffect(()=>{if(visible){setText(current?.text||'');setIcon(current?.icon||'sparkles');}},[visible,current?.text,current?.icon]);
+function LinkNowModal({visible,onClose,theme,current,onSave,onClear,circles=[]}){
+  const [text,setText]=useState(current?.text||'');
+  const [icon,setIcon]=useState(current?.icon||'sparkles');
+  const [minutes,setMinutes]=useState(60);
+  const [audience,setAudience]=useState(current?.audience||'links');
+  const [circleId,setCircleId]=useState(current?.circleId||null);
+  useEffect(()=>{if(visible){setText(current?.text||'');setIcon(current?.icon||'sparkles');setAudience(current?.audience||'links');setCircleId(current?.circleId||null);}},[visible,current?.text,current?.icon,current?.audience,current?.circleId]);
   const icons=['sparkles','musical-notes','game-controller','location','cafe','fitness','moon','people','videocam','headset'];
-  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.nextSheet,{backgroundColor:theme.card}]} onPress={()=>{}}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle,{color:theme.text}]}>LINK Now</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>A live status that expires automatically.</Text></View><IconButton icon="close" onPress={onClose} theme={theme}/></View><TextInput value={text} onChangeText={setText} maxLength={80} placeholder="What are you up to?" placeholderTextColor={theme.sub} style={[styles.nextTextInput,{backgroundColor:theme.input,color:theme.text,borderColor:theme.border}]}/><View style={styles.nowIconGrid}>{icons.map(name=><Pressable key={name} onPress={()=>setIcon(name)} style={[styles.nowIconChoice,{backgroundColor:icon===name?`${ACCENT}18`:theme.soft,borderColor:icon===name?ACCENT:theme.border}]}><Ionicons name={name} size={20} color={icon===name?ACCENT:theme.text}/></Pressable>)}</View><View style={styles.settingsChoiceRow}>{[[60,'1 h'],[240,'4 h'],[720,'Tonight']].map(([v,l])=><Pressable key={v} onPress={()=>setMinutes(v)} style={[styles.settingsChoicePill,{backgroundColor:minutes===v?theme.inverse:theme.soft,borderColor:minutes===v?theme.inverse:theme.border}]}><Text style={{color:minutes===v?theme.inverseText:theme.text,fontWeight:'900'}}>{l}</Text></Pressable>)}</View><Pressable onPress={()=>{if(!text.trim())return;onSave({text:text.trim(),icon,color:ACCENT,minutes});onClose();}} style={[styles.widePrimary,{backgroundColor:theme.inverse,marginTop:16}]}><Text style={[styles.primaryButtonText,{color:theme.inverseText}]}>Go live</Text></Pressable>{current?<Pressable onPress={()=>{onClear();onClose();}} style={[styles.resetButton,{borderColor:theme.border,marginTop:8,marginBottom:0}]}><Text style={{color:theme.danger,fontWeight:'900'}}>Clear LINK Now</Text></Pressable>:null}</Pressable></Pressable></Modal>;
+  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.nextSheet,{backgroundColor:theme.card}]} onPress={()=>{}}>
+    <View style={styles.rowBetween}><View><Text style={[styles.sheetTitle,{color:theme.text}]}>LINK Now</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>A live status that expires automatically.</Text></View><IconButton icon="close" onPress={onClose} theme={theme}/></View>
+    <TextInput value={text} onChangeText={setText} maxLength={80} placeholder="What are you up to?" placeholderTextColor={theme.sub} style={[styles.nextTextInput,{backgroundColor:theme.input,color:theme.text,borderColor:theme.border}]}/>
+    <View style={styles.nowIconGrid}>{icons.map(name=><Pressable key={name} onPress={()=>setIcon(name)} style={[styles.nowIconChoice,{backgroundColor:icon===name?`${ACCENT}18`:theme.soft,borderColor:icon===name?ACCENT:theme.border}]}><Ionicons name={name} size={20} color={icon===name?ACCENT:theme.text}/></Pressable>)}</View>
+    <Text style={[styles.groupPickerLabel,{color:theme.text}]}>Audience</Text>
+    <View style={styles.settingsChoiceRow}>{[['links','All LINKs'],['circle','Circle']].map(([v,label])=><Pressable key={v} onPress={()=>setAudience(v)} style={[styles.settingsChoicePill,{backgroundColor:audience===v?theme.inverse:theme.soft,borderColor:audience===v?theme.inverse:theme.border}]}><Text style={{color:audience===v?theme.inverseText:theme.text,fontWeight:'900'}}>{label}</Text></Pressable>)}</View>
+    {audience==='circle'?<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap:7,marginTop:4}}>{circles.map(c=><Pressable key={c.id} onPress={()=>setCircleId(c.id)} style={[styles.circlePersonChip,{backgroundColor:circleId===c.id?`${c.color}1F`:theme.soft,borderColor:circleId===c.id?c.color:theme.border}]}><Text style={{fontSize:16}}>{c.emoji}</Text><Text style={{color:theme.text,fontWeight:'850'}}>{c.name}</Text>{circleId===c.id?<Ionicons name="checkmark-circle" size={14} color={c.color}/>:null}</Pressable>)}</ScrollView>:null}
+    <View style={styles.settingsChoiceRow}>{[[60,'1 h'],[240,'4 h'],[720,'Tonight']].map(([v,l])=><Pressable key={v} onPress={()=>setMinutes(v)} style={[styles.settingsChoicePill,{backgroundColor:minutes===v?theme.inverse:theme.soft,borderColor:minutes===v?theme.inverse:theme.border}]}><Text style={{color:minutes===v?theme.inverseText:theme.text,fontWeight:'900'}}>{l}</Text></Pressable>)}</View>
+    <Pressable onPress={()=>{if(!text.trim() || (audience==='circle'&&!circleId))return;onSave({text:text.trim(),icon,color:ACCENT,minutes,audience,circleId:audience==='circle'?circleId:null});onClose();}} style={[styles.widePrimary,{backgroundColor:theme.inverse,marginTop:16}]}><Text style={[styles.primaryButtonText,{color:theme.inverseText}]}>Go live</Text></Pressable>
+    {current?<Pressable onPress={()=>{onClear();onClose();}} style={[styles.resetButton,{borderColor:theme.border,marginTop:8,marginBottom:0}]}><Text style={{color:theme.danger,fontWeight:'900'}}>Clear LINK Now</Text></Pressable>:null}
+  </Pressable></Pressable></Modal>;
 }
 
 function UnifiedSearchModal({visible,onClose,theme,activeId,profiles,groups,conversations,onOpenPerson,onOpenChat,onOpenGroup}){
- const [q,setQ]=useState(''); useEffect(()=>{if(visible)setQ('')},[visible]); const query=q.trim().toLowerCase();
- const people=Object.values(profiles||{}).filter(p=>p.id!==activeId && !!query && (((p.name||'').toLowerCase().includes(query)) || ((p.username||'').toLowerCase().includes(query)))).slice(0,8);
- const groupHits=Object.values(groups||{}).filter(g=>query&&(g.name||'').toLowerCase().includes(query)).slice(0,6);
- const messageHits=[]; if(query) Object.entries(conversations||{}).forEach(([key,list])=>(list||[]).forEach(m=>{if(m.type==='text'&&String(m.text||'').toLowerCase().includes(query)&&messageHits.length<12)messageHits.push({key,m});}));
- return <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}><View style={[styles.searchPage,{backgroundColor:theme.bg}]}><SafeAreaView style={styles.flexOne}><View style={styles.settingsHubHeader}><IconButton icon="chevron-back" onPress={onClose} theme={theme}/><View style={[styles.searchInputShell,{backgroundColor:theme.card,borderColor:theme.border}]}><Ionicons name="search" size={18} color={theme.sub}/><TextInput autoFocus value={q} onChangeText={setQ} placeholder="Search LINK" placeholderTextColor={theme.sub} style={[styles.searchInput,{color:theme.text}]}/></View></View><ScrollView contentContainerStyle={styles.searchResults}>{!query?<View style={styles.emptyState}><Ionicons name="search-outline" size={38} color={theme.sub}/><Text style={[styles.emptyTitle,{color:theme.text}]}>Search everything</Text><Text style={[styles.emptyBody,{color:theme.sub}]}>People, groups and loaded messages.</Text></View>:null}{people.length?<><SectionTitle theme={theme}>People</SectionTitle>{people.map(p=><Pressable key={p.id} onPress={()=>onOpenPerson(p)} style={[styles.searchResultRow,{backgroundColor:theme.card,borderColor:theme.border}]}><Avatar person={p} size={42} theme={theme}/><View style={{flex:1}}><View style={styles.inlineNameRow}><Text style={[styles.personName,{color:theme.text}]}>{p.name}</Text>{p.verified?<VerifiedBadge compact/>:null}</View><Text style={[styles.personSub,{color:theme.sub}]}>{p.username}</Text></View><Ionicons name="chevron-forward" size={18} color={theme.sub}/></Pressable>)}</>:null}{groupHits.length?<><SectionTitle theme={theme}>Groups</SectionTitle>{groupHits.map(g=><Pressable key={g.id} onPress={()=>onOpenGroup(g)} style={[styles.searchResultRow,{backgroundColor:theme.card,borderColor:theme.border}]}><GroupAvatar group={g} profiles={profiles} theme={theme} size={42}/><View style={{flex:1}}><Text style={[styles.personName,{color:theme.text}]}>{g.name}</Text><Text style={[styles.personSub,{color:theme.sub}]}>{g.memberIds?.length||0} members</Text></View></Pressable>)}</>:null}{messageHits.length?<><SectionTitle theme={theme}>Messages</SectionTitle>{messageHits.map(({key,m},i)=><Pressable key={`${m.id}-${i}`} onPress={()=>{const gid=key.startsWith('group__')?key.slice(7):null;if(gid)onOpenGroup(groups[gid]);else{const ids=key.split('__');const other=ids.find(id=>id!==activeId);if(other&&profiles[other])onOpenChat(profiles[other]);}}} style={[styles.searchMessageRow,{backgroundColor:theme.card,borderColor:theme.border}]}><Ionicons name="chatbubble-ellipses-outline" size={18} color={theme.sub}/><Text numberOfLines={2} style={{color:theme.text,flex:1}}>{m.text}</Text></Pressable>)}</>:null}</ScrollView></SafeAreaView></View></Modal>;
+  const [q,setQ]=useState('');
+  const [filter,setFilter]=useState('all');
+  const [history,setHistory]=useState([]);
+  const historyKey=`@link_search_history_v35_${activeId||'anon'}`;
+  useEffect(()=>{if(!visible)return;setQ('');setFilter('all');AsyncStorage.getItem(historyKey).then(raw=>{try{setHistory(JSON.parse(raw||'[]').slice(0,8));}catch{setHistory([]);}}).catch(()=>{});},[visible,activeId]);
+  const remember=async(value)=>{const clean=String(value||'').trim();if(!clean)return;const next=[clean,...history.filter(x=>x.toLowerCase()!==clean.toLowerCase())].slice(0,8);setHistory(next);AsyncStorage.setItem(historyKey,JSON.stringify(next)).catch(()=>{});};
+  const query=q.trim().toLowerCase();
+  const allow=(kind)=>filter==='all'||filter===kind;
+  const people=allow('people')?Object.values(profiles||{}).filter(p=>p.id!==activeId && !!query && (((p.name||'').toLowerCase().includes(query)) || ((p.username||'').toLowerCase().includes(query)))).slice(0,8):[];
+  const groupHits=allow('groups')?Object.values(groups||{}).filter(g=>query&&(g.name||'').toLowerCase().includes(query)).slice(0,6):[];
+  const messageHits=[];
+  if(query && ['all','messages','media','links'].includes(filter)) Object.entries(conversations||{}).forEach(([key,list])=>(list||[]).forEach(m=>{
+    if(messageHits.length>=20)return;
+    const text=String(m.text||'');
+    const lower=text.toLowerCase();
+    const sender=profiles[m.senderId];
+    const senderMatch=sender && (`${sender.name||''} ${sender.username||''}`).toLowerCase().includes(query);
+    const timeMatch=m.createdAt && new Date(m.createdAt).toLocaleDateString().toLowerCase().includes(query);
+    const isMedia=['image','photo','video','gif','voice','file','sticker'].includes(m.type);
+    const isLink=/https?:\/\//i.test(text);
+    const typeAllowed=filter==='media'?isMedia:filter==='links'?isLink:true;
+    if(typeAllowed && (lower.includes(query)||senderMatch||timeMatch||(isMedia&&['photo','image','video','gif','voice','file','sticker'].some(v=>query.includes(v)))))messageHits.push({key,m});
+  }));
+  const openMessage=({key,m})=>{remember(q);const gid=key.startsWith('group__')?key.slice(7):null;if(gid&&groups[gid])onOpenGroup(groups[gid]);else{const ids=key.split('__');const other=ids.find(id=>id!==activeId);if(other&&profiles[other])onOpenChat(profiles[other]);}};
+  const filters=[['all','All'],['people','People'],['groups','Groups'],['messages','Messages'],['media','Media'],['links','Links']];
+  return <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}><View style={[styles.searchPage,{backgroundColor:theme.bg}]}><SafeAreaView style={styles.flexOne}>
+    <View style={styles.settingsHubHeader}><IconButton icon="chevron-back" onPress={onClose} theme={theme}/><View style={[styles.searchInputShell,{backgroundColor:theme.card,borderColor:theme.border}]}><Ionicons name="search" size={18} color={theme.sub}/><TextInput autoFocus value={q} onChangeText={setQ} onSubmitEditing={()=>remember(q)} placeholder="Search LINK" placeholderTextColor={theme.sub} style={[styles.searchInput,{color:theme.text}]}/></View></View>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingHorizontal:16,gap:7,paddingBottom:8}}>{filters.map(([id,label])=><Pressable key={id} onPress={()=>setFilter(id)} style={[styles.settingsChoicePill,{backgroundColor:filter===id?theme.inverse:theme.soft,borderColor:filter===id?theme.inverse:theme.border}]}><Text style={{color:filter===id?theme.inverseText:theme.text,fontWeight:'900'}}>{label}</Text></Pressable>)}</ScrollView>
+    <ScrollView contentContainerStyle={styles.searchResults}>
+      {!query?<><View style={styles.emptyState}><Ionicons name="search-outline" size={38} color={theme.sub}/><Text style={[styles.emptyTitle,{color:theme.text}]}>Search everything</Text><Text style={[styles.emptyBody,{color:theme.sub}]}>People, groups, messages, media and links.</Text></View>{history.length?<><SectionTitle theme={theme}>Recent searches</SectionTitle><View style={{flexDirection:'row',flexWrap:'wrap',gap:7}}>{history.map(item=><Pressable key={item} onPress={()=>setQ(item)} onLongPress={()=>{const next=history.filter(x=>x!==item);setHistory(next);AsyncStorage.setItem(historyKey,JSON.stringify(next)).catch(()=>{});}} style={[styles.settingsChoicePill,{backgroundColor:theme.soft,borderColor:theme.border}]}><Ionicons name="time-outline" size={13} color={theme.sub}/><Text style={{color:theme.text,fontWeight:'800'}}>{item}</Text></Pressable>)}</View></>:null}</>:null}
+      {people.length?<><SectionTitle theme={theme}>People</SectionTitle>{people.map(p=><Pressable key={p.id} onPress={()=>{remember(q);onOpenPerson(p);}} style={[styles.searchResultRow,{backgroundColor:theme.card,borderColor:theme.border}]}><Avatar person={p} size={42} theme={theme}/><View style={{flex:1}}><View style={styles.inlineNameRow}><Text style={[styles.personName,{color:theme.text}]}>{p.name}</Text>{p.verified?<VerifiedBadge compact/>:null}</View><Text style={[styles.personSub,{color:theme.sub}]}>{p.username}</Text></View><Ionicons name="chevron-forward" size={18} color={theme.sub}/></Pressable>)}</>:null}
+      {groupHits.length?<><SectionTitle theme={theme}>Groups</SectionTitle>{groupHits.map(g=><Pressable key={g.id} onPress={()=>{remember(q);onOpenGroup(g);}} style={[styles.searchResultRow,{backgroundColor:theme.card,borderColor:theme.border}]}><GroupAvatar group={g} profiles={profiles} theme={theme} size={42}/><View style={{flex:1}}><Text style={[styles.personName,{color:theme.text}]}>{g.name}</Text><Text style={[styles.personSub,{color:theme.sub}]}>{g.memberIds?.length||0} members</Text></View></Pressable>)}</>:null}
+      {messageHits.length?<><SectionTitle theme={theme}>{filter==='media'?'Media':filter==='links'?'Links':'Messages'}</SectionTitle>{messageHits.map(({key,m},i)=><Pressable key={`${m.id}-${i}`} onPress={()=>openMessage({key,m})} style={[styles.searchMessageRow,{backgroundColor:theme.card,borderColor:theme.border}]}><Ionicons name={['image','photo'].includes(m.type)?'image-outline':m.type==='video'?'videocam-outline':m.type==='voice'?'mic-outline':m.type==='gif'?'images-outline':/https?:\/\//i.test(String(m.text||''))?'link-outline':'chatbubble-ellipses-outline'} size={18} color={theme.sub}/><View style={{flex:1}}><Text numberOfLines={2} style={{color:theme.text}}>{m.text||`[${m.type||'message'}]`}</Text>{m.createdAt?<Text style={[styles.metaText,{color:theme.sub,marginLeft:0}]}>{new Date(m.createdAt).toLocaleString()}</Text>:null}</View></Pressable>)}</>:null}
+      {query&&!people.length&&!groupHits.length&&!messageHits.length?<View style={styles.emptyState}><Ionicons name="search-outline" size={34} color={theme.sub}/><Text style={[styles.emptyTitle,{color:theme.text}]}>No results</Text></View>:null}
+    </ScrollView>
+  </SafeAreaView></View></Modal>;
 }
 
 function SafetyCenterModal({visible,onClose,theme,blockedIds,profiles,devices,onUnblock,onChangePassword,onChangeEmail,onSignOutOthers}){
@@ -2809,9 +3256,45 @@ function PollComposerModal({visible,onClose,theme,onCreate}){
  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.nextSheet,{backgroundColor:theme.card}]} onPress={()=>{}}><View style={styles.rowBetween}><Text style={[styles.sheetTitle,{color:theme.text}]}>New poll</Text><IconButton icon="close" onPress={onClose} theme={theme}/></View>{[['Question',question,setQuestion],['Option 1',a,setA],['Option 2',b,setB],['Option 3 (optional)',c,setC]].map(([ph,v,setter])=><TextInput key={ph} value={v} onChangeText={setter} placeholder={ph} placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text,marginTop:9}]}/>)}<Pressable onPress={()=>{const options=[a,b,c].map(x=>x.trim()).filter(Boolean);if(question.trim()&&options.length>=2){onCreate(question.trim(),options);onClose();}}} style={[styles.widePrimary,{backgroundColor:theme.inverse,marginTop:14}]}><Text style={[styles.primaryButtonText,{color:theme.inverseText}]}>Post poll</Text></Pressable></Pressable></Pressable></Modal>;
 }
 
-function StaffCenterModal({visible,onClose,theme,profiles,moderation,audit,reports=[],onBan,onUnban,onMute,onUnmute,onEntitlement,onReviewReport}){
- const [username,setUsername]=useState('');const [days,setDays]=useState('30');
- return <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}><View style={[styles.adminConsolePage,{backgroundColor:theme.bg}]}><SafeAreaView style={styles.flexOne}><View style={styles.adminConsoleHeader}><View><Text style={[styles.bigTitle,{color:theme.text}]}>Staff Center</Text><Text style={[styles.headerSub,{color:theme.sub}]}>Moderation, entitlements and audit trail.</Text></View><IconButton icon="close" onPress={onClose} theme={theme}/></View><ScrollView contentContainerStyle={styles.adminConsoleList}><View style={[styles.adminConsoleHero,{backgroundColor:'#111318'}]}><View style={styles.adminConsoleHeroIcon}><Ionicons name="shield-checkmark" size={28} color="#fff"/></View><View style={{flex:1}}><Text style={styles.adminConsoleHeroTitle}>LINK Staff 3.0</Text><Text style={styles.adminConsoleHeroSub}>Server-authorized controls. User clients cannot self-grant staff access.</Text></View></View><SectionTitle theme={theme}>Entitlements</SectionTitle><TextInput value={username} onChangeText={setUsername} autoCapitalize="none" placeholder="@username" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text}]}/><TextInput value={days} onChangeText={setDays} keyboardType="number-pad" placeholder="Days" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text,marginTop:8}]}/><View style={styles.settingsChoiceRow}>{['plus','pro','none'].map(tier=><Pressable key={tier} onPress={()=>onEntitlement(username,tier,Number(days)||30)} style={[styles.settingsChoicePill,{backgroundColor:theme.soft,borderColor:theme.border}]}><Text style={{color:theme.text,fontWeight:'900'}}>{tier.toUpperCase()}</Text></Pressable>)}</View><SectionTitle theme={theme}>Moderation</SectionTitle>{Object.values(profiles||{}).filter(p=>!p.isAdmin).slice(0,20).map(person=>{const st=moderation?.[person.id]||{};const muted=st.mutedUntil===-1||st.mutedUntil>Date.now();return <View key={person.id} style={[styles.adminUserCard,{backgroundColor:theme.card,borderColor:theme.border}]}><Avatar person={person} size={44} theme={theme}/><View style={{flex:1}}><View style={styles.inlineNameRow}><Text style={[styles.personName,{color:theme.text}]}>{person.name}</Text>{person.verified?<VerifiedBadge compact/>:null}</View><Text style={[styles.personSub,{color:theme.sub}]}>{person.username}</Text></View><Pressable onPress={()=>st.banned?onUnban(person.id):onBan(person.id)} style={[styles.adminIconAction,{backgroundColor:st.banned?theme.soft:'rgba(255,59,48,.12)'}]}><Ionicons name={st.banned?'lock-open-outline':'ban'} size={18} color={st.banned?theme.text:'#FF3B30'}/></Pressable><Pressable onPress={()=>muted?onUnmute(person.id):onMute(person.id,60*60*1000)} style={[styles.adminIconAction,{backgroundColor:theme.soft}]}><Ionicons name={muted?'volume-high-outline':'volume-mute-outline'} size={18} color={theme.text}/></Pressable></View>})}<SectionTitle theme={theme}>Safety reports</SectionTitle>{reports.filter(r=>r.status==='open').length?reports.filter(r=>r.status==='open').slice(0,20).map(report=>{const person=profiles[report.targetId];return <View key={report.id} style={[styles.adminUserCard,{backgroundColor:theme.card,borderColor:theme.border}]}><View style={[styles.adminEntryIcon,{backgroundColor:'rgba(255,159,10,.14)'}]}><Ionicons name="flag-outline" size={19} color="#FF9F0A"/></View><View style={{flex:1,minWidth:0}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{report.category}</Text><Text numberOfLines={2} style={[styles.settingsSub,{color:theme.sub}]}>{person?`${person.name} · ${person.username}`:'User'}{report.details?` · ${report.details}`:''}</Text></View><Pressable onPress={()=>onReviewReport?.(report.id,'reviewed')} style={[styles.adminIconAction,{backgroundColor:theme.soft}]}><Ionicons name="checkmark" size={18} color={theme.text}/></Pressable></View>}):<Text style={{color:theme.sub}}>No open reports.</Text>}<SectionTitle theme={theme}>Audit log</SectionTitle>{audit.slice(0,30).map(row=><View key={row.id} style={[styles.auditRow,{borderBottomColor:theme.border}]}><Ionicons name="terminal-outline" size={16} color={theme.sub}/><View style={{flex:1}}><Text style={{color:theme.text,fontWeight:'800'}}>{row.action}</Text><Text style={[styles.metaText,{color:theme.sub}]}>{new Date(row.createdAt).toLocaleString()}</Text></View></View>)}</ScrollView></SafeAreaView></View></Modal>;
+function StaffCenterModal({visible,onClose,theme,profiles,moderation,audit,reports=[],onBan,onUnban,onMute,onUnmute,onEntitlement,onReviewReport,onSendOfficial}){
+  const [username,setUsername]=useState('');
+  const [days,setDays]=useState('30');
+  const [officialTitle,setOfficialTitle]=useState('LINK Official');
+  const [officialBody,setOfficialBody]=useState('');
+  const [officialActionLabel,setOfficialActionLabel]=useState('');
+  const [officialActionUrl,setOfficialActionUrl]=useState('');
+  const [publishing,setPublishing]=useState(false);
+  useEffect(()=>{if(visible){setOfficialBody('');setOfficialActionLabel('');setOfficialActionUrl('');}},[visible]);
+  const publish=async()=>{if(!officialBody.trim())return Alert.alert('LINK Official','Write a message first.');setPublishing(true);try{await onSendOfficial?.({title:officialTitle.trim()||'LINK Official',body:officialBody.trim(),actionLabel:officialActionLabel.trim(),actionUrl:officialActionUrl.trim(),priority:1});setOfficialBody('');setOfficialActionLabel('');setOfficialActionUrl('');}finally{setPublishing(false);}};
+  return <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}><View style={[styles.adminConsolePage,{backgroundColor:theme.bg}]}><SafeAreaView style={styles.flexOne}>
+    <View style={styles.adminConsoleHeader}><View><Text style={[styles.bigTitle,{color:theme.text}]}>Staff Center</Text><Text style={[styles.headerSub,{color:theme.sub}]}>Moderation, broadcasts, entitlements and audit trail.</Text></View><IconButton icon="close" onPress={onClose} theme={theme}/></View>
+    <ScrollView contentContainerStyle={styles.adminConsoleList}>
+      <View style={[styles.adminConsoleHero,{backgroundColor:'#111318'}]}><View style={styles.adminConsoleHeroIcon}><Ionicons name="shield-checkmark" size={28} color="#fff"/></View><View style={{flex:1}}><Text style={styles.adminConsoleHeroTitle}>LINK Staff · Pulse</Text><Text style={styles.adminConsoleHeroSub}>Server-authorized controls. User clients cannot self-grant staff access.</Text></View></View>
+
+      <SectionTitle theme={theme}>LINK Official</SectionTitle>
+      <View style={[styles.pulseCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
+        <View style={styles.inlineNameRow}><OfficialAvatar theme={theme} size={42}/><View style={{flex:1}}><View style={styles.inlineNameRow}><Text style={[styles.settingsTitle,{color:theme.text}]}>Broadcast as LINK Official</Text><GoldVerifiedBadge compact/></View><Text style={[styles.settingsSub,{color:theme.sub}]}>Sends a read-only system message to every registered LINK user.</Text></View></View>
+        <TextInput value={officialTitle} onChangeText={setOfficialTitle} maxLength={80} placeholder="Title" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text,marginTop:12}]}/>
+        <TextInput value={officialBody} onChangeText={setOfficialBody} multiline maxLength={4000} placeholder="Message to all LINK users…" placeholderTextColor={theme.sub} style={[styles.nextTextInput,{backgroundColor:theme.input,color:theme.text,borderColor:theme.border,minHeight:110,textAlignVertical:'top'}]}/>
+        <View style={{flexDirection:'row',gap:8}}><TextInput value={officialActionLabel} onChangeText={setOfficialActionLabel} maxLength={50} placeholder="Button label (optional)" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text,flex:1}]}/><TextInput value={officialActionUrl} onChangeText={setOfficialActionUrl} autoCapitalize="none" placeholder="https://…" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text,flex:1}]}/></View>
+        <Pressable disabled={publishing} onPress={publish} style={[styles.widePrimary,{backgroundColor:'#111318',opacity:publishing ? .65 : 1}]}>{publishing?<ActivityIndicator color="#fff"/>:<><Ionicons name="megaphone" size={18} color="#F5B942"/><Text style={{color:'#fff',fontWeight:'900'}}>Publish to everyone</Text></>}</Pressable>
+      </View>
+
+      <SectionTitle theme={theme}>Entitlements</SectionTitle>
+      <TextInput value={username} onChangeText={setUsername} autoCapitalize="none" placeholder="@username" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text}]}/>
+      <TextInput value={days} onChangeText={setDays} keyboardType="number-pad" placeholder="Days" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text,marginTop:8}]}/>
+      <View style={styles.settingsChoiceRow}>{['plus','pro','none'].map(tier=><Pressable key={tier} onPress={()=>onEntitlement(username,tier,Number(days)||30)} style={[styles.settingsChoicePill,{backgroundColor:theme.soft,borderColor:theme.border}]}><Text style={{color:theme.text,fontWeight:'900'}}>{tier.toUpperCase()}</Text></Pressable>)}</View>
+
+      <SectionTitle theme={theme}>Moderation</SectionTitle>
+      {Object.values(profiles||{}).filter(p=>!p.isAdmin).slice(0,20).map(person=>{const st=moderation?.[person.id]||{};const muted=st.mutedUntil===-1||st.mutedUntil>Date.now();return <View key={person.id} style={[styles.adminUserCard,{backgroundColor:theme.card,borderColor:theme.border}]}><Avatar person={person} size={44} theme={theme}/><View style={{flex:1}}><View style={styles.inlineNameRow}><Text style={[styles.personName,{color:theme.text}]}>{person.name}</Text>{person.verified?<VerifiedBadge compact/>:null}</View><Text style={[styles.personSub,{color:theme.sub}]}>{person.username}</Text></View><Pressable onPress={()=>st.banned?onUnban(person.id):onBan(person.id)} style={[styles.adminIconAction,{backgroundColor:st.banned?theme.soft:'rgba(255,59,48,.12)'}]}><Ionicons name={st.banned?'lock-open-outline':'ban'} size={18} color={st.banned?theme.text:'#FF3B30'}/></Pressable><Pressable onPress={()=>muted?onUnmute(person.id):onMute(person.id,60*60*1000)} style={[styles.adminIconAction,{backgroundColor:theme.soft}]}><Ionicons name={muted?'volume-high-outline':'volume-mute-outline'} size={18} color={theme.text}/></Pressable></View>})}
+
+      <SectionTitle theme={theme}>Safety reports</SectionTitle>
+      {reports.filter(r=>r.status==='open').length?reports.filter(r=>r.status==='open').slice(0,20).map(report=>{const person=profiles[report.targetId];return <View key={report.id} style={[styles.adminUserCard,{backgroundColor:theme.card,borderColor:theme.border}]}><View style={[styles.adminEntryIcon,{backgroundColor:'rgba(255,159,10,.14)'}]}><Ionicons name="flag-outline" size={19} color="#FF9F0A"/></View><View style={{flex:1,minWidth:0}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{report.category}</Text><Text numberOfLines={2} style={[styles.settingsSub,{color:theme.sub}]}>{person?`${person.name} · ${person.username}`:'User'}{report.details?` · ${report.details}`:''}</Text></View><Pressable onPress={()=>onReviewReport?.(report.id,'reviewed')} style={[styles.adminIconAction,{backgroundColor:theme.soft}]}><Ionicons name="checkmark" size={18} color={theme.text}/></Pressable></View>}):<Text style={{color:theme.sub}}>No open reports.</Text>}
+
+      <SectionTitle theme={theme}>Audit log</SectionTitle>
+      {audit.slice(0,40).map(row=><View key={row.id} style={[styles.auditRow,{borderBottomColor:theme.border}]}><Ionicons name={row.action==='official_broadcast'?'megaphone-outline':'terminal-outline'} size={16} color={row.action==='official_broadcast'?'#F5B942':theme.sub}/><View style={{flex:1}}><Text style={{color:theme.text,fontWeight:'800'}}>{row.action}</Text><Text style={[styles.metaText,{color:theme.sub}]}>{new Date(row.createdAt).toLocaleString()}</Text></View></View>)}
+    </ScrollView>
+  </SafeAreaView></View></Modal>;
 }
 
 function ScannerModal({ visible, onClose, onScanned }) {
@@ -2922,22 +3405,25 @@ function ShopModal({ visible, onClose, theme, profile, balance, ownedIds, plusAc
 }
 
 
-function NoteComposerModal({ visible, onClose, theme, currentNote, plusActive = false, proActive = false, onSave, onDelete }) {
+function NoteComposerModal({ visible, onClose, theme, currentNote, plusActive = false, proActive = false, onSave, onDelete, circles=[] }) {
   const [text, setText] = useState('');
   const [emoji, setEmoji] = useState('💭');
   const [audience, setAudience] = useState('links');
+  const [circleId,setCircleId]=useState(null);
   const emojis = ['💭', '✨', '🌙', '🎧', '🫶', '🔥', '👀', '☕'];
   useEffect(() => {
     if (visible) {
       setText(currentNote?.text || '');
       setEmoji(currentNote?.emoji || '💭');
       setAudience(currentNote?.audience || 'links');
+      setCircleId(currentNote?.circleId||null);
     }
   }, [visible, currentNote?.id]);
   const save = () => {
     const clean = text.trim();
     if (!clean) return Alert.alert('Write a note', 'Add a short note for your LINKs.');
-    onSave({ text: clean.slice(0, 60), emoji, audience });
+    if(audience==='circle'&&!circleId)return Alert.alert('Circle','Choose a Circle.');
+    onSave({ text: clean.slice(0, 60), emoji, audience, circleId:audience==='circle'?circleId:null });
     onClose();
   };
   return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
@@ -2948,9 +3434,14 @@ function NoteComposerModal({ visible, onClose, theme, currentNote, plusActive = 
       <View style={styles.noteMetaLine}><Text style={[styles.settingsSub, { color: theme.sub }]}>Emoji</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>{text.length}/60</Text></View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.noteEmojiRow}>{emojis.map(e => <Pressable key={e} onPress={() => setEmoji(e)} style={[styles.noteEmojiChoice, { backgroundColor: emoji === e ? theme.inverse : theme.soft }]}><Text style={{ fontSize: 20 }}>{e}</Text></Pressable>)}</ScrollView>
       <Text style={[styles.settingsSub, { color: theme.sub, marginTop: 14 }]}>Who can see it?</Text>
-      <View style={styles.noteAudienceRow}><Pressable onPress={() => setAudience('links')} style={[styles.noteAudienceChoice, { backgroundColor: audience === 'links' ? theme.inverse : theme.soft }]}><Ionicons name="people" size={16} color={audience === 'links' ? theme.inverseText : theme.text} /><Text style={{ color: audience === 'links' ? theme.inverseText : theme.text, fontWeight: '800', fontSize: 12 }}>All LINKs</Text></Pressable><Pressable onPress={() => setAudience('close')} style={[styles.noteAudienceChoice, { backgroundColor: audience === 'close' ? ACCENT : theme.soft }]}><Ionicons name="star" size={16} color={audience === 'close' ? '#fff' : theme.text} /><Text style={{ color: audience === 'close' ? '#fff' : theme.text, fontWeight: '800', fontSize: 12 }}>Close LINKs</Text></Pressable></View>
-      <Pressable onPress={save} style={[styles.createAccountButton, { backgroundColor: theme.inverse }]}><Ionicons name="arrow-up" size={17} color={theme.inverseText} /><Text style={{ color: theme.inverseText, fontWeight: '900' }}>{currentNote ? 'Update Note' : 'Share Note'}</Text></Pressable>
-      {currentNote ? <Pressable onPress={() => { onDelete(); onClose(); }} style={styles.noteDeleteButton}><Ionicons name="trash-outline" size={16} color={theme.danger} /><Text style={{ color: theme.danger, fontWeight: '800' }}>Delete Note</Text></Pressable> : null}
+      <View style={styles.noteAudienceRow}>
+        <Pressable onPress={() => setAudience('links')} style={[styles.noteAudienceChoice, { backgroundColor: audience === 'links' ? theme.inverse : theme.soft }]}><Ionicons name="people" size={16} color={audience === 'links' ? theme.inverseText : theme.text} /><Text style={{ color: audience === 'links' ? theme.inverseText : theme.text, fontWeight: '800', fontSize: 12 }}>All LINKs</Text></Pressable>
+        <Pressable onPress={() => setAudience('close')} style={[styles.noteAudienceChoice, { backgroundColor: audience === 'close' ? theme.inverse : theme.soft }]}><Ionicons name="star" size={16} color={audience === 'close' ? theme.inverseText : theme.text} /><Text style={{ color: audience === 'close' ? theme.inverseText : theme.text, fontWeight: '800', fontSize: 12 }}>Close LINKs</Text></Pressable>
+        <Pressable onPress={() => setAudience('circle')} style={[styles.noteAudienceChoice, { backgroundColor: audience === 'circle' ? theme.inverse : theme.soft }]}><Ionicons name="ellipse-outline" size={16} color={audience === 'circle' ? theme.inverseText : theme.text} /><Text style={{ color: audience === 'circle' ? theme.inverseText : theme.text, fontWeight: '800', fontSize: 12 }}>Circle</Text></Pressable>
+      </View>
+      {audience==='circle'?<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap:7,marginTop:9}}>{circles.map(c=><Pressable key={c.id} onPress={()=>setCircleId(c.id)} style={[styles.circlePersonChip,{backgroundColor:circleId===c.id?`${c.color}18`:theme.soft,borderColor:circleId===c.id?c.color:theme.border}]}><Text>{c.emoji}</Text><Text style={{color:theme.text,fontWeight:'850'}}>{c.name}</Text></Pressable>)}</ScrollView>:null}
+      <Pressable onPress={save} style={[styles.widePrimary, { backgroundColor: theme.inverse }]}><Text style={[styles.primaryButtonText, { color: theme.inverseText }]}>{currentNote ? 'Update Note' : 'Share Note'}</Text></Pressable>
+      {currentNote ? <Pressable onPress={() => { onDelete(); onClose(); }} style={[styles.resetButton, { borderColor: theme.border }]}><Ionicons name="trash-outline" size={17} color={theme.danger} /><Text style={{ color: theme.danger, fontWeight: '800' }}>Delete Note</Text></Pressable> : null}
     </Pressable></Pressable>
   </Modal>;
 }
@@ -3230,42 +3721,40 @@ function EncryptionInfoModal({ visible, onClose, theme }) {
   </Modal>;
 }
 
-function MomentComposerModal({ visible, onClose, theme, activeProfile, onPost }) {
-  const [caption,setCaption]=useState(''),[emoji,setEmoji]=useState('✨'),[imageUri,setImageUri]=useState(null),[audience,setAudience]=useState('links'),[musicTitle,setMusicTitle]=useState(''),[musicArtist,setMusicArtist]=useState('');
-  useEffect(()=>{if(visible){setCaption('');setEmoji('✨');setImageUri(null);setAudience('links');setMusicTitle('');setMusicArtist('');}},[visible]);
+function MomentComposerModal({ visible, onClose, theme, activeProfile, circles=[], connectedProfiles=[], onPost }) {
+  const [caption,setCaption]=useState(''),[emoji,setEmoji]=useState('✨'),[imageUri,setImageUri]=useState(null),[audience,setAudience]=useState('links'),[circleId,setCircleId]=useState(null),[musicTitle,setMusicTitle]=useState(''),[musicArtist,setMusicArtist]=useState('');
+  const [mentions,setMentions]=useState([]);
+  useEffect(()=>{if(visible){setCaption('');setEmoji('✨');setImageUri(null);setAudience('links');setCircleId(null);setMusicTitle('');setMusicArtist('');setMentions([]);}},[visible]);
+  const ownCircles=(circles||[]).filter(c=>c.ownerId===activeProfile?.id);
   const choosePhoto=async()=>{try{const permission=await ImagePicker.requestMediaLibraryPermissionsAsync();if(!permission.granted)return;const r=await ImagePicker.launchImageLibraryAsync({mediaTypes:['images'],quality:.76});if(!r.canceled)setImageUri(r.assets?.[0]?.uri||null);}catch{}};
-  return <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}><View style={[styles.momentComposerPage,{backgroundColor:theme.bg}]}><SafeAreaView style={styles.flexOne}><View style={styles.settingsHubHeader}><IconButton icon="close" onPress={onClose} theme={theme}/><View style={{flex:1}}><Text style={[styles.sheetTitle,{color:theme.text}]}>New Moment</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>Moments 3.0 · 24 hours</Text></View><Pressable onPress={()=>{if(!imageUri)return;onPost({imageUri,caption,emoji,audience,musicTitle,musicArtist});onClose();}}><Text style={{color:ACCENT,fontWeight:'900'}}>Share</Text></Pressable></View><ScrollView contentContainerStyle={styles.momentComposerContent}><Pressable onPress={choosePhoto} style={[styles.momentPreview,{backgroundColor:theme.card,borderColor:theme.border}]}>{imageUri?<Image source={{uri:imageUri}} style={StyleSheet.absoluteFill}/>:<><Ionicons name="images-outline" size={38} color={theme.sub}/><Text style={{color:theme.sub,fontWeight:'800',marginTop:8}}>Choose photo</Text></>}</Pressable><TextInput value={caption} onChangeText={setCaption} placeholder="Add a caption…" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text}]}/><View style={styles.settingsChoiceRow}>{[['links','All LINKs'],['close','Close LINKs']].map(([v,l])=><Pressable key={v} onPress={()=>setAudience(v)} style={[styles.settingsChoicePill,{backgroundColor:audience===v?theme.inverse:theme.soft,borderColor:audience===v?theme.inverse:theme.border}]}><Text style={{color:audience===v?theme.inverseText:theme.text,fontWeight:'900'}}>{l}</Text></Pressable>)}</View><SectionTitle theme={theme}>Music sticker</SectionTitle><TextInput value={musicTitle} onChangeText={setMusicTitle} placeholder="Track title" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text}]}/><TextInput value={musicArtist} onChangeText={setMusicArtist} placeholder="Artist" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text,marginTop:8}]}/></ScrollView></SafeAreaView></View></Modal>;
+  return <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}><View style={[styles.momentComposerPage,{backgroundColor:theme.bg}]}><SafeAreaView style={styles.flexOne}><View style={styles.settingsHubHeader}><IconButton icon="close" onPress={onClose} theme={theme}/><View style={{flex:1}}><Text style={[styles.sheetTitle,{color:theme.text}]}>New Moment</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>Moments 3.5 · 24 hours</Text></View><Pressable onPress={()=>{if(!imageUri)return;onPost({imageUri,caption,emoji,audience,circleId,musicTitle,musicArtist,mentionedUserIds:mentions});onClose();}}><Text style={{color:ACCENT,fontWeight:'900'}}>Share</Text></Pressable></View><ScrollView contentContainerStyle={styles.momentComposerContent}><Pressable onPress={choosePhoto} style={[styles.momentPreview,{backgroundColor:theme.card,borderColor:theme.border}]}>{imageUri?<Image source={{uri:imageUri}} style={StyleSheet.absoluteFill}/>:<><Ionicons name="images-outline" size={38} color={theme.sub}/><Text style={{color:theme.sub,fontWeight:'800',marginTop:8}}>Choose photo</Text></>}</Pressable><TextInput value={caption} onChangeText={setCaption} placeholder="Add a caption…" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text}]}/><View style={styles.settingsChoiceRow}>{[['links','All LINKs'],['close','Close LINKs'],['circle','Circle']].map(([v,l])=><Pressable key={v} onPress={()=>setAudience(v)} style={[styles.settingsChoicePill,{backgroundColor:audience===v?theme.inverse:theme.soft,borderColor:audience===v?theme.inverse:theme.border}]}><Text style={{color:audience===v?theme.inverseText:theme.text,fontWeight:'900'}}>{l}</Text></Pressable>)}</View>{audience==='circle'?<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap:8,marginTop:10}}>{ownCircles.length?ownCircles.map(c=><Pressable key={c.id} onPress={()=>setCircleId(c.id)} style={[styles.circlePersonChip,{backgroundColor:circleId===c.id?`${c.color}20`:theme.soft,borderColor:circleId===c.id?c.color:theme.border}]}><Text style={{fontSize:18}}>{c.emoji}</Text><Text style={{color:theme.text,fontWeight:'900'}}>{c.name}</Text></Pressable>):<Text style={{color:theme.sub}}>Create a Circle in Profile → Pulse Center.</Text>}</ScrollView>:null}<SectionTitle theme={theme}>Mention people</SectionTitle><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{gap:7}}>{connectedProfiles.slice(0,20).map(p=>{const active=mentions.includes(p.id);return <Pressable key={p.id} onPress={()=>setMentions(prev=>active?prev.filter(x=>x!==p.id):[...prev,p.id])} style={[styles.circlePersonChip,{backgroundColor:active?`${ACCENT}18`:theme.soft,borderColor:active?ACCENT:theme.border}]}><Avatar person={p} size={26} theme={theme}/><Text style={{color:theme.text,fontWeight:'800',fontSize:10.5}}>{p.name.split(' ')[0]}</Text>{active?<Ionicons name="checkmark-circle" size={14} color={ACCENT}/>:null}</Pressable>})}</ScrollView><SectionTitle theme={theme}>Music sticker</SectionTitle><TextInput value={musicTitle} onChangeText={setMusicTitle} placeholder="Track title" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text}]}/><TextInput value={musicArtist} onChangeText={setMusicArtist} placeholder="Artist" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text,marginTop:8}]}/></ScrollView></SafeAreaView></View></Modal>;
 }
 
-function MomentViewerModal({ visible, onClose, theme, moment, owner, activeId, onReact, moments=[], onNavigate, onReply, onAddHighlight }) {
+function MomentViewerModal({ visible, onClose, theme, moment, owner, activeId, onReact, moments=[], onNavigate, onReply, onAddHighlight, onRepost, onArchive }) {
   const translateY=useRef(new Animated.Value(0)).current;
   const pan=useMemo(()=>PanResponder.create({onMoveShouldSetPanResponder:(_,g)=>Math.abs(g.dy)>12&&Math.abs(g.dy)>Math.abs(g.dx)*1.3,onPanResponderMove:(_,g)=>translateY.setValue(Math.max(0,g.dy)),onPanResponderRelease:(_,g)=>{if(g.dy>110)onClose();else Animated.spring(translateY,{toValue:0,useNativeDriver:true}).start();}}),[onClose]);
   if(!moment||!owner)return null;
-  const idx=moments.findIndex(x=>x.id===moment.id);const canPrev=idx>0,canNext=idx>=0&&idx<moments.length-1;
-  return <Modal visible={visible} animationType="fade" presentationStyle="fullScreen" onRequestClose={onClose}><Animated.View {...pan.panHandlers} style={[styles.momentViewerPage,{transform:[{translateY}]}]}><SafeAreaView style={styles.flexOne}><View style={styles.momentViewerHeader}><View style={styles.inlineNameRow}><Avatar person={owner} size={36} theme={dark}/><View><View style={styles.inlineNameRow}><Text style={styles.momentViewerName}>{owner.name}</Text>{owner.verified?<VerifiedBadge compact/>:null}</View><Text style={styles.momentViewerTime}>{moment.audience==='close'?'★ Close LINKs':'Moment'} · {moment.viewCount||0} views</Text></View></View><Pressable onPress={onClose}><Ionicons name="close" size={28} color="#fff"/></Pressable></View><View style={styles.momentViewerMedia}>{moment.imageUri?<Image source={{uri:moment.imageUri}} style={StyleSheet.absoluteFill} resizeMode="cover"/>:<View style={StyleSheet.absoluteFill}/>}<Pressable style={styles.momentTapLeft} onPress={()=>canPrev&&onNavigate(moments[idx-1])}/><Pressable style={styles.momentTapRight} onPress={()=>canNext&&onNavigate(moments[idx+1])}/>{moment.musicTitle?<View style={styles.musicSticker}><Ionicons name="musical-notes" size={16} color="#fff"/><View><Text style={styles.musicStickerTitle}>{moment.musicTitle}</Text><Text style={styles.musicStickerArtist}>{moment.musicArtist||'Music'}</Text></View></View>:null}{moment.caption?<Text style={styles.momentViewerCaption}>{moment.caption}</Text>:null}</View><View style={styles.momentReactionBar}>{['❤️','🔥','😂','😍','👏'].map(e=><Pressable key={e} onPress={()=>onReact(moment.id,e)} style={styles.momentReactionButton}><Text style={{fontSize:22}}>{e}</Text></Pressable>)}{moment.ownerId!==activeId?<Pressable onPress={()=>onReply?.(moment)} style={styles.momentReplyButton}><Ionicons name="chatbubble-outline" size={20} color="#fff"/><Text style={{color:'#fff',fontWeight:'900'}}>Reply</Text></Pressable>:<Pressable onPress={()=>onAddHighlight?.(moment)} style={styles.momentReplyButton}><Ionicons name="add-circle-outline" size={20} color="#fff"/><Text style={{color:'#fff',fontWeight:'900'}}>Highlight</Text></Pressable>}</View></SafeAreaView></Animated.View></Modal>;
+  const idx=moments.findIndex(x=>x.id===moment.id),canPrev=idx>0,canNext=idx>=0&&idx<moments.length-1;
+  const audienceLabel=moment.audience==='close'?'★ Close LINKs':moment.audience==='circle'?'◉ Circle':'Moment';
+  return <Modal visible={visible} animationType="fade" presentationStyle="fullScreen" onRequestClose={onClose}><Animated.View {...pan.panHandlers} style={[styles.momentViewerPage,{transform:[{translateY}]}]}><SafeAreaView style={styles.flexOne}><View style={styles.momentViewerHeader}><View style={styles.inlineNameRow}><Avatar person={owner} size={36} theme={dark}/><View><View style={styles.inlineNameRow}><Text style={styles.momentViewerName}>{owner.name}</Text>{owner.verified?<VerifiedBadge compact/>:null}</View><Text style={styles.momentViewerTime}>{audienceLabel} · {moment.viewCount||0} views{moment.repostOf?' · repost':''}</Text></View></View><Pressable onPress={onClose}><Ionicons name="close" size={28} color="#fff"/></Pressable></View><View style={styles.momentViewerMedia}>{moment.imageUri?<Image source={{uri:moment.imageUri}} style={StyleSheet.absoluteFill} resizeMode="cover"/>:<View style={StyleSheet.absoluteFill}/>}<Pressable style={styles.momentTapLeft} onPress={()=>canPrev&&onNavigate(moments[idx-1])}/><Pressable style={styles.momentTapRight} onPress={()=>canNext&&onNavigate(moments[idx+1])}/>{moment.musicTitle?<View style={styles.musicSticker}><Ionicons name="musical-notes" size={16} color="#fff"/><View><Text style={styles.musicStickerTitle}>{moment.musicTitle}</Text><Text style={styles.musicStickerArtist}>{moment.musicArtist||'Music'}</Text></View></View>:null}{moment.caption?<Text style={styles.momentViewerCaption}>{moment.caption}</Text>:null}</View><View style={styles.momentReactionBar}>{['❤️','🔥','😂','😍','👏'].map(e=><Pressable key={e} onPress={()=>onReact(moment.id,e)} style={styles.momentReactionButton}><Text style={{fontSize:22}}>{e}</Text></Pressable>)}{moment.ownerId!==activeId?<><Pressable onPress={()=>onReply?.(moment)} style={styles.momentReplyButton}><Ionicons name="chatbubble-outline" size={20} color="#fff"/><Text style={{color:'#fff',fontWeight:'900'}}>Reply</Text></Pressable><Pressable onPress={()=>onRepost?.(moment)} style={styles.momentReactionButton}><Ionicons name="repeat-outline" size={20} color="#fff"/></Pressable></>:<><Pressable onPress={()=>onAddHighlight?.(moment)} style={styles.momentReplyButton}><Ionicons name="add-circle-outline" size={20} color="#fff"/><Text style={{color:'#fff',fontWeight:'900'}}>Highlight</Text></Pressable><Pressable onPress={()=>onArchive?.(moment)} style={styles.momentReactionButton}><Ionicons name="archive-outline" size={20} color="#fff"/></Pressable></>}</View></SafeAreaView></Animated.View></Modal>;
 }
 
 function WhatsNewModal({ visible, onClose, theme }) {
   const sections=[
-    ['home-outline','Home 3.0','A cleaner social home with LINK Now, active LINKs, recent chats, Notes and Moments.'],
-    ['chatbubbles-outline','Chats 3.0','Real voice recording, GIFs, stickers, View Once, link previews, smooth optimistic sending and offline retry.'],
-    ['shield-checkmark-outline','Verified in chat','Verified badges now appear in direct-message headers and next to verified senders in group chats.'],
-    ['aperture-outline','Moments 3.0','Full-screen story navigation, replies, reactions, Close LINKs audience, viewers and music stickers.'],
-    ['people-circle-outline','Groups 3.0','Owner, admin and moderator roles, join approvals, expiring invites, descriptions, themes, polls and @everyone.'],
-    ['pulse-outline','LINK Now','Share a live status for 1 hour, 4 hours or the rest of the day.'],
-    ['search-outline','Unified Search','Search people, groups and loaded encrypted messages from one place.'],
-    ['notifications-outline','Activity Center','Requests, mentions, reactions and Moment activity stay together while message counts stay in Chats.'],
-    ['person-circle-outline','Profile 3.0','Cover backdrops, profile accents, layouts and Moment Highlights.'],
-    ['lock-closed-outline','Account & Safety','Block and report users, review active devices, update email/password and sign out other sessions.'],
-    ['diamond-outline','Pro 3.0','Ghost Mode, advanced identity tools, insights, themes and Pro Benefits remain integrated into NEXT.'],
-    ['construct-outline','Staff Center 3.0','Moderation, verification, custom badges, entitlements and audit history remain server-authorized.'],
-    ['cloud-offline-outline','Offline outbox','Failed sends keep their client nonce and retry without creating duplicate server messages.'],
-    ['speedometer-outline','Realtime & pagination','LINK loads the newest 50 messages per chat, loads earlier history on demand and coalesces realtime refreshes.'],
-    ['language-outline','Czech First','Czech and English remain first-class languages across LINK NEXT.'],
+    ['chatbubbles-outline','Messaging Reliability','Real network-aware offline queue, persistent retries and a Retry action for server-side send errors.'],
+    ['radio-outline','Presence 2.0','Typing, recording, uploading, Active now and separate Last Active privacy.'],
+    ['people-circle-outline','LINK Circles','Create private circles like Besties, Work or Festival Crew and share Moments to them.'],
+    ['aperture-outline','Moments 3.5','Circle audience, mentions, reposts, archive and one-tap Highlights.'],
+    ['people-outline','Groups 3.5','Announcements-only mode, slow mode, media & poll permissions, join questions and private admin notes.'],
+    ['person-circle-outline','Profile 3.5','Pinned CTA, Now Playing and two new Pro-ready layouts: Spotlight and Minimal.'],
+    ['diamond-outline','Pro 3.5','Custom presence icon, badge animation preference, message bubble effects and expanded Circle limits.'],
+    ['search-outline','Search 2.0','Unified people, groups and loaded-message search remains the center of discovery.'],
+    ['pulse-outline','Beta Health','Realtime state, latency, pending queue and diagnostics that can be sent to LINK Staff.'],
+    ['megaphone-outline','LINK Official','A read-only verified system channel. Staff can broadcast messages to every registered LINK user.'],
+    ['shield-checkmark-outline','Staff safeguards','LINK Official, entitlement changes, moderation and staff identity remain server-authorized and audited.'],
   ];
-  return <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}><EdgeSwipeBack onBack={onClose}><SafeAreaView style={[styles.whatsNewPage,{backgroundColor:theme.bg}]}><View style={[styles.whatsNewHeader,{borderBottomColor:theme.border}]}><IconButton icon="chevron-back" onPress={onClose} theme={theme}/><View style={{flex:1}}><Text style={[styles.bigTitle,{color:theme.text}]}>What's new</Text><Text style={[styles.headerSub,{color:theme.sub}]}>{BUILD}</Text></View></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.whatsNewScroll}><LinearGradient colors={['#090A0D','#30205A','#11131A']} style={styles.whatsNewHero}><View style={styles.whatsNewHeroIcon}><Text style={styles.whatsNewHeroIconText}>L</Text></View><View style={{flex:1}}><Text style={styles.whatsNewHeroEyebrow}>LINK 3.0</Text><Text style={styles.whatsNewHeroTitle}>NEXT starts here.</Text><Text style={styles.whatsNewHeroSub}>A rebuilt social layer, richer messaging, Groups and Moments 3.0, stronger safety and a more resilient beta architecture.</Text></View></LinearGradient><Text style={[styles.sectionTitle,{color:theme.text,marginTop:22,marginBottom:10}]}>Update highlights</Text><View style={[styles.whatsNewCard,{backgroundColor:theme.card,borderColor:theme.border}]}>{sections.map(([icon,title,body],index)=><View key={title} style={[styles.whatsNewRow,index===sections.length-1&&{borderBottomWidth:0},{borderBottomColor:theme.border}]}><View style={[styles.whatsNewIcon,{backgroundColor:theme.soft}]}><Ionicons name={icon} size={20} color={ACCENT}/></View><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{title}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{body}</Text></View></View>)}</View><View style={[styles.whatsNewNote,{backgroundColor:theme.soft}]}><Ionicons name="notifications-outline" size={18} color={theme.text}/><Text style={[styles.settingsSub,{color:theme.sub,flex:1}]}>Remote system push still needs a development/production build. Expo Go uses LINK's foreground Activity layer during beta testing.</Text></View></ScrollView></SafeAreaView></EdgeSwipeBack></Modal>;
+  return <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}><EdgeSwipeBack onBack={onClose}><SafeAreaView style={[styles.whatsNewPage,{backgroundColor:theme.bg}]}><View style={[styles.whatsNewHeader,{borderBottomColor:theme.border}]}><IconButton icon="chevron-back" onPress={onClose} theme={theme}/><View style={{flex:1}}><Text style={[styles.bigTitle,{color:theme.text}]}>What's new</Text><Text style={[styles.headerSub,{color:theme.sub}]}>{BUILD}</Text></View></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.whatsNewScroll}><LinearGradient colors={['#090A0D','#34245F','#11131A']} style={styles.whatsNewHero}><View style={styles.whatsNewHeroIcon}><Ionicons name="pulse" size={30} color="#fff"/></View><View style={{flex:1}}><Text style={styles.whatsNewHeroEyebrow}>LINK 3.5</Text><Text style={styles.whatsNewHeroTitle}>Pulse.</Text><Text style={styles.whatsNewHeroSub}>A maturity update focused on messaging reliability, presence, private circles, stronger groups and production-style diagnostics.</Text></View></LinearGradient><Text style={[styles.sectionTitle,{color:theme.text,marginTop:22,marginBottom:10}]}>Update highlights</Text><View style={[styles.whatsNewCard,{backgroundColor:theme.card,borderColor:theme.border}]}>{sections.map(([icon,title,body],index)=><View key={title} style={[styles.whatsNewRow,index===sections.length-1&&{borderBottomWidth:0},{borderBottomColor:theme.border}]}><View style={[styles.whatsNewIcon,{backgroundColor:theme.soft}]}><Ionicons name={icon} size={20} color={title==='LINK Official'?'#F5B942':ACCENT}/></View><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{title}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{body}</Text></View></View>)}</View><View style={[styles.whatsNewNote,{backgroundColor:theme.soft}]}><Ionicons name="construct-outline" size={18} color={theme.text}/><Text style={[styles.settingsSub,{color:theme.sub,flex:1}]}>Remote system push and native app-icon switching still require a development/production build. Expo Go keeps the in-app Pulse layer for beta testing.</Text></View></ScrollView></SafeAreaView></EdgeSwipeBack></Modal>;
 }
-
 
 function NextOnboardingModal({visible,theme,profile,onDone,onShowLink}){
   const [step,setStep]=useState(0);
@@ -3276,7 +3765,7 @@ function NextOnboardingModal({visible,theme,profile,onDone,onShowLink}){
     {icon:'qr-code-outline',title:'Meet. Scan. LINK.',body:'Show your LINK card in person, connect, then keep the conversation going.'},
   ];
   const item=cards[step]||cards[0];
-  return <Modal visible={visible} animationType="fade" presentationStyle="fullScreen"><SafeAreaView style={[styles.flexOne,{backgroundColor:theme.bg}]}><View style={{flex:1,padding:26,justifyContent:'space-between'}}><View><View style={{width:58,height:58,borderRadius:20,backgroundColor:'#111318',alignItems:'center',justifyContent:'center'}}><Text style={{color:'#fff',fontSize:30,fontWeight:'900'}}>L</Text></View><Text style={[styles.bigTitle,{color:theme.text,fontSize:42,marginTop:28}]}>Welcome to LINK 3.0</Text><Text style={[styles.headerSub,{color:theme.sub,fontSize:15,lineHeight:22,marginTop:6}]}>NEXT is built around real people, faster chats and your identity.</Text></View><View style={[styles.nextSheet,{backgroundColor:theme.card,borderWidth:StyleSheet.hairlineWidth,borderColor:theme.border,width:'100%'}]}><View style={{width:54,height:54,borderRadius:18,backgroundColor:theme.soft,alignItems:'center',justifyContent:'center'}}><Ionicons name={item.icon} size={26} color={ACCENT}/></View><Text style={[styles.sheetTitle,{color:theme.text,marginTop:18}]}>{item.title}</Text><Text style={[styles.sheetSub,{color:theme.sub,fontSize:14,lineHeight:21,marginTop:8}]}>{item.body}</Text>{step===2?<Pressable onPress={onShowLink} style={[styles.widePrimary,{backgroundColor:theme.soft,marginTop:18}]}><Ionicons name="qr-code" size={18} color={theme.text}/><Text style={{color:theme.text,fontWeight:'900'}}>Show my LINK</Text></Pressable>:null}</View><View><View style={{flexDirection:'row',justifyContent:'center',gap:7,marginBottom:16}}>{cards.map((_,i)=><View key={i} style={{width:i===step?22:7,height:7,borderRadius:99,backgroundColor:i===step?ACCENT:theme.border}}/>)}</View><Pressable onPress={()=>step<cards.length-1?setStep(step+1):onDone?.()} style={[styles.widePrimary,{backgroundColor:theme.inverse}]}><Text style={[styles.primaryButtonText,{color:theme.inverseText}]}>{step<cards.length-1?'Continue':'Enter LINK'}</Text></Pressable></View></View></SafeAreaView></Modal>;
+  return <Modal visible={visible} animationType="fade" presentationStyle="fullScreen"><SafeAreaView style={[styles.flexOne,{backgroundColor:theme.bg}]}><View style={{flex:1,padding:26,justifyContent:'space-between'}}><View><View style={{width:58,height:58,borderRadius:20,backgroundColor:'#111318',alignItems:'center',justifyContent:'center'}}><Text style={{color:'#fff',fontSize:30,fontWeight:'900'}}>L</Text></View><Text style={[styles.bigTitle,{color:theme.text,fontSize:42,marginTop:28}]}>Welcome to LINK 3.5</Text><Text style={[styles.headerSub,{color:theme.sub,fontSize:15,lineHeight:22,marginTop:6}]}>Pulse brings safer messaging, richer presence and private Circles.</Text></View><View style={[styles.nextSheet,{backgroundColor:theme.card,borderWidth:StyleSheet.hairlineWidth,borderColor:theme.border,width:'100%'}]}><View style={{width:54,height:54,borderRadius:18,backgroundColor:theme.soft,alignItems:'center',justifyContent:'center'}}><Ionicons name={item.icon} size={26} color={ACCENT}/></View><Text style={[styles.sheetTitle,{color:theme.text,marginTop:18}]}>{item.title}</Text><Text style={[styles.sheetSub,{color:theme.sub,fontSize:14,lineHeight:21,marginTop:8}]}>{item.body}</Text>{step===2?<Pressable onPress={onShowLink} style={[styles.widePrimary,{backgroundColor:theme.soft,marginTop:18}]}><Ionicons name="qr-code" size={18} color={theme.text}/><Text style={{color:theme.text,fontWeight:'900'}}>Show my LINK</Text></Pressable>:null}</View><View><View style={{flexDirection:'row',justifyContent:'center',gap:7,marginBottom:16}}>{cards.map((_,i)=><View key={i} style={{width:i===step?22:7,height:7,borderRadius:99,backgroundColor:i===step?ACCENT:theme.border}}/>)}</View><Pressable onPress={()=>step<cards.length-1?setStep(step+1):onDone?.()} style={[styles.widePrimary,{backgroundColor:theme.inverse}]}><Text style={[styles.primaryButtonText,{color:theme.inverseText}]}>{step<cards.length-1?'Continue':'Enter LINK'}</Text></Pressable></View></View></SafeAreaView></Modal>;
 }
 
 function ForegroundNotice({ notice, theme, onPress }) {
@@ -3343,6 +3832,8 @@ function LinkApp({ session }) {
   const [linkNowOpen,setLinkNowOpen]=useState(false);
   const [searchOpen,setSearchOpen]=useState(false);
   const [safetyOpen,setSafetyOpen]=useState(false);
+  const [pulseHubOpen,setPulseHubOpen]=useState(false);
+  const [officialOpen,setOfficialOpen]=useState(false);
   const [pollOpen,setPollOpen]=useState(false);
   const [viewOnceMedia,setViewOnceMedia]=useState(null);
   const [foregroundNotice, setForegroundNotice] = useState(null);
@@ -3362,8 +3853,8 @@ function LinkApp({ session }) {
   const connectedIds = data.relationships[data.activeAccountId] || [];
   const connectedProfiles = connectedIds.map(id => data.profiles[id]).filter(Boolean);
   const incomingRequests = data.requests.filter(r => r.toId === data.activeAccountId);
-  const privacy = data.privacy[data.activeAccountId] || { showStatus: true, showSocials: true, momentsToLinks: true, ghostMode: false, showActivityStatus: true, profileVisibility: 'links', messagesFrom: 'links', linkRequestsFrom: 'everyone', readReceipts: true, typingIndicators: true, profileViewsEnabled: true, discoverableByUsername: true, discoverableByEmail: false, notificationsMessages: true, notificationsRequests: true, notificationsMoments: true, notificationsProduct: false, loginAlerts: true };
-  const unreadChatCount = useMemo(() => Object.values(data.conversations || {}).reduce((total, list) => total + (list || []).filter(message => message.senderId !== data.activeAccountId && !(message.seenBy || message.readBy || []).includes(data.activeAccountId)).length, 0), [data.conversations, data.activeAccountId]);
+  const privacy = data.privacy[data.activeAccountId] || { showStatus: true, showSocials: true, momentsToLinks: true, ghostMode: false, showActivityStatus: true, profileVisibility: 'links', messagesFrom: 'links', linkRequestsFrom: 'everyone', readReceipts: true, typingIndicators: true, profileViewsEnabled: true, discoverableByUsername: true, discoverableByEmail: false, notificationsMessages: true, notificationsRequests: true, notificationsMoments: true, notificationsProduct: false, loginAlerts: true, showLastActive: true };
+  const unreadChatCount = useMemo(() => Object.values(data.conversations || {}).reduce((total, list) => total + (list || []).filter(message => message.senderId !== data.activeAccountId && !(message.seenBy || message.readBy || []).includes(data.activeAccountId)).length, 0) + (data.officialAnnouncements||[]).filter(a=>!a.read).length, [data.conversations, data.activeAccountId, data.officialAnnouncements]);
   const favoriteIds = data.favorites?.[data.activeAccountId] || [];
   const activeWallet = data.wallets?.[data.activeAccountId] ?? 0;
   const activeOwnedEffects = data.ownedEffects?.[data.activeAccountId] || [];
@@ -3373,6 +3864,9 @@ function LinkApp({ session }) {
   const activeNetflixClaim = data.benefitClaims?.[NETFLIX_BENEFIT_KEY] || null;
   const activeLinkNow=data.linkNow?.[data.activeAccountId]||null;
   const activeHighlights=data.profileHighlights?.[data.activeAccountId]||[];
+  const activeProStyle=data.proStyle?.[data.activeAccountId]||{};
+  const activeVisitors=data.recentProfileVisitors||[];
+  const officialAnnouncements=data.officialAnnouncements||[];
   const activeGroupPolls=activeGroupId?(data.groupPolls?.[activeGroupId]||[]):[];
   const activePlus = !!activeProfile?.isAdmin || subscriptionIsActive(activeSubscription) || activePro;
   const activeRestriction = data.moderation?.[data.activeAccountId] || { banned: false, mutedUntil: null };
@@ -3568,7 +4062,7 @@ function LinkApp({ session }) {
     return () => clearInterval(timer);
   }, [hydrated]);
 
-  useEffect(()=>{if(!hydrated||!data.offlineOutbox?.length)return;let stopped=false;const retry=async()=>{if(stopped||AppState.currentState!=='active')return;const item=data.offlineOutbox?.[0];if(!item)return;try{if(item.targetType==='direct')await sendMessage(item.targetId,{...item.payload,_fromOutbox:true});else await sendGroupMessage(item.targetId,{...item.payload,_fromOutbox:true});if(!stopped)mutate(prev=>({...prev,offlineOutbox:(prev.offlineOutbox||[]).filter(x=>x.id!==item.id)}));}catch{}};const timer=setTimeout(retry,2400);return()=>{stopped=true;clearTimeout(timer);};},[hydrated,data.offlineOutbox?.length]);
+  useEffect(()=>{if(!hydrated||!data.offlineOutbox?.length)return;let stopped=false,running=false;const retry=async()=>{if(stopped||running||AppState.currentState!=='active')return;const item=data.offlineOutbox?.[0];if(!item)return;running=true;try{if(item.targetType==='direct')await sendMessage(item.targetId,{...item.payload,_fromOutbox:true});else await sendGroupMessage(item.targetId,{...item.payload,_fromOutbox:true});if(!stopped)mutate(prev=>({...prev,offlineOutbox:(prev.offlineOutbox||[]).filter(x=>x.id!==item.id)}));}catch{}finally{running=false;}};const first=setTimeout(retry,1800);const timer=setInterval(retry,5000);return()=>{stopped=true;clearTimeout(first);clearInterval(timer);};},[hydrated,data.offlineOutbox?.length]);
 
   const switchAccount = (id) => {
     setActiveChatId(null); setActiveGroupId(null); setTab('home'); setAccountsOpen(false);
@@ -3609,15 +4103,25 @@ function LinkApp({ session }) {
   const clearLinkNow=async()=>{try{await clearLinkNowRemote();await refreshRemote();}catch{}};
   const blockPerson=async(id)=>{try{await blockUserRemote(id);setProfileModalId(null);await refreshRemote();}catch(error){Alert.alert('Block',error?.message||'Could not block this user.');}};
   const unblockPerson=async(id)=>{try{await unblockUserRemote(id);await refreshRemote();}catch(error){Alert.alert('Unblock',error?.message||'Try again.');}};
-  const reportPerson=(id)=>Alert.alert('Report user','Choose a reason',[...['spam','harassment','impersonation','other'].map(category=>({text:category,onPress:()=>reportUserRemote(id,category,'Reported from LINK 3.0').then(()=>Alert.alert('Report sent','Thanks. LINK Staff can review it.')).catch(e=>Alert.alert('Report',e.message))})),{text:'Cancel',style:'cancel'}]);
+  const reportPerson=(id)=>Alert.alert('Report user','Choose a reason',[...['spam','harassment','impersonation','other'].map(category=>({text:category,onPress:()=>reportUserRemote(id,category,'Reported from LINK 3.5').then(()=>Alert.alert('Report sent','Thanks. LINK Staff can review it.')).catch(e=>Alert.alert('Report',e.message))})),{text:'Cancel',style:'cancel'}]);
   const staffEntitlement=async(username,tier,days)=>{if(!username.trim())return Alert.alert('Staff Center','Enter @username.');try{await staffSetEntitlementRemote(username,tier,days);await refreshRemote();Alert.alert('Staff Center',`${tier.toUpperCase()} updated for ${username}.`);}catch(e){Alert.alert('Staff Center',e.message||'Action failed.');}};
   const reviewSafetyReport=async(id,status='reviewed')=>{try{await updateSafetyReportRemote(id,status);await refreshRemote();}catch(e){Alert.alert('Staff Center',e.message||'Could not update report.');}};
   const updateGroupV3=async(config)=>{if(!activeGroupId)return;try{await updateGroupV3Remote(activeGroupId,config);await refreshRemote();}catch(e){Alert.alert('Group 3.0',e.message||'Could not save group settings.');}};
+  const updateGroupV35=async(config)=>{if(!activeGroupId)return;try{await updateGroupV35Remote(activeGroupId,config);await refreshRemote();}catch(e){Alert.alert('Group 3.5',e.message||'Could not save group settings.');}};
   const resolveJoin=async(requestId,accept)=>{try{await resolveGroupJoinRemote(requestId,accept);await refreshRemote();}catch(e){Alert.alert('Join request',e.message||'Try again.');}};
   const createPoll=async(question,options)=>{if(!activeGroupId)return;try{await createGroupPollRemote(activeGroupId,question,options);await refreshRemote();}catch(e){Alert.alert('Poll',e.message||'Could not create poll.');}};
   const votePoll=async(pollId,index)=>{try{await voteGroupPollRemote(pollId,index);await refreshRemote();}catch(e){Alert.alert('Poll',e.message||'Could not vote.');}};
   const addHighlight=async(moment)=>{try{await addHighlightRemote(moment.id,moment.caption?.slice(0,20)||'Moment',moment.emoji||'✨');await refreshRemote();}catch(e){Alert.alert('Highlight',e.message||'Could not add highlight.');}};
   const deleteHighlight=async(id)=>{try{await deleteHighlightRemote(id);await refreshRemote();}catch{}};
+  const createCircle=async(config)=>{try{await createCircleRemote(config.name,config.emoji,config.color);await refreshRemote();}catch(e){Alert.alert('LINK Circles',e.message||'Could not create Circle.');}};
+  const toggleCircleMember=async(circleId,userId,add)=>{try{if(add)await addCircleMemberRemote(circleId,userId);else await removeCircleMemberRemote(circleId,userId);await refreshRemote();}catch(e){Alert.alert('LINK Circles',e.message||'Could not update Circle.');}};
+  const deleteCircle=async(circleId)=>{Alert.alert('Delete Circle?','This will not remove any LINKs.',[{text:'Cancel',style:'cancel'},{text:'Delete',style:'destructive',onPress:async()=>{try{await deleteCircleRemote(circleId);await refreshRemote();}catch(e){Alert.alert('LINK Circles',e.message||'Could not delete Circle.');}}}]);};
+  const saveProStyle=async(config)=>{try{await setProStyleRemote(config);await refreshRemote();}catch(e){Alert.alert('Pro 3.5',e.message||'Could not save Pro style.');}};
+  const sendDiagnostics=async()=>{const started=Date.now();let latency=null,lastError=null;try{const {error}=await supabase.from('profiles').select('id').eq('id',data.activeAccountId).maybeSingle();if(error)throw error;latency=Date.now()-started;}catch(e){lastError=e.message||String(e);}try{await sendDiagnosticsRemote({latencyMs:latency,realtimeState:'connected',queueCount:(data.offlineOutbox||[]).length,lastError:lastError||data.diagnostics?.lastError||null});mutate(prev=>({...prev,diagnostics:{...(prev.diagnostics||{}),realtimeState:'connected',lastLatencyMs:latency,lastError:lastError}}));Alert.alert('Beta Health','Diagnostics sent to LINK Staff.');}catch(e){Alert.alert('Beta Health',e.message||'Could not send diagnostics.');}};
+  const sendOfficial=async(config)=>{try{if(!config.body?.trim())return Alert.alert('LINK Official','Write a message first.');await staffSendOfficialRemote(config);await refreshRemote();Alert.alert('LINK Official','Message published to all registered LINK users.');}catch(e){Alert.alert('LINK Official',e.message||'Could not publish message.');}};
+  const markOfficialRead=async(id)=>{try{await markOfficialReadRemote(id);mutate(prev=>({...prev,officialAnnouncements:(prev.officialAnnouncements||[]).map(a=>a.id===id?{...a,read:true}:a),officialReads:{...(prev.officialReads||{}),[id]:Date.now()}}));}catch{}};
+  const repostMoment=async(moment)=>{try{await repostMomentRemote(moment.id,`Reposted from ${data.profiles[moment.ownerId]?.name||'a LINK'}`);await refreshRemote();Alert.alert('Moment','Reposted to your LINKs.');}catch(e){Alert.alert('Moment',e.message||'Could not repost.');}};
+  const archiveMoment=async(moment)=>{try{await archiveMomentRemote(moment.id,true);setMomentViewId(null);await refreshRemote();}catch(e){Alert.alert('Moment',e.message||'Could not archive.');}};
 
   const setThemeSetting = (themeSetting) => {
     mutate(prev => ({ ...prev, themeSetting }));
@@ -3711,8 +4215,8 @@ function LinkApp({ session }) {
       Alert.alert('Group not created', error?.message || 'Try again.');
     }
   };
-  const joinGroup = async (code) => {
-    const result=await joinGroupV3Remote(code); await refreshRemote(); setGroupJoinOpen(false); setTab('chats');
+  const joinGroup = async (code, answer='') => {
+    const result=await joinGroupV35Remote(code,answer); await refreshRemote(); setGroupJoinOpen(false); setTab('chats');
     if(result?.status==='requested') return Alert.alert('Request sent','A group admin needs to approve your request.');
     setActiveChatId(null); setActiveGroupId(result?.chat_id||result?.chatId||null);
   };
@@ -3860,7 +4364,7 @@ function LinkApp({ session }) {
     const optimisticExpiresAt = silentNow?.enabled ? Date.now() + (silentNow.timerSeconds || 5 * 60) * 1000 : null;
     const tempId = payload._tempId || `optimistic:${senderId}:${Date.now()}:${Math.random().toString(36).slice(2,8)}`;
     const clientNonce = payload.clientNonce || tempId.replace('optimistic:','v3:');
-    const optimistic = makeOptimisticMessage(senderId, payload, tempId, optimisticExpiresAt);
+    const optimistic = {...makeOptimisticMessage(senderId, payload, tempId, optimisticExpiresAt),clientNonce,retryPayload:{...payload,clientNonce,_tempId:tempId},retryTargetId:personId,retryTargetType:'direct'};
     mutate(prev => appendOptimisticMessage(prev, key, optimistic));
     try {
       let fresh = data;
@@ -3896,10 +4400,21 @@ function LinkApp({ session }) {
       });
     } catch (error) {
       console.warn('LINK message send failed', error);
-      patchOptimisticMessage(key, tempId, { optimistic: false, sendState: 'failed' });
-      if(!payload._fromOutbox) mutate(prev=>({...prev,offlineOutbox:[...(prev.offlineOutbox||[]).filter(x=>x.id!==clientNonce),{id:clientNonce,targetType:'direct',targetId:personId,payload:{...payload,clientNonce,_tempId:tempId},createdAt:Date.now()}].slice(-30)}));
-      Alert.alert('Queued offline', 'LINK will retry this message when the connection returns.');
+      patchOptimisticMessage(key, tempId, { optimistic: false, sendState: 'failed',sendError:error?.message||String(error) });
+      const networkError=isNetworkLikeError(error);
+      mutate(prev=>({...prev,diagnostics:{...(prev.diagnostics||{}),lastError:error?.message||String(error)}}));
+      if(networkError&&!payload._fromOutbox) mutate(prev=>({...prev,offlineOutbox:[...(prev.offlineOutbox||[]).filter(x=>x.id!==clientNonce),{id:clientNonce,targetType:'direct',targetId:personId,payload:{...payload,clientNonce,_tempId:tempId},createdAt:Date.now()}].slice(-30)}));
+      if(payload._fromOutbox) throw error;
+      Alert.alert(networkError?'Queued offline':'Message not sent', networkError?'LINK will retry this message when the connection returns.':(error?.message||'The server rejected this message. Tap Retry under the message.'));
     }
+  };
+
+  const retryFailedMessage = async (message) => {
+    if(!message?.retryPayload || !message?.retryTargetId) return Alert.alert('Retry','This message can no longer be retried.');
+    try{
+      if(message.retryTargetType==='group') await sendGroupMessage(message.retryTargetId,{...message.retryPayload,_tempId:message.id,clientNonce:message.clientNonce||message.retryPayload.clientNonce});
+      else await sendMessage(message.retryTargetId,{...message.retryPayload,_tempId:message.id,clientNonce:message.clientNonce||message.retryPayload.clientNonce});
+    }catch{}
   };
 
   const reactMessage = (personId, messageId, emoji) => {
@@ -3922,7 +4437,7 @@ function LinkApp({ session }) {
     const optimisticExpiresAt = silentNow?.enabled ? Date.now() + (silentNow.timerSeconds || 5 * 60) * 1000 : null;
     const tempId = payload._tempId || `optimistic:${senderId}:${Date.now()}:${Math.random().toString(36).slice(2,8)}`;
     const clientNonce = payload.clientNonce || tempId.replace('optimistic:','v3:');
-    const optimistic = makeOptimisticMessage(senderId, payload, tempId, optimisticExpiresAt);
+    const optimistic = {...makeOptimisticMessage(senderId, payload, tempId, optimisticExpiresAt),clientNonce,retryPayload:{...payload,clientNonce,_tempId:tempId},retryTargetId:groupId,retryTargetType:'group'};
     mutate(prev => appendOptimisticMessage(prev, key, optimistic));
     try {
       let fresh = data;
@@ -3956,9 +4471,12 @@ function LinkApp({ session }) {
       if(mentionedIds.length) Promise.all(mentionedIds.map(id=>notifyChatMentionRemote(chatId,id).catch(()=>{}))).catch(()=>{});
     } catch (error) {
       console.warn('LINK group message send failed', error);
-      patchOptimisticMessage(key, tempId, { optimistic: false, sendState: 'failed' });
-      if(!payload._fromOutbox) mutate(prev=>({...prev,offlineOutbox:[...(prev.offlineOutbox||[]).filter(x=>x.id!==clientNonce),{id:clientNonce,targetType:'group',targetId:groupId,payload:{...payload,clientNonce,_tempId:tempId},createdAt:Date.now()}].slice(-30)}));
-      Alert.alert('Queued offline', 'LINK will retry this group message when the connection returns.');
+      patchOptimisticMessage(key, tempId, { optimistic: false, sendState: 'failed',sendError:error?.message||String(error) });
+      const networkError=isNetworkLikeError(error);
+      mutate(prev=>({...prev,diagnostics:{...(prev.diagnostics||{}),lastError:error?.message||String(error)}}));
+      if(networkError&&!payload._fromOutbox) mutate(prev=>({...prev,offlineOutbox:[...(prev.offlineOutbox||[]).filter(x=>x.id!==clientNonce),{id:clientNonce,targetType:'group',targetId:groupId,payload:{...payload,clientNonce,_tempId:tempId},createdAt:Date.now()}].slice(-30)}));
+      if(payload._fromOutbox) throw error;
+      Alert.alert(networkError?'Queued offline':'Message not sent', networkError?'LINK will retry this group message when the connection returns.':(error?.message||'The server rejected this message. Tap Retry under the message.'));
     }
   };
   const reactGroupMessage = (groupId, messageId, emoji) => {
@@ -4015,10 +4533,10 @@ function LinkApp({ session }) {
     updateSettingsRemote({ doubleTapEmoji: nextEmoji }).then(refreshRemote).catch(error => Alert.alert('Reaction setting not saved', error?.message || 'Try again.'));
   };
 
-  const postMoment = async ({ imageUri, caption, emoji, audience='links', musicTitle='', musicArtist='' }) => {
+  const postMoment = async ({ imageUri, caption, emoji, audience='links', circleId=null, musicTitle='', musicArtist='', mentionedUserIds=[] }) => {
     if (!activeCanPost('post Moments')) return;
     try {
-      await postMomentRemote({ imageUri, caption, emoji, audience, musicTitle, musicArtist, expiresAt: Date.now() + 24 * 60 * 60 * 1000 });
+      await postMomentRemote({ imageUri, caption, emoji, audience, circleId, musicTitle, musicArtist, mentionedUserIds, expiresAt: Date.now() + 24 * 60 * 60 * 1000 });
       await refreshRemote();
     } catch (error) {
       Alert.alert('Moment not posted', error?.message || 'Try again.');
@@ -4038,11 +4556,11 @@ function LinkApp({ session }) {
     reactMomentRemote(momentId,emoji).catch(error=>Alert.alert('Reaction not saved',error?.message || 'Try again.'));
   };
 
-  const saveNote = async ({ text, emoji, audience }) => {
+  const saveNote = async ({ text, emoji, audience, circleId=null }) => {
     if (!activeCanPost('post Notes')) return;
     const durationHours = activePro ? 168 : activePlus ? 72 : 24;
     try {
-      await saveNoteRemote({ text, emoji, audience, expiresAt: Date.now() + durationHours * 60 * 60 * 1000 });
+      await saveNoteRemote({ text, emoji, audience, circleId, expiresAt: Date.now() + durationHours * 60 * 60 * 1000 });
       await refreshRemote();
     } catch (error) {
       Alert.alert('Note not saved', error?.message || 'Try again.');
@@ -4197,9 +4715,11 @@ ${text}` });
     <CreateAccountModal visible={createAccountOpen} onClose={() => setCreateAccountOpen(false)} theme={theme} onCreate={createLocalAccount} existingProfiles={data.profiles} />
   </>;
 
+  if (officialOpen) return <OfficialChatScreen theme={theme} announcements={officialAnnouncements} onBack={()=>setOfficialOpen(false)} onMarkRead={markOfficialRead}/>;
+
   if (activeChatTarget) return <>
     <RNStatusBar barStyle={activeMode === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={theme.bg} />
-    <ChatScreen theme={theme} activeProfile={activeProfile} person={activeChatTarget} messages={activeMessages} profiles={data.profiles} chatId={activeThreadKey ? data.backendChatIds?.[activeThreadKey] : null} typingEnabled={privacy.typingIndicators !== false} onBack={() => { setActiveChatId(null); setActiveGroupId(null); }} onSend={activeGroup ? sendGroupMessage : sendMessage} onReact={activeGroup ? reactGroupMessage : reactMessage} onEdit={editActiveMessage} onDeleteForMe={activeGroup ? deleteGroupMessageForMe : deleteMessageForMe} onDeleteEveryone={deleteActiveMessageForEveryone} onPin={pinActiveMessage} onForward={forwardActiveMessage} onOpenProfile={openProfileModal} markRead={markRead} silentConfig={activeSilentConfig} onOpenSilent={() => setSilentChatOpen(true)} onOpenEncryptionInfo={() => setEncryptionInfoOpen(true)} chatThemeId={activeChatThemeId} chatThemeScope={activeChatThemeScope} onOpenTheme={() => setChatThemeOpen(true)} chatPrefs={activeChatPrefs} onSavePrefs={saveActiveChatPrefs} isGroup={!!activeGroup} group={activeGroup} groupMembers={activeGroupMembers} onRenameGroup={(name) => activeGroup && renameGroup(activeGroup.id, name)} onToggleGroupEveryone={(enabled) => activeGroup && toggleGroupEveryone(activeGroup.id, enabled)} onPickGroupAvatar={pickActiveGroupAvatar} onRotateGroupInvite={rotateGroupInvite} onToggleGroupInvite={toggleGroupInvite} onSetGroupRole={setGroupRole} onRemoveGroupMember={removeGroupMember} onTransferGroupOwner={transferGroupOwner} onLeaveGroup={leaveActiveGroup} onUpdateGroupV3={updateGroupV3} groupJoinRequests={data.groupJoinRequests||[]} onResolveGroupJoin={resolveJoin} doubleTapEmoji={activeDoubleTapEmoji} onLoadEarlier={loadOlderActiveMessages} onMarkViewOnce={openViewOnce} groupPolls={activeGroupPolls} onOpenPoll={()=>setPollOpen(true)} onVotePoll={votePoll} />
+    <ChatScreen theme={theme} activeProfile={activeProfile} person={activeChatTarget} messages={activeMessages} profiles={data.profiles} chatId={activeThreadKey ? data.backendChatIds?.[activeThreadKey] : null} typingEnabled={privacy.typingIndicators !== false} proBubbleEffect={activeProStyle?.bubbleEffect||'none'} onBack={() => { setActiveChatId(null); setActiveGroupId(null); }} onSend={activeGroup ? sendGroupMessage : sendMessage} onRetryMessage={retryFailedMessage} onReact={activeGroup ? reactGroupMessage : reactMessage} onEdit={editActiveMessage} onDeleteForMe={activeGroup ? deleteGroupMessageForMe : deleteMessageForMe} onDeleteEveryone={deleteActiveMessageForEveryone} onPin={pinActiveMessage} onForward={forwardActiveMessage} onOpenProfile={openProfileModal} markRead={markRead} silentConfig={activeSilentConfig} onOpenSilent={() => setSilentChatOpen(true)} onOpenEncryptionInfo={() => setEncryptionInfoOpen(true)} chatThemeId={activeChatThemeId} chatThemeScope={activeChatThemeScope} onOpenTheme={() => setChatThemeOpen(true)} chatPrefs={activeChatPrefs} onSavePrefs={saveActiveChatPrefs} isGroup={!!activeGroup} group={activeGroup} groupMembers={activeGroupMembers} onRenameGroup={(name) => activeGroup && renameGroup(activeGroup.id, name)} onToggleGroupEveryone={(enabled) => activeGroup && toggleGroupEveryone(activeGroup.id, enabled)} onPickGroupAvatar={pickActiveGroupAvatar} onRotateGroupInvite={rotateGroupInvite} onToggleGroupInvite={toggleGroupInvite} onSetGroupRole={setGroupRole} onRemoveGroupMember={removeGroupMember} onTransferGroupOwner={transferGroupOwner} onLeaveGroup={leaveActiveGroup} onUpdateGroupV3={updateGroupV3} onUpdateGroupV35={updateGroupV35} groupAdminNote={activeGroupId?(data.groupAdminNotes?.[activeGroupId]?.note||''):''} groupJoinRequests={data.groupJoinRequests||[]} onResolveGroupJoin={resolveJoin} doubleTapEmoji={activeDoubleTapEmoji} onLoadEarlier={loadOlderActiveMessages} onMarkViewOnce={openViewOnce} groupPolls={activeGroupPolls} onOpenPoll={()=>setPollOpen(true)} onVotePoll={votePoll} />
     {!activeGroup ? <PersonProfileModal visible={!!profileModalId} onClose={() => setProfileModalId(null)} theme={theme} person={profileModalPerson} connected={(data.relationships[data.activeAccountId] || []).includes(profileModalId)} privacy={profileModalPrivacy} plusActive={profileModalPlusActive} proActive={profileModalProActive} favorite={favoriteIds.includes(profileModalId)} onToggleFavorite={() => profileModalId && toggleFavorite(profileModalId)} onWave={() => profileModalId && sendWave(profileModalId)} onChat={() => profileModalPerson && openChat(profileModalPerson)} viewerIsAdmin={!!activeProfile.isAdmin} moderationState={profileModalModeration} onAdminBan={() => profileModalId && adminBan(profileModalId)} onAdminUnban={() => profileModalId && adminUnban(profileModalId)} onAdminMute={() => profileModalPerson && Alert.alert('Mute ' + profileModalPerson.name, 'Choose duration.', [{ text: '15 minutes', onPress: () => adminMute(profileModalId, 15 * 60 * 1000) }, { text: '1 hour', onPress: () => adminMute(profileModalId, 60 * 60 * 1000) }, { text: '24 hours', onPress: () => adminMute(profileModalId, 24 * 60 * 60 * 1000) }, { text: 'Indefinitely', style: 'destructive', onPress: () => adminMute(profileModalId, -1) }, { text: 'Cancel', style: 'cancel' }])} onAdminUnmute={() => profileModalId && adminUnmute(profileModalId)} blocked={!!profileModalId&&(data.blockedUserIds||[]).includes(profileModalId)} onBlock={()=>profileModalId&&blockPerson(profileModalId)} onUnblock={()=>profileModalId&&unblockPerson(profileModalId)} onReport={()=>profileModalId&&reportPerson(profileModalId)} /> : null}
     <SilentChatModal visible={silentChatOpen} onClose={() => setSilentChatOpen(false)} theme={theme} config={activeSilentConfig} proActive={activePro} onSave={saveSilentConfig} />
     <EncryptionInfoModal visible={encryptionInfoOpen} onClose={() => setEncryptionInfoOpen(false)} theme={theme} />
@@ -4213,8 +4733,8 @@ ${text}` });
         {tab === 'home' && <HomeScreen theme={theme} activeProfile={activeProfile} connectedProfiles={connectedProfiles} conversations={data.conversations} activeId={data.activeAccountId} requests={incomingRequests} notifications={data.notifications} moments={data.moments} notes={data.notes || []} profiles={data.profiles} favorites={data.favorites || {}} favoriteIds={favoriteIds} openOwnCard={() => setCardOpen(true)} openScanner={() => setScannerOpen(true)} openChat={openChat} openAccountSwitcher={() => setAccountsOpen(true)} openNotifications={() => setNotificationsOpen(true)} onAccept={acceptRequest} onDecline={declineRequest} onCreateMoment={() => setMomentComposerOpen(true)} onOpenMoment={openMoment} onOwnNote={() => setNoteComposerOpen(true)} onOpenNote={(n) => setNoteReplyId(n.id)} setTab={setTab} openWhatsNew={() => setWhatsNewOpen(true)} activePro={activePro} benefitClaim={activeNetflixClaim} openPro={() => setProOpen(true)} linkNow={data.linkNow||{}} openLinkNow={()=>setLinkNowOpen(true)} openSearch={()=>setSearchOpen(true)} />}
         {tab === 'people' && <PeopleScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} localAccountIds={data.localAccountIds} requests={data.requests} favoriteIds={favoriteIds} openProfile={openProfileModal} openChat={openChat} sendRequest={sendRequest} onAccept={acceptRequest} onDecline={declineRequest} />}
         {tab === 'link' && <LinkScreen theme={theme} activeProfile={activeProfile} payload={payload} localProfiles={localProfiles} relationships={data.relationships} requests={data.requests} openScanner={() => setScannerOpen(true)} openOwnCard={() => setCardOpen(true)} sendRequest={sendRequest} onAccept={acceptRequest} onDecline={declineRequest} />}
-        {tab === 'chats' && <ChatsScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} conversations={data.conversations} favoriteIds={favoriteIds} groups={data.groups || {}} chatUserSettings={data.chatUserSettings || {}} openChat={openChat} openGroup={openGroup} onCreateGroup={() => setGroupCreateOpen(true)} onJoinGroup={() => setGroupJoinOpen(true)} />}
-        {tab === 'profile' && <ProfileScreen theme={theme} activeProfile={activeProfile} updateProfile={updateActiveProfile} themeSetting={data.themeSetting} setThemeSetting={setThemeSetting} languageSetting={data.languageSetting || 'system'} setLanguageSetting={setLanguageSetting} privacy={privacy} setPrivacy={setPrivacy} openAccountSwitcher={() => setAccountsOpen(true)} openCustomStatus={() => setCustomStatusOpen(true)} openShop={() => setShopOpen(true)} openPlus={activePro ? () => setProOpen(true) : () => setPlusOpen(true)} plusSubscription={activeSubscription} openPro={() => setProOpen(true)} proSubscription={activeProSubscription} insights={proInsights} openAdminConsole={() => setAdminConsoleOpen(true)} doubleTapEmoji={activeDoubleTapEmoji} openDoubleTapReaction={() => setDoubleTapReactionOpen(true)} resetDemo={resetDemo} accountEmail={session?.user?.email || ''} setPresenceMode={setActivePresenceMode} onSignOut={signOutLink} onSaveAdminBadge={saveActiveAdminBadge} profiles={data.profiles} onSaveStaffIdentity={saveStaffIdentity} openSafety={()=>setSafetyOpen(true)} highlights={activeHighlights} onDeleteHighlight={deleteHighlight} />}
+        {tab === 'chats' && <ChatsScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} conversations={data.conversations} favoriteIds={favoriteIds} groups={data.groups || {}} chatUserSettings={data.chatUserSettings || {}} openChat={openChat} openGroup={openGroup} onCreateGroup={() => setGroupCreateOpen(true)} onJoinGroup={() => setGroupJoinOpen(true)} officialAnnouncements={officialAnnouncements} onOpenOfficial={()=>setOfficialOpen(true)} />}
+        {tab === 'profile' && <ProfileScreen theme={theme} activeProfile={activeProfile} updateProfile={updateActiveProfile} themeSetting={data.themeSetting} setThemeSetting={setThemeSetting} languageSetting={data.languageSetting || 'system'} setLanguageSetting={setLanguageSetting} privacy={privacy} setPrivacy={setPrivacy} openAccountSwitcher={() => setAccountsOpen(true)} openCustomStatus={() => setCustomStatusOpen(true)} openShop={() => setShopOpen(true)} openPlus={activePro ? () => setProOpen(true) : () => setPlusOpen(true)} plusSubscription={activeSubscription} openPro={() => setProOpen(true)} proSubscription={activeProSubscription} insights={proInsights} openAdminConsole={() => setAdminConsoleOpen(true)} doubleTapEmoji={activeDoubleTapEmoji} openDoubleTapReaction={() => setDoubleTapReactionOpen(true)} resetDemo={resetDemo} accountEmail={session?.user?.email || ''} setPresenceMode={setActivePresenceMode} onSignOut={signOutLink} onSaveAdminBadge={saveActiveAdminBadge} profiles={data.profiles} onSaveStaffIdentity={saveStaffIdentity} openSafety={()=>setSafetyOpen(true)} openPulseHub={()=>setPulseHubOpen(true)} highlights={activeHighlights} onDeleteHighlight={deleteHighlight} />}
       </View></SafeAreaView><TabBar tab={tab} setTab={setTab} theme={theme} darkMode={activeMode === 'dark'} unreadCount={unreadChatCount} /></EdgeSwipeBack>
       <ForegroundNotice notice={foregroundNotice} theme={theme} onPress={() => { setForegroundNotice(null); setNotificationsOpen(true); }} />
 
@@ -4227,17 +4747,18 @@ ${text}` });
       <JoinGroupModal visible={groupJoinOpen} onClose={() => setGroupJoinOpen(false)} theme={theme} onJoin={joinGroup} />
       <WhatsNewModal visible={whatsNewOpen} onClose={() => setWhatsNewOpen(false)} theme={theme} />
       <NextOnboardingModal visible={hydrated && data.onboardingComplete===false} theme={theme} profile={activeProfile} onShowLink={()=>setCardOpen(true)} onDone={()=>{mutate(prev=>({...prev,onboardingComplete:true}));updateSettingsRemote({onboardingComplete:true}).catch(()=>{});}}/>
-      <LinkNowModal visible={linkNowOpen} onClose={()=>setLinkNowOpen(false)} theme={theme} current={activeLinkNow} onSave={saveLinkNow} onClear={clearLinkNow}/>
+      <LinkNowModal visible={linkNowOpen} onClose={()=>setLinkNowOpen(false)} theme={theme} current={activeLinkNow} onSave={saveLinkNow} onClear={clearLinkNow} circles={(data.circles||[]).filter(c=>c.ownerId===data.activeAccountId)}/>
       <UnifiedSearchModal visible={searchOpen} onClose={()=>setSearchOpen(false)} theme={theme} activeId={data.activeAccountId} profiles={data.profiles} groups={data.groups} conversations={data.conversations} onOpenPerson={p=>{setSearchOpen(false);setProfileModalId(p.id);}} onOpenChat={p=>{setSearchOpen(false);openChat(p);}} onOpenGroup={g=>{setSearchOpen(false);openGroup(g);}}/>
       <SafetyCenterModal visible={safetyOpen} onClose={()=>setSafetyOpen(false)} theme={theme} blockedIds={data.blockedUserIds||[]} profiles={data.profiles} devices={data.devices||[]} onUnblock={unblockPerson} onChangePassword={async p=>{try{await changePasswordRemote(p);Alert.alert('Security','Password updated.');}catch(e){Alert.alert('Security',e.message);}}} onChangeEmail={async e=>{try{await changeEmailRemote(e);Alert.alert('Email','Check your inbox to confirm the change.');}catch(err){Alert.alert('Email',err.message);}}} onSignOutOthers={async()=>{try{await signOutOtherSessionsRemote();Alert.alert('Security','Other sessions signed out.');}catch(e){Alert.alert('Security',e.message);}}}/>
+      <PulseHubModal visible={pulseHubOpen} onClose={()=>setPulseHubOpen(false)} theme={theme} activeProfile={activeProfile} connectedProfiles={connectedProfiles} circles={data.circles||[]} proStyle={activeProStyle} proActive={activePro} visitors={activeVisitors} profiles={data.profiles} diagnostics={data.diagnostics||{realtimeState:'connected'}} queueCount={(data.offlineOutbox||[]).length} onCreateCircle={createCircle} onToggleCircleMember={toggleCircleMember} onDeleteCircle={deleteCircle} onSaveProStyle={saveProStyle} onUpdateProfile={updateActiveProfile} onSendDiagnostics={sendDiagnostics}/>
       <PollComposerModal visible={pollOpen} onClose={()=>setPollOpen(false)} theme={theme} onCreate={createPoll}/>
       <ViewOnceMediaModal visible={!!viewOnceMedia} onClose={()=>setViewOnceMedia(null)} uri={viewOnceMedia?.uri || null}/>
 
-      <StaffCenterModal visible={adminConsoleOpen} onClose={() => setAdminConsoleOpen(false)} theme={theme} profiles={data.profiles} moderation={data.moderation||{}} audit={data.staffAudit||[]} reports={data.safetyReports||[]} onBan={adminBan} onUnban={adminUnban} onMute={adminMute} onUnmute={adminUnmute} onEntitlement={staffEntitlement} onReviewReport={reviewSafetyReport} />
+      <StaffCenterModal visible={adminConsoleOpen} onClose={() => setAdminConsoleOpen(false)} theme={theme} profiles={data.profiles} moderation={data.moderation||{}} audit={data.staffAudit||[]} reports={data.safetyReports||[]} onBan={adminBan} onUnban={adminUnban} onMute={adminMute} onUnmute={adminUnmute} onEntitlement={staffEntitlement} onReviewReport={reviewSafetyReport} onSendOfficial={sendOfficial} />
       <PersonProfileModal visible={!!profileModalId} onClose={() => setProfileModalId(null)} theme={theme} person={profileModalPerson} connected={(data.relationships[data.activeAccountId] || []).includes(profileModalId)} privacy={profileModalPrivacy} plusActive={profileModalPlusActive} proActive={profileModalProActive} favorite={favoriteIds.includes(profileModalId)} onToggleFavorite={() => profileModalId && toggleFavorite(profileModalId)} onWave={() => profileModalId && sendWave(profileModalId)} onChat={() => profileModalPerson && openChat(profileModalPerson)} onSendRequest={() => profileModalId && sendRequest(profileModalId)} viewerIsAdmin={!!activeProfile.isAdmin} moderationState={profileModalModeration} onAdminBan={() => profileModalId && adminBan(profileModalId)} onAdminUnban={() => profileModalId && adminUnban(profileModalId)} onAdminMute={() => profileModalPerson && Alert.alert('Mute ' + profileModalPerson.name, 'Choose duration.', [{ text: '15 minutes', onPress: () => adminMute(profileModalId, 15 * 60 * 1000) }, { text: '1 hour', onPress: () => adminMute(profileModalId, 60 * 60 * 1000) }, { text: '24 hours', onPress: () => adminMute(profileModalId, 24 * 60 * 60 * 1000) }, { text: 'Indefinitely', style: 'destructive', onPress: () => adminMute(profileModalId, -1) }, { text: 'Cancel', style: 'cancel' }])} onAdminUnmute={() => profileModalId && adminUnmute(profileModalId)} />
-      <MomentComposerModal visible={momentComposerOpen} onClose={() => setMomentComposerOpen(false)} theme={theme} activeProfile={activeProfile} onPost={postMoment} />
-      <MomentViewerModal visible={!!momentViewId} onClose={() => setMomentViewId(null)} theme={theme} moment={momentView} owner={momentView ? data.profiles[momentView.ownerId] : null} activeId={data.activeAccountId} onReact={reactMoment} moments={data.moments||[]} onNavigate={openMoment} onReply={replyMoment} onAddHighlight={addHighlight} />
-      <NoteComposerModal visible={noteComposerOpen} onClose={() => setNoteComposerOpen(false)} theme={theme} currentNote={ownNote} plusActive={activePlus} proActive={activePro} onSave={saveNote} onDelete={deleteOwnNote} />
+      <MomentComposerModal visible={momentComposerOpen} onClose={() => setMomentComposerOpen(false)} theme={theme} activeProfile={activeProfile} circles={data.circles||[]} connectedProfiles={connectedProfiles} onPost={postMoment} />
+      <MomentViewerModal visible={!!momentViewId} onClose={() => setMomentViewId(null)} theme={theme} moment={momentView} owner={momentView ? data.profiles[momentView.ownerId] : null} activeId={data.activeAccountId} onReact={reactMoment} moments={data.moments||[]} onNavigate={openMoment} onReply={replyMoment} onAddHighlight={addHighlight} onRepost={repostMoment} onArchive={archiveMoment} />
+      <NoteComposerModal visible={noteComposerOpen} onClose={() => setNoteComposerOpen(false)} theme={theme} currentNote={ownNote} plusActive={activePlus} proActive={activePro} onSave={saveNote} onDelete={deleteOwnNote} circles={(data.circles||[]).filter(c=>c.ownerId===data.activeAccountId)} />
       <NoteReplyModal visible={!!noteReplyId} onClose={() => setNoteReplyId(null)} theme={theme} note={noteReply} person={noteReplyPerson} onReply={text => noteReply && replyToNote(noteReply, text)} />
       <ShopModal visible={shopOpen} onClose={() => setShopOpen(false)} theme={theme} profile={activeProfile} balance={activeWallet} ownedIds={activeOwnedEffects} plusActive={activePlus} proActive={activePro} onPurchase={purchaseEffect} onEquip={equipEffect} onRemove={removeEffect} />
       <LinkPlusModal visible={plusOpen} onClose={() => setPlusOpen(false)} theme={theme} subscription={activeSubscription} onActivate={activatePlus} onCancel={cancelPlus} />
@@ -4515,7 +5036,7 @@ const styles = StyleSheet.create({
   mentionSuggestBar:{paddingTop:5,paddingBottom:3},mentionSuggestContent:{paddingHorizontal:10,gap:7},mentionSuggestChip:{minHeight:43,borderRadius:15,borderWidth:StyleSheet.hairlineWidth,paddingHorizontal:8,paddingVertical:6,flexDirection:'row',alignItems:'center',gap:7},mentionSuggestName:{fontSize:10.5,fontWeight:'900'},mentionSuggestUser:{fontSize:9.5,fontWeight:'600',marginTop:1},
   foregroundNotice:{position:'absolute',top:Platform.OS==='ios'?54:18,left:14,right:14,minHeight:66,borderRadius:21,borderWidth:StyleSheet.hairlineWidth,padding:11,flexDirection:'row',alignItems:'center',gap:10,zIndex:999,shadowColor:'#000',shadowOpacity:.15,shadowRadius:18,shadowOffset:{width:0,height:8},elevation:15},foregroundNoticeIcon:{width:40,height:40,borderRadius:14,alignItems:'center',justifyContent:'center'},foregroundNoticeTitle:{fontSize:12.5,fontWeight:'900'},foregroundNoticeBody:{fontSize:10.5,fontWeight:'600',marginTop:2},
 
-  // LINK 3.0 · NEXT design system
+  // LINK 3.5 · Pulse design system
   nextHero:{borderRadius:30,borderWidth:StyleSheet.hairlineWidth,padding:20,marginBottom:18,overflow:'hidden'},
   nextHeroTitle:{fontSize:34,lineHeight:37,fontWeight:'950',letterSpacing:-1.35,marginTop:18},
   nextQuickRow:{flexDirection:'row',alignItems:'center',gap:8,marginTop:18},
@@ -4535,4 +5056,32 @@ const styles = StyleSheet.create({
   momentComposerContent:{padding:18,paddingBottom:46},momentPreview:{height:320,borderRadius:28,borderWidth:StyleSheet.hairlineWidth,overflow:'hidden',alignItems:'center',justifyContent:'center',marginBottom:14},momentViewerPage:{flex:1,backgroundColor:'#000'},momentViewerHeader:{minHeight:64,paddingHorizontal:14,flexDirection:'row',alignItems:'center',justifyContent:'space-between'},momentViewerName:{color:'#fff',fontSize:13,fontWeight:'900'},momentViewerTime:{color:'rgba(255,255,255,.62)',fontSize:10.5,marginTop:2},momentViewerMedia:{flex:1,marginHorizontal:8,marginBottom:8,borderRadius:28,overflow:'hidden',backgroundColor:'#101114'},momentTapLeft:{position:'absolute',left:0,top:0,bottom:0,width:'36%'},momentTapRight:{position:'absolute',right:0,top:0,bottom:0,width:'36%'},momentViewerCaption:{position:'absolute',left:18,right:18,bottom:22,color:'#fff',fontSize:16,fontWeight:'800',textShadowColor:'rgba(0,0,0,.6)',textShadowRadius:8},momentReactionBar:{minHeight:66,paddingHorizontal:12,paddingBottom:8,flexDirection:'row',alignItems:'center',gap:5},momentReactionButton:{width:42,height:42,borderRadius:21,backgroundColor:'rgba(255,255,255,.10)',alignItems:'center',justifyContent:'center'},momentReplyButton:{marginLeft:'auto',minHeight:42,borderRadius:21,paddingHorizontal:13,backgroundColor:'rgba(255,255,255,.12)',flexDirection:'row',alignItems:'center',gap:6},musicSticker:{position:'absolute',left:16,top:18,minHeight:46,borderRadius:16,paddingHorizontal:11,backgroundColor:'rgba(0,0,0,.52)',flexDirection:'row',alignItems:'center',gap:8},musicStickerTitle:{color:'#fff',fontSize:11,fontWeight:'900'},musicStickerArtist:{color:'rgba(255,255,255,.65)',fontSize:9.5,marginTop:2},
   profileSafetyActions:{flexDirection:'row',gap:8,marginTop:14},
 
+
+  // LINK 3.5 · Pulse
+  pulseSheet:{borderRadius:28,borderWidth:StyleSheet.hairlineWidth,padding:18,marginHorizontal:16,marginVertical:10},
+  pulseCard:{borderRadius:22,borderWidth:StyleSheet.hairlineWidth,padding:15,marginBottom:12},
+  pulseEmojiInput:{width:52,height:48,borderRadius:15,textAlign:'center',fontSize:22,fontWeight:'900',borderWidth:StyleSheet.hairlineWidth},
+  pulseColorDot:{width:18,height:18,borderRadius:9,borderWidth:2,borderColor:'rgba(255,255,255,.82)'},
+  circleIcon:{width:44,height:44,borderRadius:15,alignItems:'center',justifyContent:'center'},
+  circlePersonChip:{borderRadius:18,borderWidth:StyleSheet.hairlineWidth,paddingHorizontal:10,paddingVertical:8,flexDirection:'row',alignItems:'center',gap:7,marginRight:7,marginTop:7},
+  profileCta:{marginTop:12,minHeight:42,borderRadius:15,paddingHorizontal:15,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8},
+  nowPlayingCard:{marginTop:12,borderRadius:17,padding:12,flexDirection:'row',alignItems:'center',gap:10,borderWidth:StyleSheet.hairlineWidth},
+  profileMinimalLayout:{alignItems:'center',paddingHorizontal:20,paddingTop:16,paddingBottom:14},
+  profileSpotlightLayout:{alignItems:'center',paddingHorizontal:20,paddingTop:12,paddingBottom:20},
+  healthGrid:{flexDirection:'row',flexWrap:'wrap',gap:8,marginTop:10},
+  healthMetric:{width:'48%',minHeight:74,borderRadius:17,padding:12,justifyContent:'space-between'},
+  healthValue:{fontSize:18,fontWeight:'950',letterSpacing:-.35},
+  healthLabel:{fontSize:10.5,fontWeight:'800',textTransform:'uppercase',letterSpacing:.5},
+  healthError:{marginTop:10,borderRadius:14,padding:10,fontSize:11,fontWeight:'700',lineHeight:16},
+  messageRetry:{marginLeft:7,paddingHorizontal:7,paddingVertical:3,borderRadius:9},
+  proBubbleGlow:{shadowColor:'#7C5CFF',shadowOpacity:.28,shadowRadius:12,shadowOffset:{width:0,height:4},elevation:5},
+  proBubbleSoft:{transform:[{scale:1.003}],shadowColor:'#000',shadowOpacity:.07,shadowRadius:7,shadowOffset:{width:0,height:3}},
+  officialChatRow:{marginHorizontal:16,marginTop:10,marginBottom:5,borderRadius:22,borderWidth:StyleSheet.hairlineWidth,padding:13,flexDirection:'row',alignItems:'center',gap:12},
+  officialInfoCard:{borderRadius:24,borderWidth:StyleSheet.hairlineWidth,padding:18,marginHorizontal:18,marginTop:18},
+  officialReadOnly:{borderRadius:18,padding:14,flexDirection:'row',alignItems:'center',gap:10,marginTop:12},
+  officialSecurityPill:{alignSelf:'flex-start',borderRadius:999,paddingHorizontal:10,paddingVertical:6,flexDirection:'row',alignItems:'center',gap:6,marginTop:10},
+  officialMessageRow:{paddingHorizontal:16,marginVertical:6,alignItems:'flex-start'},
+  officialMessageBubble:{maxWidth:'88%',borderRadius:22,borderTopLeftRadius:8,paddingHorizontal:15,paddingVertical:12,borderWidth:StyleSheet.hairlineWidth},
+  officialAction:{marginTop:10,borderRadius:13,paddingHorizontal:12,paddingVertical:9,flexDirection:'row',alignItems:'center',gap:7,alignSelf:'flex-start'},
+  officialComposer:{marginHorizontal:14,marginBottom:10,minHeight:50,borderRadius:19,paddingHorizontal:14,flexDirection:'row',alignItems:'center',gap:9,borderWidth:StyleSheet.hairlineWidth},
 });
