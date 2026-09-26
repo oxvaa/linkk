@@ -2684,13 +2684,85 @@ function OfficialAvatar({theme,size=48,showBadge=true}) {
   </View>;
 }
 
-function OfficialProfileModal({visible,onClose,theme}) {
-  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.pulseSheet,{backgroundColor:theme.card,borderColor:theme.border}]} onPress={()=>{}}>
-    <View style={styles.rowBetween}><Text style={[styles.sheetTitle,{color:theme.text}]}>LINK Official</Text><IconButton icon="close" onPress={onClose} theme={theme}/></View>
-    <View style={{alignItems:'center',paddingVertical:22}}><OfficialAvatar theme={theme} size={84}/><View style={[styles.inlineNameRow,{marginTop:15}]}><Text style={[styles.profileName,{color:theme.text}]}>LINK Official</Text><GoldVerifiedBadge/></View><Text style={[styles.profileUser,{color:theme.sub}]}>@linkofficial</Text></View>
-    <View style={[styles.officialInfoCard,{backgroundColor:theme.soft,borderColor:theme.border}]}><Ionicons name="megaphone-outline" size={20} color="#F5B942"/><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>Official messages from LINK</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Product news, safety notices and important account information. This profile is read-only and cannot receive replies.</Text></View></View>
-    <View style={[styles.officialReadOnly,{backgroundColor:theme.input,borderColor:theme.border}]}><Ionicons name="lock-closed" size={16} color={theme.sub}/><Text style={{color:theme.sub,fontWeight:'800',fontSize:12}}>You cannot message LINK Official</Text></View>
-  </Pressable></Pressable></Modal>;
+function OfficialProfileModal({visible,onClose,theme,announcements=[]}) {
+  const cs=CURRENT_LANGUAGE==='cs';
+  const posts=[...announcements].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  const formatPostTime=(value)=>{
+    if(!value)return '';
+    try{return new Date(value).toLocaleString(cs?'cs-CZ':'en-US',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}catch{return '';}
+  };
+  const shareProfile=()=>Share.share({message:cs?'LINK Official · @linkofficial\nOficiální profil LINKu.':'LINK Official · @linkofficial\nOfficial LINK profile.'}).catch(()=>{});
+
+  const profileHeader=<>
+    <View style={styles.officialProfileTop}>
+      <View style={styles.officialProfileHeroRow}>
+        <OfficialAvatar theme={theme} size={88} showBadge={false}/>
+        <View style={styles.officialProfileStats}>
+          <View style={styles.officialProfileStat}><Text style={[styles.officialProfileStatValue,{color:theme.text}]}>{posts.length}</Text><Text style={[styles.officialProfileStatLabel,{color:theme.sub}]}>{cs?'Příspěvků':'Posts'}</Text></View>
+          <View style={styles.officialProfileStat}><Ionicons name="shield-checkmark" size={20} color="#F5B942"/><Text style={[styles.officialProfileStatLabel,{color:theme.sub}]}>{cs?'Ověřený':'Verified'}</Text></View>
+          <View style={styles.officialProfileStat}><Ionicons name="lock-closed" size={18} color={theme.sub}/><Text style={[styles.officialProfileStatLabel,{color:theme.sub}]}>{cs?'Pouze čtení':'Read only'}</Text></View>
+        </View>
+      </View>
+
+      <View style={styles.officialProfileIdentityRow}>
+        <Text style={[styles.officialProfileName,{color:theme.text}]}>LINK Official</Text>
+        <GoldVerifiedBadge/>
+      </View>
+      <Text style={[styles.officialProfileHandle,{color:theme.sub}]}>@linkofficial</Text>
+      <Text style={[styles.officialProfileBio,{color:theme.text}]}>{cs?'Oficiální profil LINKu. Novinky, bezpečnostní upozornění, aktualizace produktu a důležité informace přímo od LINKu.':'The official LINK profile. Product news, safety notices, updates and important information directly from LINK.'}</Text>
+
+      <View style={styles.officialProfileActions}>
+        <View style={[styles.officialProfileActionButton,{backgroundColor:theme.soft,borderColor:theme.border}]}> 
+          <Ionicons name="checkmark-circle" size={17} color="#F5B942"/>
+          <Text style={[styles.officialProfileActionText,{color:theme.text}]}>{cs?'Oficiální účet':'Official account'}</Text>
+        </View>
+        <Pressable onPress={shareProfile} style={({pressed})=>[styles.officialProfileActionButton,{backgroundColor:theme.card,borderColor:theme.border,opacity:pressed ? .7 : 1}]}> 
+          <Ionicons name="share-outline" size={17} color={theme.text}/>
+          <Text style={[styles.officialProfileActionText,{color:theme.text}]}>{cs?'Sdílet profil':'Share profile'}</Text>
+        </Pressable>
+      </View>
+    </View>
+
+    <View style={[styles.officialProfileTabs,{borderTopColor:theme.border,borderBottomColor:theme.border}]}> 
+      <View style={styles.officialProfileTabActive}><Ionicons name="chatbubble-ellipses-outline" size={19} color={theme.text}/><Text style={[styles.officialProfileTabText,{color:theme.text}]}>{cs?'Příspěvky':'Posts'}</Text></View>
+      <View style={styles.officialProfileTab}><Ionicons name="information-circle-outline" size={19} color={theme.sub}/><Text style={[styles.officialProfileTabText,{color:theme.sub}]}>{cs?'Informace':'About'}</Text></View>
+    </View>
+  </>;
+
+  return <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}>
+    <SafeAreaView style={[styles.flexOne,{backgroundColor:theme.bg}]}> 
+      <View style={[styles.officialProfileNav,{borderBottomColor:theme.border,backgroundColor:theme.bg}]}> 
+        <View style={styles.officialProfileNavSide}><IconButton icon="chevron-back" onPress={onClose} theme={theme}/></View>
+        <View style={styles.officialProfileNavCenter}><Text style={[styles.officialProfileNavTitle,{color:theme.text}]}>linkofficial</Text><GoldVerifiedBadge compact/></View>
+        <View style={[styles.officialProfileNavSide,{alignItems:'flex-end'}]}><View style={[styles.officialProfileNavLock,{backgroundColor:theme.soft}]}><Ionicons name="lock-closed-outline" size={17} color={theme.sub}/></View></View>
+      </View>
+
+      <FlatList
+        data={posts}
+        keyExtractor={item=>item.id}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={posts.length?styles.officialProfileFeed:styles.officialProfileFeedEmpty}
+        ListHeaderComponent={profileHeader}
+        renderItem={({item})=><View style={[styles.officialPost,{borderBottomColor:theme.border}]}> 
+          <OfficialAvatar theme={theme} size={42} showBadge={false}/>
+          <View style={styles.officialPostContent}>
+            <View style={styles.officialPostHeader}>
+              <View style={[styles.inlineNameRow,{flexShrink:1}]}><Text numberOfLines={1} style={[styles.officialPostName,{color:theme.text}]}>LINK Official</Text><GoldVerifiedBadge compact/></View>
+              <Text style={[styles.officialPostTime,{color:theme.sub}]}>{formatPostTime(item.createdAt)}</Text>
+            </View>
+            {!!item.title&&item.title!=='LINK Official'?<Text style={[styles.officialPostTitle,{color:theme.text}]}>{item.title}</Text>:null}
+            <Text style={[styles.officialPostBody,{color:theme.text}]}>{item.body}</Text>
+            {item.actionUrl?<Pressable onPress={()=>Linking.openURL(item.actionUrl).catch(()=>{})} style={({pressed})=>[styles.officialPostLink,{borderColor:theme.border,backgroundColor:theme.card,opacity:pressed ? .7 : 1}]}><View style={{flex:1}}><Text numberOfLines={1} style={[styles.officialPostLinkLabel,{color:theme.text}]}>{item.actionLabel||(cs?'Otevřít':'Open')}</Text><Text numberOfLines={1} style={[styles.officialPostLinkUrl,{color:theme.sub}]}>{item.actionUrl}</Text></View><Ionicons name="open-outline" size={17} color={theme.sub}/></Pressable>:null}
+            <View style={styles.officialPostFooter}>
+              <View style={styles.officialPostFooterItem}><Ionicons name="chatbubble-outline" size={17} color={theme.sub}/><Text style={[styles.officialPostFooterText,{color:theme.sub}]}>{cs?'Odpovědi vypnuté':'Replies off'}</Text></View>
+              <Pressable onPress={shareProfile} hitSlop={8} style={styles.officialPostFooterItem}><Ionicons name="share-outline" size={17} color={theme.sub}/></Pressable>
+            </View>
+          </View>
+        </View>}
+        ListEmptyComponent={<View style={styles.officialProfileEmpty}><View style={[styles.officialProfileEmptyIcon,{backgroundColor:theme.soft}]}><Ionicons name="megaphone-outline" size={32} color="#F5B942"/></View><Text style={[styles.officialProfileEmptyTitle,{color:theme.text}]}>{cs?'Zatím žádné příspěvky':'No posts yet'}</Text><Text style={[styles.officialProfileEmptyBody,{color:theme.sub}]}>{cs?'Novinky a důležité informace od LINKu se zobrazí tady.':'News and important information from LINK will appear here.'}</Text></View>}
+      />
+    </SafeAreaView>
+  </Modal>;
 }
 
 function OfficialChatScreen({theme,announcements=[],onBack,onMarkRead}) {
@@ -2772,7 +2844,7 @@ function OfficialChatScreen({theme,announcements=[],onBack,onMarkRead}) {
           </View>
         </SafeAreaView>
 
-        <OfficialProfileModal visible={profileOpen} onClose={()=>setProfileOpen(false)} theme={theme}/>
+        <OfficialProfileModal visible={profileOpen} onClose={()=>setProfileOpen(false)} theme={theme} announcements={sorted}/>
       </KeyboardAvoidingView>
     </EdgeSwipeBack>
   );
@@ -5135,6 +5207,48 @@ const styles = StyleSheet.create({
   proBubbleGlow:{shadowColor:'#7C5CFF',shadowOpacity:.28,shadowRadius:12,shadowOffset:{width:0,height:4},elevation:5},
   proBubbleSoft:{transform:[{scale:1.003}],shadowColor:'#000',shadowOpacity:.07,shadowRadius:7,shadowOffset:{width:0,height:3}},
   officialChatRow:{marginHorizontal:16,marginTop:10,marginBottom:5,borderRadius:22,borderWidth:StyleSheet.hairlineWidth,padding:13,flexDirection:'row',alignItems:'center',gap:12},
+
+  officialProfileNav:{height:52,borderBottomWidth:StyleSheet.hairlineWidth,flexDirection:'row',alignItems:'center',paddingHorizontal:10},
+  officialProfileNavSide:{width:58,justifyContent:'center'},
+  officialProfileNavCenter:{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:6},
+  officialProfileNavTitle:{fontSize:16,fontWeight:'900',letterSpacing:-.2},
+  officialProfileNavLock:{width:34,height:34,borderRadius:17,alignItems:'center',justifyContent:'center'},
+  officialProfileFeed:{paddingBottom:48},
+  officialProfileFeedEmpty:{flexGrow:1,paddingBottom:48},
+  officialProfileTop:{paddingHorizontal:18,paddingTop:18,paddingBottom:16},
+  officialProfileHeroRow:{flexDirection:'row',alignItems:'center',justifyContent:'space-between'},
+  officialProfileStats:{flex:1,marginLeft:20,flexDirection:'row',alignItems:'center',justifyContent:'space-around'},
+  officialProfileStat:{minWidth:70,alignItems:'center',justifyContent:'center',gap:4},
+  officialProfileStatValue:{fontSize:18,fontWeight:'950',letterSpacing:-.35},
+  officialProfileStatLabel:{fontSize:10.5,fontWeight:'700',textAlign:'center'},
+  officialProfileIdentityRow:{marginTop:15,flexDirection:'row',alignItems:'center',gap:7},
+  officialProfileName:{fontSize:21,fontWeight:'950',letterSpacing:-.45},
+  officialProfileHandle:{fontSize:13.5,fontWeight:'600',marginTop:2},
+  officialProfileBio:{fontSize:14,lineHeight:20,marginTop:9,maxWidth:390},
+  officialProfileActions:{marginTop:15,flexDirection:'row',gap:8},
+  officialProfileActionButton:{flex:1,minHeight:40,borderRadius:13,borderWidth:StyleSheet.hairlineWidth,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:7,paddingHorizontal:10},
+  officialProfileActionText:{fontSize:12.5,fontWeight:'850'},
+  officialProfileTabs:{height:48,borderTopWidth:StyleSheet.hairlineWidth,borderBottomWidth:StyleSheet.hairlineWidth,flexDirection:'row',alignItems:'stretch'},
+  officialProfileTabActive:{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:7,borderBottomWidth:2,borderBottomColor:'#111318'},
+  officialProfileTab:{flex:1,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:7},
+  officialProfileTabText:{fontSize:12.5,fontWeight:'850'},
+  officialPost:{paddingHorizontal:16,paddingVertical:15,borderBottomWidth:StyleSheet.hairlineWidth,flexDirection:'row',alignItems:'flex-start',gap:11},
+  officialPostContent:{flex:1,minWidth:0},
+  officialPostHeader:{minHeight:24,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:10},
+  officialPostName:{fontSize:14.5,fontWeight:'950',letterSpacing:-.2},
+  officialPostTime:{fontSize:10.5,fontWeight:'650'},
+  officialPostTitle:{fontSize:16,fontWeight:'950',lineHeight:20.5,marginTop:5,letterSpacing:-.2},
+  officialPostBody:{fontSize:14.5,lineHeight:20.5,marginTop:4},
+  officialPostLink:{marginTop:11,minHeight:56,borderRadius:14,borderWidth:StyleSheet.hairlineWidth,paddingHorizontal:12,paddingVertical:10,flexDirection:'row',alignItems:'center',gap:10},
+  officialPostLinkLabel:{fontSize:12.5,fontWeight:'900'},
+  officialPostLinkUrl:{fontSize:10.5,fontWeight:'600',marginTop:2},
+  officialPostFooter:{marginTop:12,flexDirection:'row',alignItems:'center',justifyContent:'space-between'},
+  officialPostFooterItem:{flexDirection:'row',alignItems:'center',gap:6},
+  officialPostFooterText:{fontSize:10.5,fontWeight:'700'},
+  officialProfileEmpty:{flex:1,minHeight:280,alignItems:'center',justifyContent:'center',paddingHorizontal:34},
+  officialProfileEmptyIcon:{width:72,height:72,borderRadius:36,alignItems:'center',justifyContent:'center',marginBottom:18},
+  officialProfileEmptyTitle:{fontSize:20,fontWeight:'950',letterSpacing:-.4,textAlign:'center'},
+  officialProfileEmptyBody:{fontSize:13.5,lineHeight:19,marginTop:7,textAlign:'center',maxWidth:300},
   officialInfoCard:{borderRadius:24,borderWidth:StyleSheet.hairlineWidth,padding:18,marginHorizontal:18,marginTop:18},
   officialReadOnly:{borderRadius:18,padding:14,flexDirection:'row',alignItems:'center',gap:10,marginTop:12},
 
