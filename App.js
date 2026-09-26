@@ -2696,27 +2696,133 @@ function OfficialChatScreen({theme,announcements=[],onBack,onMarkRead}) {
   const [profileOpen,setProfileOpen]=useState(false);
   useEffect(()=>{announcements.filter(a=>!a.read).forEach(a=>onMarkRead?.(a.id));},[announcements.map(a=>`${a.id}:${a.read}`).join('|')]);
   const sorted=[...announcements].sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+  const isEmpty=sorted.length===0;
+
   return <View style={[styles.flexOne,{backgroundColor:theme.bg}]}>
     <SafeAreaView style={styles.flexOne}>
-      <View style={[styles.chatHeader,{borderBottomColor:theme.border,backgroundColor:theme.bg}]}>
-        <View style={styles.chatHeaderSide}><IconButton icon="chevron-back" onPress={onBack} theme={theme}/></View>
-        <Pressable onPress={()=>setProfileOpen(true)} style={styles.chatHeaderPersonCenter}><OfficialAvatar theme={theme} size={34}/><View style={styles.inlineNameRow}><Text style={[styles.chatHeaderName,{color:theme.text}]}>LINK Official</Text><GoldVerifiedBadge compact/></View></Pressable>
-        <View style={[styles.chatHeaderSide,styles.chatHeaderRight]}><Ionicons name="lock-closed-outline" size={20} color={theme.sub}/></View>
-      </View>
-      <View style={[styles.officialSecurityPill,{backgroundColor:theme.soft}]}><Ionicons name="shield-checkmark" size={14} color="#F5B942"/><Text style={{color:theme.sub,fontSize:10.5,fontWeight:'800'}}>Verified system channel · read only</Text></View>
-      <FlatList data={sorted} keyExtractor={x=>x.id} contentContainerStyle={{padding:16,paddingBottom:120}} renderItem={({item})=><View style={styles.officialMessageRow}>
-        <OfficialAvatar theme={theme} size={34}/>
-        <View style={[styles.officialMessageBubble,{backgroundColor:theme.card,borderColor:theme.border}]}>
-          <View style={styles.inlineNameRow}><Text style={{color:theme.text,fontWeight:'950',fontSize:12.5}}>LINK Official</Text><GoldVerifiedBadge compact/></View>
-          {!!item.title && item.title!=='LINK Official'?<Text style={{color:theme.text,fontWeight:'950',fontSize:16,marginTop:7}}>{item.title}</Text>:null}
-          <Text style={{color:theme.text,fontSize:14.5,lineHeight:20,marginTop:5}}>{item.body}</Text>
-          {item.actionUrl?<Pressable onPress={()=>Linking.openURL(item.actionUrl).catch(()=>{})} style={[styles.officialAction,{backgroundColor:'#111318'}]}><Text style={{color:'#fff',fontWeight:'900'}}>{item.actionLabel||'Open'}</Text><Ionicons name="open-outline" size={15} color="#fff"/></Pressable>:null}
-          <Text style={[styles.metaText,{color:theme.sub,marginLeft:0,marginTop:8}]}>{item.createdAt?new Date(item.createdAt).toLocaleString():''}</Text>
+      <View style={[styles.officialHeader,{backgroundColor:theme.bg}]}>
+        <View pointerEvents="box-none" style={styles.officialHeaderControls}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Back"
+            hitSlop={10}
+            onPress={onBack}
+            style={({pressed})=>[
+              styles.officialHeaderButton,
+              {
+                backgroundColor:theme.card,
+                borderColor:theme.border,
+                opacity:pressed ? .72 : 1,
+                transform:[{scale:pressed ? .96 : 1}],
+              }
+            ]}>
+            <Ionicons name="chevron-back" size={27} color={theme.text}/>
+          </Pressable>
+
+          <View
+            accessibilityLabel="Read only"
+            style={[
+              styles.officialHeaderButton,
+              {backgroundColor:theme.card,borderColor:theme.border}
+            ]}>
+            <Ionicons name="lock-closed-outline" size={23} color={theme.sub}/>
+          </View>
         </View>
-      </View>} ListEmptyComponent={<View style={styles.emptyState}><Ionicons name="megaphone-outline" size={42} color={theme.sub}/><Text style={[styles.emptyTitle,{color:theme.text}]}>No official messages yet</Text><Text style={[styles.emptyBody,{color:theme.sub}]}>Important LINK updates will appear here.</Text></View>}/>
-      <View style={[styles.officialComposer,{backgroundColor:theme.bg,borderTopColor:theme.border}]}><View style={[styles.officialReadOnly,{backgroundColor:theme.input,borderColor:theme.border,flex:1,margin:0}]}><Ionicons name="lock-closed" size={16} color={theme.sub}/><Text style={{color:theme.sub,fontWeight:'800'}}>Replies are disabled</Text></View></View>
+
+        <Pressable
+          onPress={()=>setProfileOpen(true)}
+          style={({pressed})=>[styles.officialHeaderIdentity,{opacity:pressed ? .82 : 1}]}>
+          <OfficialAvatar theme={theme} size={62}/>
+          <View style={styles.officialHeaderTitleRow}>
+            <Text numberOfLines={1} style={[styles.officialHeaderTitle,{color:theme.text}]}>LINK Official</Text>
+            <GoldVerifiedBadge/>
+          </View>
+        </Pressable>
+      </View>
+
+      <View style={styles.officialSecurityWrap}>
+        <View style={[
+          styles.officialSecurityPill,
+          {backgroundColor:theme.card,borderColor:'rgba(245,185,66,.28)'}
+        ]}>
+          <View style={styles.officialSecurityIcon}>
+            <Ionicons name="shield-checkmark" size={16} color="#F5B942"/>
+          </View>
+          <Text numberOfLines={1} style={[styles.officialSecurityText,{color:theme.sub}]}>
+            Verified system channel · read only
+          </Text>
+        </View>
+      </View>
+
+      <FlatList
+        style={styles.officialList}
+        data={sorted}
+        keyExtractor={x=>x.id}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[
+          styles.officialListContent,
+          isEmpty && styles.officialListEmptyContent,
+        ]}
+        renderItem={({item})=><View style={styles.officialMessageRow}>
+          <OfficialAvatar theme={theme} size={34}/>
+          <View style={[styles.officialMessageBubble,{backgroundColor:theme.card,borderColor:theme.border}]}>
+            <View style={styles.inlineNameRow}>
+              <Text style={[styles.officialMessageSender,{color:theme.text}]}>LINK Official</Text>
+              <GoldVerifiedBadge compact/>
+            </View>
+            {!!item.title && item.title!=='LINK Official'
+              ? <Text style={[styles.officialMessageTitle,{color:theme.text}]}>{item.title}</Text>
+              : null}
+            <Text style={[styles.officialMessageBody,{color:theme.text}]}>{item.body}</Text>
+            {item.actionUrl
+              ? <Pressable
+                  onPress={()=>Linking.openURL(item.actionUrl).catch(()=>{})}
+                  style={({pressed})=>[
+                    styles.officialAction,
+                    {backgroundColor:theme.inverse,opacity:pressed ? .72 : 1}
+                  ]}>
+                  <Text style={{color:theme.inverseText,fontWeight:'900'}}>{item.actionLabel||'Open'}</Text>
+                  <Ionicons name="open-outline" size={15} color={theme.inverseText}/>
+                </Pressable>
+              : null}
+            <Text style={[styles.officialMessageTime,{color:theme.sub}]}>
+              {item.createdAt?new Date(item.createdAt).toLocaleString():''}
+            </Text>
+          </View>
+        </View>}
+        ListEmptyComponent={
+          <View style={styles.officialEmptyState}>
+            <View style={[styles.officialEmptyIcon,{backgroundColor:theme.soft}]}>
+              <Ionicons name="megaphone-outline" size={44} color={theme.sub}/>
+            </View>
+            <Text style={[styles.officialEmptyTitle,{color:theme.text}]}>No official messages yet</Text>
+            <Text style={[styles.officialEmptyBody,{color:theme.sub}]}>Important LINK updates will appear here.</Text>
+          </View>
+        }
+      />
+
+      <View style={[styles.officialComposerArea,{backgroundColor:theme.bg}]}>
+        <View style={[
+          styles.officialComposer,
+          {
+            backgroundColor:theme.card,
+            borderColor:theme.border,
+            shadowColor:theme.text,
+          }
+        ]}>
+          <View style={[styles.officialComposerInner,{backgroundColor:theme.input}]}>
+            <Ionicons name="lock-closed" size={18} color={theme.sub}/>
+            <Text style={[styles.officialComposerText,{color:theme.sub}]}>Replies are disabled</Text>
+          </View>
+        </View>
+      </View>
     </SafeAreaView>
-    <OfficialProfileModal visible={profileOpen} onClose={()=>setProfileOpen(false)} theme={theme}/>
+
+    <OfficialProfileModal
+      visible={profileOpen}
+      onClose={()=>setProfileOpen(false)}
+      theme={theme}
+    />
   </View>;
 }
 
@@ -5079,9 +5185,222 @@ const styles = StyleSheet.create({
   officialChatRow:{marginHorizontal:16,marginTop:10,marginBottom:5,borderRadius:22,borderWidth:StyleSheet.hairlineWidth,padding:13,flexDirection:'row',alignItems:'center',gap:12},
   officialInfoCard:{borderRadius:24,borderWidth:StyleSheet.hairlineWidth,padding:18,marginHorizontal:18,marginTop:18},
   officialReadOnly:{borderRadius:18,padding:14,flexDirection:'row',alignItems:'center',gap:10,marginTop:12},
-  officialSecurityPill:{alignSelf:'flex-start',borderRadius:999,paddingHorizontal:10,paddingVertical:6,flexDirection:'row',alignItems:'center',gap:6,marginTop:10},
-  officialMessageRow:{paddingHorizontal:16,marginVertical:6,alignItems:'flex-start'},
-  officialMessageBubble:{maxWidth:'88%',borderRadius:22,borderTopLeftRadius:8,paddingHorizontal:15,paddingVertical:12,borderWidth:StyleSheet.hairlineWidth},
-  officialAction:{marginTop:10,borderRadius:13,paddingHorizontal:12,paddingVertical:9,flexDirection:'row',alignItems:'center',gap:7,alignSelf:'flex-start'},
-  officialComposer:{marginHorizontal:14,marginBottom:10,minHeight:50,borderRadius:19,paddingHorizontal:14,flexDirection:'row',alignItems:'center',gap:9,borderWidth:StyleSheet.hairlineWidth},
+
+  officialHeader:{
+    minHeight:164,
+    justifyContent:'center',
+    alignItems:'center',
+    paddingHorizontal:18,
+    paddingTop:10,
+    paddingBottom:12,
+  },
+  officialHeaderControls:{
+    position:'absolute',
+    top:18,
+    left:18,
+    right:18,
+    zIndex:5,
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'space-between',
+  },
+  officialHeaderButton:{
+    width:48,
+    height:48,
+    borderRadius:24,
+    alignItems:'center',
+    justifyContent:'center',
+    borderWidth:StyleSheet.hairlineWidth,
+    shadowOpacity:.06,
+    shadowRadius:11,
+    shadowOffset:{width:0,height:5},
+    elevation:2,
+  },
+  officialHeaderIdentity:{
+    alignItems:'center',
+    justifyContent:'center',
+    paddingTop:4,
+    minWidth:210,
+  },
+  officialHeaderTitleRow:{
+    marginTop:12,
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'center',
+    gap:7,
+  },
+  officialHeaderTitle:{
+    fontSize:21,
+    lineHeight:26,
+    fontWeight:'950',
+    letterSpacing:-.55,
+  },
+
+  officialSecurityWrap:{
+    alignItems:'center',
+    justifyContent:'center',
+    paddingHorizontal:18,
+    paddingTop:4,
+    paddingBottom:8,
+  },
+  officialSecurityPill:{
+    maxWidth:'94%',
+    minHeight:42,
+    borderRadius:999,
+    paddingHorizontal:15,
+    paddingVertical:9,
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'center',
+    gap:8,
+    borderWidth:StyleSheet.hairlineWidth,
+    shadowColor:'#F5B942',
+    shadowOpacity:.05,
+    shadowRadius:8,
+    shadowOffset:{width:0,height:3},
+  },
+  officialSecurityIcon:{
+    width:23,
+    height:23,
+    borderRadius:12,
+    alignItems:'center',
+    justifyContent:'center',
+  },
+  officialSecurityText:{
+    flexShrink:1,
+    fontSize:12.5,
+    lineHeight:17,
+    fontWeight:'850',
+    letterSpacing:-.1,
+  },
+
+  officialList:{flex:1},
+  officialListContent:{
+    paddingHorizontal:18,
+    paddingTop:12,
+    paddingBottom:24,
+  },
+  officialListEmptyContent:{
+    flexGrow:1,
+    justifyContent:'center',
+    paddingTop:2,
+    paddingBottom:34,
+  },
+  officialEmptyState:{
+    alignItems:'center',
+    justifyContent:'center',
+    paddingHorizontal:26,
+    transform:[{translateY:-10}],
+  },
+  officialEmptyIcon:{
+    width:96,
+    height:96,
+    borderRadius:48,
+    alignItems:'center',
+    justifyContent:'center',
+    marginBottom:26,
+  },
+  officialEmptyTitle:{
+    fontSize:24,
+    lineHeight:30,
+    fontWeight:'950',
+    letterSpacing:-.65,
+    textAlign:'center',
+  },
+  officialEmptyBody:{
+    marginTop:9,
+    maxWidth:330,
+    fontSize:15,
+    lineHeight:21,
+    fontWeight:'500',
+    textAlign:'center',
+  },
+
+  officialMessageRow:{
+    flexDirection:'row',
+    alignItems:'flex-start',
+    gap:10,
+    marginVertical:7,
+  },
+  officialMessageBubble:{
+    flexShrink:1,
+    maxWidth:'84%',
+    borderRadius:22,
+    borderTopLeftRadius:9,
+    paddingHorizontal:15,
+    paddingVertical:13,
+    borderWidth:StyleSheet.hairlineWidth,
+    shadowColor:'#000',
+    shadowOpacity:.035,
+    shadowRadius:7,
+    shadowOffset:{width:0,height:3},
+  },
+  officialMessageSender:{
+    fontWeight:'950',
+    fontSize:12.5,
+  },
+  officialMessageTitle:{
+    fontWeight:'950',
+    fontSize:16,
+    lineHeight:20,
+    marginTop:7,
+    letterSpacing:-.2,
+  },
+  officialMessageBody:{
+    fontSize:14.5,
+    lineHeight:20.5,
+    marginTop:5,
+  },
+  officialMessageTime:{
+    fontSize:10.5,
+    fontWeight:'650',
+    marginTop:9,
+  },
+  officialAction:{
+    marginTop:11,
+    borderRadius:14,
+    minHeight:38,
+    paddingHorizontal:13,
+    paddingVertical:9,
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'center',
+    gap:7,
+    alignSelf:'flex-start',
+  },
+
+  officialComposerArea:{
+    paddingHorizontal:18,
+    paddingTop:8,
+    paddingBottom:8,
+  },
+  officialComposer:{
+    width:'100%',
+    minHeight:72,
+    borderRadius:30,
+    borderWidth:StyleSheet.hairlineWidth,
+    padding:8,
+    justifyContent:'center',
+    shadowOpacity:.055,
+    shadowRadius:14,
+    shadowOffset:{width:0,height:5},
+    elevation:2,
+  },
+  officialComposerInner:{
+    width:'100%',
+    minHeight:54,
+    borderRadius:22,
+    paddingHorizontal:18,
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'flex-start',
+    gap:12,
+  },
+  officialComposerText:{
+    flexShrink:1,
+    fontSize:15,
+    lineHeight:20,
+    fontWeight:'850',
+    letterSpacing:-.15,
+  },
 });
