@@ -1,30 +1,25 @@
-LINK 3.5 · Pulse — Markdown 101
-================================
+LINK 3.5 · Pulse — Message Stability Fix (Build 356)
+===================================================
 
-Discord-style Markdown formatting added.
+Fixes the case where a recipient does not see a newly received message in the chat list
+until manually opening/leaving/reopening the conversation.
 
-Who can format:
-- Admin / CEO messages render Markdown.
-- LINK Official announcements always render Markdown (publishing is already server-authorized to LINK Staff).
-- Regular users can type Markdown characters, but their messages remain plain text.
+Stability layer:
+- Message INSERT realtime events use a faster 90 ms coalesced refresh.
+- Realtime channel status is tracked (SUBSCRIBED / CHANNEL_ERROR / TIMED_OUT / CLOSED).
+- A catch-up refresh runs whenever the realtime channel subscribes/re-subscribes.
+- New lightweight server RPC: inbox_sync_cursor().
+- Inbox Watchdog checks the latest visible server message every 3.5 seconds while LINK is active.
+- A full snapshot is fetched only if the server cursor differs from the local inbox cursor.
+- Returning LINK to the foreground triggers an immediate catch-up sync.
+- Notifications realtime refresh moved from slow to fast path.
+- Existing realtime remains primary; watchdog is only the reliability fallback.
 
-Supported syntax:
-- **bold**
-- *italic*
-- ***bold italic***
-- __underline__
-- ~~strikethrough~~
-- `inline code`
-- fenced code blocks with triple backticks
-- > quote
-- # / ## / ### headings
-- bullet and numbered lists
-- ||spoiler|| (tap to reveal)
-- [label](https://example.com)
+Backend:
+- public.inbox_sync_cursor() is restricted to authenticated/service_role.
+- It uses auth.uid() and chat membership to return only the current user's latest visible message.
 
-Also included:
-- Markdown stripped from chat-list previews so previews stay clean.
-- Markdown 101 helper in the admin chat attachment menu.
-- Markdown 101 helper in Staff Center → LINK Official composer.
-- LINK Official chat and profile feed share the same Markdown renderer.
-- Launcher cache build: 355.
+Files:
+- App.js
+- App.snack.js
+- index.html

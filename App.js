@@ -637,17 +637,18 @@ async function loadLinkSnapshot(base, userId) {
   return {...base,version:35,activeAccountId:userId,localAccountIds:[userId],profiles,relationships,requests,groups,conversations,backendChatIds,doubleTapReactions:{[userId]:settings.double_tap_emoji||'❤️'},moments,notes,notifications:{[userId]:notifications},favorites:{[userId]:(favoritesQ.data||[]).map(x=>x.favorite_user_id)},privacy:{[userId]:{showStatus:settings.show_status??true,showSocials:settings.show_socials??true,momentsToLinks:settings.moments_to_links??true,ghostMode:settings.ghost_mode??false,showActivityStatus:settings.show_activity_status??true,profileVisibility:settings.profile_visibility||'links',messagesFrom:settings.messages_from||'links',linkRequestsFrom:settings.link_requests_from||'everyone',readReceipts:settings.read_receipts??true,typingIndicators:settings.typing_indicators??true,profileViewsEnabled:settings.profile_views_enabled??true,discoverableByUsername:settings.discoverable_by_username??true,discoverableByEmail:settings.discoverable_by_email??false,notificationsMessages:settings.notifications_messages??true,notificationsRequests:settings.notifications_requests??true,notificationsMoments:settings.notifications_moments??true,notificationsProduct:settings.notifications_product??false,loginAlerts:settings.login_alerts??true,showLastActive:settings.show_last_active??true}},wallets:{[userId]:ent.coins??2200},ownedEffects:{[userId]:ent.owned_effects||[]},subscriptions,proSubscriptions,benefitClaims,moderation,chatKeys,silentChats,chatThemes,chatThemeScopes,chatUserSettings,profileViews:{[userId]:(profileViewsQ.data||[]).length},themeSetting:settings.theme_setting||base.themeSetting||'system',languageSetting:settings.language_setting||base.languageSetting||'system',onboardingComplete:settings.onboarding_complete!==false,linkNow,groupJoinRequests:(joinRequestsQ.data||[]).map(r=>({id:r.id,chatId:r.chat_id,userId:r.user_id,status:r.status,answer:r.answer||'',createdAt:toMs(r.created_at)})),groupPolls,profileHighlights,blockedUserIds,devices:(devicesQ.data||[]).map(d=>({id:d.id,label:d.device_label,platform:d.platform,version:d.app_version,lastSeenAt:toMs(d.last_seen_at),createdAt:toMs(d.created_at)})),viewOnceViewed:viewedOnce,staffAudit:(staffAuditQ.data||[]).map(a=>({id:a.id,actorId:a.actor_id,targetId:a.target_user_id,action:a.action,metadata:a.metadata||{},createdAt:toMs(a.created_at)})),safetyReports:(reportsQ.data||[]).map(r=>({id:r.id,reporterId:r.reporter_id,targetId:r.reported_user_id,category:r.category,details:r.details,status:r.status,createdAt:toMs(r.created_at)})),presenceActivity,circles,proStyle,officialAnnouncements,officialReads,groupAdminNotes,recentProfileVisitors};
 }
 
-function subscribeLink(userId,onChange){
+function subscribeLink(userId,onChange,onStatus){
   let fastTimer=null,slowTimer=null,running=false,queued=false,closed=false;
   const run=async()=>{if(closed)return;if(running){queued=true;return;}running=true;try{await onChange?.();}finally{running=false;if(queued&&!closed){queued=false;fastTimer=setTimeout(run,650);}}};
-  const fast=()=>{if(closed)return;clearTimeout(fastTimer);fastTimer=setTimeout(run,360);};
-  const slow=()=>{if(closed)return;clearTimeout(slowTimer);slowTimer=setTimeout(run,950);};
+  const messageFast=()=>{if(closed)return;clearTimeout(fastTimer);fastTimer=setTimeout(run,90);};
+  const fast=()=>{if(closed)return;clearTimeout(fastTimer);fastTimer=setTimeout(run,260);};
+  const slow=()=>{if(closed)return;clearTimeout(slowTimer);slowTimer=setTimeout(run,900);};
   const channel=supabase.channel(`link-live-v3-${userId}`)
     .on('postgres_changes',{event:'*',schema:'public',table:'profiles'},fast)
     .on('postgres_changes',{event:'*',schema:'public',table:'connections'},fast)
     .on('postgres_changes',{event:'*',schema:'public',table:'chats'},fast)
     .on('postgres_changes',{event:'*',schema:'public',table:'chat_members'},fast)
-    .on('postgres_changes',{event:'*',schema:'public',table:'messages'},fast)
+    .on('postgres_changes',{event:'*',schema:'public',table:'messages'},messageFast)
     .on('postgres_changes',{event:'*',schema:'public',table:'message_reactions'},slow)
     .on('postgres_changes',{event:'*',schema:'public',table:'message_receipts'},slow)
     .on('postgres_changes',{event:'*',schema:'public',table:'message_pins'},slow)
@@ -656,7 +657,7 @@ function subscribeLink(userId,onChange){
     .on('postgres_changes',{event:'*',schema:'public',table:'moment_reactions'},slow)
     .on('postgres_changes',{event:'*',schema:'public',table:'moment_views'},slow)
     .on('postgres_changes',{event:'*',schema:'public',table:'notes'},slow)
-    .on('postgres_changes',{event:'*',schema:'public',table:'notifications'},slow)
+    .on('postgres_changes',{event:'*',schema:'public',table:'notifications'},fast)
     .on('postgres_changes',{event:'*',schema:'public',table:'moderation'},fast)
     .on('postgres_changes',{event:'*',schema:'public',table:'entitlements'},fast)
     .on('postgres_changes',{event:'*',schema:'public',table:'profile_tiers'},slow)
@@ -675,7 +676,12 @@ function subscribeLink(userId,onChange){
     .on('postgres_changes',{event:'*',schema:'public',table:'official_announcements'},fast)
     .on('postgres_changes',{event:'*',schema:'public',table:'official_announcement_reads'},slow)
     .on('postgres_changes',{event:'*',schema:'public',table:'group_admin_notes'},slow)
-    .subscribe();
+    .subscribe((status,error)=>{
+      if(closed)return;
+      onStatus?.(status,error||null);
+      if(status==='SUBSCRIBED') messageFast();
+      else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'||status==='CLOSED') slow();
+    });
   return()=>{closed=true;clearTimeout(fastTimer);clearTimeout(slowTimer);supabase.removeChannel(channel);};
 }
 
@@ -891,6 +897,14 @@ async function sendMessageRemote(chatId, payload) {
     .then(({error:receiptError}) => { if (receiptError) console.warn('LINK sender receipt failed', receiptError); })
     .catch(receiptError => console.warn('LINK sender receipt failed', receiptError));
   return data;
+}
+
+
+async function getInboxSyncCursorRemote() {
+  const { data, error } = await supabase.rpc('inbox_sync_cursor');
+  if (error) throw error;
+  const row = Array.isArray(data) ? data[0] : data;
+  return row?.latest_message_id || null;
 }
 
 async function editMessageRemote(messageId, cipher) {
@@ -4085,6 +4099,8 @@ function LinkApp({ session }) {
   const refreshInFlightRef = useRef(false);
   const refreshQueuedRef = useRef(false);
   const refreshPromiseRef = useRef(null);
+  const inboxWatchBusyRef = useRef(false);
+  const latestLocalMessageIdRef = useRef(null);
 
   const activeMode = data.themeSetting === 'system' ? (systemScheme === 'dark' ? 'dark' : 'light') : data.themeSetting;
   const theme = activeMode === 'dark' ? dark : light;
@@ -4209,8 +4225,87 @@ function LinkApp({ session }) {
   }, [hydrated, liveUserId, data]);
   useEffect(() => {
     if (!hydrated || !liveUserId) return undefined;
-    return subscribeLink(liveUserId, refreshRemote);
+    return subscribeLink(
+      liveUserId,
+      refreshRemote,
+      (status,error) => {
+        const state = status === 'SUBSCRIBED' ? 'connected' : String(status || 'connecting').toLowerCase();
+        setData(prev => ({
+          ...prev,
+          diagnostics: {
+            ...(prev.diagnostics || {}),
+            realtimeState: state,
+            lastError: error?.message || (status === 'SUBSCRIBED' ? null : prev.diagnostics?.lastError || null),
+          },
+        }));
+      }
+    );
   }, [hydrated, liveUserId]);
+  useEffect(() => {
+    let latestId = null;
+    let latestAt = -1;
+    for (const list of Object.values(data.conversations || {})) {
+      for (const message of list || []) {
+        if (!message?.id || String(message.id).startsWith('optimistic:')) continue;
+        const createdAt = Number(message.createdAt || 0);
+        if (createdAt >= latestAt) {
+          latestAt = createdAt;
+          latestId = message.id;
+        }
+      }
+    }
+    latestLocalMessageIdRef.current = latestId;
+  }, [data.conversations]);
+
+  useEffect(() => {
+    if (!hydrated || !liveUserId) return undefined;
+    let alive = true;
+
+    const checkInbox = async ({ force = false } = {}) => {
+      if (!alive || AppState.currentState !== 'active' || inboxWatchBusyRef.current) return;
+      inboxWatchBusyRef.current = true;
+      try {
+        const serverLatestId = await getInboxSyncCursorRemote();
+        const localLatestId = latestLocalMessageIdRef.current;
+        if (force || serverLatestId !== localLatestId) {
+          const fresh = await refreshRemote();
+          if (fresh) {
+            let newestId = null;
+            let newestAt = -1;
+            for (const list of Object.values(fresh.conversations || {})) {
+              for (const message of list || []) {
+                if (!message?.id || String(message.id).startsWith('optimistic:')) continue;
+                const createdAt = Number(message.createdAt || 0);
+                if (createdAt >= newestAt) {
+                  newestAt = createdAt;
+                  newestId = message.id;
+                }
+              }
+            }
+            latestLocalMessageIdRef.current = newestId;
+          }
+        }
+      } catch (error) {
+        console.warn('LINK inbox watchdog failed', error);
+      } finally {
+        inboxWatchBusyRef.current = false;
+      }
+    };
+
+    const startupTimer = setTimeout(() => checkInbox(), 700);
+    const interval = setInterval(() => checkInbox(), 3500);
+    const appStateSub = AppState.addEventListener('change', state => {
+      if (state === 'active') setTimeout(() => checkInbox({ force:true }), 120);
+    });
+
+    return () => {
+      alive = false;
+      clearTimeout(startupTimer);
+      clearInterval(interval);
+      appStateSub.remove();
+    };
+  }, [hydrated, liveUserId]);
+
   useEffect(() => {
     if (!hydrated || !liveUserId) return undefined;
     let alive = true;
