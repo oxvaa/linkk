@@ -360,6 +360,7 @@ Object.assign(CS_TRANSLATIONS, {
   "No official messages yet":"Zatím žádné oficiální zprávy",
   "Important LINK updates will appear here.":"Důležité novinky LINKu se zobrazí tady.",
   "Replies are disabled":"Odpovědi jsou vypnuté",
+  "Official channel · read only":"Oficiální kanál · pouze ke čtení",
   "Publish to everyone":"Odeslat všem",
   "Official broadcast":"Oficiální zpráva",
   "Send a read-only message as LINK Official to every registered LINK account.":"Pošli všem registrovaným LINK účtům zprávu pouze ke čtení jménem LINK Official.",
@@ -2676,10 +2677,10 @@ function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setT
 
 
 
-function OfficialAvatar({theme,size=48}) {
+function OfficialAvatar({theme,size=48,showBadge=true}) {
   return <View style={{width:size,height:size,borderRadius:size/2,backgroundColor:'#111318',alignItems:'center',justifyContent:'center',borderWidth:StyleSheet.hairlineWidth,borderColor:'rgba(245,185,66,.55)'}}>
     <Text style={{color:'#fff',fontSize:size*.42,fontWeight:'950',letterSpacing:-1}}>L</Text>
-    <View style={{position:'absolute',right:-2,bottom:-2}}><GoldVerifiedBadge compact={size<50}/></View>
+    {showBadge?<View style={{position:'absolute',right:-2,bottom:-2}}><GoldVerifiedBadge compact={size<50}/></View>:null}
   </View>;
 }
 
@@ -2693,6 +2694,7 @@ function OfficialProfileModal({visible,onClose,theme}) {
 }
 
 function OfficialChatScreen({theme,announcements=[],onBack,onMarkRead}) {
+  const [profileOpen,setProfileOpen]=useState(false);
   useEffect(()=>{announcements.filter(a=>!a.read).forEach(a=>onMarkRead?.(a.id));},[announcements.map(a=>`${a.id}:${a.read}`).join('|')]);
   const sorted=[...announcements].sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
   const isEmpty=sorted.length===0;
@@ -2704,78 +2706,73 @@ function OfficialChatScreen({theme,announcements=[],onBack,onMarkRead}) {
           <View style={[styles.chatHeader,{borderBottomColor:theme.border}]}> 
             <BlurView intensity={Platform.OS === 'ios' ? 42 : 28} tint={theme.bg === dark.bg ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
             <View style={styles.chatHeaderSide}>
-              <IconButton icon="chevron-back" onPress={onBack} theme={theme} />
+              <IconButton icon="chevron-back" onPress={onBack} theme={theme}/>
             </View>
-            <View style={styles.chatHeaderCenter}>
-              <View style={{flexDirection:'row',alignItems:'center',justifyContent:'center',gap:10}}>
-                <OfficialAvatar theme={theme} size={38}/>
-                <View style={{minWidth:0,alignItems:'flex-start'}}>
-                  <View style={styles.inlineNameRow}>
-                    <Text numberOfLines={1} style={[styles.chatName,{color:theme.text}]}>LINK Official</Text>
-                    <GoldVerifiedBadge compact/>
-                  </View>
-                  <Text numberOfLines={1} style={[styles.chatPresence,{color:theme.sub}]}>Official channel · read only</Text>
-                </View>
-              </View>
-            </View>
-            <View style={styles.chatHeaderSide}>
-              <View style={[styles.officialHeaderLock,{backgroundColor:theme.soft,borderColor:theme.border}]}>
-                <Ionicons name="lock-closed-outline" size={16} color={theme.sub}/>
-              </View>
-            </View>
-          </View>
 
-          <View style={[styles.officialInfoBanner,{backgroundColor:theme.card,borderColor:theme.border}]}> 
-            <Ionicons name="shield-checkmark" size={16} color="#F5B942"/>
-            <Text numberOfLines={1} style={[styles.officialInfoBannerText,{color:theme.sub}]}>Verified system channel · replies disabled</Text>
-          </View>
-
-          <FlatList
-            style={styles.flexOne}
-            data={sorted}
-            keyExtractor={x=>x.id}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={[styles.officialThreadContent,isEmpty && styles.officialThreadContentEmpty]}
-            renderItem={({item})=><View style={styles.officialThreadRow}>
-              <View style={styles.groupMessageAvatarSlot}>
-                <View style={styles.groupMessageAvatarLeft}><OfficialAvatar theme={theme} size={30}/></View>
-              </View>
-              <View style={styles.messageStack}>
-                <View style={styles.inlineNameRow}>
-                  <Text style={[styles.groupSenderName,{color:theme.text,marginTop:0,marginLeft:8,marginBottom:5}]}>LINK Official</Text>
+            <Pressable onPress={()=>setProfileOpen(true)} style={styles.chatHeaderPersonCenter}>
+              <OfficialAvatar theme={theme} size={34} showBadge={false}/>
+              <View style={{alignItems:'center',minWidth:0}}>
+                <View style={styles.chatHeaderIdentity}>
+                  <Text numberOfLines={1} style={[styles.chatHeaderName,{color:theme.text}]}>LINK Official</Text>
                   <GoldVerifiedBadge compact/>
+                  <Ionicons name="chevron-down" size={12} color={theme.sub}/>
                 </View>
-                {!!item.title && item.title!=='LINK Official' ? <Text style={[styles.officialBubbleTitle,{color:theme.text}]}>{item.title}</Text> : null}
-                <View style={styles.incomingPressable}>
-                  <View style={styles.bubbleShell}>
-                    <View style={[styles.bubble,styles.incomingBubble,{backgroundColor:theme.card,borderWidth:StyleSheet.hairlineWidth,borderColor:theme.border}]}> 
-                      <Text style={[styles.bubbleText,{color:theme.text,fontSize:15.5,lineHeight:21.5}]}>{item.body}</Text>
-                      {item.actionUrl ? <Pressable onPress={()=>Linking.openURL(item.actionUrl).catch(()=>{})} style={({pressed})=>[styles.officialInlineAction,{backgroundColor:theme.inverse,opacity:pressed?0.78:1}]}><Text style={[styles.officialInlineActionText,{color:theme.inverseText}]}>{item.actionLabel||'Open'}</Text><Ionicons name="open-outline" size={14} color={theme.inverseText}/></Pressable> : null}
+                <Text numberOfLines={1} style={[styles.chatHeaderStatus,{color:theme.sub}]}>Official channel · read only</Text>
+              </View>
+            </Pressable>
+
+            <View style={[styles.chatHeaderSide,styles.chatHeaderRight]}>
+              <IconButton icon="information-circle-outline" onPress={()=>setProfileOpen(true)} theme={theme}/>
+              <IconButton icon="lock-closed-outline" onPress={()=>Alert.alert('LINK Official','This is a verified system channel. Only LINK Staff can publish here. Replies are disabled for everyone.')} theme={theme}/>
+            </View>
+          </View>
+
+          <Pressable onPress={()=>setProfileOpen(true)} style={[styles.metContext,{backgroundColor:theme.soft}]}> 
+            <Ionicons name="shield-checkmark" size={13} color="#F5B942"/>
+            <Text style={[styles.metContextText,{color:theme.sub}]}>Verified system channel · read only</Text>
+            <Ionicons name="information-circle-outline" size={13} color={theme.sub}/>
+          </Pressable>
+
+          <View style={styles.chatBody}>
+            <FlatList
+              data={sorted}
+              keyExtractor={x=>x.id}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={[styles.messageList,isEmpty&&styles.officialDmEmptyList]}
+              renderItem={({item})=><View style={[styles.messageLine,{justifyContent:'flex-start'}]}>
+                <View style={[styles.messageStack,{alignItems:'flex-start'}]}>
+                  <View style={styles.incomingPressable}>
+                    <View style={styles.bubbleShell}>
+                      <View style={[styles.bubble,styles.incomingBubble,{backgroundColor:theme.soft}]}> 
+                        {!!item.title && item.title!=='LINK Official' ? <Text style={[styles.officialDmBubbleTitle,{color:theme.text}]}>{item.title}</Text> : null}
+                        <Text style={[styles.bubbleText,{color:theme.text}]}>{item.body}</Text>
+                        {item.actionUrl ? <Pressable onPress={()=>Linking.openURL(item.actionUrl).catch(()=>{})} style={({pressed})=>[styles.officialDmAction,{backgroundColor:theme.inverse,opacity:pressed ? .78 : 1}]}><Text style={[styles.officialDmActionText,{color:theme.inverseText}]}>{item.actionLabel||'Open'}</Text><Ionicons name="open-outline" size={14} color={theme.inverseText}/></Pressable> : null}
+                      </View>
                     </View>
                   </View>
+                  <View style={[styles.messageMetaOutside,{justifyContent:'flex-start'}]}>
+                    <Text style={[styles.bubbleTime,{color:theme.sub}]}>{item.createdAt?new Date(item.createdAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):''}</Text>
+                  </View>
                 </View>
-                <View style={[styles.messageMetaOutside,{justifyContent:'flex-start'}]}>
-                  <Text style={[styles.bubbleTime,{color:theme.sub}]}>{item.createdAt?new Date(item.createdAt).toLocaleString():''}</Text>
-                </View>
-              </View>
-            </View>}
-            ListEmptyComponent={<View style={styles.officialChatEmptyState}><View style={[styles.officialChatEmptyIcon,{backgroundColor:theme.soft}]}><Ionicons name="megaphone-outline" size={42} color={theme.sub}/></View><Text style={[styles.officialChatEmptyTitle,{color:theme.text}]}>No official messages yet</Text><Text style={[styles.officialChatEmptyBody,{color:theme.sub}]}>Important LINK updates will appear here.</Text></View>}
-          />
+              </View>}
+              ListEmptyComponent={<View style={styles.emptyChat}><View style={[styles.emptyChatIcon,{backgroundColor:'rgba(245,185,66,.13)'}]}><Ionicons name="megaphone-outline" size={28} color="#F5B942"/></View><Text style={[styles.emptyTitle,{color:theme.text}]}>No official messages yet</Text><Text style={[styles.emptyBody,{color:theme.sub}]}>Important LINK updates will appear here.</Text></View>}
+            />
+          </View>
 
           <View style={[styles.composerWrap,{backgroundColor:theme.bg}]}> 
-            <View style={[styles.plusButton,{backgroundColor:theme.soft,borderColor:theme.border,opacity:1}]}> 
-              <Ionicons name="lock-closed" size={20} color={theme.sub} />
+            <View style={[styles.plusButton,{backgroundColor:theme.soft,borderColor:theme.border}]}> 
+              <Ionicons name="lock-closed" size={20} color={theme.sub}/>
             </View>
-            <View style={[styles.composer,{backgroundColor:theme.card,borderColor:theme.border,opacity:1}]}> 
-              <View style={styles.officialDisabledComposerInner}>
-                <Text style={[styles.composerInput,{color:theme.sub}]}>Replies are disabled</Text>
-              </View>
+            <View style={[styles.composer,{backgroundColor:theme.card,borderColor:theme.border}]}> 
+              <TextInput editable={false} pointerEvents="none" value="" placeholder="Replies are disabled" placeholderTextColor={theme.sub} style={[styles.composerInput,{color:theme.sub}]}/>
               <View style={[styles.sendButton,{backgroundColor:theme.soft}]}> 
-                <Ionicons name="remove" size={18} color={theme.sub}/>
+                <Ionicons name="lock-closed-outline" size={17} color={theme.sub}/>
               </View>
             </View>
           </View>
         </SafeAreaView>
+
+        <OfficialProfileModal visible={profileOpen} onClose={()=>setProfileOpen(false)} theme={theme}/>
       </KeyboardAvoidingView>
     </EdgeSwipeBack>
   );
