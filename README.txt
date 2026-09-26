@@ -1,14 +1,30 @@
-LINK 3.5 · Pulse — Official Profile Feed
-========================================
+LINK 3.5 · Pulse — Markdown 101
+================================
 
-New LINK Official profile experience:
-- Tapping LINK Official in chat opens a full-screen profile instead of a sheet.
-- Instagram-style profile header with avatar, verified identity, stats and profile actions.
-- Threads/X-style chronological feed below the profile.
-- The feed reuses the same official_announcements data as LINK Official chat, so Staff broadcasts automatically appear as posts.
-- Action links from announcements are available inside posts.
-- Profile and post UI supports Czech/English based on the app language.
-- Profile remains read-only; replies stay disabled.
-- Launcher cache build bumped to 354.
+Discord-style Markdown formatting added.
 
-Files: App.js, App.snack.js, index.html
+Who can format:
+- Admin / CEO messages render Markdown.
+- LINK Official announcements always render Markdown (publishing is already server-authorized to LINK Staff).
+- Regular users can type Markdown characters, but their messages remain plain text.
+
+Supported syntax:
+- **bold**
+- *italic*
+- ***bold italic***
+- __underline__
+- ~~strikethrough~~
+- `inline code`
+- fenced code blocks with triple backticks
+- > quote
+- # / ## / ### headings
+- bullet and numbered lists
+- ||spoiler|| (tap to reveal)
+- [label](https://example.com)
+
+Also included:
+- Markdown stripped from chat-list previews so previews stay clean.
+- Markdown 101 helper in the admin chat attachment menu.
+- Markdown 101 helper in Staff Center → LINK Official composer.
+- LINK Official chat and profile feed share the same Markdown renderer.
+- Launcher cache build: 355.

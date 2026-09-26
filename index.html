@@ -207,7 +207,7 @@
         const url = new URL('./App.snack.js', window.location.href);
         url.search = '';
         url.hash = '';
-        url.searchParams.set('build', '354');
+        url.searchParams.set('build', '355');
         url.searchParams.set('cb', String(cacheBust));
         return url.toString();
       }
@@ -265,7 +265,7 @@
         const params = new URLSearchParams();
         params.set('name', shared ? 'LINK 3.5 · Shared Test Session' : BUILD);
         params.set('description', shared
-          ? 'LINK 3.5 Pulse · Official Profile Feed shared unsaved test session. Keep this Snack UNSAVED and share only the My Device QR with testers.'
+          ? 'LINK 3.5 Pulse · Markdown 101 shared unsaved test session. Keep this Snack UNSAVED and share only the My Device QR with testers.'
           : 'LINK 3.5 · Pulse — reliable messaging, Presence 2.0, Circles, Moments 3.5, Groups 3.5, LINK Now, Search 2.0, Profile 3.5, Beta Health and the read-only gold-verified LINK Official channel. Generated from GitHub.');
         params.set('sdkVersion', SDK_VERSION);
         params.set('platform', 'mydevice');

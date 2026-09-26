@@ -2141,13 +2141,13 @@ function ChatsScreen({ theme, activeId, profiles, connectedIds, conversations, f
   const allRows = [...groupRows, ...directRows];
   const archivedCount=allRows.filter(row=>row.archived).length;
   const rows = allRows.filter(row=>showArchived?row.archived:!row.archived).sort((a, b) => Number(b.favorite) - Number(a.favorite) || (b.last?.id || b.group?.createdAt || '').toString().localeCompare((a.last?.id || a.group?.createdAt || '').toString()));
-  const preview = (item) => item.last ? `${item.last.senderId === activeId ? 'You: ' : item.type === 'group' ? `${profiles[item.last.senderId]?.name?.split(' ')[0] || 'Member'}: ` : ''}${item.last.type === 'text' ? (item.last.text || (item.last.cipher ? '🔒 Encrypted message' : 'Message')) : item.last.type === 'photo' ? '📷 Encrypted photo' : '🎙 Encrypted voice message'}` : (item.type === 'group' ? 'Start the group conversation' : 'Start the conversation');
+  const preview = (item) => item.last ? `${item.last.senderId === activeId ? 'You: ' : item.type === 'group' ? `${profiles[item.last.senderId]?.name?.split(' ')[0] || 'Member'}: ` : ''}${item.last.type === 'text' ? (stripMarkdownForPreview(item.last.text) || (item.last.cipher ? '🔒 Encrypted message' : 'Message')) : item.last.type === 'photo' ? '📷 Encrypted photo' : '🎙 Encrypted voice message'}` : (item.type === 'group' ? 'Start the group conversation' : 'Start the conversation');
 
   return (
     <View style={styles.flexOne}>
       <View style={styles.simpleHeader}><View style={{ flex: 1 }}><Text style={[styles.bigTitle, { color: theme.text }]}>{showArchived?'Archived':'Chats'}</Text><Text style={[styles.headerSub, { color: theme.sub }]}>Direct + group chats · encrypted by default.</Text></View>{archivedCount?<Pressable onPress={()=>setShowArchived(v=>!v)} style={[styles.newGroupButton,{backgroundColor:theme.soft,marginRight:7}]}><Ionicons name={showArchived?'chatbubbles':'archive'} size={15} color={theme.text}/><Text style={{color:theme.text,fontWeight:'900',fontSize:11}}>{showArchived?'Inbox':archivedCount}</Text></Pressable>:null}<Pressable onPress={onJoinGroup} style={[styles.newGroupButton,{backgroundColor:theme.soft,marginRight:7}]}><Ionicons name="enter-outline" size={15} color={theme.text}/><Text style={{color:theme.text,fontWeight:'900',fontSize:11}}>Join</Text></Pressable><Pressable onPress={onCreateGroup} style={[styles.newGroupButton, { backgroundColor: theme.inverse }]}><Ionicons name="people" size={16} color={theme.inverseText} /><Text style={{ color: theme.inverseText, fontWeight: '900', fontSize: 11 }}>New group</Text></Pressable></View>
       <FlatList data={rows} keyExtractor={x => `${x.type}_${x.id}`} contentContainerStyle={styles.listPad} showsVerticalScrollIndicator={false}
-        ListHeaderComponent={!showArchived?<Pressable onPress={onOpenOfficial} style={({pressed})=>[styles.officialChatRow,{backgroundColor:theme.card,borderColor:theme.border,opacity:pressed ? .72 : 1}]}><View style={{position:'relative'}}><OfficialAvatar theme={theme} size={52}/>{officialUnread?<View style={styles.unreadDot}/>:null}</View><View style={{flex:1,minWidth:0}}><View style={styles.rowBetween}><View style={styles.inlineNameRow}><Text style={[styles.personName,{color:theme.text}]}>LINK Official</Text><GoldVerifiedBadge compact/></View><Text style={[styles.metaText,{color:theme.sub}]}>{officialLatest?.createdAt?new Date(officialLatest.createdAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):''}</Text></View><Text numberOfLines={1} style={[styles.chatPreview,{color:officialUnread?theme.text:theme.sub,fontWeight:officialUnread?'800':'400'}]}>{officialLatest?.body||'Official product and safety updates from LINK.'}</Text></View>{officialUnread?<View style={styles.unreadCount}><Text style={styles.unreadCountText}>{officialUnread}</Text></View>:null}</Pressable>:null}
+        ListHeaderComponent={!showArchived?<Pressable onPress={onOpenOfficial} style={({pressed})=>[styles.officialChatRow,{backgroundColor:theme.card,borderColor:theme.border,opacity:pressed ? .72 : 1}]}><View style={{position:'relative'}}><OfficialAvatar theme={theme} size={52}/>{officialUnread?<View style={styles.unreadDot}/>:null}</View><View style={{flex:1,minWidth:0}}><View style={styles.rowBetween}><View style={styles.inlineNameRow}><Text style={[styles.personName,{color:theme.text}]}>LINK Official</Text><GoldVerifiedBadge compact/></View><Text style={[styles.metaText,{color:theme.sub}]}>{officialLatest?.createdAt?new Date(officialLatest.createdAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):''}</Text></View><Text numberOfLines={1} style={[styles.chatPreview,{color:officialUnread?theme.text:theme.sub,fontWeight:officialUnread?'800':'400'}]}>{stripMarkdownForPreview(officialLatest?.body)||'Official product and safety updates from LINK.'}</Text></View>{officialUnread?<View style={styles.unreadCount}><Text style={styles.unreadCountText}>{officialUnread}</Text></View>:null}</Pressable>:null}
         renderItem={({ item }) => (
           <Pressable onPress={() => item.type === 'group' ? openGroup(item.group) : openChat(item.person)} style={({ pressed }) => [styles.chatRow, { borderBottomColor: theme.border, opacity: pressed ? .72 : 1 }]}>
             <View>{item.type === 'group' ? <GroupAvatar group={item.group} profiles={profiles} theme={theme} size={52} /> : <Avatar person={item.person} size={52} theme={theme} />}{item.unread ? <View style={styles.unreadDot} /> : null}</View>
@@ -2750,8 +2750,8 @@ function OfficialProfileModal({visible,onClose,theme,announcements=[]}) {
               <View style={[styles.inlineNameRow,{flexShrink:1}]}><Text numberOfLines={1} style={[styles.officialPostName,{color:theme.text}]}>LINK Official</Text><GoldVerifiedBadge compact/></View>
               <Text style={[styles.officialPostTime,{color:theme.sub}]}>{formatPostTime(item.createdAt)}</Text>
             </View>
-            {!!item.title&&item.title!=='LINK Official'?<Text style={[styles.officialPostTitle,{color:theme.text}]}>{item.title}</Text>:null}
-            <Text style={[styles.officialPostBody,{color:theme.text}]}>{item.body}</Text>
+            {!!item.title&&item.title!=='LINK Official'?<MarkdownText text={item.title} style={styles.officialPostTitle} color={theme.text} theme={theme}/>:null}
+            <MarkdownText text={item.body} style={styles.officialPostBody} color={theme.text} theme={theme}/>
             {item.actionUrl?<Pressable onPress={()=>Linking.openURL(item.actionUrl).catch(()=>{})} style={({pressed})=>[styles.officialPostLink,{borderColor:theme.border,backgroundColor:theme.card,opacity:pressed ? .7 : 1}]}><View style={{flex:1}}><Text numberOfLines={1} style={[styles.officialPostLinkLabel,{color:theme.text}]}>{item.actionLabel||(cs?'Otevřít':'Open')}</Text><Text numberOfLines={1} style={[styles.officialPostLinkUrl,{color:theme.sub}]}>{item.actionUrl}</Text></View><Ionicons name="open-outline" size={17} color={theme.sub}/></Pressable>:null}
             <View style={styles.officialPostFooter}>
               <View style={styles.officialPostFooterItem}><Ionicons name="chatbubble-outline" size={17} color={theme.sub}/><Text style={[styles.officialPostFooterText,{color:theme.sub}]}>{cs?'Odpovědi vypnuté':'Replies off'}</Text></View>
@@ -2816,8 +2816,8 @@ function OfficialChatScreen({theme,announcements=[],onBack,onMarkRead}) {
                   <View style={styles.incomingPressable}>
                     <View style={styles.bubbleShell}>
                       <View style={[styles.bubble,styles.incomingBubble,{backgroundColor:theme.soft}]}> 
-                        {!!item.title && item.title!=='LINK Official' ? <Text style={[styles.officialDmBubbleTitle,{color:theme.text}]}>{item.title}</Text> : null}
-                        <Text style={[styles.bubbleText,{color:theme.text}]}>{item.body}</Text>
+                        {!!item.title && item.title!=='LINK Official' ? <MarkdownText text={item.title} style={styles.officialDmBubbleTitle} color={theme.text} theme={theme}/> : null}
+                        <MarkdownText text={item.body} style={styles.bubbleText} color={theme.text} theme={theme}/>
                         {item.actionUrl ? <Pressable onPress={()=>Linking.openURL(item.actionUrl).catch(()=>{})} style={({pressed})=>[styles.officialDmAction,{backgroundColor:theme.inverse,opacity:pressed ? .78 : 1}]}><Text style={[styles.officialDmActionText,{color:theme.inverseText}]}>{item.actionLabel||'Open'}</Text><Ionicons name="open-outline" size={14} color={theme.inverseText}/></Pressable> : null}
                       </View>
                     </View>
@@ -2920,6 +2920,115 @@ function LinkPreviewCard({ text, mine, theme, accent, textColor }) {
   return <Pressable onPress={()=>Linking.openURL(url).catch(()=>{})} style={{marginTop:8,minWidth:190,maxWidth:240,borderRadius:14,padding:10,backgroundColor:mine?'rgba(255,255,255,.14)':theme.card,borderWidth:StyleSheet.hairlineWidth,borderColor:mine?'rgba(255,255,255,.22)':theme.border}}><View style={{flexDirection:'row',alignItems:'center',gap:8}}><View style={{width:32,height:32,borderRadius:10,alignItems:'center',justifyContent:'center',backgroundColor:mine?'rgba(255,255,255,.12)':theme.soft}}><Ionicons name="link" size={16} color={mine?textColor:accent}/></View><View style={{flex:1,minWidth:0}}><Text numberOfLines={1} style={{color:mine?textColor:theme.text,fontWeight:'900',fontSize:12}}>{host}</Text><Text numberOfLines={1} style={{color:mine?textColor:theme.sub,opacity:.72,fontSize:10.5,marginTop:2}}>Open link</Text></View><Ionicons name="open-outline" size={14} color={mine?textColor:theme.sub}/></View></Pressable>;
 }
 
+
+function stripMarkdownForPreview(value='') {
+  return String(value||'')
+    .replace(/```[\s\S]*?```/g, block => block.replace(/```/g,''))
+    .replace(/^#{1,3}\s+/gm,'')
+    .replace(/^>\s?/gm,'')
+    .replace(/^[-*]\s+/gm,'')
+    .replace(/^\d+\.\s+/gm,'')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,'$1')
+    .replace(/\|\|([^|]+)\|\|/g,'$1')
+    .replace(/\*\*\*([^*]+)\*\*\*/g,'$1')
+    .replace(/\*\*([^*]+)\*\*/g,'$1')
+    .replace(/__([^_]+)__/g,'$1')
+    .replace(/~~([^~]+)~~/g,'$1')
+    .replace(/`([^`]+)`/g,'$1')
+    .replace(/\*([^*\n]+)\*/g,'$1')
+    .replace(/_([^_\n]+)_/g,'$1')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
+function MarkdownSpoiler({text,color,theme,style}) {
+  const [revealed,setRevealed]=useState(false);
+  return <Text onPress={()=>setRevealed(v=>!v)} style={[style,{color:revealed?color:'transparent',backgroundColor:revealed?theme.soft:color,borderRadius:4}]}>{text}</Text>;
+}
+
+function MarkdownInline({text,style,color,theme}) {
+  const raw=String(text??'');
+  const tokenRe=/(\[[^\]\n]+\]\(https?:\/\/[^\s)]+\)|\|\|[^|\n]+\|\||\*\*\*[^*\n]+\*\*\*|\*\*[^*\n]+\*\*|__[^_\n]+__|~~[^~\n]+~~|`[^`\n]+`|\*[^*\n]+\*|_[^_\n]+_)/g;
+  const nodes=[];
+  let last=0;
+  let match;
+  let index=0;
+  while((match=tokenRe.exec(raw))){
+    if(match.index>last)nodes.push(<Text key={`p-${index++}`}>{raw.slice(last,match.index)}</Text>);
+    const token=match[0];
+    const link=token.match(/^\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)$/);
+    if(link){
+      nodes.push(<Text key={`l-${index++}`} onPress={()=>Linking.openURL(link[2]).catch(()=>{})} style={{color:'#0A84FF',textDecorationLine:'underline',fontWeight:'700'}}>{link[1]}</Text>);
+    } else if(token.startsWith('||')){
+      nodes.push(<MarkdownSpoiler key={`s-${index++}`} text={token.slice(2,-2)} color={color} theme={theme} style={style}/>);
+    } else if(token.startsWith('***')){
+      nodes.push(<Text key={`bi-${index++}`} style={{fontWeight:'900',fontStyle:'italic'}}>{token.slice(3,-3)}</Text>);
+    } else if(token.startsWith('**')){
+      nodes.push(<Text key={`b-${index++}`} style={{fontWeight:'900'}}>{token.slice(2,-2)}</Text>);
+    } else if(token.startsWith('__')){
+      nodes.push(<Text key={`u-${index++}`} style={{textDecorationLine:'underline'}}>{token.slice(2,-2)}</Text>);
+    } else if(token.startsWith('~~')){
+      nodes.push(<Text key={`st-${index++}`} style={{textDecorationLine:'line-through'}}>{token.slice(2,-2)}</Text>);
+    } else if(token.startsWith('`')){
+      nodes.push(<Text key={`c-${index++}`} style={{fontFamily:Platform.OS==='ios'?'Menlo':'monospace',fontSize:Math.max(11,(StyleSheet.flatten(style)?.fontSize||15)-1),backgroundColor:theme.soft}}>{token.slice(1,-1)}</Text>);
+    } else {
+      nodes.push(<Text key={`i-${index++}`} style={{fontStyle:'italic'}}>{token.slice(1,-1)}</Text>);
+    }
+    last=match.index+token.length;
+  }
+  if(last<raw.length)nodes.push(<Text key={`tail-${index++}`}>{raw.slice(last)}</Text>);
+  return <Text style={[style,{color}]}>{nodes}</Text>;
+}
+
+function MarkdownText({text,style,color,theme}) {
+  const raw=String(text??'');
+  const lines=raw.split('\n');
+  const blocks=[];
+  let inCode=false;
+  let code=[];
+  const flushCode=()=>{
+    if(!code.length)return;
+    blocks.push(<View key={`code-${blocks.length}`} style={[styles.markdownCodeBlock,{backgroundColor:theme.soft,borderColor:theme.border}]}><Text selectable style={[styles.markdownCodeText,{color}]}>{code.join('\n')}</Text></View>);
+    code=[];
+  };
+  lines.forEach((line,idx)=>{
+    if(line.trim().startsWith('```')){
+      if(inCode){flushCode();inCode=false;}else{inCode=true;}
+      return;
+    }
+    if(inCode){code.push(line);return;}
+    const heading=line.match(/^(#{1,3})\s+(.+)$/);
+    const quote=line.match(/^>\s?(.*)$/);
+    const bullet=line.match(/^[-*]\s+(.+)$/);
+    const numbered=line.match(/^\d+\.\s+(.+)$/);
+    if(heading){
+      const level=heading[1].length;
+      blocks.push(<MarkdownInline key={`h-${idx}`} text={heading[2]} color={color} theme={theme} style={[style,styles.markdownHeading,level===1&&styles.markdownHeading1,level===2&&styles.markdownHeading2]}/>);
+    } else if(quote){
+      blocks.push(<View key={`q-${idx}`} style={[styles.markdownQuote,{borderLeftColor:color,backgroundColor:theme.soft}]}><MarkdownInline text={quote[1]} color={color} theme={theme} style={style}/></View>);
+    } else if(bullet||numbered){
+      const body=(bullet||numbered)[1];
+      blocks.push(<View key={`li-${idx}`} style={styles.markdownListRow}><Text style={[style,{color,fontWeight:'900'}]}>{numbered?`${line.match(/^\d+/)?.[0]}.`:'•'}</Text><View style={{flex:1}}><MarkdownInline text={body} color={color} theme={theme} style={style}/></View></View>);
+    } else if(line.length===0){
+      blocks.push(<View key={`sp-${idx}`} style={{height:7}}/>);
+    } else {
+      blocks.push(<MarkdownInline key={`t-${idx}`} text={line} color={color} theme={theme} style={style}/>);
+    }
+  });
+  if(inCode)flushCode();
+  return <View style={styles.markdownRoot}>{blocks}</View>;
+}
+
+function showMarkdown101() {
+  const cs=CURRENT_LANGUAGE==='cs';
+  Alert.alert(
+    'Markdown 101',
+    cs
+      ? '**tučné**\n*kurzíva*\n***tučná kurzíva***\n__podtržení__\n~~přeškrtnutí~~\n`inline code`\n```code block```\n> citace\n# nadpis\n- seznam\n||spoiler||\n[text](https://link.com)'
+      : '**bold**\n*italic*\n***bold italic***\n__underline__\n~~strikethrough~~\n`inline code`\n```code block```\n> quote\n# heading\n- list\n||spoiler||\n[text](https://link.com)'
+  );
+}
+
 function VoiceMessageContent({ uri, duration, mine, theme, accent, overlayColor, textColor }) {
   const player=useAudioPlayer(uri?{uri}:null);
   const status=useAudioPlayerStatus(player);
@@ -3016,10 +3125,12 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
     onPanResponderTerminate: resetReplySwipe,
   }), [onSwipeReply, swipeX]);
 
+  const sender = profiles[message.senderId];
+  const markdownEnabled = !!sender?.isAdmin || sender?.role === 'admin' || sender?.role === 'ceo';
   const content = (
     <>
       {message.forwardedFrom ? <View style={styles.forwardedLabel}><Ionicons name="arrow-redo-outline" size={11} color={mine ? outgoingText : theme.sub} /><Text style={{ color: mine ? outgoingText : theme.sub, fontSize: 10, fontWeight: '800', opacity: .72 }}>Forwarded</Text></View> : null}
-      {quoted ? <View style={[styles.replyQuote, { borderLeftColor: mine ? (outgoingText === '#FFFFFF' ? 'rgba(255,255,255,.72)' : 'rgba(0,0,0,.32)') : outgoingTheme.colors[0] }]}><Text numberOfLines={1} style={{ color: mine ? (outgoingText === '#FFFFFF' ? 'rgba(255,255,255,.82)' : 'rgba(0,0,0,.62)') : theme.sub, fontSize: 11, fontWeight: '700' }}>{quoted.type === 'text' ? quoted.text : quoted.type === 'photo' ? '📷 Photo' : '🎙 Voice message'}</Text></View> : null}
+      {quoted ? <View style={[styles.replyQuote, { borderLeftColor: mine ? (outgoingText === '#FFFFFF' ? 'rgba(255,255,255,.72)' : 'rgba(0,0,0,.32)') : outgoingTheme.colors[0] }]}><Text numberOfLines={1} style={{ color: mine ? (outgoingText === '#FFFFFF' ? 'rgba(255,255,255,.82)' : 'rgba(0,0,0,.62)') : theme.sub, fontSize: 11, fontWeight: '700' }}>{quoted.type === 'text' ? stripMarkdownForPreview(quoted.text) : quoted.type === 'photo' ? '📷 Photo' : '🎙 Voice message'}</Text></View> : null}
       {message.viewOnce && !mine ? <View style={styles.viewOnceLabel}><Ionicons name="eye-outline" size={11} color={mine?outgoingText:theme.sub}/><Text style={{color:mine?outgoingText:theme.sub,fontSize:10,fontWeight:'800'}}>View once</Text></View> : null}
       {message.viewOnce && !mine && !message.viewOnceViewed
         ? <View style={[styles.richMessageCard,{backgroundColor:theme.soft}]}><View style={{width:36,height:36,borderRadius:18,backgroundColor:theme.card,alignItems:'center',justifyContent:'center'}}><Ionicons name="eye-outline" size={20} color={outgoingTheme.colors[0]}/></View><View style={{flex:1}}><Text style={{color:theme.text,fontWeight:'900'}}>Open once</Text><Text style={{color:theme.sub,fontSize:11,marginTop:2}}>Tap to view this photo once</Text></View></View>
@@ -3039,14 +3150,13 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
           ? <Text style={{fontSize:48,lineHeight:58}}>{message.text || '✨'}</Text>
         : message.type === 'voice'
           ? <VoiceMessageContent uri={message.uri} duration={message.duration} mine={mine} theme={theme} accent={outgoingTheme.colors[0]} overlayColor={overlayColor} textColor={outgoingText}/>
-          : <View><Text style={[styles.bubbleText, { color: mine ? outgoingText : theme.text }]}>{message.text}</Text><LinkPreviewCard text={message.text} mine={mine} theme={theme} accent={outgoingTheme.colors[0]} textColor={outgoingText}/></View>}
+          : <View>{markdownEnabled ? <MarkdownText text={message.text} style={styles.bubbleText} color={mine ? outgoingText : theme.text} theme={theme}/> : <Text style={[styles.bubbleText,{color:mine ? outgoingText : theme.text}]}>{message.text}</Text>}<LinkPreviewCard text={message.text} mine={mine} theme={theme} accent={outgoingTheme.colors[0]} textColor={outgoingText}/></View>}
     </>
   );
 
   const mineBubbleStyle = [styles.bubble, styles.outgoingBubble, bubbleEffect==='glow'&&styles.proBubbleGlow, bubbleEffect==='soft'&&styles.proBubbleSoft];
   const incomingBubbleStyle = [styles.bubble, styles.incomingBubble, { backgroundColor: theme.soft }];
 
-  const sender = profiles[message.senderId];
   const avatarOffset = (showSender ? 25 : 0) + Math.max(0, (bubbleHeight - 28) / 2);
   const avatarSlot = groupMode && !mine ? (
     <View style={[styles.groupMessageAvatarSlot, styles.groupMessageAvatarLeft, { marginTop: avatarOffset }]}>
@@ -3260,7 +3370,7 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
         {replyTo ? <View style={[styles.replyComposerBar, { backgroundColor: theme.soft }]}><View style={{ flex: 1 }}><Text style={{ color: chatAccent, fontWeight: '800', fontSize: 11 }}>Replying to {replyTo.senderId === activeProfile.id ? 'yourself' : profiles[replyTo.senderId]?.name}</Text><Text numberOfLines={1} style={{ color: theme.sub, fontSize: 12 }}>{replyTo.type === 'text' ? replyTo.text : replyTo.type}</Text></View><Pressable onPress={() => setReplyTo(null)}><Ionicons name="close" size={19} color={theme.sub} /></Pressable></View> : null}
         {mentionSuggestions.length ? <View style={[styles.mentionSuggestBar,{backgroundColor:theme.bg}]}><ScrollView horizontal showsHorizontalScrollIndicator={false} keyboardShouldPersistTaps="always" contentContainerStyle={styles.mentionSuggestContent}>{mentionSuggestions.map(member=><Pressable key={member.id} onPress={()=>insertMention(member)} style={[styles.mentionSuggestChip,{backgroundColor:theme.card,borderColor:theme.border}]}><Avatar person={member} size={27} theme={theme}/><View><Text style={[styles.mentionSuggestName,{color:theme.text}]}>{member.name}</Text><Text style={[styles.mentionSuggestUser,{color:theme.sub}]}>{member.username}</Text></View></Pressable>)}</ScrollView></View> : null}
         {recordingBusy?<View style={[styles.recordingBar,{backgroundColor:theme.soft}]}><View style={styles.recordingDot}/><Text style={{color:theme.text,fontWeight:'900',flex:1}}>Recording · {Math.max(0,Math.floor((recorderState.durationMillis||0)/1000))}s</Text><Pressable onPress={()=>stopVoiceRecording(true)}><Text style={{color:theme.danger,fontWeight:'900'}}>Cancel</Text></Pressable></View>:null}
-        <View style={[styles.composerWrap, { backgroundColor: theme.bg }]}><Pressable style={[styles.plusButton, { backgroundColor: theme.soft, borderColor: theme.border }]} onPress={() => Alert.alert('Send', 'Choose an attachment.', [{ text: 'Photo / video / GIF', onPress: pickChatPhoto }, { text: 'Sticker', onPress:()=>Alert.alert('Sticker','Choose a sticker',[...['🔥','💜','😂','👀'].map(emoji=>({text:emoji,onPress:()=>send({type:'sticker',text:emoji})})),{text:'Cancel',style:'cancel'}]) }, { text: 'Voice message', onPress: startVoiceRecording }, { text:'View Once photo', onPress: async()=>{ try{ const permission=await ImagePicker.requestMediaLibraryPermissionsAsync(); if(!permission.granted)return; const result=await ImagePicker.launchImageLibraryAsync({mediaTypes:['images'],quality:.72}); if(!result.canceled&&result.assets?.[0]?.uri)send({type:'photo',text:'',uri:result.assets[0].uri,viewOnce:true}); }catch{} } }, {text:'Location card',onPress:()=>send({type:'location',text:'Current location'})}, ...(isGroup?[{text:'Poll',onPress:onOpenPoll}]:[]),{text:'Contact card',onPress:()=>send({type:'contact',text:activeProfile.name})},{ text: 'Cancel', style: 'cancel' }])}><Ionicons name="add" size={24} color={theme.text} /></Pressable><View style={[styles.composer, { backgroundColor: theme.card, borderColor: theme.border }]}><TextInput ref={composerRef} value={text} onChangeText={changeText} onFocus={() => setTimeout(() => listRef.current?.scrollToEnd?.({ animated: true }), 80)} placeholder={editTarget?'Edit message':silentConfig?.enabled ? `Silent message · ${formatSilentTimer(silentConfig.timerSeconds)}` : 'Message'} placeholderTextColor={theme.sub} style={[styles.composerInput, { color: theme.text }]} multiline maxLength={1000} /><Pressable onPress={()=>{ if(recordingBusy) stopVoiceRecording(false); else if(text.trim()||editTarget) send(); else startVoiceRecording(); }} onLongPress={()=>recordingBusy&&stopVoiceRecording(true)} style={[styles.sendButton,{backgroundColor:(text.trim()||recordingBusy)?chatAccent:theme.soft}]}><Ionicons name={recordingBusy?'stop':editTarget?'checkmark':text.trim()?'arrow-up':'mic'} size={19} color={(text.trim()||recordingBusy)?(chatTheme.textColor||'#fff'):theme.sub}/></Pressable></View></View>
+        <View style={[styles.composerWrap, { backgroundColor: theme.bg }]}><Pressable style={[styles.plusButton, { backgroundColor: theme.soft, borderColor: theme.border }]} onPress={() => Alert.alert('Send', 'Choose an attachment.', [{ text: 'Photo / video / GIF', onPress: pickChatPhoto }, { text: 'Sticker', onPress:()=>Alert.alert('Sticker','Choose a sticker',[...['🔥','💜','😂','👀'].map(emoji=>({text:emoji,onPress:()=>send({type:'sticker',text:emoji})})),{text:'Cancel',style:'cancel'}]) }, { text: 'Voice message', onPress: startVoiceRecording }, { text:'View Once photo', onPress: async()=>{ try{ const permission=await ImagePicker.requestMediaLibraryPermissionsAsync(); if(!permission.granted)return; const result=await ImagePicker.launchImageLibraryAsync({mediaTypes:['images'],quality:.72}); if(!result.canceled&&result.assets?.[0]?.uri)send({type:'photo',text:'',uri:result.assets[0].uri,viewOnce:true}); }catch{} } }, {text:'Location card',onPress:()=>send({type:'location',text:'Current location'})}, ...(isGroup?[{text:'Poll',onPress:onOpenPoll}]:[]),...(activeProfile?.isAdmin?[{text:'Markdown 101',onPress:showMarkdown101}]:[]),{text:'Contact card',onPress:()=>send({type:'contact',text:activeProfile.name})},{ text: 'Cancel', style: 'cancel' }])}><Ionicons name="add" size={24} color={theme.text} /></Pressable><View style={[styles.composer, { backgroundColor: theme.card, borderColor: theme.border }]}><TextInput ref={composerRef} value={text} onChangeText={changeText} onFocus={() => setTimeout(() => listRef.current?.scrollToEnd?.({ animated: true }), 80)} placeholder={editTarget?'Edit message':silentConfig?.enabled ? `Silent message · ${formatSilentTimer(silentConfig.timerSeconds)}` : 'Message'} placeholderTextColor={theme.sub} style={[styles.composerInput, { color: theme.text }]} multiline maxLength={1000} /><Pressable onPress={()=>{ if(recordingBusy) stopVoiceRecording(false); else if(text.trim()||editTarget) send(); else startVoiceRecording(); }} onLongPress={()=>recordingBusy&&stopVoiceRecording(true)} style={[styles.sendButton,{backgroundColor:(text.trim()||recordingBusy)?chatAccent:theme.soft}]}><Ionicons name={recordingBusy?'stop':editTarget?'checkmark':text.trim()?'arrow-up':'mic'} size={19} color={(text.trim()||recordingBusy)?(chatTheme.textColor||'#fff'):theme.sub}/></Pressable></View></View>
       </SafeAreaView>
       {isGroup ? <GroupInfoModal visible={groupInfoOpen} onClose={() => setGroupInfoOpen(false)} theme={theme} group={group} profiles={profiles} activeId={activeProfile.id} onRename={onRenameGroup} onToggleEveryone={onToggleGroupEveryone} onPickAvatar={onPickGroupAvatar} onRotateInvite={onRotateGroupInvite} onToggleInvite={onToggleGroupInvite} onSetRole={onSetGroupRole} onRemoveMember={onRemoveGroupMember} onTransferOwner={onTransferGroupOwner} onLeave={onLeaveGroup} onUpdateV3={onUpdateGroupV3} onUpdateV35={onUpdateGroupV35} adminNote={groupAdminNote} joinRequests={groupJoinRequests} onResolveJoin={onResolveGroupJoin} /> : null}
     </KeyboardAvoidingView>
@@ -3405,7 +3515,7 @@ function StaffCenterModal({visible,onClose,theme,profiles,moderation,audit,repor
       <View style={[styles.pulseCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
         <View style={styles.inlineNameRow}><OfficialAvatar theme={theme} size={42}/><View style={{flex:1}}><View style={styles.inlineNameRow}><Text style={[styles.settingsTitle,{color:theme.text}]}>Broadcast as LINK Official</Text><GoldVerifiedBadge compact/></View><Text style={[styles.settingsSub,{color:theme.sub}]}>Sends a read-only system message to every registered LINK user.</Text></View></View>
         <TextInput value={officialTitle} onChangeText={setOfficialTitle} maxLength={80} placeholder="Title" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text,marginTop:12}]}/>
-        <TextInput value={officialBody} onChangeText={setOfficialBody} multiline maxLength={4000} placeholder="Message to all LINK users…" placeholderTextColor={theme.sub} style={[styles.nextTextInput,{backgroundColor:theme.input,color:theme.text,borderColor:theme.border,minHeight:110,textAlignVertical:'top'}]}/>
+        <TextInput value={officialBody} onChangeText={setOfficialBody} multiline maxLength={4000} placeholder="Message to all LINK users…" placeholderTextColor={theme.sub} style={[styles.nextTextInput,{backgroundColor:theme.input,color:theme.text,borderColor:theme.border,minHeight:110,textAlignVertical:'top'}]}/><Pressable onPress={showMarkdown101} style={[styles.markdown101Hint,{backgroundColor:theme.soft,borderColor:theme.border}]}><Ionicons name="code-slash-outline" size={17} color={ACCENT}/><Text style={[styles.markdown101HintText,{color:theme.sub}]}><Text style={{color:theme.text,fontWeight:'900'}}>Markdown 101</Text> · **bold** · *italic* · __underline__ · ~~strike~~ · `code` · ||spoiler||</Text><Ionicons name="chevron-forward" size={15} color={theme.sub}/></Pressable>
         <View style={{flexDirection:'row',gap:8}}><TextInput value={officialActionLabel} onChangeText={setOfficialActionLabel} maxLength={50} placeholder="Button label (optional)" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text,flex:1}]}/><TextInput value={officialActionUrl} onChangeText={setOfficialActionUrl} autoCapitalize="none" placeholder="https://…" placeholderTextColor={theme.sub} style={[styles.profileInput,{backgroundColor:theme.input,color:theme.text,flex:1}]}/></View>
         <Pressable disabled={publishing} onPress={publish} style={[styles.widePrimary,{backgroundColor:'#111318',opacity:publishing ? .65 : 1}]}>{publishing?<ActivityIndicator color="#fff"/>:<><Ionicons name="megaphone" size={18} color="#F5B942"/><Text style={{color:'#fff',fontWeight:'900'}}>Publish to everyone</Text></>}</Pressable>
       </View>
@@ -4964,6 +5074,17 @@ const styles = StyleSheet.create({
   settingsCard: { borderWidth: StyleSheet.hairlineWidth, borderRadius: 22, overflow: 'hidden' }, settingsRow: { flexDirection: 'row', gap: 12, alignItems: 'center', padding: 14 }, settingsIcon: { width: 38, height: 38, borderRadius: 13, alignItems: 'center', justifyContent: 'center' }, settingsTitle: { fontWeight: '900', fontSize: 14 }, settingsSub: { fontSize: 11.5, lineHeight: 16, marginTop: 2 }, resetButton: { marginTop: 22, marginBottom: 18, height: 48, borderRadius: 16, borderWidth: StyleSheet.hairlineWidth, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 8 },
   tabBarShell: { position: 'absolute', left: 0, right: 0, bottom: Platform.OS === 'ios' ? 18 : 10, height: 72, paddingHorizontal: 15, backgroundColor: 'transparent', zIndex: 120, elevation: 30 }, tabGlass: { flex: 1, borderRadius: 32, borderWidth: StyleSheet.hairlineWidth, overflow: 'hidden', shadowOpacity: .18, shadowRadius: 26, shadowOffset: { width: 0, height: 12 }, elevation: 18 }, tabInner: { flex: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 6, paddingVertical: 5 }, tabItem: { flex: 1, height: 60, alignItems: 'center', justifyContent: 'center' }, tabActiveCapsule: { minWidth: 57, minHeight: 50, borderRadius: 20, borderWidth: StyleSheet.hairlineWidth, borderColor: 'transparent', alignItems: 'center', justifyContent: 'center', gap: 2, paddingHorizontal: 7 }, tabIconWrap: { position: 'relative', minWidth: 28, minHeight: 25, alignItems: 'center', justifyContent: 'center' }, tabUnreadBadge: { position: 'absolute', right: -11, top: -7, minWidth: 18, height: 18, borderRadius: 9, paddingHorizontal: 4, backgroundColor: '#FF3B30', borderWidth: 1.5, borderColor: '#fff', alignItems: 'center', justifyContent: 'center' }, tabUnreadBadgeText: { color: '#fff', fontSize: 9, fontWeight: '900', lineHeight: 11 }, tabLabel: { fontSize: 8.5, fontWeight: '800', letterSpacing: -.1 }, centerTabGlass: { width: 51, height: 51, borderRadius: 20, borderWidth: 1, alignItems: 'center', justifyContent: 'center', shadowColor: '#000', shadowOpacity: .22, shadowRadius: 15, shadowOffset: { width: 0, height: 7 } }, glassHighlight: { position: 'absolute', left: 22, right: 22, top: 1, height: 1, borderRadius: 999, opacity: .92 },
   chatHeader: { height: 78, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, borderBottomWidth: StyleSheet.hairlineWidth, overflow: 'hidden' }, chatHeaderSide: { width: 88, flexDirection: 'row', alignItems: 'center' }, chatHeaderRight: { justifyContent: 'flex-end', gap: 3 }, chatHeaderPerson: { flexDirection: 'row', alignItems: 'center', gap: 10 }, chatHeaderPersonCenter: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 4 }, chatHeaderIdentity: { flexDirection: 'row', alignItems: 'center', gap: 3, maxWidth: 150 }, chatHeaderName: { fontWeight: '800', fontSize: 12.5, letterSpacing: -.2 }, chatHeaderStatus: { fontSize: 10.5, marginTop: 2, fontWeight: '800' }, metContext: { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 6, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 7, marginTop: 8 }, metContextText: { fontSize: 10.5, fontWeight: '700' },
+
+  markdownRoot:{alignSelf:'stretch'},
+  markdownHeading:{fontWeight:'950',letterSpacing:-.25,marginVertical:2},
+  markdownHeading1:{fontSize:21,lineHeight:26},
+  markdownHeading2:{fontSize:18.5,lineHeight:23},
+  markdownQuote:{borderLeftWidth:3,borderRadius:6,paddingLeft:10,paddingRight:8,paddingVertical:7,marginVertical:3},
+  markdownListRow:{flexDirection:'row',alignItems:'flex-start',gap:7,marginVertical:1},
+  markdownCodeBlock:{borderWidth:StyleSheet.hairlineWidth,borderRadius:10,paddingHorizontal:10,paddingVertical:9,marginVertical:4},
+  markdownCodeText:{fontFamily:Platform.OS==='ios'?'Menlo':'monospace',fontSize:12.5,lineHeight:18},
+  markdown101Hint:{marginTop:8,borderRadius:14,borderWidth:StyleSheet.hairlineWidth,paddingHorizontal:12,paddingVertical:10,flexDirection:'row',alignItems:'center',gap:8},
+  markdown101HintText:{fontSize:11.5,lineHeight:16,fontWeight:'700',flex:1},
   chatBody: { flex: 1, overflow: 'hidden' }, messageList: { paddingHorizontal: 14, paddingTop: 18, paddingBottom: 20, flexGrow: 1 }, messageLine: { flexDirection: 'row', marginVertical: 2.5 }, groupMessageLine: { alignItems: 'flex-start', marginVertical: 1.2 }, messageStack: { maxWidth: '84%' }, groupMessageStack: { maxWidth: '78%' }, groupMessageAvatarSlot: { width: 32, minHeight: 28, justifyContent: 'flex-end' }, groupMessageAvatarLeft: { alignItems: 'flex-start', marginRight: 5 }, groupMessageAvatarRight: { alignItems: 'flex-end', marginLeft: 5 }, groupMessageTightSpacer: { height: 1 }, bubblePressable: { position: 'relative' }, incomingPressable: { paddingLeft: 4 }, outgoingPressable: { paddingRight: 4 }, bubbleShell: { position: 'relative' }, bubble: { borderRadius: 22, paddingHorizontal: 16, paddingTop: 10.5, paddingBottom: 10.5, overflow: 'hidden', minHeight: 42, justifyContent: 'center' }, outgoingBubble: { borderRadius: 22 }, incomingBubble: { borderRadius: 22 }, outgoingTail: { display: 'none' }, incomingTail: { display: 'none' }, bubbleText: { fontSize: 17, lineHeight: 22.5, letterSpacing: -.2 }, messageMetaOutside: { minHeight: 16, flexDirection: 'row', alignItems: 'center', gap: 3, marginTop: 3, paddingHorizontal: 10 }, bubbleTime: { fontSize: 10, fontWeight: '600' }, replyQuote: { borderLeftWidth: 2, paddingLeft: 7, marginBottom: 7, maxWidth: 220 }, groupSenderName: { fontSize: 11, fontWeight: '800', marginLeft: 10, marginBottom: 4, marginTop: 8 }, groupSenderNameMine: { marginLeft: 0, marginRight: 10 }, reactionBadge: { position: 'absolute', bottom: -12, right: 7, borderRadius: 999, paddingHorizontal: 7, paddingVertical: 3, borderWidth: StyleSheet.hairlineWidth, shadowColor: '#000', shadowOpacity: .08, shadowRadius: 6, shadowOffset: { width: 0, height: 2 }, elevation: 2 },
   photoMessage: { width: 205, height: 154, borderRadius: 17, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }, photoMessageImage: { width: '100%', height: '100%' }, voiceMessage: { width: 205, flexDirection: 'row', alignItems: 'center', gap: 9, paddingVertical: 3 }, voicePlay: { width: 30, height: 30, borderRadius: 15, alignItems: 'center', justifyContent: 'center' }, voiceWave:{flex:1,height:24,flexDirection:'row',alignItems:'center',justifyContent:'space-between'},
   richMessageCard:{minWidth:190,maxWidth:225,flexDirection:'row',alignItems:'center',gap:10,padding:11,borderRadius:15}, forwardedLabel:{flexDirection:'row',alignItems:'center',gap:4,marginBottom:4}, deletedMessage:{flexDirection:'row',alignItems:'center',gap:7}, pinnedBanner:{minHeight:44,paddingHorizontal:14,paddingVertical:7,flexDirection:'row',alignItems:'center',gap:9,borderBottomWidth:StyleSheet.hairlineWidth},
