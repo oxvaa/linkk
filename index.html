@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#f5f5f7" />
-  <title>LINK 3.5 — Pulse · Developer & Shared Test Launcher</title>
+  <title>LINK 3.6 · Developer & Shared Test Launcher</title>
   <style>
     :root {
       color-scheme: light;
@@ -126,7 +126,7 @@
       <div class="meta">
         <div class="row"><span id="repoDot" class="dot wait"></span><span class="label">Repository</span><span class="value" id="repoValue">Zjišťuji…</span></div>
         <div class="row"><span class="dot"></span><span class="label">Expo SDK</span><span class="value">57</span></div>
-        <div class="row"><span class="dot"></span><span class="label">Build</span><span class="value">LINK 3.5 · Pulse</span></div>
+        <div class="row"><span class="dot"></span><span class="label">Build</span><span class="value">LINK 3.6</span></div>
       </div>
 
       <div class="actions">
@@ -147,7 +147,7 @@
 
   <script>
     (() => {
-      const BUILD = 'LINK 3.5 · Pulse';
+      const BUILD = 'LINK 3.6';
       const SDK_VERSION = '57.0.0';
       const DEFAULT_BRANCH = 'main';
       const DEPENDENCIES = [
@@ -200,14 +200,14 @@
         return;
       }
 
-      // LINK 3.5 launcher: use the same GitHub Pages origin as the launcher.
+      // LINK 3.6 launcher: use the same GitHub Pages origin as the launcher.
       // This avoids browser CORS / network failures against raw.githubusercontent.com,
       // jsDelivr and the GitHub API while keeping App.snack.js public for Expo Snack.
       function pagesSourceUrl(cacheBust = Date.now()) {
         const url = new URL('./App.snack.js', window.location.href);
         url.search = '';
         url.hash = '';
-        url.searchParams.set('build', '356');
+        url.searchParams.set('build', '360');
         url.searchParams.set('cb', String(cacheBust));
         return url.toString();
       }
@@ -226,7 +226,7 @@
           if (!response.ok) return { ok: false, reason: `HTTP ${response.status}` };
           const source = await response.text();
           if (!source.includes('export default')) return { ok: false, reason: 'Expo entry nebyl nalezen' };
-          if (!source.includes('LINK 3.5 · Pulse')) return { ok: false, reason: 'GitHub Pages ještě servíruje starší build' };
+          if (!source.includes('LINK 3.6')) return { ok: false, reason: 'GitHub Pages ještě servíruje starší build' };
           return { ok: true };
         } catch (error) {
           return { ok: false, reason: error?.message || 'ověření nebylo dostupné' };
@@ -237,7 +237,7 @@
       verifySameOriginSource(rawAppUrl).then(result => {
         if (result.ok) {
           repoDot.className = 'dot';
-          status.textContent = 'Připraveno. LINK 3.5 source je dostupný přes GitHub Pages.';
+          status.textContent = 'Připraveno. LINK 3.6 source je dostupný přes GitHub Pages.';
         } else {
           repoDot.className = 'dot wait';
           status.textContent = `Launcher je připraven. Ověření source bylo přeskočeno (${result.reason}).`;
@@ -254,7 +254,7 @@
           status.textContent = 'Vytvářím čerstvou NEULOŽENOU session pro společný QR…';
         } else {
           createBtn.textContent = 'Otevírám Developer mode…';
-          status.textContent = 'Připravuji čerstvý LINK 3.5 source…';
+          status.textContent = 'Připravuji čerstvý LINK 3.6 source…';
         }
 
         // A unique source URL forces a completely fresh Snack document every time.
@@ -263,10 +263,10 @@
         rawBtn.href = rawAppUrl;
 
         const params = new URLSearchParams();
-        params.set('name', shared ? 'LINK 3.5 · Shared Test Session' : BUILD);
+        params.set('name', shared ? 'LINK 3.6 · Shared Test Session' : BUILD);
         params.set('description', shared
-          ? 'LINK 3.5 Pulse · Markdown 101 shared unsaved test session. Keep this Snack UNSAVED and share only the My Device QR with testers.'
-          : 'LINK 3.5 · Pulse — reliable messaging, Presence 2.0, Circles, Moments 3.5, Groups 3.5, LINK Now, Search 2.0, Profile 3.5, Beta Health and the read-only gold-verified LINK Official channel. Generated from GitHub.');
+          ? 'LINK 3.6 shared unsaved test session with Profile Posts. Keep this Snack UNSAVED and share only the My Device QR with testers.'
+          : 'LINK 3.6 — permanent text/photo Profile Posts, full-screen Threads-style profiles, likes, reliable messaging, Presence 2.0, Circles, Moments, Groups, LINK Now, Search 2.0, Beta Health and the read-only gold-verified LINK Official channel. Generated from GitHub.');
         params.set('sdkVersion', SDK_VERSION);
         params.set('platform', 'mydevice');
         params.set('supportedPlatforms', 'ios,android,web');

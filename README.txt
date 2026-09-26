@@ -1,23 +1,20 @@
-LINK 3.5 · Pulse — Message Stability Fix (Build 356)
-===================================================
+LINK 3.6 — Profile Posts
+========================
 
-Fixes the case where a recipient does not see a newly received message in the chat list
-until manually opening/leaving/reopening the conversation.
+Major profile update built on LINK Production.
 
-Stability layer:
-- Message INSERT realtime events use a faster 90 ms coalesced refresh.
-- Realtime channel status is tracked (SUBSCRIBED / CHANNEL_ERROR / TIMED_OUT / CLOSED).
-- A catch-up refresh runs whenever the realtime channel subscribes/re-subscribes.
-- New lightweight server RPC: inbox_sync_cursor().
-- Inbox Watchdog checks the latest visible server message every 3.5 seconds while LINK is active.
-- A full snapshot is fetched only if the server cursor differs from the local inbox cursor.
-- Returning LINK to the foreground triggers an immediate catch-up sync.
-- Notifications realtime refresh moved from slow to fast path.
-- Existing realtime remains primary; watchdog is only the reliability fallback.
-
-Backend:
-- public.inbox_sync_cursor() is restricted to authenticated/service_role.
-- It uses auth.uid() and chat membership to return only the current user's latest visible message.
+New in 3.6:
+- Every user profile now has a permanent Threads/X-style post feed.
+- Users can publish text-only posts or a photo with text.
+- Photo posts use the private profile-posts Storage bucket.
+- Post media follows the same profile_visibility rules as the profile itself.
+- Users can like posts; likes update optimistically and sync through Supabase.
+- Own posts can be deleted.
+- Public profiles are now full-screen instead of a small popup.
+- LINK Official remains the special read-only official feed.
+- Admin/CEO profile posts support the existing Markdown 101 renderer; normal user posts stay plain text.
+- profile_posts and profile_post_likes are Realtime-enabled.
+- Build launcher cache tag: 360.
 
 Files:
 - App.js
