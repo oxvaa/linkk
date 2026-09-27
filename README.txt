@@ -1,37 +1,38 @@
-LINK 4.1 · ONE — Settings Redesign
-===================================
+LINK 4.1 · Admin Identity — Build 411
+=====================================
 
-Profile cleanup
-- Removed the whole Profile settings block from "Profile layout" through "Refresh LINK data".
-- Profile now stays focused on identity, highlights and social posts.
-- The gear button remains the main entry into Settings.
+NEW ADMIN AVATAR FX
+Bold:
+- Dragon Coil
+- Neon Serpent
+- Inferno
+- Electric Tempest
+- Void Rift
 
-Settings 4.1
-- New iOS grouped-settings design inspired by the structure of modern native iOS settings screens.
-- Large section labels, rounded grouped cards, subtle separators, left icons, right values and chevrons.
-- Settings presented as a native page sheet on iOS.
+Minimal:
+- Pure Halo
+- Micro Orbit
+- Thin Arc
+- Glass Ring
+- Mono Pulse
 
-Moved into Settings
-- Profile layout
-- Profile effects
-- Active status
-- Custom status
-- Double Tap reaction
-- LINK Pro
-- LINK Plus
-- Pro Insights
-- Staff Center / Staff Badge / Staff Profile Lab
-- Account & sign out
-- Refresh LINK data
+The original Executive Orbit, CEO Crown and Founder Aura remain available.
+All admin_* effects are now protected server-side: only Admin/CEO can equip them on their own account.
 
-Still included
-- Account information
-- Privacy
-- Sharing
-- Notifications
-- Login alerts
-- Appearance
-- Language
-- Sign out
+OFFICIAL AFFILIATION
+Profiles now support:
+- verification_style: blue | gold
+- official_affiliation: boolean
 
-Launcher cache build: 410
+Officially affiliated accounts show a gold verified badge and a localized note:
+"Tento účet je oficiálně přidružen k LINK."
+
+Production account changes:
+- pardeljiri3@gmail.com / Dominik: Admin, gold verified, officially affiliated.
+- simiyeeye@icloud.com / @kubajs: CEO, gold verified, officially affiliated.
+
+Backend migration:
+- link_411_admin_identity_fx
+
+Launcher cache build:
+- 411
