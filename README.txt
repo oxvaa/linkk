@@ -1,23 +1,41 @@
-LINK 4.2 · Multi-Account — Build 420
-====================================
+LINK 4.3 · Artists & Celebrities — Build 430
+==============================================
 
-NEW
-- Add another existing LINK account without signing out.
-- Switch instantly between saved accounts from Account Switcher.
-- Each account keeps its own real Supabase Auth session.
-- Chats, requests, feed, notifications, settings and profile data change with the active account.
-- No passwords are stored by LINK Multi-Account.
-- Active Supabase session tokens are saved locally and refreshed by Supabase when needed.
-- Session rotation updates the saved account automatically.
-- Up to 8 accounts can be kept on one device.
-- Long-press an inactive account to remove it from this device.
-- Sign out removes only the current account; if another account is saved, LINK switches to it automatically.
+ARTIST / CELEBRITY ACCOUNTS
+- New profile account_type: standard | artist
+- New verification_style: green
+- Green badge uses #4AB45A with a white check, matching the supplied Artist badge reference.
+- Artist accounts otherwise use the normal LINK profile, posts, Moments, chat and multi-account system.
 
-UI
-- New iOS-style Accounts sheet.
-- Add account page sheet with email/password.
-- Current account gets a checkmark.
-- Admin / gold verified identity is preserved in the account picker.
+LINK RELATIONSHIP RULE
+- Standard accounts cannot send LINK requests to Artist accounts.
+- Artist accounts can initiate LINK requests to standard accounts.
+- Once connected, chat and normal LINK features work as usual.
+- Rule is enforced on both client and Production backend.
+- QR scan of an Artist account opens its profile instead of attempting a forbidden request.
 
-No backend schema migration was required.
-Launcher cache build: 420
+DISCOVER
+- New Artists & Celebrities horizontal section.
+- Artist profiles remain searchable by name / @username.
+- Green verification is shown everywhere through the shared VerificationBadge renderer.
+
+PRE-APPROVED ARTIST REGISTRY
+- Yzomandias / @yzomandias / jakubvlcek@link.app
+- Nik Tendo / @goldcigo / goldcigo@link.app
+- 🔇 / @nobodylisten / nobody@link.app
+- WUNNA / @gunna / gunna@link.app
+
+Those four emails are pre-approved in app_private.artist_account_allowlist.
+When an Auth account is created for one of those emails, LINK automatically assigns:
+- official display name
+- official @username
+- account_type=artist
+- verified=true
+- verification_style=green
+- profile_visibility=everyone
+
+BACKEND
+- link_430_artist_celebrity_accounts
+- link_430_artist_allowlist
+
+Launcher cache build: 430

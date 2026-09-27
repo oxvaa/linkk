@@ -327,7 +327,7 @@ Object.assign(CS_TRANSLATIONS, {
 
 
 Object.assign(CS_TRANSLATIONS, {
-  "LINK 4.0 · ONE · profiles, posts and beta health":"LINK 3.6 · profily, příspěvky a stav bety",
+  "LINK 4.3 · Artists · profiles, posts and beta health":"LINK 3.6 · profily, příspěvky a stav bety",
   "LINK Circles":"LINK Circles",
   "Create a Circle":"Vytvořit Circle",
   "Share Moments and status with a hand-picked group.":"Sdílej Moments a status jen s vybranou skupinou.",
@@ -671,7 +671,7 @@ async function loadLinkSnapshot(base, userId) {
 
   const profiles={};
   for(const row of profilesQ.data||[]) profiles[row.id]={
-    id:row.id,isLocal:false,isSelf:row.id===userId,isAdmin:['admin','ceo'].includes(row.role),role:row.role,verified:!!row.verified,verificationStyle:row.verification_style||'blue',officialAffiliation:!!row.official_affiliation,
+    id:row.id,isLocal:false,isSelf:row.id===userId,isAdmin:['admin','ceo'].includes(row.role),role:row.role,accountType:row.account_type||'standard',verified:!!row.verified,verificationStyle:row.verification_style||'blue',officialAffiliation:!!row.official_affiliation,
     customBadgeEnabled:!!row.custom_badge_enabled,customBadgeText:row.custom_badge_text||null,customBadgeIcon:row.custom_badge_icon||null,customBadgeColor:row.custom_badge_color||'#111318',
     name:row.name,username:row.username,bio:row.bio||'',photoUri:row.avatar_url||null,coverUri:row.cover_url||null,profileAccent:row.profile_accent||'#6C5CE7',
     profileCtaLabel:row.profile_cta_label||'',profileCtaUrl:row.profile_cta_url||'',nowPlaying:row.now_playing||{},
@@ -1319,6 +1319,7 @@ function accountEntryFromSession(session, profile = null) {
       verificationStyle:profile?.verificationStyle||'blue',
       officialAffiliation:!!profile?.officialAffiliation,
       role:profile?.role||'user',
+      accountType:profile?.accountType||'standard',
       isAdmin:!!profile?.isAdmin,
       presenceMode:profile?.presenceMode||'online',
       presenceVisible:profile?.presenceVisible!==false,
@@ -1600,7 +1601,7 @@ const DRAFT_PREFIX = '@link_chat_draft_v1';
 const DEVICE_ID_KEY = '@link_device_id_v3';
 const ACCENT = '#6C5CE7';
 const EMPTY_MESSAGES = Object.freeze([]);
-const BUILD = 'LINK 4.2 · ONE';
+const BUILD = 'LINK 4.3 · Artists';
 const VERIFIED_BADGE_DATA_URI = 'data:image/png;base64,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';
 
 function NetflixWordmark({ width = 112, height = 31, style }) {
@@ -2258,11 +2259,35 @@ function GoldVerifiedBadge({ compact = false }) {
 }
 
 
+
+function ArtistVerifiedBadge({ compact = false }) {
+  const size = compact ? 18 : 23;
+  const checkSize = compact ? 10 : 13;
+  return <View accessibilityLabel="Artist verified" style={[styles.verifiedBadge,{width:size,height:size,alignItems:'center',justifyContent:'center'}]}>
+    <Image source={{ uri: VERIFIED_BADGE_DATA_URI }} style={{ width:size,height:size,tintColor:'#4AB45A' }} resizeMode="contain" />
+    <Ionicons name="checkmark" size={checkSize} color="#FFFFFF" style={{position:'absolute'}}/>
+  </View>;
+}
+
+function ArtistDiscoverCard({person,theme,onPress,connected=false}) {
+  return <Pressable onPress={onPress} style={[styles.artistDiscoverCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
+    <View style={styles.artistDiscoverAvatarWrap}>
+      <Avatar person={person} size={58} theme={theme}/>
+      <View style={[styles.artistDiscoverVerified,{backgroundColor:theme.card}]}>
+        <ArtistVerifiedBadge compact/>
+      </View>
+    </View>
+    <Text numberOfLines={1} style={[styles.artistDiscoverName,{color:theme.text}]}>{person.name}</Text>
+    <Text numberOfLines={1} style={[styles.artistDiscoverHandle,{color:theme.sub}]}>{person.username}</Text>
+    {connected?<View style={[styles.artistDiscoverState,{backgroundColor:'rgba(74,180,90,.12)'}]}><Text style={styles.artistDiscoverStateText}>LINKED</Text></View>:null}
+  </Pressable>;
+}
+
 function VerificationBadge({person,compact=false}) {
   if(!person?.verified) return null;
-  return person?.verificationStyle==='gold'
-    ? <GoldVerifiedBadge compact={compact}/>
-    : <VerifiedBadge compact={compact}/>;
+  if(person?.verificationStyle==='gold') return <GoldVerifiedBadge compact={compact}/>;
+  if(person?.verificationStyle==='green') return <ArtistVerifiedBadge compact={compact}/>;
+  return <VerifiedBadge compact={compact}/>;
 }
 
 function OfficialAffiliationNote({person,theme,compact=false}) {
@@ -2438,6 +2463,7 @@ function PeopleScreen({ theme, activeId, profiles, connectedIds, localAccountIds
   const pendingTo = (id) => requests.some(r => r.fromId === activeId && r.toId === id);
   const pendingFrom = (id) => requests.some(r => r.fromId === id && r.toId === activeId);
   const isConnected = (id) => connectedIds.includes(id);
+  const viewerIsArtist = profiles[activeId]?.accountType==='artist';
 
   const searchResults = cleanQuery ? Object.values(profiles)
     .filter(p => p && p.id !== activeId)
@@ -2467,6 +2493,7 @@ function PeopleScreen({ theme, activeId, profiles, connectedIds, localAccountIds
     const incomingRequest = requests.find(r => r.fromId === person.id && r.toId === activeId);
     const sent = pendingTo(person.id);
     if (incomingRequest) return <View style={styles.inlineRequestActions}><Pressable onPress={() => onAccept(incomingRequest)} style={[styles.inlineAccept, { backgroundColor: theme.inverse }]}><Ionicons name="checkmark" size={15} color={theme.inverseText} /></Pressable><Pressable onPress={() => onDecline(incomingRequest.id)} style={[styles.inlineDecline, { backgroundColor: theme.soft }]}><Ionicons name="close" size={15} color={theme.text} /></Pressable></View>;
+    if(person.accountType==='artist'&&!viewerIsArtist) return <View style={[styles.linkRequestButton,{backgroundColor:theme.soft}]}><Ionicons name="lock-closed-outline" size={13} color="#4AB45A"/></View>;
     return <Pressable disabled={sent} onPress={() => sendRequest(person.id)} style={[styles.linkRequestButton, { backgroundColor: sent ? theme.soft : theme.inverse }]}><Text style={{ color: sent ? theme.sub : theme.inverseText, fontWeight: '800', fontSize: 12 }}>{sent ? 'Sent' : 'LINK'}</Text></Pressable>;
   };
 
@@ -3452,7 +3479,7 @@ function PulseHubModal({visible,onClose,theme,activeProfile,connectedProfiles=[]
   const myCircles=circles.filter(c=>c.ownerId===activeProfile?.id);
   const visitorPeople=visitors.map(v=>profiles[v.viewerId]).filter(Boolean).slice(0,8);
   return <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}><SafeAreaView style={[styles.flexOne,{backgroundColor:theme.bg}]}>
-    <View style={[styles.settingsHubHeader,{borderBottomColor:theme.border}]}><View style={{flex:1}}><Text style={[styles.bigTitle,{color:theme.text}]}>Pulse</Text><Text style={[styles.headerSub,{color:theme.sub}]}>LINK 4.0 · ONE · profiles, posts and beta health</Text></View><IconButton icon="close" onPress={onClose} theme={theme}/></View>
+    <View style={[styles.settingsHubHeader,{borderBottomColor:theme.border}]}><View style={{flex:1}}><Text style={[styles.bigTitle,{color:theme.text}]}>Pulse</Text><Text style={[styles.headerSub,{color:theme.sub}]}>LINK 4.3 · Artists · profiles, posts and beta health</Text></View><IconButton icon="close" onPress={onClose} theme={theme}/></View>
     <ScrollView contentContainerStyle={{padding:18,paddingBottom:50}}>
       <SectionTitle theme={theme}>LINK Circles</SectionTitle>
       <View style={[styles.pulseCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
@@ -4282,6 +4309,8 @@ function PersonProfileModal({ visible, onClose, theme, person, connected, privac
   const cs=CURRENT_LANGUAGE==='cs';
   const showSocials=privacy?.showSocials!==false;
   const showStatus=privacy?.showStatus!==false;
+  const viewerIsArtist=profiles?.[activeUserId]?.accountType==='artist';
+  const artistLinkRestricted=person.accountType==='artist'&&!viewerIsArtist&&!connected;
   const isMuted=moderationState?.mutedUntil===-1||(moderationState?.mutedUntil||0)>Date.now();
   const safePosts=canView?posts:[];
   const postMap=Object.fromEntries((allPosts.length?allPosts:posts).map(p=>[p.id,p]));
@@ -4304,7 +4333,7 @@ function PersonProfileModal({ visible, onClose, theme, person, connected, privac
         {showStatus?<View style={{marginTop:9,alignSelf:'flex-start'}}><StatusBadge person={person} theme={theme}/></View>:null}
         {showSocials?<ProfileSocialLinks person={person} theme={theme} compact/>:null}
         {!canView?<View style={[styles.publicProfilePrivate,{backgroundColor:theme.soft,borderColor:theme.border}]}><Ionicons name="lock-closed" size={20} color={theme.sub}/><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{cs?'Soukromý profil':'Private profile'}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{cs?'Obsah tohoto profilu je dostupný jen povoleným LINKům.':'This profile content is only available to allowed LINKs.'}</Text></View></View>:null}
-        <View style={styles.publicProfileActions}>{connected?<><Pressable onPress={()=>{onClose();onChat();}} style={[styles.publicProfileActionPrimary,{backgroundColor:theme.inverse}]}><Ionicons name="chatbubble-ellipses" size={17} color={theme.inverseText}/><Text style={{color:theme.inverseText,fontWeight:'900'}}>{cs?'Zpráva':'Message'}</Text></Pressable><Pressable onPress={onToggleFavorite} style={[styles.publicProfileActionSquare,{backgroundColor:theme.soft,borderColor:theme.border}]}><Ionicons name={favorite?'star':'star-outline'} size={20} color={favorite?ACCENT:theme.text}/></Pressable></>:<Pressable onPress={onSendRequest} style={[styles.publicProfileActionPrimary,{backgroundColor:theme.inverse}]}><Ionicons name="link" size={17} color={theme.inverseText}/><Text style={{color:theme.inverseText,fontWeight:'900'}}>{cs?'Přidat LINK':'Add LINK'}</Text></Pressable>}<Pressable onPress={shareProfile} style={[styles.publicProfileActionSquare,{backgroundColor:theme.soft,borderColor:theme.border}]}><Ionicons name="share-outline" size={19} color={theme.text}/></Pressable></View>
+        <View style={styles.publicProfileActions}>{connected?<><Pressable onPress={()=>{onClose();onChat();}} style={[styles.publicProfileActionPrimary,{backgroundColor:theme.inverse}]}><Ionicons name="chatbubble-ellipses" size={17} color={theme.inverseText}/><Text style={{color:theme.inverseText,fontWeight:'900'}}>{cs?'Zpráva':'Message'}</Text></Pressable><Pressable onPress={onToggleFavorite} style={[styles.publicProfileActionSquare,{backgroundColor:theme.soft,borderColor:theme.border}]}><Ionicons name={favorite?'star':'star-outline'} size={20} color={favorite?ACCENT:theme.text}/></Pressable></>:artistLinkRestricted?<View style={[styles.artistLinkLocked,{backgroundColor:theme.soft,borderColor:theme.border}]}><Ionicons name="lock-closed-outline" size={16} color="#4AB45A"/><Text style={[styles.artistLinkLockedText,{color:theme.sub}]}>{cs?'LINK musí zahájit Artist':'Artist must initiate LINK'}</Text></View>:<Pressable onPress={onSendRequest} style={[styles.publicProfileActionPrimary,{backgroundColor:theme.inverse}]}><Ionicons name="link" size={17} color={theme.inverseText}/><Text style={{color:theme.inverseText,fontWeight:'900'}}>{cs?'Přidat LINK':'Add LINK'}</Text></Pressable>}<Pressable onPress={shareProfile} style={[styles.publicProfileActionSquare,{backgroundColor:theme.soft,borderColor:theme.border}]}><Ionicons name="share-outline" size={19} color={theme.text}/></Pressable></View>
         {connected?<Pressable onPress={onWave} style={[styles.publicProfileWave,{backgroundColor:theme.soft,borderColor:theme.border}]}><Ionicons name="hand-left-outline" size={16} color={theme.text}/><Text style={{color:theme.text,fontWeight:'850',fontSize:12.5}}>{cs?'Poslat wave':'Send a wave'}</Text></Pressable>:null}
         {viewerIsAdmin&&!person.isAdmin?<View style={[styles.adminModerationBox,{backgroundColor:theme.card,borderColor:theme.border}]}><View style={styles.rowBetween}><View><Text style={[styles.settingsTitle,{color:theme.text}]}>Admin controls</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>{moderationState?.banned?'Account is banned':isMuted?'Account is muted':'No active restriction'}</Text></View><Ionicons name="shield-checkmark" size={20} color={moderationState?.banned?theme.danger:'#0A84FF'}/></View><View style={styles.adminModerationActions}>{moderationState?.banned?<Pressable onPress={onAdminUnban} style={[styles.adminModerationButton,{backgroundColor:theme.soft}]}><Text style={{color:theme.text,fontWeight:'900'}}>Unban</Text></Pressable>:<Pressable onPress={onAdminBan} style={[styles.adminModerationButton,{backgroundColor:'#FF3B30'}]}><Text style={{color:'#fff',fontWeight:'900'}}>Ban</Text></Pressable>}{isMuted?<Pressable onPress={onAdminUnmute} style={[styles.adminModerationButton,{backgroundColor:theme.soft}]}><Text style={{color:theme.text,fontWeight:'900'}}>Unmute</Text></Pressable>:<Pressable onPress={onAdminMute} style={[styles.adminModerationButton,{backgroundColor:'#FF9F0A'}]}><Text style={{color:'#fff',fontWeight:'900'}}>Mute</Text></Pressable>}</View></View>:null}
       </View>
@@ -4731,7 +4760,7 @@ function NextOnboardingModal({visible,theme,profile,onDone,onShowLink}){
     {icon:'compass-outline',title:'Discover',body:'Find people, posts and #topics across LINK from one place.'},
   ];
   const item=cards[step]||cards[0];
-  return <Modal visible={visible} animationType="fade" presentationStyle="fullScreen"><SafeAreaView style={[styles.flexOne,{backgroundColor:theme.bg}]}><View style={{flex:1,padding:26,justifyContent:'space-between'}}><View><View style={{width:58,height:58,borderRadius:20,backgroundColor:'#111318',alignItems:'center',justifyContent:'center'}}><Text style={{color:'#fff',fontSize:30,fontWeight:'900'}}>L</Text></View><Text style={[styles.bigTitle,{color:theme.text,fontSize:42,marginTop:28}]}>Welcome to LINK 4.0</Text><Text style={[styles.headerSub,{color:theme.sub,fontSize:15,lineHeight:22,marginTop:6}]}>ONE brings your social identity, posts, discovery and conversations together.</Text></View><View style={[styles.nextSheet,{backgroundColor:theme.card,borderWidth:StyleSheet.hairlineWidth,borderColor:theme.border,width:'100%'}]}><View style={{width:54,height:54,borderRadius:18,backgroundColor:theme.soft,alignItems:'center',justifyContent:'center'}}><Ionicons name={item.icon} size={26} color={ACCENT}/></View><Text style={[styles.sheetTitle,{color:theme.text,marginTop:18}]}>{item.title}</Text><Text style={[styles.sheetSub,{color:theme.sub,fontSize:14,lineHeight:21,marginTop:8}]}>{item.body}</Text>{step===2?<Pressable onPress={onShowLink} style={[styles.widePrimary,{backgroundColor:theme.soft,marginTop:18}]}><Ionicons name="qr-code" size={18} color={theme.text}/><Text style={{color:theme.text,fontWeight:'900'}}>Show my LINK</Text></Pressable>:null}</View><View><View style={{flexDirection:'row',justifyContent:'center',gap:7,marginBottom:16}}>{cards.map((_,i)=><View key={i} style={{width:i===step?22:7,height:7,borderRadius:99,backgroundColor:i===step?ACCENT:theme.border}}/>)}</View><Pressable onPress={()=>step<cards.length-1?setStep(step+1):onDone?.()} style={[styles.widePrimary,{backgroundColor:theme.inverse}]}><Text style={[styles.primaryButtonText,{color:theme.inverseText}]}>{step<cards.length-1?'Continue':'Enter LINK'}</Text></Pressable></View></View></SafeAreaView></Modal>;
+  return <Modal visible={visible} animationType="fade" presentationStyle="fullScreen"><SafeAreaView style={[styles.flexOne,{backgroundColor:theme.bg}]}><View style={{flex:1,padding:26,justifyContent:'space-between'}}><View><View style={{width:58,height:58,borderRadius:20,backgroundColor:'#111318',alignItems:'center',justifyContent:'center'}}><Text style={{color:'#fff',fontSize:30,fontWeight:'900'}}>L</Text></View><Text style={[styles.bigTitle,{color:theme.text,fontSize:42,marginTop:28}]}>Welcome to LINK 4.3</Text><Text style={[styles.headerSub,{color:theme.sub,fontSize:15,lineHeight:22,marginTop:6}]}>ONE brings your social identity, posts, discovery and conversations together.</Text></View><View style={[styles.nextSheet,{backgroundColor:theme.card,borderWidth:StyleSheet.hairlineWidth,borderColor:theme.border,width:'100%'}]}><View style={{width:54,height:54,borderRadius:18,backgroundColor:theme.soft,alignItems:'center',justifyContent:'center'}}><Ionicons name={item.icon} size={26} color={ACCENT}/></View><Text style={[styles.sheetTitle,{color:theme.text,marginTop:18}]}>{item.title}</Text><Text style={[styles.sheetSub,{color:theme.sub,fontSize:14,lineHeight:21,marginTop:8}]}>{item.body}</Text>{step===2?<Pressable onPress={onShowLink} style={[styles.widePrimary,{backgroundColor:theme.soft,marginTop:18}]}><Ionicons name="qr-code" size={18} color={theme.text}/><Text style={{color:theme.text,fontWeight:'900'}}>Show my LINK</Text></Pressable>:null}</View><View><View style={{flexDirection:'row',justifyContent:'center',gap:7,marginBottom:16}}>{cards.map((_,i)=><View key={i} style={{width:i===step?22:7,height:7,borderRadius:99,backgroundColor:i===step?ACCENT:theme.border}}/>)}</View><Pressable onPress={()=>step<cards.length-1?setStep(step+1):onDone?.()} style={[styles.widePrimary,{backgroundColor:theme.inverse}]}><Text style={[styles.primaryButtonText,{color:theme.inverseText}]}>{step<cards.length-1?'Continue':'Enter LINK'}</Text></Pressable></View></View></SafeAreaView></Modal>;
 }
 
 function ForegroundNotice({ notice, theme, onPress }) {
@@ -4822,12 +4851,14 @@ function DiscoverScreen({theme,activeProfile,profiles,posts=[],connectedIds=[],r
     return Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,8);
   },[posts]);
   const people=useMemo(()=>Object.values(profiles).filter(p=>p&&p.id!==activeProfile.id&&p.discoverableByUsername!==false).filter(p=>!clean||`${p.name} ${p.username}`.toLowerCase().includes(clean)).slice(0,20),[profiles,activeProfile.id,clean]);
+  const artists=useMemo(()=>Object.values(profiles).filter(p=>p&&p.id!==activeProfile.id&&p.accountType==='artist'&&p.discoverableByUsername!==false).slice(0,16),[profiles,activeProfile.id]);
   const matchedPosts=useMemo(()=>posts.filter(p=>!p.parentId&&(!clean||String(p.body||'').toLowerCase().includes(clean)||String(profiles[p.authorId]?.username||'').toLowerCase().includes(clean))).slice(0,40),[posts,profiles,clean]);
   const openTag=(tag)=>setQuery(tag);
   return <View style={styles.flexOne}>
     <View style={styles.simpleHeader}><Text style={[styles.bigTitle,{color:theme.text}]}>{cs?'Objevovat':'Discover'}</Text><Text style={[styles.headerSub,{color:theme.sub}]}>{cs?'Lidé, příspěvky a témata napříč LINKem.':'People, posts and topics across LINK.'}</Text></View>
     <View style={[styles.oneSearchBox,{backgroundColor:theme.input}]}><Ionicons name="search" size={19} color={theme.sub}/><TextInput value={query} onChangeText={setQuery} autoCapitalize="none" autoCorrect={false} placeholder={cs?'Hledat @username, text nebo #téma':'Search @username, text or #topic'} placeholderTextColor={theme.sub} style={[styles.searchInput,{color:theme.text}]}/>{query?<Pressable onPress={()=>setQuery('')}><Ionicons name="close-circle" size={18} color={theme.sub}/></Pressable>:null}</View>
     <ScrollView contentContainerStyle={styles.oneDiscoverScroll} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+      {!clean&&artists.length?<View style={styles.artistDiscoverSection}><View style={styles.oneSectionRow}><View style={styles.inlineNameRow}><Text style={[styles.oneSectionTitle,{color:theme.text}]}>{cs?'Artists & Celebrities':'Artists & Celebrities'}</Text><ArtistVerifiedBadge compact/></View><Text style={[styles.oneSectionMeta,{color:'#4AB45A'}]}>{artists.length}</Text></View><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.artistDiscoverRow}>{artists.map(person=><ArtistDiscoverCard key={person.id} person={person} theme={theme} connected={connectedIds.includes(person.id)} onPress={()=>onOpenProfile?.(person)}/>)}</ScrollView></View>:null}
       {incomingRequests.length?<View style={styles.linkRequestInboxBlock}><View style={styles.oneSectionRow}><View style={styles.inlineNameRow}><Text style={[styles.oneSectionTitle,{color:theme.text}]}>{cs?'Žádosti o LINK':'LINK requests'}</Text><View style={styles.linkRequestCountBadge}><Text style={styles.linkRequestCountText}>{incomingRequests.length>99?'99+':incomingRequests.length}</Text></View></View><Text style={[styles.oneSectionMeta,{color:theme.sub}]}>{cs?'Čekají na tebe':'Waiting for you'}</Text></View>{incomingRequests.map(request=>{const person=profiles[request.fromId];return person?<RequestCard key={request.id} request={request} profile={person} theme={theme} onAccept={onAcceptRequest} onDecline={onDeclineRequest}/>:null})}</View>:null}
       {!clean&&hashtags.length?<><View style={styles.oneSectionRow}><Text style={[styles.oneSectionTitle,{color:theme.text}]}>{cs?'Trenduje':'Trending'}</Text><Ionicons name="trending-up" size={17} color={ACCENT}/></View><View style={styles.oneTrendWrap}>{hashtags.map(([tag,count])=><Pressable key={tag} onPress={()=>openTag(tag)} style={[styles.oneTrendChip,{backgroundColor:theme.card,borderColor:theme.border}]}><Text style={[styles.oneTrendTag,{color:theme.text}]}>{tag}</Text><Text style={[styles.oneTrendCount,{color:theme.sub}]}>{count}</Text></Pressable>)}</View></>:null}
       <View style={[styles.oneSectionRow,{marginTop:18}]}><Text style={[styles.oneSectionTitle,{color:theme.text}]}>{clean?(cs?'Lidé':'People'):(cs?'Doporučené profily':'Suggested people')}</Text><Text style={[styles.oneSectionMeta,{color:theme.sub}]}>{people.length}</Text></View>
@@ -4848,7 +4879,7 @@ function CreateHubModal({visible,onClose,theme,onPost,onMoment,onNote,onGroup,on
     ['pulse-outline','LINK Now',cs?'Co právě děláš?':'What are you doing right now?',onLinkNow],
   ];
   const fire=(fn)=>{onClose?.();setTimeout(()=>fn?.(),170);};
-  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.oneCreateHub,{backgroundColor:theme.card,borderColor:theme.border}]} onPress={()=>{}}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle,{color:theme.text}]}>Create</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>LINK 4.0 · ONE</Text></View><IconButton icon="close" onPress={onClose} theme={theme}/></View><View style={styles.oneCreateGrid}>{actions.map(([icon,title,sub,fn])=><Pressable key={title} onPress={()=>fire(fn)} style={[styles.oneCreateAction,{backgroundColor:theme.bg,borderColor:theme.border}]}><View style={[styles.oneCreateIcon,{backgroundColor:theme.soft}]}><Ionicons name={icon} size={22} color={ACCENT}/></View><Text style={[styles.oneCreateTitle,{color:theme.text}]}>{title}</Text><Text style={[styles.oneCreateSub,{color:theme.sub}]}>{sub}</Text></Pressable>)}</View><View style={styles.oneCreateQuickRow}><Pressable onPress={()=>fire(onMyLink)} style={[styles.oneCreateQuick,{backgroundColor:theme.soft}]}><Ionicons name="qr-code-outline" size={18} color={theme.text}/><Text style={[styles.oneCreateQuickText,{color:theme.text}]}>My LINK</Text></Pressable><Pressable onPress={()=>fire(onScan)} style={[styles.oneCreateQuick,{backgroundColor:theme.soft}]}><Ionicons name="scan-outline" size={18} color={theme.text}/><Text style={[styles.oneCreateQuickText,{color:theme.text}]}>{cs?'Skenovat':'Scan'}</Text></Pressable></View></Pressable></Pressable></Modal>;
+  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.oneCreateHub,{backgroundColor:theme.card,borderColor:theme.border}]} onPress={()=>{}}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle,{color:theme.text}]}>Create</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>LINK 4.3 · Artists</Text></View><IconButton icon="close" onPress={onClose} theme={theme}/></View><View style={styles.oneCreateGrid}>{actions.map(([icon,title,sub,fn])=><Pressable key={title} onPress={()=>fire(fn)} style={[styles.oneCreateAction,{backgroundColor:theme.bg,borderColor:theme.border}]}><View style={[styles.oneCreateIcon,{backgroundColor:theme.soft}]}><Ionicons name={icon} size={22} color={ACCENT}/></View><Text style={[styles.oneCreateTitle,{color:theme.text}]}>{title}</Text><Text style={[styles.oneCreateSub,{color:theme.sub}]}>{sub}</Text></Pressable>)}</View><View style={styles.oneCreateQuickRow}><Pressable onPress={()=>fire(onMyLink)} style={[styles.oneCreateQuick,{backgroundColor:theme.soft}]}><Ionicons name="qr-code-outline" size={18} color={theme.text}/><Text style={[styles.oneCreateQuickText,{color:theme.text}]}>My LINK</Text></Pressable><Pressable onPress={()=>fire(onScan)} style={[styles.oneCreateQuick,{backgroundColor:theme.soft}]}><Ionicons name="scan-outline" size={18} color={theme.text}/><Text style={[styles.oneCreateQuickText,{color:theme.text}]}>{cs?'Skenovat':'Scan'}</Text></Pressable></View></Pressable></Pressable></Modal>;
 }
 
 function PostThreadModal({visible,onClose,theme,post,posts=[],profiles,activeUserId,onToggleLike,onDelete,onReply,onRepost,onQuote,onBookmark,onPin,onOpenProfile}) {
@@ -4945,7 +4976,7 @@ function LinkApp({ session, accountManager }) {
   const activeMode = data.themeSetting === 'system' ? (systemScheme === 'dark' ? 'dark' : 'light') : data.themeSetting;
   const theme = activeMode === 'dark' ? dark : light;
   const activeProfile = data.profiles[data.activeAccountId];
-  useEffect(()=>{if(activeProfile?.id)accountManager?.updateProfile?.(activeProfile).catch(()=>{});},[activeProfile?.id,activeProfile?.name,activeProfile?.username,activeProfile?.photoUri,activeProfile?.verified,activeProfile?.verificationStyle,activeProfile?.role]);
+  useEffect(()=>{if(activeProfile?.id)accountManager?.updateProfile?.(activeProfile).catch(()=>{});},[activeProfile?.id,activeProfile?.name,activeProfile?.username,activeProfile?.photoUri,activeProfile?.verified,activeProfile?.verificationStyle,activeProfile?.role,activeProfile?.accountType]);
   const localProfiles = data.localAccountIds.map(id => data.profiles[id]).filter(Boolean);
   const connectedIds = data.relationships[data.activeAccountId] || [];
   const connectedProfiles = connectedIds.map(id => data.profiles[id]).filter(Boolean);
@@ -5005,7 +5036,7 @@ function LinkApp({ session, accountManager }) {
 
   const payload = useMemo(() => {
     if (!activeProfile) return 'LINK::invalid';
-    return `LINK::${encodeURIComponent(JSON.stringify({ v: 2, id: activeProfile.id, name: activeProfile.name, username: activeProfile.username, bio: activeProfile.bio, status: activeProfile.status, statusIcon: activeProfile.statusIcon, statusColor: activeProfile.statusColor, statusGradient: activeProfile.statusGradient || null }))}`;
+    return `LINK::${encodeURIComponent(JSON.stringify({ v: 3, id: activeProfile.id, name: activeProfile.name, username: activeProfile.username, bio: activeProfile.bio, accountType:activeProfile.accountType||'standard', verified:!!activeProfile.verified, verificationStyle:activeProfile.verificationStyle||'blue', status: activeProfile.status, statusIcon: activeProfile.statusIcon, statusColor: activeProfile.statusColor, statusGradient: activeProfile.statusGradient || null }))}`;
   }, [activeProfile]);
 
   const refreshRemote = async () => {
@@ -5376,6 +5407,10 @@ function LinkApp({ session, accountManager }) {
   const sendRequest = async (toId) => {
     if (!toId || !activeCanPost('send LINK requests')) return;
     if (toId === data.activeAccountId || connectedIds.includes(toId)) return;
+    const target=data.profiles[toId];
+    if(target?.accountType==='artist'&&activeProfile?.accountType!=='artist'){
+      return Alert.alert(CURRENT_LANGUAGE==='cs'?'Artist účet':'Artist account',CURRENT_LANGUAGE==='cs'?'Tento účet si nemůžeš LINKnout. LINK musí zahájit samotný Artist/Celebrity účet.':'You cannot send a LINK request to this account. The Artist/Celebrity account must initiate the LINK.');
+    }
     try {
       await requestLinkRemote(toId);
       await refreshRemote();
@@ -5408,7 +5443,11 @@ function LinkApp({ session, accountManager }) {
         return { ...prev, profiles };
       });
       setScannerOpen(false);
-      setTimeout(() => sendRequest(incoming.id), 60);
+      if(incoming.accountType==='artist'&&activeProfile?.accountType!=='artist'){
+        setTimeout(()=>setProfileModalId(incoming.id),80);
+      }else{
+        setTimeout(() => sendRequest(incoming.id), 60);
+      }
     } catch { Alert.alert('Not a LINK card', 'Try scanning a QR generated inside LINK.'); }
   };
 
@@ -6094,6 +6133,19 @@ const styles = StyleSheet.create({
   onePinnedText:{fontSize:10.5,fontWeight:'850'},
   oneSearchBox:{marginHorizontal:18,minHeight:46,borderRadius:17,paddingHorizontal:13,flexDirection:'row',alignItems:'center',gap:9},
   oneDiscoverScroll:{paddingHorizontal:18,paddingTop:15,paddingBottom:120},
+
+  artistDiscoverSection:{marginBottom:18},
+  artistDiscoverRow:{gap:9,paddingRight:14},
+  artistDiscoverCard:{width:132,minHeight:160,borderRadius:22,borderWidth:StyleSheet.hairlineWidth,padding:12,alignItems:'center'},
+  artistDiscoverAvatarWrap:{position:'relative',marginBottom:10},
+  artistDiscoverVerified:{position:'absolute',right:-4,bottom:-2,width:22,height:22,borderRadius:11,alignItems:'center',justifyContent:'center'},
+  artistDiscoverName:{fontSize:13,fontWeight:'950',textAlign:'center',width:'100%'},
+  artistDiscoverHandle:{fontSize:10.5,fontWeight:'700',marginTop:3,textAlign:'center',width:'100%'},
+  artistDiscoverState:{marginTop:9,borderRadius:999,paddingHorizontal:8,paddingVertical:4},
+  artistDiscoverStateText:{fontSize:8.5,fontWeight:'950',color:'#4AB45A',letterSpacing:.4},
+  artistLinkLocked:{flex:1,minHeight:46,borderRadius:15,borderWidth:StyleSheet.hairlineWidth,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:8},
+  artistLinkLockedText:{fontSize:12.5,fontWeight:'850'},
+
   linkRequestInboxBlock:{marginBottom:18},
   linkRequestCountBadge:{minWidth:21,height:21,borderRadius:11,backgroundColor:'#FF3B30',alignItems:'center',justifyContent:'center',paddingHorizontal:6},
   linkRequestCountText:{color:'#fff',fontSize:10,fontWeight:'950'},
