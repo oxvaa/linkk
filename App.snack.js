@@ -4770,6 +4770,139 @@ function ForegroundNotice({ notice, theme, onPress }) {
 }
 
 
+
+function BackstageMark({size=42}) {
+  return <View style={[styles.backstageMark,{width:size,height:size,borderRadius:size*.28}]}>
+    <Text style={[styles.backstageMarkText,{fontSize:size*.48}]}>B</Text>
+  </View>;
+}
+
+function BackstagePromoCard({theme,onOpen}) {
+  const cs=CURRENT_LANGUAGE==='cs';
+  return <View style={[styles.backstageFeedShell,{borderBottomColor:theme.border}]}>
+    <LinearGradient colors={['#090A0D','#17191E','#08090B']} style={styles.backstageFeedCard}>
+      <View style={styles.backstageSponsoredRow}>
+        <View style={styles.inlineNameRow}>
+          <BackstageMark size={34}/>
+          <View>
+            <Text style={styles.backstageBrand}>BACKSTAGE</Text>
+            <Text style={styles.backstageSponsored}>{cs?'Doporučeno v LINKu':'Sponsored in LINK'}</Text>
+          </View>
+        </View>
+        <View style={styles.backstageMiniBadge}><Text style={styles.backstageMiniBadgeText}>PWA</Text></View>
+      </View>
+
+      <Text style={styles.backstageFeedEyebrow}>FOLLOW LESS. EXPERIENCE MORE.</Text>
+      <Text style={styles.backstageFeedTitle}>{cs?'Blíž k umělcům, které opravdu posloucháš.':'Closer to the artists you actually care about.'}</Text>
+      <Text style={styles.backstageFeedBody}>
+        {cs
+          ? 'Exkluzivní drops, hudba, eventy, merch, listening rooms a obsah přímo od Artists.'
+          : 'Exclusive drops, music, events, merch, listening rooms and content directly from Artists.'}
+      </Text>
+
+      <View style={styles.backstageFeatureRow}>
+        {[
+          ['musical-notes-outline',cs?'Hudba':'Music'],
+          ['ticket-outline',cs?'Eventy':'Events'],
+          ['bag-handle-outline','Drops'],
+          ['people-outline','Core Fans'],
+        ].map(([icon,label])=><View key={label} style={styles.backstageFeatureChip}>
+          <Ionicons name={icon} size={14} color="#D9DBE1"/>
+          <Text style={styles.backstageFeatureChipText}>{label}</Text>
+        </View>)}
+      </View>
+
+      <Pressable onPress={onOpen} style={({pressed})=>[styles.backstageFeedCTA,{opacity:pressed ? .78 : 1}]}>
+        <Text style={styles.backstageFeedCTAText}>{cs?'Zjistit více':'Learn more'}</Text>
+        <Ionicons name="arrow-forward" size={17} color="#0A0B0E"/>
+      </Pressable>
+    </LinearGradient>
+  </View>;
+}
+
+function BackstageInfoModal({visible,onClose,theme}) {
+  const cs=CURRENT_LANGUAGE==='cs';
+  const features=[
+    ['checkmark-seal-outline',cs?'Ověřené Artist profily':'Verified Artist profiles',cs?'Sleduj oficiální profily a obsah přímo od Artists.':'Follow official profiles and content directly from Artists.'],
+    ['star-outline','Core Fan',cs?'Členství pro superfans a přístup k exkluzivnímu obsahu.':'Memberships for superfans and exclusive access.'],
+    ['gift-outline','Drops',cs?'Limitované releasy, merch a speciální dropy na jednom místě.':'Limited releases, merch and special drops in one place.'],
+    ['musical-notes-outline',cs?'Hudba & listening rooms':'Music & listening rooms',cs?'Nová hudba, společné poslechy a fan experiences.':'New music, shared listening and fan experiences.'],
+    ['ticket-outline',cs?'Eventy & secret events':'Events & secret events',cs?'Eventy, tajné akce a BACKSTAGE Pass.':'Events, secret experiences and BACKSTAGE Pass.'],
+    ['link-outline','LINK × BACKSTAGE',cs?'Propojení identity přes NEXTworks ID a LINK ekosystém.':'Identity connection through NEXTworks ID and the LINK ecosystem.'],
+  ];
+
+  const iosSteps=[
+    [1,'safari-outline',cs?'Otevři BACKSTAGE v Safari':'Open BACKSTAGE in Safari',cs?'Použij Safari na iPhonu. Instalace na plochu funguje přes nabídku Sdílet.':'Use Safari on iPhone. Home Screen installation is available from Share.'],
+    [2,'share-outline',cs?'Klepni na Sdílet':'Tap Share',cs?'Dole v Safari klepni na ikonu čtverce se šipkou nahoru.':'Tap the square-with-up-arrow Share button in Safari.'],
+    [3,'add-circle-outline',cs?'Zvol „Přidat na plochu“':'Choose “Add to Home Screen”',cs?'V nabídce sjeď níže a vyber Přidat na plochu.':'Scroll the Share sheet and choose Add to Home Screen.'],
+    [4,'checkmark-circle-outline',cs?'Potvrď Přidat':'Confirm Add',cs?'Potvrď název a klepni na Přidat. Ikona BACKSTAGE se objeví na ploše.':'Confirm the name and tap Add. BACKSTAGE appears on your Home Screen.'],
+    [5,'apps-outline',cs?'Spouštěj jako aplikaci':'Launch it like an app',cs?'BACKSTAGE se z plochy otevře jako samostatná webová aplikace bez klasického Safari UI.':'From the Home Screen, BACKSTAGE opens as a standalone web app without the normal Safari chrome.'],
+  ];
+
+  return <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}>
+    <SafeAreaView style={[styles.backstagePage,{backgroundColor:theme.bg}]}>
+      <View style={[styles.backstageHeader,{borderBottomColor:theme.border}]}>
+        <IconButton icon="chevron-back" onPress={onClose} theme={theme}/>
+        <View style={{flex:1,alignItems:'center'}}>
+          <Text style={[styles.backstageHeaderTitle,{color:theme.text}]}>BACKSTAGE</Text>
+          <Text style={[styles.backstageHeaderSub,{color:theme.sub}]}>Closer to the artists you love.</Text>
+        </View>
+        <View style={{width:42}}/>
+      </View>
+
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.backstageScroll}>
+        <LinearGradient colors={['#06070A','#181A20','#0B0C10']} style={styles.backstageHero}>
+          <BackstageMark size={66}/>
+          <Text style={styles.backstageHeroEyebrow}>FOLLOW LESS. EXPERIENCE MORE.</Text>
+          <Text style={styles.backstageHeroTitle}>{cs?'Fan platforma postavená kolem Artists.':'A fan platform built around Artists.'}</Text>
+          <Text style={styles.backstageHeroBody}>
+            {cs
+              ? 'BACKSTAGE je direct-to-fan platforma pro Artists a superfans. Místo algoritmického chaosu dostaneš hudbu, drops, eventy a exkluzivní momenty přímo od lidí, které sleduješ.'
+              : 'BACKSTAGE is a direct-to-fan platform for Artists and superfans. Instead of algorithmic noise, get music, drops, events and exclusive moments directly from the people you follow.'}
+          </Text>
+        </LinearGradient>
+
+        <Text style={[styles.backstageSectionTitle,{color:theme.text}]}>{cs?'Co najdeš v BACKSTAGE':'What’s inside BACKSTAGE'}</Text>
+        <View style={[styles.backstageInfoCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
+          {features.map(([icon,title,body],i)=><View key={title} style={[styles.backstageInfoRow,i<features.length-1&&{borderBottomWidth:StyleSheet.hairlineWidth,borderBottomColor:theme.border}]}>
+            <View style={[styles.backstageInfoIcon,{backgroundColor:theme.soft}]}><Ionicons name={icon} size={20} color={theme.text}/></View>
+            <View style={{flex:1}}>
+              <Text style={[styles.backstageInfoTitle,{color:theme.text}]}>{title}</Text>
+              <Text style={[styles.backstageInfoBody,{color:theme.sub}]}>{body}</Text>
+            </View>
+          </View>)}
+        </View>
+
+        <View style={styles.backstageInstallHeadingRow}>
+          <View>
+            <Text style={[styles.backstageSectionTitle,{color:theme.text,marginTop:0}]}>{cs?'Přidej BACKSTAGE na plochu':'Add BACKSTAGE to Home Screen'}</Text>
+            <Text style={[styles.backstageInstallIntro,{color:theme.sub}]}>{cs?'Na iOS funguje BACKSTAGE jako PWA/webová aplikace.':'On iOS, BACKSTAGE works as a PWA/web app.'}</Text>
+          </View>
+          <View style={[styles.backstageIOSBadge,{backgroundColor:theme.inverse}]}><Ionicons name="logo-apple" size={17} color={theme.inverseText}/><Text style={[styles.backstageIOSBadgeText,{color:theme.inverseText}]}>iOS</Text></View>
+        </View>
+
+        <View style={[styles.backstageInfoCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
+          {iosSteps.map(([number,icon,title,body],i)=><View key={number} style={[styles.backstageStep,i<iosSteps.length-1&&{borderBottomWidth:StyleSheet.hairlineWidth,borderBottomColor:theme.border}]}>
+            <View style={[styles.backstageStepNumber,{backgroundColor:theme.inverse}]}><Text style={[styles.backstageStepNumberText,{color:theme.inverseText}]}>{number}</Text></View>
+            <View style={[styles.backstageStepIcon,{backgroundColor:theme.soft}]}><Ionicons name={icon} size={19} color={theme.text}/></View>
+            <View style={{flex:1}}>
+              <Text style={[styles.backstageInfoTitle,{color:theme.text}]}>{title}</Text>
+              <Text style={[styles.backstageInfoBody,{color:theme.sub}]}>{body}</Text>
+            </View>
+          </View>)}
+        </View>
+
+        <View style={[styles.backstageTip,{backgroundColor:theme.soft}]}>
+          <Ionicons name="information-circle-outline" size={19} color={theme.text}/>
+          <Text style={[styles.backstageTipText,{color:theme.sub}]}>
+            {cs?'Tip: BACKSTAGE otevři přímo v Safari. Pokud jsi odkaz otevřel uvnitř jiné aplikace, nejdřív zvol „Otevřít v Safari“.':'Tip: Open BACKSTAGE directly in Safari. If the link opened inside another app, choose “Open in Safari” first.'}
+          </Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  </Modal>;
+}
+
 function OfficialTimelinePost({item,theme,onOpenOfficial}) {
   const cs=CURRENT_LANGUAGE==='cs';
   const formatTime=(value)=>{try{return new Date(value).toLocaleString(cs?'cs-CZ':'en-US',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}catch{return ''}};
@@ -4788,6 +4921,7 @@ function OfficialTimelinePost({item,theme,onOpenOfficial}) {
 function LinkFeedScreen({theme,activeProfile,profiles,posts=[],connectedIds=[],officialAnnouncements=[],linkNow={},moments=[],notes=[],onCreatePost,onCreateMoment,onOpenMoment,onOpenNote,onOpenProfile,onOpenOfficial,onOpenActivity,onOpenWhatsNew,activityCount=0,onToggleLike,onDelete,onReply,onRepost,onQuote,onBookmark,onPin,onOpenThread}) {
   const cs=CURRENT_LANGUAGE==='cs';
   const [mode,setMode]=useState('following');
+  const [backstageOpen,setBackstageOpen]=useState(false);
   const postMap=useMemo(()=>Object.fromEntries(posts.map(p=>[p.id,p])),[posts]);
   const pulsePeople=useMemo(()=>{
     const entries=[];
@@ -4814,7 +4948,10 @@ function LinkFeedScreen({theme,activeProfile,profiles,posts=[],connectedIds=[],o
   const feedItems=useMemo(()=>{
     const items=socialPosts.map(post=>({kind:'post',id:`post:${post.id}`,createdAt:post.createdAt,post}));
     const official=(officialAnnouncements||[]).map(item=>({kind:'official',id:`official:${item.id}`,createdAt:item.createdAt,item}));
-    return [...items,...official].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    const sorted=[...items,...official].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    const ad={kind:'backstage',id:'promo:backstage'};
+    if(sorted.length>=2)return [...sorted.slice(0,2),ad,...sorted.slice(2)];
+    return [...sorted,ad];
   },[socialPosts,officialAnnouncements]);
   return <View style={styles.flexOne}>
     <View style={styles.oneHeader}><Pressable onPress={onOpenWhatsNew}><Text style={[styles.oneBrand,{color:theme.text}]}>LINK</Text><Text style={[styles.oneHeaderSub,{color:theme.sub}]}>4.0 · ONE</Text></Pressable><View style={styles.oneHeaderActions}><Pressable onPress={onOpenActivity} style={[styles.oneHeaderCircle,{backgroundColor:theme.card,borderColor:theme.border}]}><Ionicons name="notifications-outline" size={19} color={theme.text}/>{activityCount?<View style={styles.oneActivityDot}/>:null}</Pressable><Pressable onPress={onCreatePost} style={[styles.oneHeaderCreate,{backgroundColor:theme.inverse}]}><Ionicons name="add" size={20} color={theme.inverseText}/></Pressable></View></View>
@@ -4831,11 +4968,14 @@ function LinkFeedScreen({theme,activeProfile,profiles,posts=[],connectedIds=[],o
         {pulsePeople.length?<View style={styles.onePulseBlock}><View style={styles.oneSectionRow}><Text style={[styles.oneSectionTitle,{color:theme.text}]}>LINK Pulse</Text><Text style={[styles.oneSectionMeta,{color:theme.sub}]}>{cs?'Právě teď':'Right now'}</Text></View><ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.onePulseRow}>{pulsePeople.map(entry=><Pressable key={entry.id} onPress={()=>entry.note?onOpenNote?.(entry.note):onOpenProfile?.(entry.person)} style={[styles.onePulseCard,{backgroundColor:theme.card,borderColor:theme.border}]}><Avatar person={entry.person} size={38} theme={theme}/><View style={{flex:1,minWidth:0}}><Text numberOfLines={1} style={[styles.onePulseName,{color:theme.text}]}>{entry.person.name}</Text><Text numberOfLines={1} style={[styles.onePulseText,{color:theme.sub}]}>{entry.text}</Text></View>{entry.note?<Text style={{fontSize:17}}>{entry.note.emoji||'💭'}</Text>:<Ionicons name={entry.icon||'pulse'} size={17} color={entry.color||ACCENT}/>}</Pressable>)}</ScrollView></View>:null}
         <Pressable onPress={onCreatePost} style={[styles.oneComposePrompt,{backgroundColor:theme.card,borderColor:theme.border}]}><Avatar person={activeProfile} size={40} theme={theme}/><Text style={[styles.oneComposePromptText,{color:theme.sub}]}>{cs?'Co je nového?':'What’s new?'}</Text><View style={[styles.oneComposePhoto,{backgroundColor:theme.soft}]}><Ionicons name="image-outline" size={18} color={ACCENT}/></View></Pressable>
       </>}
-      renderItem={({item})=>item.kind==='official'
+      renderItem={({item})=>item.kind==='backstage'
+        ? <BackstagePromoCard theme={theme} onOpen={()=>setBackstageOpen(true)}/>
+        : item.kind==='official'
         ? <OfficialTimelinePost item={item.item} theme={theme} onOpenOfficial={onOpenOfficial}/>
         : <ProfilePostCard post={item.post} author={profiles[item.post.authorId]} theme={theme} activeUserId={activeProfile.id} onToggleLike={onToggleLike} onDelete={onDelete} onReply={onReply} onRepost={onRepost} onQuote={onQuote} onBookmark={onBookmark} onPin={onPin} onOpenThread={onOpenThread} postMap={postMap} profiles={profiles}/>}
       ListEmptyComponent={<View style={styles.oneEmpty}><Ionicons name="planet-outline" size={42} color={theme.sub}/><Text style={[styles.oneEmptyTitle,{color:theme.text}]}>{cs?'Feed je zatím prázdný':'Your feed is quiet'}</Text><Text style={[styles.oneEmptyBody,{color:theme.sub}]}>{cs?'Přidej první post nebo propoj další LINKy.':'Post something or connect with more LINKs.'}</Text></View>}
     />
+    <BackstageInfoModal visible={backstageOpen} onClose={()=>setBackstageOpen(false)} theme={theme}/>
   </View>;
 }
 
@@ -6120,6 +6260,50 @@ const styles = StyleSheet.create({
   oneComposePromptText:{flex:1,fontSize:14,fontWeight:'650'},
   oneComposePhoto:{width:34,height:34,borderRadius:17,alignItems:'center',justifyContent:'center'},
   oneFeedPostShell:{paddingHorizontal:2,paddingVertical:15,borderBottomWidth:StyleSheet.hairlineWidth,flexDirection:'row',alignItems:'flex-start',gap:11},
+
+  backstageMark:{backgroundColor:'#0A0B0E',borderWidth:1,borderColor:'rgba(255,255,255,.12)',alignItems:'center',justifyContent:'center'},
+  backstageMarkText:{color:'#F5F6F8',fontWeight:'950',letterSpacing:-1},
+  backstageFeedShell:{paddingVertical:15,borderBottomWidth:StyleSheet.hairlineWidth},
+  backstageFeedCard:{borderRadius:24,padding:17,overflow:'hidden'},
+  backstageSponsoredRow:{flexDirection:'row',alignItems:'center',justifyContent:'space-between'},
+  backstageBrand:{color:'#F7F8FA',fontSize:13.5,fontWeight:'950',letterSpacing:.7},
+  backstageSponsored:{color:'#8C8F98',fontSize:9.5,fontWeight:'750',marginTop:2},
+  backstageMiniBadge:{borderRadius:999,borderWidth:1,borderColor:'rgba(255,255,255,.18)',paddingHorizontal:8,paddingVertical:4},
+  backstageMiniBadgeText:{color:'#C7C9CF',fontSize:8.5,fontWeight:'900',letterSpacing:.65},
+  backstageFeedEyebrow:{color:'#8F929C',fontSize:9.5,fontWeight:'900',letterSpacing:1.1,marginTop:22},
+  backstageFeedTitle:{color:'#F7F8FA',fontSize:24,lineHeight:29,fontWeight:'950',letterSpacing:-.8,marginTop:6,maxWidth:340},
+  backstageFeedBody:{color:'#A5A8B1',fontSize:13,lineHeight:19,fontWeight:'550',marginTop:9,maxWidth:360},
+  backstageFeatureRow:{flexDirection:'row',flexWrap:'wrap',gap:7,marginTop:17},
+  backstageFeatureChip:{borderRadius:999,borderWidth:1,borderColor:'rgba(255,255,255,.10)',backgroundColor:'rgba(255,255,255,.05)',paddingHorizontal:9,paddingVertical:7,flexDirection:'row',alignItems:'center',gap:5},
+  backstageFeatureChipText:{color:'#D9DBE1',fontSize:9.5,fontWeight:'850'},
+  backstageFeedCTA:{marginTop:18,minHeight:45,borderRadius:15,backgroundColor:'#F3F4F6',paddingHorizontal:15,flexDirection:'row',alignItems:'center',justifyContent:'space-between'},
+  backstageFeedCTAText:{color:'#0A0B0E',fontSize:13.5,fontWeight:'950'},
+  backstagePage:{flex:1},
+  backstageHeader:{height:58,borderBottomWidth:StyleSheet.hairlineWidth,paddingHorizontal:10,flexDirection:'row',alignItems:'center'},
+  backstageHeaderTitle:{fontSize:14.5,fontWeight:'950',letterSpacing:.8},
+  backstageHeaderSub:{fontSize:9.5,fontWeight:'650',marginTop:1},
+  backstageScroll:{paddingHorizontal:16,paddingTop:16,paddingBottom:42},
+  backstageHero:{borderRadius:28,padding:22,minHeight:300,justifyContent:'flex-end'},
+  backstageHeroEyebrow:{color:'#858994',fontSize:9.5,fontWeight:'950',letterSpacing:1.2,marginTop:22},
+  backstageHeroTitle:{color:'#F7F8FA',fontSize:30,lineHeight:35,fontWeight:'950',letterSpacing:-1.05,marginTop:7,maxWidth:360},
+  backstageHeroBody:{color:'#A9ACB5',fontSize:13.5,lineHeight:20,fontWeight:'550',marginTop:11,maxWidth:390},
+  backstageSectionTitle:{fontSize:19,fontWeight:'950',letterSpacing:-.5,marginTop:24,marginBottom:10},
+  backstageInfoCard:{borderRadius:24,borderWidth:StyleSheet.hairlineWidth,overflow:'hidden'},
+  backstageInfoRow:{minHeight:78,paddingHorizontal:14,paddingVertical:13,flexDirection:'row',alignItems:'center',gap:12},
+  backstageInfoIcon:{width:42,height:42,borderRadius:14,alignItems:'center',justifyContent:'center'},
+  backstageInfoTitle:{fontSize:13.5,fontWeight:'900',letterSpacing:-.15},
+  backstageInfoBody:{fontSize:11.5,lineHeight:16.5,fontWeight:'550',marginTop:3},
+  backstageInstallHeadingRow:{marginTop:25,marginBottom:10,flexDirection:'row',alignItems:'flex-end',justifyContent:'space-between',gap:12},
+  backstageInstallIntro:{fontSize:11.5,lineHeight:16,fontWeight:'550',maxWidth:285},
+  backstageIOSBadge:{borderRadius:999,paddingHorizontal:9,paddingVertical:6,flexDirection:'row',alignItems:'center',gap:5},
+  backstageIOSBadgeText:{fontSize:9.5,fontWeight:'900'},
+  backstageStep:{minHeight:92,paddingHorizontal:13,paddingVertical:13,flexDirection:'row',alignItems:'flex-start',gap:9},
+  backstageStepNumber:{width:25,height:25,borderRadius:13,alignItems:'center',justifyContent:'center',marginTop:7},
+  backstageStepNumberText:{fontSize:10.5,fontWeight:'950'},
+  backstageStepIcon:{width:38,height:38,borderRadius:13,alignItems:'center',justifyContent:'center',marginTop:1},
+  backstageTip:{marginTop:12,borderRadius:18,padding:13,flexDirection:'row',alignItems:'flex-start',gap:9},
+  backstageTipText:{flex:1,fontSize:11.5,lineHeight:16.5,fontWeight:'600'},
+
   oneOfficialLink:{marginTop:10,minHeight:42,borderRadius:14,borderWidth:StyleSheet.hairlineWidth,paddingHorizontal:12,flexDirection:'row',alignItems:'center',justifyContent:'space-between',gap:8},
   oneOfficialLinkTitle:{fontSize:12.5,fontWeight:'900',flex:1},
   onePostReference:{marginTop:10,borderRadius:16,borderWidth:StyleSheet.hairlineWidth,padding:11,overflow:'hidden'},
