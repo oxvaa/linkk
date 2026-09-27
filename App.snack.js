@@ -1408,7 +1408,7 @@ const DRAFT_PREFIX = '@link_chat_draft_v1';
 const DEVICE_ID_KEY = '@link_device_id_v3';
 const ACCENT = '#6C5CE7';
 const EMPTY_MESSAGES = Object.freeze([]);
-const BUILD = 'LINK 4.0 · ONE';
+const BUILD = 'LINK 4.1 · ONE';
 const VERIFIED_BADGE_DATA_URI = 'data:image/png;base64,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';
 
 function NetflixWordmark({ width = 112, height = 31, style }) {
@@ -2428,75 +2428,164 @@ function PresenceStatusModal({ visible, onClose, theme, profile, proActive, onSe
   </Pressable></Pressable></Modal>;
 }
 
-function SettingsHubModal({ visible, onClose, theme, profile, accountEmail, privacy, setPrivacy, themeSetting, setThemeSetting, languageSetting, setLanguageSetting, proActive, onOpenPresence, onSignOut }) {
+
+function IOSSettingsRow({theme,icon,title,value,onPress,right,last=false,danger=false,iconColor=null}) {
+  const content=<>
+    <View style={styles.iosSettingsIconSlot}><Ionicons name={icon} size={22} color={danger?theme.danger:(iconColor||theme.text)}/></View>
+    <Text numberOfLines={1} style={[styles.iosSettingsRowTitle,{color:danger?theme.danger:theme.text}]}>{title}</Text>
+    <View style={styles.iosSettingsRowRight}>
+      {value!=null&&value!==''?<Text numberOfLines={1} style={[styles.iosSettingsValue,{color:danger?theme.danger:theme.sub}]}>{value}</Text>:null}
+      {right||null}
+      {onPress?<Ionicons name="chevron-forward" size={19} color={theme.sub}/>:null}
+    </View>
+  </>;
+  const rowStyle=[styles.iosSettingsRow,!last&&{borderBottomWidth:StyleSheet.hairlineWidth,borderBottomColor:theme.border}];
+  return onPress
+    ? <Pressable onPress={onPress} style={({pressed})=>[...rowStyle,{opacity:pressed ? .65 : 1}]}>{content}</Pressable>
+    : <View style={rowStyle}>{content}</View>;
+}
+
+function IOSSettingsSection({theme,title,children}) {
+  return <View style={styles.iosSettingsSection}>
+    <Text style={[styles.iosSettingsSectionTitle,{color:theme.sub}]}>{title}</Text>
+    <View style={[styles.iosSettingsCard,{backgroundColor:theme.card,borderColor:theme.border}]}>{children}</View>
+  </View>;
+}
+
+function SettingsHubModal({
+  visible,onClose,theme,profile,accountEmail,privacy,setPrivacy,
+  themeSetting,setThemeSetting,languageSetting,setLanguageSetting,
+  proActive,plusActive,proSubscription,plusSubscription,
+  profileLayout,setProfileLayout,insights,doubleTapEmoji,
+  onOpenPresence,onOpenCustomStatus,onOpenShop,onOpenPro,onOpenPlus,onOpenDoubleTap,
+  onOpenAccountSwitcher,onOpenAdminConsole,onOpenAdminBadge,onOpenAdminCustomize,
+  onRefresh,onSignOut
+}) {
   if (!profile) return null;
-  const patch = (next) => setPrivacy({ ...privacy, ...next });
-  const shortId = profile.id ? `${profile.id.slice(0,8)}…${profile.id.slice(-4)}` : '—';
-  return <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-    <EdgeSwipeBack onBack={onClose}><SafeAreaView style={{flex:1,backgroundColor:theme.bg}}>
-      <View style={[styles.settingsHubHeader,{borderBottomColor:theme.border}]}><IconButton icon="chevron-back" onPress={onClose} theme={theme}/><View style={{flex:1}}><Text style={[styles.sheetTitle,{color:theme.text}]}>Settings</Text><Text style={[styles.sheetSub,{color:theme.sub}]}>Privacy, account and LINK preferences</Text></View></View>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.settingsHubScroll}>
-        <SectionTitle theme={theme}>Active status</SectionTitle>
-        <Pressable onPress={onOpenPresence} style={[styles.settingsEntryCard,{backgroundColor:theme.card,borderColor:theme.border}]}><View style={[styles.settingsIcon,{backgroundColor:theme.soft}]}><View style={[styles.presenceChoiceDot,{backgroundColor:presenceMeta(profile).color}]} /></View><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>{presenceMeta(profile).label}</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Control your active dot and availability.</Text></View><Ionicons name="chevron-forward" size={19} color={theme.sub}/></Pressable>
+  const cs=CURRENT_LANGUAGE==='cs';
+  const patch=(next)=>setPrivacy({...privacy,...next});
+  const launch=(fn)=>{onClose();setTimeout(()=>fn?.(),180);};
+  const shortId=profile.id?`${profile.id.slice(0,8)}…${profile.id.slice(-4)}`:'—';
+  const layoutName=PROFILE_LAYOUTS.find(x=>x.id===profileLayout)?.name||'Default';
+  const proLabel=profile.isAdmin?(cs?'Přístup Staff':'Staff access'):proActive?(proSubscription?.plan==='annual'?(cs?'Aktivní · ročně':'Active · annual'):(cs?'Aktivní · měsíčně':'Active · monthly')):(cs?'Neaktivní':'Inactive');
+  const plusLabel=profile.isAdmin?(cs?'Přístup Staff':'Staff access'):plusActive?(plusSubscription?.plan==='annual'?(cs?'Aktivní · ročně':'Active · annual'):(cs?'Aktivní · měsíčně':'Active · monthly')):(cs?'Neaktivní':'Inactive');
+  const themeLabel=themeSetting==='dark'?(cs?'Tmavý':'Dark'):themeSetting==='light'?(cs?'Světlý':'Light'):(cs?'Systém':'System');
+  const languageLabel=languageSetting==='cs'?'Čeština':languageSetting==='en'?'English':(cs?'Podle systému':'System');
+  const visibilityLabel=privacy.profileVisibility==='everyone'?(cs?'Všichni':'Everyone'):privacy.profileVisibility==='private'?(cs?'Soukromý':'Private'):'LINKs';
+  const messagesLabel=privacy.messagesFrom==='everyone'?(cs?'Všichni':'Everyone'):privacy.messagesFrom==='nobody'?(cs?'Nikdo':'Nobody'):'LINKs';
+  const requestsLabel=privacy.linkRequestsFrom==='mutuals'?(cs?'Společní':'Mutuals'):privacy.linkRequestsFrom==='nobody'?(cs?'Nikdo':'Nobody'):(cs?'Všichni':'Everyone');
+  const statusLabel=profile.status||presenceMeta(profile).label;
+  const profileEffectName=profile.profileEffectId?(profileEffectById(profile.profileEffectId)?.name||'Active'):(cs?'Žádný':'None');
+  const chooseLayout=()=>Alert.alert(cs?'Vzhled profilu':'Profile layout',cs?'Vyber rozložení veřejného profilu.':'Choose your public profile layout.',PROFILE_LAYOUTS.map(item=>({text:item.name+(item.id===profileLayout?' ✓':''),onPress:()=>setProfileLayout?.(item.id)})).concat({text:cs?'Zrušit':'Cancel',style:'cancel'}));
+  const chooseAppearance=()=>Alert.alert(cs?'Vzhled':'Appearance','',[
+    {text:(cs?'Podle systému':'System')+(themeSetting==='system'?' ✓':''),onPress:()=>setThemeSetting('system')},
+    {text:(cs?'Světlý':'Light')+(themeSetting==='light'?' ✓':''),onPress:()=>setThemeSetting('light')},
+    {text:(cs?'Tmavý':'Dark')+(themeSetting==='dark'?' ✓':''),onPress:()=>setThemeSetting('dark')},
+    {text:cs?'Zrušit':'Cancel',style:'cancel'},
+  ]);
+  const chooseLanguage=()=>Alert.alert(cs?'Jazyk':'Language','',[
+    {text:(cs?'Podle systému':'System')+(languageSetting==='system'?' ✓':''),onPress:()=>setLanguageSetting('system')},
+    {text:'Čeština'+(languageSetting==='cs'?' ✓':''),onPress:()=>setLanguageSetting('cs')},
+    {text:'English'+(languageSetting==='en'?' ✓':''),onPress:()=>setLanguageSetting('en')},
+    {text:cs?'Zrušit':'Cancel',style:'cancel'},
+  ]);
+  const choosePrivacy=(kind)=> {
+    const config=kind==='profile'
+      ? {title:cs?'Viditelnost profilu':'Profile visibility',current:privacy.profileVisibility||'links',items:[['everyone',cs?'Všichni':'Everyone'],['links','LINKs'],['private',cs?'Soukromý':'Private']],key:'profileVisibility'}
+      : kind==='messages'
+      ? {title:cs?'Zprávy od':'Messages from',current:privacy.messagesFrom||'links',items:[['everyone',cs?'Všichni':'Everyone'],['links','LINKs'],['nobody',cs?'Nikdo':'Nobody']],key:'messagesFrom'}
+      : {title:cs?'Žádosti o LINK':'LINK requests',current:privacy.linkRequestsFrom||'everyone',items:[['everyone',cs?'Všichni':'Everyone'],['mutuals',cs?'Společní':'Mutuals'],['nobody',cs?'Nikdo':'Nobody']],key:'linkRequestsFrom'};
+    Alert.alert(config.title,'',config.items.map(([value,label])=>({text:label+(config.current===value?' ✓':''),onPress:()=>patch({[config.key]:value})})).concat({text:cs?'Zrušit':'Cancel',style:'cancel'}));
+  };
 
-        <SectionTitle theme={theme}>Account & personal information</SectionTitle>
-        <View style={[styles.settingsCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
-          <SettingsRow theme={theme} icon="person-outline" title="Display name" subtitle={profile.name || '—'} right={null}/>
-          <SettingsRow theme={theme} icon="at-outline" title="Username" subtitle={profile.username || '—'} right={null}/>
-          <SettingsRow theme={theme} icon="mail-outline" title="Email" subtitle={accountEmail || '—'} right={null}/>
-          <SettingsRow theme={theme} icon="finger-print-outline" title="Account ID" subtitle={shortId} right={null} last/>
+  return <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+    <SafeAreaView style={[styles.iosSettingsPage,{backgroundColor:theme.bg}]}>
+      <View style={styles.iosSettingsHeader}>
+        <View style={{flex:1}}>
+          <Text style={[styles.iosSettingsTitle,{color:theme.text}]}>{cs?'Nastavení LINK':'LINK Settings'}</Text>
+          <Text style={[styles.iosSettingsSubtitle,{color:theme.sub}]}>LINK 4.1</Text>
         </View>
+        <Pressable onPress={onClose} style={[styles.iosSettingsClose,{backgroundColor:theme.card,borderColor:theme.border}]}>
+          <Ionicons name="close" size={27} color={theme.text}/>
+        </Pressable>
+      </View>
 
-        <SectionTitle theme={theme}>Privacy</SectionTitle>
-        <View style={[styles.settingsCard,{backgroundColor:theme.card,borderColor:theme.border,marginBottom:10}]}>
-          <View style={styles.settingsBlock}><Text style={[styles.settingsTitle,{color:theme.text}]}>Privacy presets</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Switch several privacy controls at once.</Text><View style={styles.settingsChoiceRow}><Pressable onPress={()=>patch({profileVisibility:'everyone',messagesFrom:'everyone',linkRequestsFrom:'everyone',showActivityStatus:true,readReceipts:true,typingIndicators:true,discoverableByUsername:true})} style={[styles.settingsChoicePill,{backgroundColor:theme.soft,borderColor:theme.border}]}><Text style={{color:theme.text,fontWeight:'900'}}>Open</Text></Pressable><Pressable onPress={()=>patch({profileVisibility:'links',messagesFrom:'links',linkRequestsFrom:'everyone',showActivityStatus:true,readReceipts:true,typingIndicators:true,discoverableByUsername:true})} style={[styles.settingsChoicePill,{backgroundColor:`${ACCENT}18`,borderColor:ACCENT}]}><Text style={{color:ACCENT,fontWeight:'900'}}>Balanced</Text></Pressable><Pressable onPress={()=>patch({profileVisibility:'private',messagesFrom:'nobody',linkRequestsFrom:'mutuals',showActivityStatus:false,readReceipts:false,typingIndicators:false,discoverableByEmail:false})} style={[styles.settingsChoicePill,{backgroundColor:theme.soft,borderColor:theme.border}]}><Text style={{color:theme.text,fontWeight:'900'}}>Private</Text></Pressable></View></View>
-        </View>
-        <View style={[styles.settingsCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
-          <View style={styles.settingsBlock}><Text style={[styles.settingsTitle,{color:theme.text}]}>Profile visibility</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Choose who can open your full LINK profile.</Text><SettingsChoicePills theme={theme} value={privacy.profileVisibility || 'links'} onChange={v=>patch({profileVisibility:v})} options={[{value:'everyone',label:'Everyone'},{value:'links',label:'LINKs'},{value:'private',label:'Private'}]}/></View>
-          <View style={[styles.settingsBlock,{borderTopWidth:StyleSheet.hairlineWidth,borderTopColor:theme.border}]}><Text style={[styles.settingsTitle,{color:theme.text}]}>Messages from</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Who is allowed to start a conversation.</Text><SettingsChoicePills theme={theme} value={privacy.messagesFrom || 'links'} onChange={v=>patch({messagesFrom:v})} options={[{value:'everyone',label:'Everyone'},{value:'links',label:'LINKs'},{value:'nobody',label:'Nobody'}]}/></View>
-          <View style={[styles.settingsBlock,{borderTopWidth:StyleSheet.hairlineWidth,borderTopColor:theme.border}]}><Text style={[styles.settingsTitle,{color:theme.text}]}>LINK requests</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Control who can send you a LINK request.</Text><SettingsChoicePills theme={theme} value={privacy.linkRequestsFrom || 'everyone'} onChange={v=>patch({linkRequestsFrom:v})} options={[{value:'everyone',label:'Everyone'},{value:'mutuals',label:'Mutuals'},{value:'nobody',label:'Nobody'}]}/></View>
-          <SettingsRow theme={theme} icon="radio-button-on-outline" title="Show activity status" subtitle="Allow people to see your active dot" right={<Switch value={privacy.showActivityStatus !== false} onValueChange={v=>patch({showActivityStatus:v})} trackColor={{false:theme.soft,true:'#34C759'}}/>}/>
-          <SettingsRow theme={theme} icon="time-outline" title="Show last active" subtitle="Let LINKs see when you were last active" right={<Switch value={privacy.showLastActive !== false} onValueChange={v=>patch({showLastActive:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
-          <SettingsRow theme={theme} icon="checkmark-done-outline" title="Read receipts" subtitle="Show Seen when you read messages" right={<Switch value={privacy.readReceipts !== false} onValueChange={v=>patch({readReceipts:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
-          <SettingsRow theme={theme} icon="chatbubble-ellipses-outline" title="Typing indicators" subtitle="Let people know when you are typing" right={<Switch value={privacy.typingIndicators !== false} onValueChange={v=>patch({typingIndicators:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
-          <SettingsRow theme={theme} icon="analytics-outline" title="Profile views" subtitle="Allow your profile visits to count in insights" right={<Switch value={privacy.profileViewsEnabled !== false} onValueChange={v=>patch({profileViewsEnabled:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
-          <SettingsRow theme={theme} icon="search-outline" title="Discoverable by username" subtitle="People can find your @username in People" right={<Switch value={privacy.discoverableByUsername !== false} onValueChange={v=>patch({discoverableByUsername:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
-          <SettingsRow theme={theme} icon="mail-unread-outline" title="Discoverable by email" subtitle="Allow account discovery using your email" right={<Switch value={!!privacy.discoverableByEmail} onValueChange={v=>patch({discoverableByEmail:v})} trackColor={{false:theme.soft,true:ACCENT}}/>} last/>
-        </View>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.iosSettingsScroll}>
+        <IOSSettingsSection theme={theme} title={cs?'Profil':'Profile'}>
+          <IOSSettingsRow theme={theme} icon="grid-outline" title="Profile layout" value={layoutName} onPress={chooseLayout}/>
+          <IOSSettingsRow theme={theme} icon="sparkles-outline" title="Profile effects" value={profileEffectName} onPress={()=>launch(onOpenShop)}/>
+          <IOSSettingsRow theme={theme} icon="radio-button-on-outline" title="Active status" value={presenceMeta(profile).label} onPress={()=>launch(onOpenPresence)}/>
+          <IOSSettingsRow theme={theme} icon="color-palette-outline" title="Custom status" value={statusLabel} onPress={()=>launch(onOpenCustomStatus)}/>
+          <IOSSettingsRow theme={theme} icon="heart-outline" title="Double Tap reaction" value={plusActive?doubleTapEmoji:'❤️'} onPress={()=>launch(plusActive?onOpenDoubleTap:onOpenPlus)} last/>
+        </IOSSettingsSection>
 
-        <SectionTitle theme={theme}>Sharing</SectionTitle>
-        <View style={[styles.settingsCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
-          <SettingsRow theme={theme} icon="pulse-outline" title="Share custom status" subtitle="Show your custom text status to LINKs" right={<Switch value={privacy.showStatus !== false} onValueChange={v=>patch({showStatus:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
-          <SettingsRow theme={theme} icon="logo-instagram" title="Show socials" subtitle="Display social handles on your profile" right={<Switch value={privacy.showSocials !== false} onValueChange={v=>patch({showSocials:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
-          <SettingsRow theme={theme} icon="aperture-outline" title="Moments to LINKs" subtitle="Keep Moments limited to people you LINKed" right={<Switch value={privacy.momentsToLinks !== false} onValueChange={v=>patch({momentsToLinks:v})} trackColor={{false:theme.soft,true:ACCENT}}/>} last/>
-        </View>
+        <IOSSettingsSection theme={theme} title={cs?'Předplatné':'Subscription'}>
+          <IOSSettingsRow theme={theme} icon="diamond-outline" title="LINK Pro" value={proLabel} onPress={profile.isAdmin?undefined:()=>launch(onOpenPro)}/>
+          <IOSSettingsRow theme={theme} icon="sparkles-outline" title="LINK Plus" value={plusLabel} onPress={profile.isAdmin?undefined:()=>launch(proActive?onOpenPro:onOpenPlus)} last={!proActive}/>
+          {proActive?<IOSSettingsRow theme={theme} icon="analytics-outline" title="Pro Insights" value={`${insights?.views||0} ${cs?'zobrazení':'views'}`} last/>:null}
+        </IOSSettingsSection>
 
-        <SectionTitle theme={theme}>Notifications</SectionTitle>
-        <View style={[styles.settingsCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
-          <SettingsRow theme={theme} icon="chatbubbles-outline" title="Messages" subtitle="Message and reaction notifications" right={<Switch value={privacy.notificationsMessages !== false} onValueChange={v=>patch({notificationsMessages:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
-          <SettingsRow theme={theme} icon="person-add-outline" title="LINK requests" subtitle="Requests and accepted LINKs" right={<Switch value={privacy.notificationsRequests !== false} onValueChange={v=>patch({notificationsRequests:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
-          <SettingsRow theme={theme} icon="aperture-outline" title="Moments" subtitle="Moment interactions and replies" right={<Switch value={privacy.notificationsMoments !== false} onValueChange={v=>patch({notificationsMoments:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
-          <SettingsRow theme={theme} icon="sparkles-outline" title="LINK updates" subtitle="Product news, drops and feature announcements" right={<Switch value={!!privacy.notificationsProduct} onValueChange={v=>patch({notificationsProduct:v})} trackColor={{false:theme.soft,true:ACCENT}}/>} last/>
-        </View>
+        {profile.isAdmin?<IOSSettingsSection theme={theme} title={cs?'Administrace':'Administration'}>
+          <IOSSettingsRow theme={theme} icon="shield-checkmark-outline" title="Staff Center" value={profile.role==='ceo'?'CEO':'Admin'} onPress={()=>launch(onOpenAdminConsole)}/>
+          <IOSSettingsRow theme={theme} icon="ribbon-outline" title="Staff Badge" value={profile.customBadgeEnabled?(profile.customBadgeText||'Custom'):(cs?'Výchozí':'Default')} onPress={()=>launch(onOpenAdminBadge)}/>
+          <IOSSettingsRow theme={theme} icon="color-wand-outline" title={profile.role==='ceo'?'CEO Profile Lab':'Staff Profile Lab'} onPress={()=>launch(onOpenAdminCustomize)} last/>
+        </IOSSettingsSection>:null}
 
-        <SectionTitle theme={theme}>Security</SectionTitle>
-        <View style={[styles.settingsCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
-          <SettingsRow theme={theme} icon="shield-checkmark-outline" title="Login alerts" subtitle="Warn about new LINK sign-ins" right={<Switch value={privacy.loginAlerts !== false} onValueChange={v=>patch({loginAlerts:v})} trackColor={{false:theme.soft,true:ACCENT}}/>} last/>
-        </View>
+        <IOSSettingsSection theme={theme} title={cs?'Účet':'Account'}>
+          <IOSSettingsRow theme={theme} icon="person-outline" title="Display name" value={profile.name||'—'}/>
+          <IOSSettingsRow theme={theme} icon="at-outline" title="Username" value={profile.username||'—'}/>
+          <IOSSettingsRow theme={theme} icon="mail-outline" title="Email" value={accountEmail||'—'}/>
+          <IOSSettingsRow theme={theme} icon="finger-print-outline" title="Account ID" value={shortId}/>
+          <IOSSettingsRow theme={theme} icon="people-circle-outline" title="Account & sign out" onPress={()=>launch(onOpenAccountSwitcher)} last/>
+        </IOSSettingsSection>
 
-        <SectionTitle theme={theme}>Language</SectionTitle>
-        <View style={[styles.settingsCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
-          <View style={styles.settingsBlock}><Text style={[styles.settingsTitle,{color:theme.text}]}>App language</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Use your device language or choose manually.</Text><SettingsChoicePills theme={theme} value={languageSetting || 'system'} onChange={setLanguageSetting} options={[{value:'system',label:'Follow system'},{value:'cs',label:'Czech'},{value:'en',label:'English'}]}/></View>
-        </View>
+        <IOSSettingsSection theme={theme} title={cs?'Soukromí':'Privacy'}>
+          <IOSSettingsRow theme={theme} icon="eye-outline" title="Profile visibility" value={visibilityLabel} onPress={()=>choosePrivacy('profile')}/>
+          <IOSSettingsRow theme={theme} icon="chatbubble-outline" title="Messages from" value={messagesLabel} onPress={()=>choosePrivacy('messages')}/>
+          <IOSSettingsRow theme={theme} icon="person-add-outline" title="LINK requests" value={requestsLabel} onPress={()=>choosePrivacy('requests')}/>
+          <IOSSettingsRow theme={theme} icon="radio-button-on-outline" title="Show activity status" right={<Switch value={privacy.showActivityStatus!==false} onValueChange={v=>patch({showActivityStatus:v})} trackColor={{false:theme.soft,true:'#34C759'}}/>}/>
+          <IOSSettingsRow theme={theme} icon="time-outline" title="Show last active" right={<Switch value={privacy.showLastActive!==false} onValueChange={v=>patch({showLastActive:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
+          <IOSSettingsRow theme={theme} icon="checkmark-done-outline" title="Read receipts" right={<Switch value={privacy.readReceipts!==false} onValueChange={v=>patch({readReceipts:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
+          <IOSSettingsRow theme={theme} icon="chatbubble-ellipses-outline" title="Typing indicators" right={<Switch value={privacy.typingIndicators!==false} onValueChange={v=>patch({typingIndicators:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
+          <IOSSettingsRow theme={theme} icon="analytics-outline" title="Profile views" right={<Switch value={privacy.profileViewsEnabled!==false} onValueChange={v=>patch({profileViewsEnabled:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
+          <IOSSettingsRow theme={theme} icon="search-outline" title="Discoverable by username" right={<Switch value={privacy.discoverableByUsername!==false} onValueChange={v=>patch({discoverableByUsername:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
+          <IOSSettingsRow theme={theme} icon="mail-unread-outline" title="Discoverable by email" right={<Switch value={!!privacy.discoverableByEmail} onValueChange={v=>patch({discoverableByEmail:v})} trackColor={{false:theme.soft,true:ACCENT}}/>} last/>
+        </IOSSettingsSection>
 
-        <SectionTitle theme={theme}>Appearance</SectionTitle>
-        <View style={styles.themeRow}><ThemeOption mode="system" active={themeSetting==='system'} label="System" icon="phone-portrait-outline" onPress={setThemeSetting} theme={theme}/><ThemeOption mode="light" active={themeSetting==='light'} label="Light" icon="sunny-outline" onPress={setThemeSetting} theme={theme}/><ThemeOption mode="dark" active={themeSetting==='dark'} label="Dark" icon="moon-outline" onPress={setThemeSetting} theme={theme}/></View>
+        <IOSSettingsSection theme={theme} title={cs?'Sdílení':'Sharing'}>
+          <IOSSettingsRow theme={theme} icon="pulse-outline" title="Share custom status" right={<Switch value={privacy.showStatus!==false} onValueChange={v=>patch({showStatus:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
+          <IOSSettingsRow theme={theme} icon="logo-instagram" title="Show socials" right={<Switch value={privacy.showSocials!==false} onValueChange={v=>patch({showSocials:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
+          <IOSSettingsRow theme={theme} icon="aperture-outline" title="Moments to LINKs" right={<Switch value={privacy.momentsToLinks!==false} onValueChange={v=>patch({momentsToLinks:v})} trackColor={{false:theme.soft,true:ACCENT}}/>} last/>
+        </IOSSettingsSection>
 
-        <SectionTitle theme={theme}>Account</SectionTitle>
-        <Pressable onPress={onSignOut} style={[styles.settingsDangerCard,{backgroundColor:theme.card,borderColor:theme.border}]}><Ionicons name="log-out-outline" size={20} color={theme.danger}/><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.danger}]}>Sign out</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Use another LINK account on this device.</Text></View></Pressable>
-        <Text style={[styles.settingHint,{color:theme.sub,textAlign:'center',marginTop:14}]}>LINK 4.0 · ONE · preferences sync through LINK Production.</Text>
+        <IOSSettingsSection theme={theme} title={cs?'Oznámení':'Notifications'}>
+          <IOSSettingsRow theme={theme} icon="chatbubbles-outline" title="Messages" right={<Switch value={privacy.notificationsMessages!==false} onValueChange={v=>patch({notificationsMessages:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
+          <IOSSettingsRow theme={theme} icon="person-add-outline" title="LINK requests" right={<Switch value={privacy.notificationsRequests!==false} onValueChange={v=>patch({notificationsRequests:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
+          <IOSSettingsRow theme={theme} icon="aperture-outline" title="Moments" right={<Switch value={privacy.notificationsMoments!==false} onValueChange={v=>patch({notificationsMoments:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
+          <IOSSettingsRow theme={theme} icon="sparkles-outline" title="LINK updates" right={<Switch value={!!privacy.notificationsProduct} onValueChange={v=>patch({notificationsProduct:v})} trackColor={{false:theme.soft,true:ACCENT}}/>} last/>
+        </IOSSettingsSection>
+
+        <IOSSettingsSection theme={theme} title={cs?'Zabezpečení':'Security'}>
+          <IOSSettingsRow theme={theme} icon="shield-checkmark-outline" title="Login alerts" right={<Switch value={privacy.loginAlerts!==false} onValueChange={v=>patch({loginAlerts:v})} trackColor={{false:theme.soft,true:ACCENT}}/>} last/>
+        </IOSSettingsSection>
+
+        <IOSSettingsSection theme={theme} title={cs?'Motiv':'Appearance'}>
+          <IOSSettingsRow theme={theme} icon="sunny-outline" title="Appearance" value={themeLabel} onPress={chooseAppearance}/>
+          <IOSSettingsRow theme={theme} icon="language-outline" title="Language" value={languageLabel} onPress={chooseLanguage} last/>
+        </IOSSettingsSection>
+
+        <IOSSettingsSection theme={theme} title={cs?'Nastavení aplikace':'App settings'}>
+          <IOSSettingsRow theme={theme} icon="return-up-back-outline" title="Swipe to go back" value={cs?'Zapnuto':'On'}/>
+          <IOSSettingsRow theme={theme} icon="refresh-outline" title="Refresh LINK data" onPress={()=>{onClose();setTimeout(()=>onRefresh?.(),180);}} danger last/>
+        </IOSSettingsSection>
+
+        <Pressable onPress={onSignOut} style={[styles.iosSettingsSignOut,{backgroundColor:theme.card,borderColor:theme.border}]}>
+          <Ionicons name="log-out-outline" size={21} color={theme.danger}/>
+          <Text style={[styles.iosSettingsSignOutText,{color:theme.danger}]}>{cs?'Odhlásit se':'Sign out'}</Text>
+        </Pressable>
+        <Text style={[styles.iosSettingsFooter,{color:theme.sub}]}>LINK 4.1 · ONE</Text>
       </ScrollView>
-    </SafeAreaView></EdgeSwipeBack>
+    </SafeAreaView>
   </Modal>;
 }
 
@@ -2852,8 +2941,8 @@ function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setT
 
   return (<>
     <ScrollView contentContainerStyle={styles.screenScroll} showsVerticalScrollIndicator={false}>
-      <View style={styles.topHeader}><View><Text style={[styles.bigTitle, { color: theme.text }]}>Profile</Text><Text style={[styles.headerSub, { color: theme.sub }]}>Profile 4.0 · your social identity</Text></View><View style={styles.headerActionRow}><IconButton icon="add-circle-outline" onPress={()=>setPostComposerOpen(true)} theme={theme} /><IconButton icon="settings-outline" onPress={() => setSettingsOpen(true)} theme={theme} /><IconButton icon="bag-handle-outline" onPress={openShop} theme={theme} /><IconButton icon={editing ? 'checkmark' : 'create-outline'} onPress={editing ? save : () => setEditing(true)} theme={theme} filled={editing} /></View></View>
-      <Pressable onPress={pickCoverPhoto} style={[styles.profileCover,{backgroundColor:`${(editing?draft:activeProfile).profileAccent||ACCENT}22`,borderColor:theme.border}]}>{(editing?draft:activeProfile).coverUri?<Image source={{uri:(editing?draft:activeProfile).coverUri}} style={StyleSheet.absoluteFill} resizeMode="cover"/>:<LinearGradient colors={[`${(editing?draft:activeProfile).profileAccent||ACCENT}44`,theme.card]} style={StyleSheet.absoluteFill}/>}<View style={styles.profileCoverShade}/><View style={styles.profileCoverLabel}><Ionicons name="image-outline" size={15} color="#fff"/><Text style={{color:'#fff',fontWeight:'900',fontSize:11}}>Profile 4.0 backdrop</Text></View></Pressable>
+      <View style={styles.topHeader}><View><Text style={[styles.bigTitle, { color: theme.text }]}>Profile</Text><Text style={[styles.headerSub, { color: theme.sub }]}>Profile 4.1 · your social identity</Text></View><View style={styles.headerActionRow}><IconButton icon="add-circle-outline" onPress={()=>setPostComposerOpen(true)} theme={theme} /><IconButton icon="settings-outline" onPress={() => setSettingsOpen(true)} theme={theme} /><IconButton icon="bag-handle-outline" onPress={openShop} theme={theme} /><IconButton icon={editing ? 'checkmark' : 'create-outline'} onPress={editing ? save : () => setEditing(true)} theme={theme} filled={editing} /></View></View>
+      <Pressable onPress={pickCoverPhoto} style={[styles.profileCover,{backgroundColor:`${(editing?draft:activeProfile).profileAccent||ACCENT}22`,borderColor:theme.border}]}>{(editing?draft:activeProfile).coverUri?<Image source={{uri:(editing?draft:activeProfile).coverUri}} style={StyleSheet.absoluteFill} resizeMode="cover"/>:<LinearGradient colors={[`${(editing?draft:activeProfile).profileAccent||ACCENT}44`,theme.card]} style={StyleSheet.absoluteFill}/>}<View style={styles.profileCoverShade}/><View style={styles.profileCoverLabel}><Ionicons name="image-outline" size={15} color="#fff"/><Text style={{color:'#fff',fontWeight:'900',fontSize:11}}>Profile 4.1 backdrop</Text></View></Pressable>
       {editing ? <View style={{flexDirection:'row',gap:9,marginTop:10,marginBottom:2}}>{['#6C5CE7','#0A84FF','#34C759','#FF2D55','#FF9F0A','#111318'].map(color=><Pressable key={color} onPress={()=>setDraft(prev=>({...prev,profileAccent:color}))} style={{width:32,height:32,borderRadius:16,backgroundColor:color,borderWidth:3,borderColor:draft.profileAccent===color?'#fff':color,shadowColor:'#000',shadowOpacity:.12,shadowRadius:4}}>{draft.profileAccent===color?<Ionicons name="checkmark" size={16} color="#fff" style={{alignSelf:'center',marginTop:5}}/>:null}</Pressable>)}</View> : null}
       <View style={[styles.profileCard, profileLayout === 'social' && styles.profileCardSocial, profileLayout === 'compact' && styles.profileCardCompact, { backgroundColor: theme.card, borderColor: theme.border }]}>
         {editing ? <><ProfileIdentityLayout person={draft} theme={theme} layout={profileLayout} proActive={proActive} plusActive={plusActive} editable onPhoto={photoMenu} showStatus={false} showSocials={profileLayout === 'social'} /><View style={{ width: '100%', marginTop: profileLayout === 'compact' ? 8 : 14, gap: 10 }}>
@@ -2880,77 +2969,13 @@ function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setT
       <Pressable onPress={openSafety} style={[styles.settingsEntryCard,{backgroundColor:theme.card,borderColor:theme.border,marginTop:12}]}><View style={[styles.settingsIcon,{backgroundColor:theme.soft}]}><Ionicons name="shield-checkmark-outline" size={20} color={theme.text}/></View><View style={{flex:1}}><Text style={[styles.settingsTitle,{color:theme.text}]}>Account & Safety</Text><Text style={[styles.settingsSub,{color:theme.sub}]}>Password, email, devices, blocked people and reports.</Text></View><Ionicons name="chevron-forward" size={19} color={theme.sub}/></Pressable>
       <Pressable onPress={openPulseHub} style={[styles.settingsEntryCard,{backgroundColor:theme.card,borderColor:theme.border,marginTop:10}]}><View style={[styles.settingsIcon,{backgroundColor:`${ACCENT}18`}]}><Ionicons name="pulse-outline" size={20} color={ACCENT}/></View><View style={{flex:1}}><View style={styles.inlineNameRow}><Text style={[styles.settingsTitle,{color:theme.text}]}>Pulse Center</Text><Pill theme={theme} tone="accent">3.6</Pill></View><Text style={[styles.settingsSub,{color:theme.sub}]}>Profiles, posts, Circles, Pro style, visitors and Beta Health.</Text></View><Ionicons name="chevron-forward" size={19} color={theme.sub}/></Pressable>
 
-      <SectionTitle theme={theme}>Profile layout</SectionTitle>
-      <Text style={[styles.profileLayoutIntro,{color:theme.sub}]}>Choose how your public LINK identity is arranged.</Text>
-      <ProfileLayoutChooser theme={theme} value={profileLayout} onChange={setProfileLayout}/>
 
-      {activeProfile.isAdmin ? <>
-        <SectionTitle theme={theme}>LINK Administration</SectionTitle>
-        <Pressable onPress={openAdminConsole} style={[styles.adminEntryCard, { backgroundColor: theme.card, borderColor: theme.border }]}><View style={[styles.adminEntryIcon, { backgroundColor: '#111318' }]}><Ionicons name="shield-checkmark" size={22} color="#fff" /></View><View style={{ flex: 1 }}><View style={styles.inlineNameRow}><Text style={[styles.settingsTitle, { color: theme.text }]}>Staff Center</Text><ProfilePlanBadgeRow person={activeProfile} proActive compact align="start" /></View><Text style={[styles.settingsSub, { color: theme.sub }]}>Moderation, verification, subscriptions and audit logs.</Text></View><Ionicons name="chevron-forward" size={20} color={theme.sub} /></Pressable>
-        {activeProfile.isAdmin ? <Pressable onPress={() => setAdminBadgeOpen(true)} style={[styles.adminEntryCard, { backgroundColor: theme.card, borderColor: theme.border }]}><View style={[styles.adminEntryIcon, { backgroundColor: activeProfile.customBadgeColor || '#6C5CE7' }]}><Ionicons name={activeProfile.customBadgeEnabled ? (activeProfile.customBadgeIcon || 'shield-checkmark') : 'diamond'} size={22} color="#fff" /></View><View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>Staff Badge</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>{activeProfile.customBadgeEnabled ? `${activeProfile.customBadgeText || 'Custom'} · custom staff identity` : 'Manage badges & verified by @username'}</Text></View><Ionicons name="chevron-forward" size={20} color={theme.sub} /></Pressable> : null}
-        <Pressable onPress={() => setAdminCustomizeOpen(true)} style={[styles.adminEntryCard, { backgroundColor: theme.card, borderColor: theme.border }]}><View style={[styles.adminEntryIcon, { backgroundColor: '#0A84FF' }]}><Ionicons name="color-wand" size={22} color="#fff" /></View><View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>{activeProfile.role === 'ceo' ? 'CEO Profile Lab' : 'Staff Profile Lab'}</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>Staff-only animated effects, name effects and GIF profile photos.</Text></View><Ionicons name="chevron-forward" size={20} color={theme.sub} /></Pressable>
-      </> : null}
-
-      <SectionTitle theme={theme} action={activeProfile.isAdmin ? 'Staff access' : proActive ? 'Manage' : 'See plans'} onAction={activeProfile.isAdmin ? undefined : openPro}>LINK Pro</SectionTitle>
-      <Pressable onPress={activeProfile.isAdmin ? () => Alert.alert('LINK Staff', 'LINK CEO includes all LINK Pro features automatically.') : openPro} style={[styles.proEntryCard, { backgroundColor: proActive ? '#111318' : theme.card, borderColor: proActive ? '#111318' : theme.border }]}>
-        <View style={[styles.proEntryIcon, { backgroundColor: proActive ? '#7C5CFC' : '#111318' }]}><Ionicons name="diamond" size={22} color="#fff" /></View>
-        <View style={{ flex: 1 }}><View style={styles.inlineNameRow}><Text style={[styles.settingsTitle, { color: proActive ? '#fff' : theme.text }]}>{activeProfile.isAdmin ? 'LINK Pro · Staff Access' : proActive ? 'LINK Pro is active' : 'Unlock LINK Pro'}</Text>{proActive && !activeProfile.isAdmin ? <ProBadge compact /> : null}</View><Text style={[styles.settingsSub, { color: proActive ? 'rgba(255,255,255,.66)' : theme.sub }]}>{activeProfile.isAdmin ? 'All Pro tools are unlocked for LINK administration' : proActive ? `${proSubscription?.trial ? '7-day trial · ' : ''}${proSubscription?.plan === 'annual' ? 'Annual' : 'Monthly'} · Pro tools unlocked` : 'Ghost Mode, 7-day Notes, Profile Insights, 30% Shop savings & more'}</Text></View>
-        <Ionicons name="chevron-forward" size={20} color={proActive ? '#fff' : theme.sub} />
-      </Pressable>
-
-      {proActive ? <>
-        <SectionTitle theme={theme}>Pro Insights</SectionTitle>
-        <View style={[styles.insightsCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
-          <View style={styles.insightItem}><Text style={[styles.insightValue, { color: theme.text }]}>{insights?.views || 0}</Text><Text style={[styles.insightLabel, { color: theme.sub }]}>Profile views</Text></View>
-          <View style={[styles.insightDivider, { backgroundColor: theme.border }]} />
-          <View style={styles.insightItem}><Text style={[styles.insightValue, { color: theme.text }]}>{insights?.links || 0}</Text><Text style={[styles.insightLabel, { color: theme.sub }]}>LINKs</Text></View>
-          <View style={[styles.insightDivider, { backgroundColor: theme.border }]} />
-          <View style={styles.insightItem}><Text style={[styles.insightValue, { color: theme.text }]}>{insights?.messages || 0}</Text><Text style={[styles.insightLabel, { color: theme.sub }]}>Messages sent</Text></View>
-        </View>
-      </> : null}
-
-      <SectionTitle theme={theme} action={activeProfile.isAdmin ? 'Staff access' : plusActive ? (proActive ? 'Included' : 'Manage') : 'See plans'} onAction={activeProfile.isAdmin ? undefined : proActive ? openPro : openPlus}>LINK Plus</SectionTitle>
-      <Pressable onPress={activeProfile.isAdmin ? () => Alert.alert('LINK Staff', 'LINK CEO includes all LINK Plus features automatically.') : openPlus} style={[styles.plusEntryCard, { backgroundColor: plusActive ? theme.inverse : theme.card, borderColor: plusActive ? theme.inverse : theme.border }]}>
-        <View style={[styles.plusEntryIcon, { backgroundColor: plusActive ? theme.inverseText : '#111318' }]}><Ionicons name="sparkles" size={22} color={plusActive ? theme.inverse : '#fff'} /></View>
-        <View style={{ flex: 1 }}><View style={styles.inlineNameRow}><Text style={[styles.settingsTitle, { color: plusActive ? theme.inverseText : theme.text }]}>{activeProfile.isAdmin ? 'LINK Plus · Staff Access' : proActive ? 'LINK Plus included with Pro' : plusActive ? 'LINK Plus is active' : 'Upgrade to LINK Plus'}</Text>{plusActive && !activeProfile.isAdmin ? <PlusBadge compact /> : null}</View><Text style={[styles.settingsSub, { color: plusActive ? theme.inverseText : theme.sub, opacity: plusActive ? .68 : 1 }]}>{activeProfile.isAdmin ? 'All Plus perks are unlocked for LINK administration' : proActive ? 'All LINK Plus perks are included in your Pro plan' : plusActive ? `${plusSubscription?.plan === 'annual' ? 'Annual' : 'Monthly'} plan · premium perks unlocked` : 'From 54 Kč/month on annual · better Notes, Shop savings & more'}</Text></View>
-        <Ionicons name="chevron-forward" size={20} color={plusActive ? theme.inverseText : theme.sub} />
-      </Pressable>
-      <Pressable onPress={plusActive ? openDoubleTapReaction : openPlus} style={[styles.doubleTapSettingCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
-        <View style={[styles.doubleTapSettingIcon, { backgroundColor: plusActive ? `${ACCENT}18` : theme.soft }]}><Ionicons name="heart" size={20} color={plusActive ? ACCENT : theme.sub} /></View>
-        <View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>Double Tap reaction</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>{plusActive ? 'Choose the emoji sent when you double tap a message.' : 'Everyone gets ❤️ · LINK Plus unlocks a custom emoji.'}</Text></View>
-        <View style={[styles.doubleTapEmojiPreview, { backgroundColor: theme.soft }]}><Text style={styles.doubleTapEmojiPreviewText}>{plusActive ? doubleTapEmoji : '❤️'}</Text></View>
-      </Pressable>
-
-      <SectionTitle theme={theme} action="Open shop" onAction={openShop}>Profile effects</SectionTitle>
-      <Pressable onPress={openShop} style={[styles.shopEntryCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
-        <View style={[styles.shopEntryIcon, { backgroundColor: activeProfile.profileEffectId ? `${profileEffectById(activeProfile.profileEffectId)?.color || ACCENT}18` : theme.soft }]}><Ionicons name="sparkles" size={21} color={activeProfile.profileEffectId ? (profileEffectById(activeProfile.profileEffectId)?.color || ACCENT) : theme.text} /></View>
-        <View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>{activeProfile.profileEffectId ? profileEffectById(activeProfile.profileEffectId)?.name : 'No profile effect equipped'}</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>Animated profile art from LINK Shop</Text></View>
-        <Ionicons name="chevron-forward" size={20} color={theme.sub} />
-      </Pressable>
-
-      <SectionTitle theme={theme} action="Change" onAction={() => setPresenceOpen(true)}>Active status</SectionTitle>
-      <Pressable onPress={() => setPresenceOpen(true)} style={[styles.settingsEntryCard, { backgroundColor: theme.card, borderColor: theme.border }]}><View style={[styles.settingsIcon, { backgroundColor: theme.soft }]}><View style={[styles.presenceChoiceDot, { backgroundColor: presenceMeta(activeProfile).color }]} /></View><View style={{ flex: 1 }}><View style={styles.inlineNameRow}><Text style={[styles.settingsTitle, { color: theme.text }]}>{presenceMeta(activeProfile).label}</Text>{activeProfile.presenceMode === 'ghost' ? <ProBadge compact /> : null}</View><Text style={[styles.settingsSub, { color: theme.sub }]}>{activeProfile.presenceMode === 'ghost' ? 'You appear offline across LINK.' : presenceIsLive(activeProfile) ? 'Active now · shown across People and chats.' : 'Your selected status will appear when LINK is active.'}</Text></View><Ionicons name="chevron-forward" size={19} color={theme.sub} /></Pressable>
-
-      <SectionTitle theme={theme} action="Custom" onAction={openCustomStatus}>Status</SectionTitle>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.statusRow}>{STATUS_PRESETS.map(s => {
-        const active = activeProfile.status === s.label && activeProfile.statusIcon === s.icon;
-        return <Pressable key={s.label} onPress={() => updateProfile({ ...activeProfile, status: s.label, statusIcon: s.icon, statusColor: s.color, statusGradient: null })} style={[styles.statusChoice, { backgroundColor: active ? `${s.color}1F` : theme.soft, borderColor: active ? `${s.color}55` : 'transparent' }]}><Ionicons name={s.icon} size={14} color={active ? s.color : theme.sub} /><Text style={{ color: active ? s.color : theme.text, fontWeight: '800', fontSize: 12 }}>{s.label}</Text></Pressable>;
-      })}<Pressable onPress={openCustomStatus} style={[styles.statusChoice, { backgroundColor: theme.soft, borderColor: theme.border }]}><Ionicons name="color-palette-outline" size={14} color={theme.text} /><Text style={{ color: theme.text, fontWeight: '800', fontSize: 12 }}>Custom</Text></Pressable></ScrollView>
-      <View style={[styles.customStatusPreview, { backgroundColor: theme.card, borderColor: theme.border }]}><View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>Your status</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>Pick any text, icon and color. LINKs see it across the app.</Text></View><StatusBadge person={activeProfile} theme={theme} /></View>
-
-      <SectionTitle theme={theme}>Account</SectionTitle>
-      <Pressable onPress={openAccountSwitcher} style={[styles.accountManagerButton, { backgroundColor: theme.card, borderColor: theme.border }]}><View style={[styles.settingsIcon, { backgroundColor: theme.soft }]}><Ionicons name="people-circle-outline" size={20} color={theme.text} /></View><View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>Account & sign out</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>Use another LINK account or sign out</Text></View><Ionicons name="chevron-forward" size={20} color={theme.sub} /></Pressable>
-
-      <SectionTitle theme={theme}>Settings</SectionTitle>
-      <Pressable onPress={() => setSettingsOpen(true)} style={[styles.settingsEntryCard, { backgroundColor: theme.card, borderColor: theme.border }]}><View style={[styles.settingsIcon, { backgroundColor: theme.soft }]}><Ionicons name="settings-outline" size={20} color={theme.text} /></View><View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>Privacy, account & app settings</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>Active status, privacy, notifications, security and personal information.</Text></View><Ionicons name="chevron-forward" size={20} color={theme.sub} /></Pressable>
-      <View style={[styles.gestureTip, { backgroundColor: theme.card, borderColor: theme.border }]}><Ionicons name="return-up-back-outline" size={20} color={ACCENT} /><View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>Swipe to go back</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>On detail pages, swipe right from the left edge to go back. In chat, swipe a message right to reply.</Text></View></View>
-      <Pressable onPress={resetDemo} style={[styles.resetButton, { borderColor: theme.border }]}><Ionicons name="refresh" size={18} color={theme.danger} /><Text style={{ color: theme.danger, fontWeight: '800' }}>Refresh LINK data</Text></Pressable>
     </ScrollView>
     <CreateProfilePostModal visible={postComposerOpen} onClose={()=>setPostComposerOpen(false)} theme={theme} profile={activeProfile} profiles={profiles} onCreate={onCreatePost}/>
     <AdminCustomizationModal visible={adminCustomizeOpen} onClose={() => setAdminCustomizeOpen(false)} theme={theme} profile={activeProfile} onUpdate={updateProfile} onPickGif={pickProfileGif} />
     <AdminBadgeModal visible={adminBadgeOpen} onClose={() => setAdminBadgeOpen(false)} theme={theme} profile={activeProfile} profiles={profiles} onSave={onSaveAdminBadge} onSaveTarget={onSaveStaffIdentity} />
     <PresenceStatusModal visible={presenceOpen} onClose={() => setPresenceOpen(false)} theme={theme} profile={activeProfile} proActive={proActive} onSelect={setPresenceMode} />
-    <SettingsHubModal visible={settingsOpen} onClose={() => setSettingsOpen(false)} theme={theme} profile={activeProfile} accountEmail={accountEmail} privacy={privacy} setPrivacy={setPrivacy} themeSetting={themeSetting} setThemeSetting={setThemeSetting} languageSetting={languageSetting} setLanguageSetting={setLanguageSetting} proActive={proActive} onOpenPresence={() => { setSettingsOpen(false); setTimeout(() => setPresenceOpen(true), 180); }} onSignOut={onSignOut} />
+    <SettingsHubModal visible={settingsOpen} onClose={() => setSettingsOpen(false)} theme={theme} profile={activeProfile} accountEmail={accountEmail} privacy={privacy} setPrivacy={setPrivacy} themeSetting={themeSetting} setThemeSetting={setThemeSetting} languageSetting={languageSetting} setLanguageSetting={setLanguageSetting} proActive={proActive} plusActive={plusActive} proSubscription={proSubscription} plusSubscription={plusSubscription} profileLayout={profileLayout} setProfileLayout={setProfileLayout} insights={insights} doubleTapEmoji={doubleTapEmoji} onOpenPresence={()=>setPresenceOpen(true)} onOpenCustomStatus={openCustomStatus} onOpenShop={openShop} onOpenPro={openPro} onOpenPlus={openPlus} onOpenDoubleTap={openDoubleTapReaction} onOpenAccountSwitcher={openAccountSwitcher} onOpenAdminConsole={openAdminConsole} onOpenAdminBadge={()=>setAdminBadgeOpen(true)} onOpenAdminCustomize={()=>setAdminCustomizeOpen(true)} onRefresh={resetDemo} onSignOut={onSignOut} />
   </>);
 }
 
@@ -5580,6 +5605,25 @@ const styles = StyleSheet.create({
   officialDmAction:{marginTop:10,borderRadius:13,paddingHorizontal:12,paddingVertical:9,flexDirection:'row',alignItems:'center',alignSelf:'flex-start',gap:6},
   officialDmActionText:{fontSize:12.5,fontWeight:'900'},
   flexOne: { flex: 1 },
+
+  iosSettingsPage:{flex:1},
+  iosSettingsHeader:{paddingHorizontal:22,paddingTop:10,paddingBottom:12,flexDirection:'row',alignItems:'center',gap:14},
+  iosSettingsTitle:{fontSize:27,lineHeight:34,fontWeight:'950',letterSpacing:-.8},
+  iosSettingsSubtitle:{fontSize:12,fontWeight:'750',marginTop:1},
+  iosSettingsClose:{width:46,height:46,borderRadius:23,borderWidth:StyleSheet.hairlineWidth,alignItems:'center',justifyContent:'center'},
+  iosSettingsScroll:{paddingHorizontal:16,paddingBottom:44},
+  iosSettingsSection:{marginTop:18},
+  iosSettingsSectionTitle:{fontSize:18,fontWeight:'850',letterSpacing:-.35,marginLeft:16,marginBottom:9},
+  iosSettingsCard:{borderRadius:26,borderWidth:StyleSheet.hairlineWidth,overflow:'hidden'},
+  iosSettingsRow:{minHeight:60,paddingHorizontal:18,flexDirection:'row',alignItems:'center',gap:12},
+  iosSettingsIconSlot:{width:27,alignItems:'center',justifyContent:'center'},
+  iosSettingsRowTitle:{flex:1,minWidth:0,fontSize:16.5,lineHeight:21,fontWeight:'650',letterSpacing:-.25},
+  iosSettingsRowRight:{maxWidth:'52%',flexDirection:'row',alignItems:'center',justifyContent:'flex-end',gap:7},
+  iosSettingsValue:{fontSize:15,lineHeight:20,fontWeight:'500',textAlign:'right'},
+  iosSettingsSignOut:{marginTop:22,minHeight:58,borderRadius:24,borderWidth:StyleSheet.hairlineWidth,paddingHorizontal:18,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:9},
+  iosSettingsSignOutText:{fontSize:16,fontWeight:'800'},
+  iosSettingsFooter:{fontSize:11,fontWeight:'700',textAlign:'center',marginTop:16,marginBottom:6},
+
 
   oneHeader:{height:64,paddingHorizontal:18,flexDirection:'row',alignItems:'center',justifyContent:'space-between'},
   oneBrand:{fontSize:25,fontWeight:'950',letterSpacing:-1},

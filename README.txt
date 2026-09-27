@@ -1,45 +1,37 @@
-LINK 4.0 · ONE — Build 400
-=============================
+LINK 4.1 · ONE — Settings Redesign
+===================================
 
-Major social-platform update built on LINK 3.6.
+Profile cleanup
+- Removed the whole Profile settings block from "Profile layout" through "Refresh LINK data".
+- Profile now stays focused on identity, highlights and social posts.
+- The gear button remains the main entry into Settings.
 
-CORE
-- New navigation: Feed · Discover · Create · Chats · Profile
-- Feed 4.0 with Following + Discover modes
-- LINK Official posts integrated into the same timeline
-- LINK Pulse live-status cards inside Feed
-- Create Hub: Post / Moment / Note / Group / LINK Now
-- Discover search across people, posts and #topics
-- Trending hashtag chips
+Settings 4.1
+- New iOS grouped-settings design inspired by the structure of modern native iOS settings screens.
+- Large section labels, rounded grouped cards, subtle separators, left icons, right values and chevrons.
+- Settings presented as a native page sheet on iOS.
 
-POSTS 2.0
-- Replies and threaded conversations
-- Reposts
-- Quote posts
-- Likes
-- Bookmarks
-- Pinned profile post
-- Text + photo posts
-- Admin/CEO Markdown 101 remains supported
-- Activity notifications for likes, replies, reposts and quote posts
+Moved into Settings
+- Profile layout
+- Profile effects
+- Active status
+- Custom status
+- Double Tap reaction
+- LINK Pro
+- LINK Plus
+- Pro Insights
+- Staff Center / Staff Badge / Staff Profile Lab
+- Account & sign out
+- Refresh LINK data
 
-PROFILE 4.0
-- Posts / Replies / Media / Likes tabs on your profile
-- Posts / Replies / Media tabs on public profiles
-- Pinned post area
-- Existing profile privacy still controls who can read profile posts
+Still included
+- Account information
+- Privacy
+- Sharing
+- Notifications
+- Login alerts
+- Appearance
+- Language
+- Sign out
 
-STABILITY
-- LINK 3.6 realtime message stability layer remains active
-- Post, like and bookmark changes are included in Realtime refresh
-- Existing chats, Moments, Groups, Circles, LINK Now, LINK Official and Staff tools remain intact
-
-BACKEND
-- Migration: link_400_one_core
-- profile_posts extended with parent_id / repost_of_id / quote_of_id / pinned
-- profile_post_bookmarks with RLS
-- Activity notification triggers
-- Realtime enabled for profile_post_bookmarks
-- set_profile_post_pinned() authenticated RPC
-
-Expo launcher cache build: 400
+Launcher cache build: 410
