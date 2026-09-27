@@ -1,38 +1,23 @@
-LINK 4.1 · Admin Identity — Build 411
-=====================================
+LINK 4.2 · Multi-Account — Build 420
+====================================
 
-NEW ADMIN AVATAR FX
-Bold:
-- Dragon Coil
-- Neon Serpent
-- Inferno
-- Electric Tempest
-- Void Rift
+NEW
+- Add another existing LINK account without signing out.
+- Switch instantly between saved accounts from Account Switcher.
+- Each account keeps its own real Supabase Auth session.
+- Chats, requests, feed, notifications, settings and profile data change with the active account.
+- No passwords are stored by LINK Multi-Account.
+- Active Supabase session tokens are saved locally and refreshed by Supabase when needed.
+- Session rotation updates the saved account automatically.
+- Up to 8 accounts can be kept on one device.
+- Long-press an inactive account to remove it from this device.
+- Sign out removes only the current account; if another account is saved, LINK switches to it automatically.
 
-Minimal:
-- Pure Halo
-- Micro Orbit
-- Thin Arc
-- Glass Ring
-- Mono Pulse
+UI
+- New iOS-style Accounts sheet.
+- Add account page sheet with email/password.
+- Current account gets a checkmark.
+- Admin / gold verified identity is preserved in the account picker.
 
-The original Executive Orbit, CEO Crown and Founder Aura remain available.
-All admin_* effects are now protected server-side: only Admin/CEO can equip them on their own account.
-
-OFFICIAL AFFILIATION
-Profiles now support:
-- verification_style: blue | gold
-- official_affiliation: boolean
-
-Officially affiliated accounts show a gold verified badge and a localized note:
-"Tento účet je oficiálně přidružen k LINK."
-
-Production account changes:
-- pardeljiri3@gmail.com / Dominik: Admin, gold verified, officially affiliated.
-- simiyeeye@icloud.com / @kubajs: CEO, gold verified, officially affiliated.
-
-Backend migration:
-- link_411_admin_identity_fx
-
-Launcher cache build:
-- 411
+No backend schema migration was required.
+Launcher cache build: 420

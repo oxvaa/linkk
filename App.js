@@ -680,7 +680,25 @@ async function loadLinkSnapshot(base, userId) {
   };
   const blockedUserIds=(blocksQ.data||[]).map(x=>x.blocked_id);
   const relationships={[userId]:[]},requests=[];
-  for(const row of connectionsQ.data||[]){ const other=row.user_a===userId?row.user_b:row.user_a; if(row.status==='accepted'&&!blockedUserIds.includes(other))relationships[userId].push(other); if(row.status==='pending')requests.push({id:row.id,fromId:row.requested_by,toId:row.requested_by===row.user_a?row.user_b:row.user_a,createdAt:timeLabel(row.created_at)}); }
+  let latestConnectionRow=null;
+  let incomingPendingCount=0;
+  for(const row of connectionsQ.data||[]){
+    const other=row.user_a===userId?row.user_b:row.user_a;
+    const updatedAt=toMs(row.updated_at||row.created_at);
+    if(!latestConnectionRow || updatedAt>(latestConnectionRow.updatedAt||0)) latestConnectionRow={id:row.id,status:row.status,updatedAt};
+    if(row.status==='accepted'&&!blockedUserIds.includes(other))relationships[userId].push(other);
+    if(row.status==='pending'){
+      const toId=row.requested_by===row.user_a?row.user_b:row.user_a;
+      requests.push({id:row.id,fromId:row.requested_by,toId,createdAt:timeLabel(row.created_at),createdAtMs:toMs(row.created_at),updatedAt});
+      if(toId===userId)incomingPendingCount+=1;
+    }
+  }
+  const linkRequestSyncCursor=[
+    latestConnectionRow?.id||'none',
+    latestConnectionRow?.status||'none',
+    latestConnectionRow?.updatedAt||0,
+    incomingPendingCount,
+  ].join('|');
   relationships[userId]=Array.from(new Set(relationships[userId]));
 
   const membersByChat={}; for(const row of membersQ.data||[]){(membersByChat[row.chat_id] ||= []).push(row);}
@@ -754,18 +772,19 @@ async function loadLinkSnapshot(base, userId) {
   }
   const recentProfileVisitors=(profileViewsQ.data||[]).map(v=>({viewerId:v.viewer_id||null,viewedAt:toMs(v.viewed_at)})).filter(v=>v.viewerId).slice(-30).reverse();
 
-  return {...base,version:40,activeAccountId:userId,localAccountIds:[userId],profiles,relationships,requests,groups,conversations,backendChatIds,doubleTapReactions:{[userId]:settings.double_tap_emoji||'❤️'},moments,notes,notifications:{[userId]:notifications},favorites:{[userId]:(favoritesQ.data||[]).map(x=>x.favorite_user_id)},privacy:{[userId]:{showStatus:settings.show_status??true,showSocials:settings.show_socials??true,momentsToLinks:settings.moments_to_links??true,ghostMode:settings.ghost_mode??false,showActivityStatus:settings.show_activity_status??true,profileVisibility:settings.profile_visibility||'links',messagesFrom:settings.messages_from||'links',linkRequestsFrom:settings.link_requests_from||'everyone',readReceipts:settings.read_receipts??true,typingIndicators:settings.typing_indicators??true,profileViewsEnabled:settings.profile_views_enabled??true,discoverableByUsername:settings.discoverable_by_username??true,discoverableByEmail:settings.discoverable_by_email??false,notificationsMessages:settings.notifications_messages??true,notificationsRequests:settings.notifications_requests??true,notificationsMoments:settings.notifications_moments??true,notificationsProduct:settings.notifications_product??false,loginAlerts:settings.login_alerts??true,showLastActive:settings.show_last_active??true}},wallets:{[userId]:ent.coins??2200},ownedEffects:{[userId]:ent.owned_effects||[]},subscriptions,proSubscriptions,benefitClaims,moderation,chatKeys,silentChats,chatThemes,chatThemeScopes,chatUserSettings,profileViews:{[userId]:(profileViewsQ.data||[]).length},themeSetting:settings.theme_setting||base.themeSetting||'system',languageSetting:settings.language_setting||base.languageSetting||'system',onboardingComplete:settings.onboarding_complete!==false,linkNow,groupJoinRequests:(joinRequestsQ.data||[]).map(r=>({id:r.id,chatId:r.chat_id,userId:r.user_id,status:r.status,answer:r.answer||'',createdAt:toMs(r.created_at)})),groupPolls,profileHighlights,blockedUserIds,devices:(devicesQ.data||[]).map(d=>({id:d.id,label:d.device_label,platform:d.platform,version:d.app_version,lastSeenAt:toMs(d.last_seen_at),createdAt:toMs(d.created_at)})),viewOnceViewed:viewedOnce,staffAudit:(staffAuditQ.data||[]).map(a=>({id:a.id,actorId:a.actor_id,targetId:a.target_user_id,action:a.action,metadata:a.metadata||{},createdAt:toMs(a.created_at)})),safetyReports:(reportsQ.data||[]).map(r=>({id:r.id,reporterId:r.reporter_id,targetId:r.reported_user_id,category:r.category,details:r.details,status:r.status,createdAt:toMs(r.created_at)})),presenceActivity,circles,proStyle,officialAnnouncements,officialReads,groupAdminNotes,profilePosts,profilePostBookmarks:Array.from(profilePostBookmarkIds),recentProfileVisitors};
+  return {...base,version:40,activeAccountId:userId,localAccountIds:[userId],profiles,relationships,requests,groups,conversations,backendChatIds,doubleTapReactions:{[userId]:settings.double_tap_emoji||'❤️'},moments,notes,notifications:{[userId]:notifications},favorites:{[userId]:(favoritesQ.data||[]).map(x=>x.favorite_user_id)},privacy:{[userId]:{showStatus:settings.show_status??true,showSocials:settings.show_socials??true,momentsToLinks:settings.moments_to_links??true,ghostMode:settings.ghost_mode??false,showActivityStatus:settings.show_activity_status??true,profileVisibility:settings.profile_visibility||'links',messagesFrom:settings.messages_from||'links',linkRequestsFrom:settings.link_requests_from||'everyone',readReceipts:settings.read_receipts??true,typingIndicators:settings.typing_indicators??true,profileViewsEnabled:settings.profile_views_enabled??true,discoverableByUsername:settings.discoverable_by_username??true,discoverableByEmail:settings.discoverable_by_email??false,notificationsMessages:settings.notifications_messages??true,notificationsRequests:settings.notifications_requests??true,notificationsMoments:settings.notifications_moments??true,notificationsProduct:settings.notifications_product??false,loginAlerts:settings.login_alerts??true,showLastActive:settings.show_last_active??true}},wallets:{[userId]:ent.coins??2200},ownedEffects:{[userId]:ent.owned_effects||[]},subscriptions,proSubscriptions,benefitClaims,moderation,chatKeys,silentChats,chatThemes,chatThemeScopes,chatUserSettings,profileViews:{[userId]:(profileViewsQ.data||[]).length},themeSetting:settings.theme_setting||base.themeSetting||'system',languageSetting:settings.language_setting||base.languageSetting||'system',onboardingComplete:settings.onboarding_complete!==false,linkNow,groupJoinRequests:(joinRequestsQ.data||[]).map(r=>({id:r.id,chatId:r.chat_id,userId:r.user_id,status:r.status,answer:r.answer||'',createdAt:toMs(r.created_at)})),groupPolls,profileHighlights,blockedUserIds,devices:(devicesQ.data||[]).map(d=>({id:d.id,label:d.device_label,platform:d.platform,version:d.app_version,lastSeenAt:toMs(d.last_seen_at),createdAt:toMs(d.created_at)})),viewOnceViewed:viewedOnce,staffAudit:(staffAuditQ.data||[]).map(a=>({id:a.id,actorId:a.actor_id,targetId:a.target_user_id,action:a.action,metadata:a.metadata||{},createdAt:toMs(a.created_at)})),safetyReports:(reportsQ.data||[]).map(r=>({id:r.id,reporterId:r.reporter_id,targetId:r.reported_user_id,category:r.category,details:r.details,status:r.status,createdAt:toMs(r.created_at)})),presenceActivity,circles,proStyle,officialAnnouncements,officialReads,groupAdminNotes,profilePosts,profilePostBookmarks:Array.from(profilePostBookmarkIds),linkRequestSyncCursor,recentProfileVisitors};
 }
 
 function subscribeLink(userId,onChange,onStatus){
   let fastTimer=null,slowTimer=null,running=false,queued=false,closed=false;
   const run=async()=>{if(closed)return;if(running){queued=true;return;}running=true;try{await onChange?.();}finally{running=false;if(queued&&!closed){queued=false;fastTimer=setTimeout(run,650);}}};
   const messageFast=()=>{if(closed)return;clearTimeout(fastTimer);fastTimer=setTimeout(run,90);};
+  const requestFast=()=>{if(closed)return;clearTimeout(fastTimer);fastTimer=setTimeout(run,110);};
   const fast=()=>{if(closed)return;clearTimeout(fastTimer);fastTimer=setTimeout(run,260);};
   const slow=()=>{if(closed)return;clearTimeout(slowTimer);slowTimer=setTimeout(run,900);};
   const channel=supabase.channel(`link-live-v3-${userId}`)
     .on('postgres_changes',{event:'*',schema:'public',table:'profiles'},fast)
-    .on('postgres_changes',{event:'*',schema:'public',table:'connections'},fast)
+    .on('postgres_changes',{event:'*',schema:'public',table:'connections'},requestFast)
     .on('postgres_changes',{event:'*',schema:'public',table:'chats'},fast)
     .on('postgres_changes',{event:'*',schema:'public',table:'chat_members'},fast)
     .on('postgres_changes',{event:'*',schema:'public',table:'messages'},messageFast)
@@ -1030,6 +1049,20 @@ async function getInboxSyncCursorRemote() {
   return row?.latest_message_id || null;
 }
 
+
+async function getLinkRequestSyncCursorRemote() {
+  const { data, error } = await supabase.rpc('link_request_sync_cursor');
+  if (error) throw error;
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row) return 'none|none|0|0';
+  return [
+    row.latest_connection_id || 'none',
+    row.latest_connection_status || 'none',
+    row.latest_connection_at ? new Date(row.latest_connection_at).getTime() : 0,
+    Number(row.pending_incoming_count || 0),
+  ].join('|');
+}
+
 async function editMessageRemote(messageId, cipher) {
   const { error } = await supabase.from('messages').update({ cipher, edited_at:new Date().toISOString() }).eq('id',messageId);
   if (error) throw error;
@@ -1264,9 +1297,71 @@ async function purchaseEffectRemote(effectId) {
 }
 
 
+
+const MULTI_ACCOUNT_KEY = 'link:multi-account:v1';
+
+function accountEntryFromSession(session, profile = null) {
+  if (!session?.user?.id) return null;
+  const metadata=session.user.user_metadata||{};
+  return {
+    userId:session.user.id,
+    email:session.user.email||'',
+    accessToken:session.access_token,
+    refreshToken:session.refresh_token,
+    expiresAt:Number(session.expires_at||0),
+    updatedAt:Date.now(),
+    profile:{
+      id:session.user.id,
+      name:profile?.name||metadata.name||session.user.email?.split('@')[0]||'LINK user',
+      username:profile?.username||metadata.username?(String(profile?.username||metadata.username).startsWith('@')?String(profile?.username||metadata.username):`@${profile?.username||metadata.username}`):'',
+      photoUri:profile?.photoUri||metadata.avatar_url||null,
+      verified:!!profile?.verified,
+      verificationStyle:profile?.verificationStyle||'blue',
+      officialAffiliation:!!profile?.officialAffiliation,
+      role:profile?.role||'user',
+      isAdmin:!!profile?.isAdmin,
+      presenceMode:profile?.presenceMode||'online',
+      presenceVisible:profile?.presenceVisible!==false,
+    },
+  };
+}
+
+async function readMultiAccountVault() {
+  try {
+    const raw=await AsyncStorage.getItem(MULTI_ACCOUNT_KEY);
+    const parsed=JSON.parse(raw||'[]');
+    return Array.isArray(parsed)?parsed.filter(x=>x?.userId&&x?.refreshToken):[];
+  } catch { return []; }
+}
+
+async function writeMultiAccountVault(accounts) {
+  const clean=(accounts||[]).filter(x=>x?.userId&&x?.refreshToken).slice(0,8);
+  await AsyncStorage.setItem(MULTI_ACCOUNT_KEY,JSON.stringify(clean));
+  return clean;
+}
+
+async function upsertMultiAccountSession(session, profile = null) {
+  const entry=accountEntryFromSession(session,profile);
+  if(!entry)return readMultiAccountVault();
+  const current=await readMultiAccountVault();
+  const previous=current.find(x=>x.userId===entry.userId);
+  const merged={
+    ...previous,
+    ...entry,
+    profile:{...(previous?.profile||{}),...(entry.profile||{})},
+  };
+  return writeMultiAccountVault([merged,...current.filter(x=>x.userId!==entry.userId)]);
+}
+
+async function removeMultiAccountSession(userId) {
+  const current=await readMultiAccountVault();
+  return writeMultiAccountVault(current.filter(x=>x.userId!==userId));
+}
+
 function BackendGate({ children }) {
   const [session, setSession] = useState(null);
   const [ready, setReady] = useState(false);
+  const [savedAccounts,setSavedAccounts]=useState([]);
   const [mode, setMode] = useState('login');
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
@@ -1282,10 +1377,24 @@ function BackendGate({ children }) {
       if (value === 'cs' || value === 'en') setAuthLanguage(value);
     }).catch(() => {});
     let alive = true;
-    supabase.auth.getSession().then(({ data }) => {
-      if (alive) { setSession(data.session || null); setReady(true); }
+    (async()=>{
+      const vault=await readMultiAccountVault();
+      if(alive)setSavedAccounts(vault);
+      const {data}=await supabase.auth.getSession();
+      const current=data.session||null;
+      if(current){
+        const next=await upsertMultiAccountSession(current);
+        if(alive)setSavedAccounts(next);
+      }
+      if(alive){setSession(current);setReady(true);}
+    })().catch(()=>{if(alive)setReady(true);});
+    const { data: listener } = supabase.auth.onAuthStateChange(async(_event, next) => {
+      setSession(next || null);
+      if(next){
+        const vault=await upsertMultiAccountSession(next).catch(()=>null);
+        if(vault)setSavedAccounts(vault);
+      }
     });
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, next) => setSession(next || null));
     return () => { alive = false; listener.subscription.unsubscribe(); };
   }, []);
 
@@ -1314,16 +1423,99 @@ function BackendGate({ children }) {
         }
         if (!data.session) Alert.alert('Verify your email', 'Your LINK account was created. Verify the email, then return here and sign in.');
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
+        const { data:loginData, error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
         if (error) throw error;
+        if(loginData.session){
+          const vault=await upsertMultiAccountSession(loginData.session);
+          setSavedAccounts(vault);
+        }
       }
     } catch (error) {
       Alert.alert(mode === 'register' ? 'Could not create account' : 'Could not sign in', error?.message || 'Try again.');
     } finally { setLoading(false); }
   };
 
+
+  const refreshSavedAccounts=async()=>{
+    const vault=await readMultiAccountVault();
+    setSavedAccounts(vault);
+    return vault;
+  };
+
+  const addExistingAccount=async(email,password)=>{
+    const {data:currentData}=await supabase.auth.getSession();
+    if(currentData.session)await upsertMultiAccountSession(currentData.session);
+    const {data,error}=await supabase.auth.signInWithPassword({email,password});
+    if(error)throw error;
+    if(!data.session)throw new Error('No session returned');
+    const vault=await upsertMultiAccountSession(data.session);
+    setSavedAccounts(vault);
+    return data.session;
+  };
+
+  const switchToSavedAccount=async(userId)=>{
+    if(session?.user?.id===userId)return session;
+    const vault=await readMultiAccountVault();
+    const entry=vault.find(x=>x.userId===userId);
+    if(!entry)throw new Error('Saved account not found');
+    if(session)await upsertMultiAccountSession(session);
+    const {data,error}=await supabase.auth.setSession({access_token:entry.accessToken,refresh_token:entry.refreshToken});
+    if(error){
+      const next=await removeMultiAccountSession(userId);
+      setSavedAccounts(next);
+      throw new Error('This account session expired. Add the account again.');
+    }
+    if(data.session){
+      const next=await upsertMultiAccountSession(data.session,entry.profile);
+      setSavedAccounts(next);
+    }
+    return data.session;
+  };
+
+  const removeSavedAccount=async(userId)=>{
+    if(session?.user?.id===userId)throw new Error('Switch to another account before removing this one.');
+    const next=await removeMultiAccountSession(userId);
+    setSavedAccounts(next);
+  };
+
+  const updateSavedAccountProfile=async(profile)=>{
+    if(!session?.user?.id||!profile)return;
+    const {data}=await supabase.auth.getSession();
+    if(!data.session)return;
+    const next=await upsertMultiAccountSession(data.session,profile);
+    setSavedAccounts(next);
+  };
+
+  const signOutCurrentAccount=async()=>{
+    const currentId=session?.user?.id;
+    const vault=await readMultiAccountVault();
+    const others=vault.filter(x=>x.userId!==currentId);
+    await removeMultiAccountSession(currentId);
+    setSavedAccounts(others);
+    if(others.length){
+      const target=others[0];
+      const {data,error}=await supabase.auth.setSession({access_token:target.accessToken,refresh_token:target.refreshToken});
+      if(!error&&data.session){
+        const next=await upsertMultiAccountSession(data.session,target.profile);
+        setSavedAccounts(next);
+        return;
+      }
+    }
+    await supabase.auth.signOut();
+  };
+
+  const accountManager={
+    accounts:savedAccounts,
+    addExistingAccount,
+    switchTo:switchToSavedAccount,
+    remove:removeSavedAccount,
+    updateProfile:updateSavedAccountProfile,
+    signOutCurrent:signOutCurrentAccount,
+    refresh:refreshSavedAccounts,
+  };
+
   if (!ready) return <View style={backendStyles.loading}><View style={backendStyles.loadingLogo}><Text style={backendStyles.loadingLogoText}>L</Text></View><ActivityIndicator size="small" color={ACCENT} /><Text style={backendStyles.loadingText}>Connecting to LINK…</Text></View>;
-  if (session) return children(session);
+  if (session) return children(session,accountManager);
 
   return (
     <SafeAreaView style={backendStyles.page}>
@@ -1408,7 +1600,7 @@ const DRAFT_PREFIX = '@link_chat_draft_v1';
 const DEVICE_ID_KEY = '@link_device_id_v3';
 const ACCENT = '#6C5CE7';
 const EMPTY_MESSAGES = Object.freeze([]);
-const BUILD = 'LINK 4.1 · ONE';
+const BUILD = 'LINK 4.2 · ONE';
 const VERIFIED_BADGE_DATA_URI = 'data:image/png;base64,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';
 
 function NetflixWordmark({ width = 112, height = 31, style }) {
@@ -1816,6 +2008,7 @@ function initialData(userId = null) {
     profiles: {},
     relationships: userId ? { [userId]: [] } : {},
     requests: [],
+    linkRequestSyncCursor: 'none|none|0|0',
     groups: {},
     doubleTapReactions: userId ? { [userId]: '❤️' } : {},
     conversations: {},
@@ -3942,15 +4135,120 @@ function OwnCardModal({ visible, onClose, theme, profile, payload }) {
   return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><View style={styles.modalBackdrop}><View style={[styles.ownCardModal, { backgroundColor: theme.card }]}><View style={styles.rowBetween}><View><Text style={[styles.linkBrand, { color: theme.text }]}>LINK*</Text><Text style={[styles.cardHint, { color: theme.sub }]}>scan to send request</Text></View><IconButton icon="close" onPress={onClose} theme={theme} /></View><View style={[styles.qrWrapLarge, { backgroundColor: '#fff' }]}><QRCode value={payload} size={220} color="#0E0F12" backgroundColor="#FFFFFF" /></View><Text style={[styles.modalCardName, { color: theme.text }]}>{profile.name}</Text><Text style={[styles.modalCardUser, { color: theme.sub }]}>{profile.username}</Text><View style={{ alignSelf: 'center', marginTop: 10 }}><StatusBadge person={profile} theme={theme} /></View><Text style={[styles.modalCardHint, { color: theme.sub }]}>Scanning sends a mutual LINK request. Chat unlocks after acceptance.</Text></View></View></Modal>;
 }
 
-function NotificationsModal({ visible, onClose, theme, items, markAllRead, onOpenPost }) {
+function NotificationsModal({ visible, onClose, theme, items, markAllRead, onOpenPost, onOpenRequests }) {
   useEffect(() => { if (visible) markAllRead(); }, [visible]);
   const iconFor=(type)=>type==='request'?'link-outline':type==='wave'?'hand-left-outline':type==='post_like'?'heart-outline':type==='post_reply'?'chatbubble-ellipses-outline':type==='post_repost'?'repeat-outline':type==='post_quote'?'chatbox-ellipses-outline':type==='mention'?'at':'notifications-outline';
-  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.sheetCard, { backgroundColor: theme.card }]} onPress={() => {}}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle, { color: theme.text }]}>Activity 4.0</Text><Text style={[styles.sheetSub, { color: theme.sub }]}>Posts, replies, mentions, requests and LINK updates</Text></View><IconButton icon="close" onPress={onClose} theme={theme} /></View><ScrollView style={{ maxHeight: 480 }} contentContainerStyle={{ paddingTop: 14 }}>{items.length ? items.map(n => <Pressable key={n.id} disabled={!n.entityId} onPress={()=>{if(n.entityType==='profile_post'&&n.entityId){onClose();setTimeout(()=>onOpenPost?.(n.entityId),150);}}} style={[styles.notificationRow, { borderBottomColor: theme.border }]}><View style={[styles.notificationIcon, { backgroundColor: theme.soft }]}><Ionicons name={iconFor(n.type)} size={18} color={n.type==='post_like'?'#FF375F':theme.text} /></View><View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>{n.title}</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>{n.body}</Text></View><Text style={[styles.metaText, { color: theme.sub }]}>{n.time}</Text></Pressable>) : <View style={styles.emptyState}><Ionicons name="notifications-off-outline" size={34} color={theme.sub} /><Text style={[styles.emptyTitle, { color: theme.text }]}>All caught up</Text></View>}</ScrollView></Pressable></Pressable></Modal>;
+  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.sheetCard, { backgroundColor: theme.card }]} onPress={() => {}}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle, { color: theme.text }]}>Activity 4.0</Text><Text style={[styles.sheetSub, { color: theme.sub }]}>Posts, replies, mentions, requests and LINK updates</Text></View><IconButton icon="close" onPress={onClose} theme={theme} /></View><ScrollView style={{ maxHeight: 480 }} contentContainerStyle={{ paddingTop: 14 }}>{items.length ? items.map(n => <Pressable key={n.id} disabled={!n.entityId&&n.type!=='request'} onPress={()=>{if(n.type==='request'){onClose();setTimeout(()=>onOpenRequests?.(),150);return;}if(n.entityType==='profile_post'&&n.entityId){onClose();setTimeout(()=>onOpenPost?.(n.entityId),150);}}} style={[styles.notificationRow, { borderBottomColor: theme.border }]}><View style={[styles.notificationIcon, { backgroundColor: theme.soft }]}><Ionicons name={iconFor(n.type)} size={18} color={n.type==='post_like'?'#FF375F':theme.text} /></View><View style={{ flex: 1 }}><Text style={[styles.settingsTitle, { color: theme.text }]}>{n.title}</Text><Text style={[styles.settingsSub, { color: theme.sub }]}>{n.body}</Text></View><Text style={[styles.metaText, { color: theme.sub }]}>{n.time}</Text></Pressable>) : <View style={styles.emptyState}><Ionicons name="notifications-off-outline" size={34} color={theme.sub} /><Text style={[styles.emptyTitle, { color: theme.text }]}>All caught up</Text></View>}</ScrollView></Pressable></Pressable></Modal>;
 }
 
-function AccountSwitcherModal({ visible, onClose, theme, localProfiles, activeId, onSwitch, onCreate }) {
-  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}><Pressable style={styles.modalBackdrop} onPress={onClose}><Pressable style={[styles.sheetCard, { backgroundColor: theme.card }]} onPress={() => {}}><View style={styles.rowBetween}><View><Text style={[styles.sheetTitle, { color: theme.text }]}>LINK account</Text><Text style={[styles.sheetSub, { color: theme.sub }]}>Signed in with Supabase Auth</Text></View><IconButton icon="close" onPress={onClose} theme={theme} /></View><View style={{ marginTop: 15 }}>{localProfiles.map(p => <Pressable key={p.id} onPress={() => onSwitch(p.id)} style={[styles.accountSwitchRow, { backgroundColor: p.id === activeId ? theme.soft : 'transparent' }]}><Avatar person={p} size={46} theme={theme} /><View style={{ flex: 1 }}><View style={styles.inlineNameRow}><Text style={[styles.personName, { color: theme.text }]}>{p.name}</Text>{p.isAdmin ? <ProfilePlanBadgeRow person={p} compact align="start" /> : (p.verified?<VerificationBadge person={p} compact/>:null)}</View><Text style={[styles.personSub, { color: theme.sub }]}>{p.username}</Text></View>{p.id === activeId ? <Ionicons name="checkmark-circle" size={22} color={ACCENT} /> : <Ionicons name="swap-horizontal" size={20} color={theme.sub} />}</Pressable>)}</View><Pressable onPress={onCreate} style={[styles.createAccountButton, { backgroundColor: theme.inverse }]}><Ionicons name="person-add-outline" size={18} color={theme.inverseText} /><Text style={{ color: theme.inverseText, fontWeight: '800' }}>Sign out / use another account</Text></Pressable><Text style={[styles.tinyHint, { color: theme.sub }]}>This account is synced through LINK Production and can be used on another device.</Text></Pressable></Pressable></Modal>;
+function AccountSwitcherModal({ visible, onClose, theme, accounts=[], activeId, onSwitch, onAdd, onRemove }) {
+  const cs=CURRENT_LANGUAGE==='cs';
+  const askRemove=(account)=>{
+    Alert.alert(
+      cs?'Odebrat účet z tohoto zařízení?':'Remove account from this device?',
+      account.email||account.profile?.username||'LINK account',
+      [
+        {text:cs?'Zrušit':'Cancel',style:'cancel'},
+        {text:cs?'Odebrat':'Remove',style:'destructive',onPress:()=>onRemove?.(account.userId)},
+      ]
+    );
+  };
+  return <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <Pressable style={styles.modalBackdrop} onPress={onClose}>
+      <Pressable style={[styles.multiAccountSheet,{backgroundColor:theme.card,borderColor:theme.border}]} onPress={()=>{}}>
+        <View style={styles.rowBetween}>
+          <View>
+            <Text style={[styles.sheetTitle,{color:theme.text}]}>{cs?'Účty':'Accounts'}</Text>
+            <Text style={[styles.sheetSub,{color:theme.sub}]}>{cs?'Přepni účet bez odhlášení':'Switch without signing out'}</Text>
+          </View>
+          <IconButton icon="close" onPress={onClose} theme={theme}/>
+        </View>
+        <View style={styles.multiAccountList}>
+          {accounts.map(account=>{
+            const p={...(account.profile||{}),id:account.userId,isSelf:account.userId===activeId};
+            const active=account.userId===activeId;
+            return <Pressable key={account.userId} disabled={active} onPress={()=>onSwitch?.(account.userId)} onLongPress={()=>!active&&askRemove(account)} style={({pressed})=>[styles.multiAccountRow,{backgroundColor:active?theme.soft:'transparent',opacity:pressed ? .72 : 1}]}>
+              <Avatar person={p} size={48} theme={theme}/>
+              <View style={{flex:1,minWidth:0}}>
+                <View style={styles.inlineNameRow}>
+                  <Text numberOfLines={1} style={[styles.personName,{color:theme.text}]}>{p.name||account.email?.split('@')[0]||'LINK user'}</Text>
+                  {p.verified?<VerificationBadge person={p} compact/>:null}
+                  {p.isAdmin?<ProfilePlanBadgeRow person={p} compact align="start"/>:null}
+                </View>
+                <Text numberOfLines={1} style={[styles.personSub,{color:theme.sub}]}>{p.username||account.email}</Text>
+              </View>
+              {active?<View style={styles.multiAccountActive}><Ionicons name="checkmark" size={15} color="#fff"/></View>:<Ionicons name="swap-horizontal" size={20} color={theme.sub}/>}
+            </Pressable>;
+          })}
+        </View>
+        <Pressable onPress={onAdd} style={[styles.multiAccountAddRow,{backgroundColor:theme.soft,borderColor:theme.border}]}>
+          <View style={[styles.multiAccountAddIcon,{backgroundColor:theme.inverse}]}><Ionicons name="add" size={21} color={theme.inverseText}/></View>
+          <View style={{flex:1}}>
+            <Text style={[styles.settingsTitle,{color:theme.text}]}>{cs?'Přidat další účet':'Add another account'}</Text>
+            <Text style={[styles.settingsSub,{color:theme.sub}]}>{cs?'Přihlásíš ho jen jednou.':'Sign in once, then switch instantly.'}</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={19} color={theme.sub}/>
+        </Pressable>
+        <Text style={[styles.tinyHint,{color:theme.sub,textAlign:'center',marginTop:12}]}>{cs?'Podrž jiný účet pro odebrání z tohoto zařízení.':'Long-press another account to remove it from this device.'}</Text>
+      </Pressable>
+    </Pressable>
+  </Modal>;
 }
+
+
+function AddAccountModal({visible,onClose,theme,onSubmit}) {
+  const cs=CURRENT_LANGUAGE==='cs';
+  const [email,setEmail]=useState('');
+  const [password,setPassword]=useState('');
+  const [showPassword,setShowPassword]=useState(false);
+  const [busy,setBusy]=useState(false);
+  useEffect(()=>{if(visible){setEmail('');setPassword('');setShowPassword(false);setBusy(false);}},[visible]);
+  const submit=async()=>{
+    if(busy)return;
+    const clean=email.trim().toLowerCase();
+    if(!clean||password.length<6)return Alert.alert(cs?'Zkontroluj údaje':'Check your details',cs?'Zadej platný e-mail a heslo.':'Enter a valid email and password.');
+    setBusy(true);
+    try{
+      await onSubmit?.(clean,password);
+    }catch(error){
+      Alert.alert(cs?'Účet se nepodařilo přidat':'Could not add account',error?.message||'Try again.');
+      setBusy(false);
+    }
+  };
+  return <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={busy?undefined:onClose}>
+    <SafeAreaView style={[styles.multiAccountAddPage,{backgroundColor:theme.bg}]}>
+      <View style={styles.multiAccountAddHeader}>
+        <View style={{flex:1}}>
+          <Text style={[styles.iosSettingsTitle,{color:theme.text}]}>{cs?'Přidat účet':'Add account'}</Text>
+          <Text style={[styles.iosSettingsSubtitle,{color:theme.sub}]}>{cs?'Přihlas další LINK účet jednou.':'Sign in to another LINK account once.'}</Text>
+        </View>
+        <IconButton icon="close" onPress={onClose} theme={theme}/>
+      </View>
+      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.multiAccountAddScroll}>
+        <View style={[styles.multiAccountSecurity,{backgroundColor:theme.soft,borderColor:theme.border}]}>
+          <Ionicons name="shield-checkmark-outline" size={20} color={ACCENT}/>
+          <Text style={[styles.multiAccountSecurityText,{color:theme.sub}]}>{cs?'LINK neukládá heslo. Uloží jen přihlášenou session pro rychlé přepnutí.':'LINK does not store your password. Only the signed-in session is saved for quick switching.'}</Text>
+        </View>
+        <View style={[styles.iosSettingsCard,{backgroundColor:theme.card,borderColor:theme.border}]}>
+          <View style={[styles.multiAccountInputRow,{borderBottomColor:theme.border}]}>
+            <Ionicons name="mail-outline" size={21} color={theme.text}/>
+            <TextInput value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" autoCorrect={false} placeholder="E-mail" placeholderTextColor={theme.sub} style={[styles.multiAccountInput,{color:theme.text}]}/>
+          </View>
+          <View style={styles.multiAccountInputRow}>
+            <Ionicons name="lock-closed-outline" size={21} color={theme.text}/>
+            <TextInput value={password} onChangeText={setPassword} secureTextEntry={!showPassword} autoCapitalize="none" placeholder={cs?'Heslo':'Password'} placeholderTextColor={theme.sub} style={[styles.multiAccountInput,{color:theme.text}]}/>
+            <Pressable onPress={()=>setShowPassword(v=>!v)} hitSlop={8}><Ionicons name={showPassword?'eye-off-outline':'eye-outline'} size={20} color={theme.sub}/></Pressable>
+          </View>
+        </View>
+        <Pressable disabled={busy} onPress={submit} style={[styles.multiAccountAddButton,{backgroundColor:theme.inverse,opacity:busy ? .72 : 1}]}>
+          {busy?<ActivityIndicator size="small" color={theme.inverseText}/>:<Ionicons name="person-add-outline" size={19} color={theme.inverseText}/>}
+          <Text style={{color:theme.inverseText,fontWeight:'900',fontSize:15}}>{busy?(cs?'Přidávám…':'Adding…'):(cs?'Přidat účet':'Add account')}</Text>
+        </Pressable>
+      </ScrollView>
+    </SafeAreaView>
+  </Modal>;
+}
+
 
 function CreateAccountModal({ visible, onClose, theme, onCreate, existingProfiles }) {
   const [name, setName] = useState(''); const [username, setUsername] = useState(''); const [bio, setBio] = useState('');
@@ -4512,10 +4810,11 @@ function LinkFeedScreen({theme,activeProfile,profiles,posts=[],connectedIds=[],o
   </View>;
 }
 
-function DiscoverScreen({theme,activeProfile,profiles,posts=[],connectedIds=[],onOpenProfile,onToggleLike,onDelete,onReply,onRepost,onQuote,onBookmark,onPin,onOpenThread}) {
+function DiscoverScreen({theme,activeProfile,profiles,posts=[],connectedIds=[],requests=[],onAcceptRequest,onDeclineRequest,onOpenProfile,onToggleLike,onDelete,onReply,onRepost,onQuote,onBookmark,onPin,onOpenThread}) {
   const cs=CURRENT_LANGUAGE==='cs';
   const [query,setQuery]=useState('');
   const clean=query.trim().toLowerCase();
+  const incomingRequests=useMemo(()=>requests.filter(r=>r.toId===activeProfile.id),[requests,activeProfile.id]);
   const postMap=useMemo(()=>Object.fromEntries(posts.map(p=>[p.id,p])),[posts]);
   const hashtags=useMemo(()=>{
     const counts={};
@@ -4529,6 +4828,7 @@ function DiscoverScreen({theme,activeProfile,profiles,posts=[],connectedIds=[],o
     <View style={styles.simpleHeader}><Text style={[styles.bigTitle,{color:theme.text}]}>{cs?'Objevovat':'Discover'}</Text><Text style={[styles.headerSub,{color:theme.sub}]}>{cs?'Lidé, příspěvky a témata napříč LINKem.':'People, posts and topics across LINK.'}</Text></View>
     <View style={[styles.oneSearchBox,{backgroundColor:theme.input}]}><Ionicons name="search" size={19} color={theme.sub}/><TextInput value={query} onChangeText={setQuery} autoCapitalize="none" autoCorrect={false} placeholder={cs?'Hledat @username, text nebo #téma':'Search @username, text or #topic'} placeholderTextColor={theme.sub} style={[styles.searchInput,{color:theme.text}]}/>{query?<Pressable onPress={()=>setQuery('')}><Ionicons name="close-circle" size={18} color={theme.sub}/></Pressable>:null}</View>
     <ScrollView contentContainerStyle={styles.oneDiscoverScroll} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+      {incomingRequests.length?<View style={styles.linkRequestInboxBlock}><View style={styles.oneSectionRow}><View style={styles.inlineNameRow}><Text style={[styles.oneSectionTitle,{color:theme.text}]}>{cs?'Žádosti o LINK':'LINK requests'}</Text><View style={styles.linkRequestCountBadge}><Text style={styles.linkRequestCountText}>{incomingRequests.length>99?'99+':incomingRequests.length}</Text></View></View><Text style={[styles.oneSectionMeta,{color:theme.sub}]}>{cs?'Čekají na tebe':'Waiting for you'}</Text></View>{incomingRequests.map(request=>{const person=profiles[request.fromId];return person?<RequestCard key={request.id} request={request} profile={person} theme={theme} onAccept={onAcceptRequest} onDecline={onDeclineRequest}/>:null})}</View>:null}
       {!clean&&hashtags.length?<><View style={styles.oneSectionRow}><Text style={[styles.oneSectionTitle,{color:theme.text}]}>{cs?'Trenduje':'Trending'}</Text><Ionicons name="trending-up" size={17} color={ACCENT}/></View><View style={styles.oneTrendWrap}>{hashtags.map(([tag,count])=><Pressable key={tag} onPress={()=>openTag(tag)} style={[styles.oneTrendChip,{backgroundColor:theme.card,borderColor:theme.border}]}><Text style={[styles.oneTrendTag,{color:theme.text}]}>{tag}</Text><Text style={[styles.oneTrendCount,{color:theme.sub}]}>{count}</Text></Pressable>)}</View></>:null}
       <View style={[styles.oneSectionRow,{marginTop:18}]}><Text style={[styles.oneSectionTitle,{color:theme.text}]}>{clean?(cs?'Lidé':'People'):(cs?'Doporučené profily':'Suggested people')}</Text><Text style={[styles.oneSectionMeta,{color:theme.sub}]}>{people.length}</Text></View>
       {people.slice(0,clean?20:8).map(person=><Pressable key={person.id} onPress={()=>onOpenProfile?.(person)} style={[styles.onePersonResult,{backgroundColor:theme.card,borderColor:theme.border}]}><Avatar person={person} size={46} theme={theme}/><View style={{flex:1,minWidth:0}}><View style={styles.inlineNameRow}><Text numberOfLines={1} style={[styles.personName,{color:theme.text}]}>{person.name}</Text>{person.verified?<VerificationBadge person={person} compact/>:null}</View><Text style={[styles.personSub,{color:theme.sub}]}>{person.username}</Text></View>{connectedIds.includes(person.id)?<Pill theme={theme} tone="success">LINKED</Pill>:<Ionicons name="chevron-forward" size={18} color={theme.sub}/>}</Pressable>)}
@@ -4561,7 +4861,7 @@ function PostThreadModal({visible,onClose,theme,post,posts=[],profiles,activeUse
   return <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}><SafeAreaView style={[styles.flexOne,{backgroundColor:theme.bg}]}><View style={[styles.oneThreadHeader,{borderBottomColor:theme.border}]}><IconButton icon="chevron-back" onPress={onClose} theme={theme}/><Text style={[styles.oneThreadTitle,{color:theme.text}]}>{cs?'Vlákno':'Thread'}</Text><View style={{width:42}}/></View><ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.oneThreadScroll}>{card(root)}<View style={styles.oneThreadDivider}><Text style={[styles.oneThreadDividerText,{color:theme.sub}]}>{replies.length} {cs?'odpovědí':'replies'}</Text></View>{replies.map(card)}{!replies.length?<View style={styles.oneEmpty}><Ionicons name="chatbubble-outline" size={34} color={theme.sub}/><Text style={[styles.oneEmptyTitle,{color:theme.text}]}>{cs?'Zatím bez odpovědí':'No replies yet'}</Text></View>:null}</ScrollView><View style={[styles.oneThreadComposer,{backgroundColor:theme.bg,borderTopColor:theme.border}]}><Pressable onPress={()=>onReply?.(root)} style={[styles.oneThreadReplyButton,{backgroundColor:theme.card,borderColor:theme.border}]}><Avatar person={profiles[activeUserId]} size={32} theme={theme}/><Text style={[styles.oneThreadReplyText,{color:theme.sub}]}>{cs?'Napiš odpověď…':'Write a reply…'}</Text><Ionicons name="arrow-up-circle" size={24} color={ACCENT}/></Pressable></View></SafeAreaView></Modal>;
 }
 
-function TabBar({ tab, setTab, theme, darkMode, unreadCount = 0, onCreate }) {
+function TabBar({ tab, setTab, theme, darkMode, unreadCount = 0, requestCount = 0, onCreate }) {
   const items = [
     ['feed', 'newspaper-outline', 'Feed'],
     ['discover', 'compass-outline', 'Discover'],
@@ -4576,9 +4876,9 @@ function TabBar({ tab, setTab, theme, darkMode, unreadCount = 0, onCreate }) {
       <View style={styles.tabInner}>{items.map(([key, icon, label]) => {
         const active = tab === key;
         const center = key === 'create';
-        const badge = key === 'chats' ? Math.min(unreadCount, 99) : 0;
+        const badge = key === 'chats' ? Math.min(unreadCount, 99) : key === 'discover' ? Math.min(requestCount,99) : 0;
         return <Pressable key={key} onPress={() => center ? onCreate?.() : setTab(key)} style={styles.tabItem} hitSlop={5}>
-          {center ? <View style={[styles.centerTabGlass, { backgroundColor: active ? ACCENT : (darkMode ? 'rgba(255,255,255,.14)' : 'rgba(16,17,20,.92)'), borderColor: darkMode ? 'rgba(255,255,255,.22)' : 'rgba(255,255,255,.92)' }]}><Ionicons name="add" size={27} color="#fff" /></View> : <View style={[styles.tabActiveCapsule, active && { backgroundColor: darkMode ? 'rgba(255,255,255,.14)' : 'rgba(255,255,255,.66)', borderColor: darkMode ? 'rgba(255,255,255,.11)' : 'rgba(255,255,255,.92)' }]}><View style={styles.tabIconWrap}><Ionicons name={active ? icon.replace('-outline', '') : icon} size={active ? 23 : 22} color={active ? theme.text : theme.sub} />{badge ? <View style={styles.tabUnreadBadge}><Text style={styles.tabUnreadBadgeText}>{unreadCount > 99 ? '99+' : badge}</Text></View> : null}</View><Text style={[styles.tabLabel, { color: active ? theme.text : theme.sub, opacity: active ? 1 : .72 }]}>{label}</Text></View>}
+          {center ? <View style={[styles.centerTabGlass, { backgroundColor: active ? ACCENT : (darkMode ? 'rgba(255,255,255,.14)' : 'rgba(16,17,20,.92)'), borderColor: darkMode ? 'rgba(255,255,255,.22)' : 'rgba(255,255,255,.92)' }]}><Ionicons name="add" size={27} color="#fff" /></View> : <View style={[styles.tabActiveCapsule, active && { backgroundColor: darkMode ? 'rgba(255,255,255,.14)' : 'rgba(255,255,255,.66)', borderColor: darkMode ? 'rgba(255,255,255,.11)' : 'rgba(255,255,255,.92)' }]}><View style={styles.tabIconWrap}><Ionicons name={active ? icon.replace('-outline', '') : icon} size={active ? 23 : 22} color={active ? theme.text : theme.sub} />{badge ? <View style={styles.tabUnreadBadge}><Text style={styles.tabUnreadBadgeText}>{(key==='chats'?unreadCount:requestCount)>99?'99+':badge}</Text></View> : null}</View><Text style={[styles.tabLabel, { color: active ? theme.text : theme.sub, opacity: active ? 1 : .72 }]}>{label}</Text></View>}
         </Pressable>;
       })}</View>
       <View style={[styles.glassHighlight, { backgroundColor: darkMode ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.82)' }]} pointerEvents="none" />
@@ -4586,7 +4886,7 @@ function TabBar({ tab, setTab, theme, darkMode, unreadCount = 0, onCreate }) {
   </View>;
 }
 
-function LinkApp({ session }) {
+function LinkApp({ session, accountManager }) {
   const systemScheme = useColorScheme();
   const liveUserId = session?.user?.id || null;
   const [hydrated, setHydrated] = useState(false);
@@ -4599,6 +4899,7 @@ function LinkApp({ session }) {
   const [cardOpen, setCardOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [accountsOpen, setAccountsOpen] = useState(false);
+  const [addAccountOpen,setAddAccountOpen]=useState(false);
   const [createAccountOpen, setCreateAccountOpen] = useState(false);
   const [profileModalId, setProfileModalId] = useState(null);
   const [momentComposerOpen, setMomentComposerOpen] = useState(false);
@@ -4639,16 +4940,19 @@ function LinkApp({ session }) {
   const refreshPromiseRef = useRef(null);
   const inboxWatchBusyRef = useRef(false);
   const latestLocalMessageIdRef = useRef(null);
+  const latestLocalRequestCursorRef = useRef('none|none|0|0');
 
   const activeMode = data.themeSetting === 'system' ? (systemScheme === 'dark' ? 'dark' : 'light') : data.themeSetting;
   const theme = activeMode === 'dark' ? dark : light;
   const activeProfile = data.profiles[data.activeAccountId];
+  useEffect(()=>{if(activeProfile?.id)accountManager?.updateProfile?.(activeProfile).catch(()=>{});},[activeProfile?.id,activeProfile?.name,activeProfile?.username,activeProfile?.photoUri,activeProfile?.verified,activeProfile?.verificationStyle,activeProfile?.role]);
   const localProfiles = data.localAccountIds.map(id => data.profiles[id]).filter(Boolean);
   const connectedIds = data.relationships[data.activeAccountId] || [];
   const connectedProfiles = connectedIds.map(id => data.profiles[id]).filter(Boolean);
   const incomingRequests = data.requests.filter(r => r.toId === data.activeAccountId);
   const privacy = data.privacy[data.activeAccountId] || { showStatus: true, showSocials: true, momentsToLinks: true, ghostMode: false, showActivityStatus: true, profileVisibility: 'links', messagesFrom: 'links', linkRequestsFrom: 'everyone', readReceipts: true, typingIndicators: true, profileViewsEnabled: true, discoverableByUsername: true, discoverableByEmail: false, notificationsMessages: true, notificationsRequests: true, notificationsMoments: true, notificationsProduct: false, loginAlerts: true, showLastActive: true };
   const unreadActivityCount = useMemo(() => (data.notifications?.[data.activeAccountId] || []).filter(n=>!n.read&&!['message','group_message'].includes(n.type)).length,[data.notifications,data.activeAccountId]);
+  const incomingLinkRequestCount = useMemo(() => (data.requests||[]).filter(r=>r.toId===data.activeAccountId).length,[data.requests,data.activeAccountId]);
   const unreadChatCount = useMemo(() => Object.values(data.conversations || {}).reduce((total, list) => total + (list || []).filter(message => message.senderId !== data.activeAccountId && !(message.seenBy || message.readBy || []).includes(data.activeAccountId)).length, 0) + (data.officialAnnouncements||[]).filter(a=>!a.read).length, [data.conversations, data.activeAccountId, data.officialAnnouncements]);
   const favoriteIds = data.favorites?.[data.activeAccountId] || [];
   const activeWallet = data.wallets?.[data.activeAccountId] ?? 0;
@@ -4784,6 +5088,10 @@ function LinkApp({ session }) {
     );
   }, [hydrated, liveUserId]);
   useEffect(() => {
+    latestLocalRequestCursorRef.current=data.linkRequestSyncCursor||'none|none|0|0';
+  }, [data.linkRequestSyncCursor]);
+
+  useEffect(() => {
     let latestId = null;
     let latestAt = -1;
     for (const list of Object.values(data.conversations || {})) {
@@ -4807,11 +5115,16 @@ function LinkApp({ session }) {
       if (!alive || AppState.currentState !== 'active' || inboxWatchBusyRef.current) return;
       inboxWatchBusyRef.current = true;
       try {
-        const serverLatestId = await getInboxSyncCursorRemote();
+        const [serverLatestId,serverRequestCursor] = await Promise.all([
+          getInboxSyncCursorRemote(),
+          getLinkRequestSyncCursorRemote(),
+        ]);
         const localLatestId = latestLocalMessageIdRef.current;
-        if (force || serverLatestId !== localLatestId) {
+        const localRequestCursor = latestLocalRequestCursorRef.current;
+        if (force || serverLatestId !== localLatestId || serverRequestCursor !== localRequestCursor) {
           const fresh = await refreshRemote();
           if (fresh) {
+            latestLocalRequestCursorRef.current=fresh.linkRequestSyncCursor||serverRequestCursor;
             let newestId = null;
             let newestAt = -1;
             for (const list of Object.values(fresh.conversations || {})) {
@@ -4941,9 +5254,15 @@ function LinkApp({ session }) {
 
   useEffect(()=>{if(!hydrated||!data.offlineOutbox?.length)return;let stopped=false,running=false;const retry=async()=>{if(stopped||running||AppState.currentState!=='active')return;const item=data.offlineOutbox?.[0];if(!item)return;running=true;try{if(item.targetType==='direct')await sendMessage(item.targetId,{...item.payload,_fromOutbox:true});else await sendGroupMessage(item.targetId,{...item.payload,_fromOutbox:true});if(!stopped)mutate(prev=>({...prev,offlineOutbox:(prev.offlineOutbox||[]).filter(x=>x.id!==item.id)}));}catch{}finally{running=false;}};const first=setTimeout(retry,1800);const timer=setInterval(retry,5000);return()=>{stopped=true;clearTimeout(first);clearInterval(timer);};},[hydrated,data.offlineOutbox?.length]);
 
-  const switchAccount = (id) => {
-    setActiveChatId(null); setActiveGroupId(null); setTab('feed'); setAccountsOpen(false);
-    mutate(prev => ({ ...prev, activeAccountId: id }));
+  const switchAccount = async(id) => {
+    if(id===data.activeAccountId){setAccountsOpen(false);return;}
+    try{
+      setAccountsOpen(false);
+      setActiveChatId(null);setActiveGroupId(null);setTab('feed');
+      await accountManager?.switchTo?.(id);
+    }catch(error){
+      Alert.alert(CURRENT_LANGUAGE==='cs'?'Účet nelze přepnout':'Could not switch account',error?.message||'Try adding the account again.');
+    }
   };
 
   const createLocalAccount = () => {
@@ -5617,7 +5936,8 @@ ${text}` });
   if (activeRestriction?.banned && !activeProfile.isAdmin) return <>
     <RNStatusBar barStyle={activeMode === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={theme.bg} />
     <RestrictedAccountScreen theme={theme} person={activeProfile} onSwitch={() => setAccountsOpen(true)} />
-    <AccountSwitcherModal visible={accountsOpen} onClose={() => setAccountsOpen(false)} theme={theme} localProfiles={localProfiles} activeId={data.activeAccountId} onSwitch={switchAccount} onCreate={async () => { setAccountsOpen(false); await signOutLink(); }} />
+    <AddAccountModal visible={addAccountOpen} onClose={()=>setAddAccountOpen(false)} theme={theme} onSubmit={async(email,password)=>{await accountManager?.addExistingAccount?.(email,password);setAddAccountOpen(false);}} />
+      <AccountSwitcherModal visible={accountsOpen} onClose={() => setAccountsOpen(false)} theme={theme} accounts={accountManager?.accounts||[]} activeId={data.activeAccountId} onSwitch={switchAccount} onAdd={()=>{setAccountsOpen(false);setTimeout(()=>setAddAccountOpen(true),160);}} onRemove={async id=>{try{await accountManager?.remove?.(id);}catch(error){Alert.alert("Account",error?.message||"Could not remove account.");}}} />
     <CreateAccountModal visible={createAccountOpen} onClose={() => setCreateAccountOpen(false)} theme={theme} onCreate={createLocalAccount} existingProfiles={data.profiles} />
   </>;
 
@@ -5639,11 +5959,11 @@ ${text}` });
       <RNStatusBar barStyle={activeMode === 'dark' ? 'light-content' : 'dark-content'} backgroundColor={theme.bg} />
       <EdgeSwipeBack enabled={tab !== 'feed'} onBack={() => setTab('feed')} style={styles.flexOne}><SafeAreaView style={styles.safe}><View style={styles.content}>
         {tab === 'feed' && <LinkFeedScreen theme={theme} activeProfile={activeProfile} profiles={data.profiles} posts={data.profilePosts||[]} connectedIds={connectedIds} officialAnnouncements={officialAnnouncements} linkNow={data.linkNow||{}} moments={data.moments||[]} notes={data.notes||[]} onCreatePost={()=>openSocialComposer()} onCreateMoment={()=>setMomentComposerOpen(true)} onOpenMoment={openMoment} onOpenNote={note=>setNoteReplyId(note.id)} onOpenProfile={openProfileModal} onOpenOfficial={()=>setOfficialProfileOpen(true)} onOpenActivity={()=>setNotificationsOpen(true)} onOpenWhatsNew={()=>setWhatsNewOpen(true)} activityCount={unreadActivityCount} onToggleLike={toggleProfilePostLikeHandler} onDelete={deleteProfilePostHandler} onReply={replyProfilePostHandler} onRepost={repostProfilePostHandler} onQuote={quoteProfilePostHandler} onBookmark={toggleProfilePostBookmarkHandler} onPin={pinProfilePostHandler} onOpenThread={openPostThreadHandler} />}
-        {tab === 'discover' && <DiscoverScreen theme={theme} activeProfile={activeProfile} profiles={data.profiles} posts={data.profilePosts||[]} connectedIds={connectedIds} onOpenProfile={openProfileModal} onToggleLike={toggleProfilePostLikeHandler} onDelete={deleteProfilePostHandler} onReply={replyProfilePostHandler} onRepost={repostProfilePostHandler} onQuote={quoteProfilePostHandler} onBookmark={toggleProfilePostBookmarkHandler} onPin={pinProfilePostHandler} onOpenThread={openPostThreadHandler} />}
+        {tab === 'discover' && <DiscoverScreen theme={theme} activeProfile={activeProfile} profiles={data.profiles} posts={data.profilePosts||[]} connectedIds={connectedIds} requests={data.requests||[]} onAcceptRequest={acceptRequest} onDeclineRequest={declineRequest} onOpenProfile={openProfileModal} onToggleLike={toggleProfilePostLikeHandler} onDelete={deleteProfilePostHandler} onReply={replyProfilePostHandler} onRepost={repostProfilePostHandler} onQuote={quoteProfilePostHandler} onBookmark={toggleProfilePostBookmarkHandler} onPin={pinProfilePostHandler} onOpenThread={openPostThreadHandler} />}
         {tab === 'chats' && <ChatsScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} conversations={data.conversations} favoriteIds={favoriteIds} groups={data.groups || {}} chatUserSettings={data.chatUserSettings || {}} openChat={openChat} openGroup={openGroup} onCreateGroup={() => setGroupCreateOpen(true)} onJoinGroup={() => setGroupJoinOpen(true)} officialAnnouncements={officialAnnouncements} onOpenOfficial={()=>setOfficialOpen(true)} />}
-        {tab === 'profile' && <ProfileScreen theme={theme} activeProfile={activeProfile} updateProfile={updateActiveProfile} themeSetting={data.themeSetting} setThemeSetting={setThemeSetting} languageSetting={data.languageSetting || 'system'} setLanguageSetting={setLanguageSetting} privacy={privacy} setPrivacy={setPrivacy} openAccountSwitcher={() => setAccountsOpen(true)} openCustomStatus={() => setCustomStatusOpen(true)} openShop={() => setShopOpen(true)} openPlus={activePro ? () => setProOpen(true) : () => setPlusOpen(true)} plusSubscription={activeSubscription} openPro={() => setProOpen(true)} proSubscription={activeProSubscription} insights={proInsights} openAdminConsole={() => setAdminConsoleOpen(true)} doubleTapEmoji={activeDoubleTapEmoji} openDoubleTapReaction={() => setDoubleTapReactionOpen(true)} resetDemo={resetDemo} accountEmail={session?.user?.email || ''} setPresenceMode={setActivePresenceMode} onSignOut={signOutLink} onSaveAdminBadge={saveActiveAdminBadge} profiles={data.profiles} onSaveStaffIdentity={saveStaffIdentity} openSafety={()=>setSafetyOpen(true)} openPulseHub={()=>setPulseHubOpen(true)} highlights={activeHighlights} onDeleteHighlight={deleteHighlight} profilePosts={activeProfilePosts} allProfilePosts={data.profilePosts||[]} onCreatePost={createProfilePostHandler} onTogglePostLike={toggleProfilePostLikeHandler} onDeletePost={deleteProfilePostHandler} onReplyPost={replyProfilePostHandler} onRepostPost={repostProfilePostHandler} onQuotePost={quoteProfilePostHandler} onBookmarkPost={toggleProfilePostBookmarkHandler} onPinPost={pinProfilePostHandler} onOpenPostThread={openPostThreadHandler} />}
-      </View></SafeAreaView><TabBar tab={tab} setTab={setTab} theme={theme} darkMode={activeMode === 'dark'} unreadCount={unreadChatCount} onCreate={()=>setCreateHubOpen(true)} /></EdgeSwipeBack>
-      <ForegroundNotice notice={foregroundNotice} theme={theme} onPress={() => { setForegroundNotice(null); setNotificationsOpen(true); }} />
+        {tab === 'profile' && <ProfileScreen theme={theme} activeProfile={activeProfile} updateProfile={updateActiveProfile} themeSetting={data.themeSetting} setThemeSetting={setThemeSetting} languageSetting={data.languageSetting || 'system'} setLanguageSetting={setLanguageSetting} privacy={privacy} setPrivacy={setPrivacy} openAccountSwitcher={() => setAccountsOpen(true)} openCustomStatus={() => setCustomStatusOpen(true)} openShop={() => setShopOpen(true)} openPlus={activePro ? () => setProOpen(true) : () => setPlusOpen(true)} plusSubscription={activeSubscription} openPro={() => setProOpen(true)} proSubscription={activeProSubscription} insights={proInsights} openAdminConsole={() => setAdminConsoleOpen(true)} doubleTapEmoji={activeDoubleTapEmoji} openDoubleTapReaction={() => setDoubleTapReactionOpen(true)} resetDemo={resetDemo} accountEmail={session?.user?.email || ''} setPresenceMode={setActivePresenceMode} onSignOut={()=>accountManager?.signOutCurrent?.()} onSaveAdminBadge={saveActiveAdminBadge} profiles={data.profiles} onSaveStaffIdentity={saveStaffIdentity} openSafety={()=>setSafetyOpen(true)} openPulseHub={()=>setPulseHubOpen(true)} highlights={activeHighlights} onDeleteHighlight={deleteHighlight} profilePosts={activeProfilePosts} allProfilePosts={data.profilePosts||[]} onCreatePost={createProfilePostHandler} onTogglePostLike={toggleProfilePostLikeHandler} onDeletePost={deleteProfilePostHandler} onReplyPost={replyProfilePostHandler} onRepostPost={repostProfilePostHandler} onQuotePost={quoteProfilePostHandler} onBookmarkPost={toggleProfilePostBookmarkHandler} onPinPost={pinProfilePostHandler} onOpenPostThread={openPostThreadHandler} />}
+      </View></SafeAreaView><TabBar tab={tab} setTab={setTab} theme={theme} darkMode={activeMode === 'dark'} unreadCount={unreadChatCount} requestCount={incomingLinkRequestCount} onCreate={()=>setCreateHubOpen(true)} /></EdgeSwipeBack>
+      <ForegroundNotice notice={foregroundNotice} theme={theme} onPress={() => { const isRequest=foregroundNotice?.type==='request'; setForegroundNotice(null); if(isRequest)setTab('discover'); else setNotificationsOpen(true); }} />
 
       <CreateHubModal visible={createHubOpen} onClose={()=>setCreateHubOpen(false)} theme={theme} onPost={()=>openSocialComposer()} onMoment={()=>setMomentComposerOpen(true)} onNote={()=>setNoteComposerOpen(true)} onGroup={()=>setGroupCreateOpen(true)} onLinkNow={()=>setLinkNowOpen(true)} onMyLink={()=>setCardOpen(true)} onScan={()=>setScannerOpen(true)}/>
       <CreateProfilePostModal visible={socialComposerOpen} onClose={()=>{setSocialComposerOpen(false);setSocialComposerContext({replyTo:null,quotePost:null});}} theme={theme} profile={activeProfile} profiles={data.profiles} replyTo={socialComposerContext.replyTo} quotePost={socialComposerContext.quotePost} onCreate={createProfilePostHandler}/>
@@ -5651,8 +5971,9 @@ ${text}` });
       <OfficialProfileModal visible={officialProfileOpen} onClose={()=>setOfficialProfileOpen(false)} theme={theme} announcements={officialAnnouncements}/>
       <ScannerModal visible={scannerOpen} onClose={() => setScannerOpen(false)} onScanned={onScanned} />
       <OwnCardModal visible={cardOpen} onClose={() => setCardOpen(false)} theme={theme} profile={activeProfile} payload={payload} />
-      <NotificationsModal visible={notificationsOpen} onClose={() => setNotificationsOpen(false)} theme={theme} items={(data.notifications[data.activeAccountId] || []).filter(item => !['message','group_message'].includes(item.type))} markAllRead={markNotificationsRead} onOpenPost={id=>setThreadPostId(id)} />
-      <AccountSwitcherModal visible={accountsOpen} onClose={() => setAccountsOpen(false)} theme={theme} localProfiles={localProfiles} activeId={data.activeAccountId} onSwitch={switchAccount} onCreate={async () => { setAccountsOpen(false); await signOutLink(); }} />
+      <NotificationsModal visible={notificationsOpen} onClose={() => setNotificationsOpen(false)} theme={theme} items={(data.notifications[data.activeAccountId] || []).filter(item => !['message','group_message'].includes(item.type))} markAllRead={markNotificationsRead} onOpenPost={id=>setThreadPostId(id)} onOpenRequests={()=>setTab('discover')} />
+      <AddAccountModal visible={addAccountOpen} onClose={()=>setAddAccountOpen(false)} theme={theme} onSubmit={async(email,password)=>{await accountManager?.addExistingAccount?.(email,password);setAddAccountOpen(false);}} />
+      <AccountSwitcherModal visible={accountsOpen} onClose={() => setAccountsOpen(false)} theme={theme} accounts={accountManager?.accounts||[]} activeId={data.activeAccountId} onSwitch={switchAccount} onAdd={()=>{setAccountsOpen(false);setTimeout(()=>setAddAccountOpen(true),160);}} onRemove={async id=>{try{await accountManager?.remove?.(id);}catch(error){Alert.alert("Account",error?.message||"Could not remove account.");}}} />
       <CreateAccountModal visible={createAccountOpen} onClose={() => setCreateAccountOpen(false)} theme={theme} onCreate={createLocalAccount} existingProfiles={data.profiles} />
       <CreateGroupModal visible={groupCreateOpen} onClose={() => setGroupCreateOpen(false)} theme={theme} activeProfile={activeProfile} profiles={data.profiles} connectedIds={connectedIds} onCreate={createGroup} />
       <JoinGroupModal visible={groupJoinOpen} onClose={() => setGroupJoinOpen(false)} theme={theme} onJoin={joinGroup} />
@@ -5685,7 +6006,7 @@ ${text}` });
 
 
 export default function App() {
-  return <BackendGate>{session => <LinkApp key={session.user.id} session={session} />}</BackendGate>;
+  return <BackendGate>{(session,accountManager) => <LinkApp key={session.user.id} session={session} accountManager={accountManager} />}</BackendGate>;
 }
 
 const styles = StyleSheet.create({
@@ -5694,6 +6015,21 @@ const styles = StyleSheet.create({
   officialDmAction:{marginTop:10,borderRadius:13,paddingHorizontal:12,paddingVertical:9,flexDirection:'row',alignItems:'center',alignSelf:'flex-start',gap:6},
   officialDmActionText:{fontSize:12.5,fontWeight:'900'},
   flexOne: { flex: 1 },
+
+  multiAccountSheet:{width:'92%',maxWidth:540,borderRadius:28,borderWidth:StyleSheet.hairlineWidth,padding:18,maxHeight:'78%'},
+  multiAccountList:{marginTop:14,gap:5},
+  multiAccountRow:{minHeight:66,borderRadius:18,paddingHorizontal:10,flexDirection:'row',alignItems:'center',gap:11},
+  multiAccountActive:{width:24,height:24,borderRadius:12,backgroundColor:ACCENT,alignItems:'center',justifyContent:'center'},
+  multiAccountAddRow:{marginTop:14,minHeight:66,borderRadius:20,borderWidth:StyleSheet.hairlineWidth,paddingHorizontal:12,flexDirection:'row',alignItems:'center',gap:11},
+  multiAccountAddIcon:{width:38,height:38,borderRadius:14,alignItems:'center',justifyContent:'center'},
+  multiAccountAddPage:{flex:1},
+  multiAccountAddHeader:{paddingHorizontal:20,paddingTop:10,paddingBottom:12,flexDirection:'row',alignItems:'center',gap:12},
+  multiAccountAddScroll:{paddingHorizontal:16,paddingTop:14,paddingBottom:40},
+  multiAccountSecurity:{borderRadius:18,borderWidth:StyleSheet.hairlineWidth,padding:13,flexDirection:'row',alignItems:'flex-start',gap:10,marginBottom:14},
+  multiAccountSecurityText:{flex:1,fontSize:12,lineHeight:17,fontWeight:'650'},
+  multiAccountInputRow:{minHeight:62,paddingHorizontal:16,borderBottomWidth:StyleSheet.hairlineWidth,flexDirection:'row',alignItems:'center',gap:12},
+  multiAccountInput:{flex:1,fontSize:16,lineHeight:21,paddingVertical:10},
+  multiAccountAddButton:{marginTop:16,minHeight:54,borderRadius:20,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:9},
 
   iosSettingsPage:{flex:1},
   iosSettingsHeader:{paddingHorizontal:22,paddingTop:10,paddingBottom:12,flexDirection:'row',alignItems:'center',gap:14},
@@ -5758,6 +6094,10 @@ const styles = StyleSheet.create({
   onePinnedText:{fontSize:10.5,fontWeight:'850'},
   oneSearchBox:{marginHorizontal:18,minHeight:46,borderRadius:17,paddingHorizontal:13,flexDirection:'row',alignItems:'center',gap:9},
   oneDiscoverScroll:{paddingHorizontal:18,paddingTop:15,paddingBottom:120},
+  linkRequestInboxBlock:{marginBottom:18},
+  linkRequestCountBadge:{minWidth:21,height:21,borderRadius:11,backgroundColor:'#FF3B30',alignItems:'center',justifyContent:'center',paddingHorizontal:6},
+  linkRequestCountText:{color:'#fff',fontSize:10,fontWeight:'950'},
+
   oneTrendWrap:{flexDirection:'row',flexWrap:'wrap',gap:8},
   oneTrendChip:{minHeight:38,borderRadius:15,borderWidth:StyleSheet.hairlineWidth,paddingHorizontal:12,flexDirection:'row',alignItems:'center',gap:8},
   oneTrendTag:{fontSize:12.5,fontWeight:'900'},
