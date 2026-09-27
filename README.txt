@@ -1,22 +1,45 @@
-LINK 3.6 — Profile Posts
-========================
+LINK 4.0 · ONE — Build 400
+=============================
 
-Major profile update built on LINK Production.
+Major social-platform update built on LINK 3.6.
 
-New in 3.6:
-- Every user profile now has a permanent Threads/X-style post feed.
-- Users can publish text-only posts or a photo with text.
-- Photo posts use the private profile-posts Storage bucket.
-- Post media follows the same profile_visibility rules as the profile itself.
-- Users can like posts; likes update optimistically and sync through Supabase.
-- Own posts can be deleted.
-- Public profiles are now full-screen instead of a small popup.
-- LINK Official remains the special read-only official feed.
-- Admin/CEO profile posts support the existing Markdown 101 renderer; normal user posts stay plain text.
-- profile_posts and profile_post_likes are Realtime-enabled.
-- Build launcher cache tag: 360.
+CORE
+- New navigation: Feed · Discover · Create · Chats · Profile
+- Feed 4.0 with Following + Discover modes
+- LINK Official posts integrated into the same timeline
+- LINK Pulse live-status cards inside Feed
+- Create Hub: Post / Moment / Note / Group / LINK Now
+- Discover search across people, posts and #topics
+- Trending hashtag chips
 
-Files:
-- App.js
-- App.snack.js
-- index.html
+POSTS 2.0
+- Replies and threaded conversations
+- Reposts
+- Quote posts
+- Likes
+- Bookmarks
+- Pinned profile post
+- Text + photo posts
+- Admin/CEO Markdown 101 remains supported
+- Activity notifications for likes, replies, reposts and quote posts
+
+PROFILE 4.0
+- Posts / Replies / Media / Likes tabs on your profile
+- Posts / Replies / Media tabs on public profiles
+- Pinned post area
+- Existing profile privacy still controls who can read profile posts
+
+STABILITY
+- LINK 3.6 realtime message stability layer remains active
+- Post, like and bookmark changes are included in Realtime refresh
+- Existing chats, Moments, Groups, Circles, LINK Now, LINK Official and Staff tools remain intact
+
+BACKEND
+- Migration: link_400_one_core
+- profile_posts extended with parent_id / repost_of_id / quote_of_id / pinned
+- profile_post_bookmarks with RLS
+- Activity notification triggers
+- Realtime enabled for profile_post_bookmarks
+- set_profile_post_pinned() authenticated RPC
+
+Expo launcher cache build: 400
