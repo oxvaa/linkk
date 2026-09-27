@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#f5f5f7" />
-  <title>LINK 4.3 · ONE · Artists & Celebrities + BACKSTAGE · Developer & Shared Test Launcher</title>
+  <title>LINK 4.3 · Artists + BACKSTAGE · Expo Recovery Launcher</title>
   <style>
     :root {
       color-scheme: light;
@@ -109,6 +109,17 @@
       line-height: 1.4;
       text-align: center;
     }
+    .recovery {
+      margin: 0 0 16px;
+      padding: 14px 15px;
+      border-radius: 18px;
+      background: rgba(255,159,10,.10);
+      border: 1px solid rgba(255,159,10,.20);
+      color: #555b66;
+      font-size: 13px;
+      line-height: 1.48;
+    }
+    .recovery strong { color: #101114; }
     .tiny { margin: 18px 3px 0; color: #9a9fa9; font-size: 12px; line-height: 1.45; text-align: center; }
     @media (max-width: 520px) {
       body { padding: 14px; }
@@ -126,28 +137,38 @@
       <div class="meta">
         <div class="row"><span id="repoDot" class="dot wait"></span><span class="label">Repository</span><span class="value" id="repoValue">Zjišťuji…</span></div>
         <div class="row"><span class="dot"></span><span class="label">Expo SDK</span><span class="value">57</span></div>
-        <div class="row"><span class="dot"></span><span class="label">Build</span><span class="value">LINK 4.3 · ONE</span></div>
+        <div class="row"><span class="dot"></span><span class="label">Build</span><span class="value">LINK 4.3 · Artists · 432</span></div>
+        <div class="row"><span class="dot wait"></span><span class="label">Expo iOS</span><span class="value">Přihlášení vyžadováno</span></div>
+      </div>
+
+      <div class="recovery">
+        <strong>iPhone / Expo Go 2026</strong><br>
+        Než naskenuješ QR, musíš být přihlášený v <strong>Expo Go</strong>.
+        Pokud se objeví jen <strong>Connecting…</strong>, nepoužívej znovu starý QR:
+        vrať se sem a vytvoř <strong>novou Expo session</strong>.
       </div>
 
       <div class="actions">
-        <button id="testBtn" class="primary" type="button">👥 Testovat s kamarády</button>
-        <button id="createBtn" class="secondary" type="button">🛠 Developer mode</button>
+        <button id="testBtn" class="primary" type="button">⚡ Nová Shared Test Session</button>
+        <button id="createBtn" class="secondary" type="button">💾 Stabilní Developer Session</button>
         <a id="rawBtn" class="action secondary" href="#" target="_blank" rel="noopener">Otevřít App.snack.js</a>
       </div>
 
       <div id="testHint" style="display:none;margin-top:14px;padding:14px 15px;border-radius:16px;background:rgba(108,92,231,.09);border:1px solid rgba(108,92,231,.18);font-size:13px;line-height:1.45;color:#555b66;text-align:left">
         <strong style="color:#101114">Shared Test Session</strong><br>
-        Otevře se čerstvý neuložený Snack. <strong>Neklikej v něm na Save.</strong> Otevři <strong>My Device</strong> a pošli QR kamarádům. Oni se přihlásí do Expo Go svým vlastním účtem a jen QR naskenují.
+        Vždy se vytvoří úplně nová Snack session. Na iPhonu musí být každý tester <strong>přihlášený v Expo Go</strong>.
+        Když starý QR přestane fungovat nebo zůstane na <strong>Connecting…</strong>, vrať se na launcher a vytvoř nový QR.
+        Pro vlastní dlouhodobé testování doporučuju v Developer Session Snack jednou <strong>uložit</strong>.
       </div>
 
       <div id="status" class="status">Připravuji GitHub source URL…</div>
-      <div class="tiny">Developer mode můžeš normálně uložit. Shared Test Session nech neuloženou, aby QR nebyl svázaný s vlastníkem Expo účtu.</div>
+      <div class="tiny">Starý QR po zániku Snack session znovu nepoužívej. Shared režim = vždy nový QR. Developer režim můžeš po přihlášení v Snacku uložit pro stabilnější dlouhodobé testování.</div>
     </section>
   </main>
 
   <script>
     (() => {
-      const BUILD = 'LINK 4.3 · ONE';
+      const BUILD = 'LINK 4.3 · Artists + BACKSTAGE';
       const SDK_VERSION = '57.0.0';
       const DEFAULT_BRANCH = 'main';
       const DEPENDENCIES = [
@@ -203,12 +224,13 @@
       // LINK 4.3 ONE launcher: use the same GitHub Pages origin as the launcher.
       // This avoids browser CORS / network failures against raw.githubusercontent.com,
       // jsDelivr and the GitHub API while keeping App.snack.js public for Expo Snack.
-      function pagesSourceUrl(cacheBust = Date.now()) {
+      function pagesSourceUrl(cacheBust = Date.now(), sessionId = null) {
         const url = new URL('./App.snack.js', window.location.href);
         url.search = '';
         url.hash = '';
-        url.searchParams.set('build', '431');
+        url.searchParams.set('build', '432');
         url.searchParams.set('cb', String(cacheBust));
+        url.searchParams.set('session', sessionId || String(cacheBust));
         return url.toString();
       }
 
@@ -226,7 +248,7 @@
           if (!response.ok) return { ok: false, reason: `HTTP ${response.status}` };
           const source = await response.text();
           if (!source.includes('export default')) return { ok: false, reason: 'Expo entry nebyl nalezen' };
-          if (!source.includes('LINK 4.3 · ONE')) return { ok: false, reason: 'GitHub Pages ještě servíruje starší build' };
+          if (!source.includes('LINK 4.3 · Artists')) return { ok: false, reason: 'GitHub Pages ještě servíruje starší build' };
           return { ok: true };
         } catch (error) {
           return { ok: false, reason: error?.message || 'ověření nebylo dostupné' };
@@ -237,7 +259,7 @@
       verifySameOriginSource(rawAppUrl).then(result => {
         if (result.ok) {
           repoDot.className = 'dot';
-          status.textContent = 'Připraveno. LINK 4.3 ONE source je dostupný přes GitHub Pages.';
+          status.textContent = 'Připraveno. LINK 4.3 Artists source je dostupný přes GitHub Pages.';
         } else {
           repoDot.className = 'dot wait';
           status.textContent = `Launcher je připraven. Ověření source bylo přeskočeno (${result.reason}).`;
@@ -254,19 +276,23 @@
           status.textContent = 'Vytvářím čerstvou NEULOŽENOU session pro společný QR…';
         } else {
           createBtn.textContent = 'Otevírám Developer mode…';
-          status.textContent = 'Připravuji čerstvý LINK 4.3 ONE source…';
+          status.textContent = 'Připravuji úplně novou Expo session…';
         }
 
         // A unique source URL forces a completely fresh Snack document every time.
         // No Snack id / owner is supplied here — ownership is added only if the user later presses Save.
-        rawAppUrl = pagesSourceUrl(Date.now());
+        const now = Date.now();
+        const sessionId = (globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function')
+          ? globalThis.crypto.randomUUID()
+          : `${now}-${Math.random().toString(36).slice(2)}`;
+        rawAppUrl = pagesSourceUrl(now, sessionId);
         rawBtn.href = rawAppUrl;
 
         const params = new URLSearchParams();
-        params.set('name', shared ? 'LINK 4.3 ONE · Shared Test Session' : BUILD);
+        params.set('name', shared ? `LINK 4.3 · Shared · ${Date.now().toString().slice(-6)}` : `${BUILD} · Developer`);
         params.set('description', shared
-          ? 'LINK 4.3 ONE shared unsaved test session. Feed, Discover, Posts 2.0, Profile 4.0, Activity 4.0 and Create Hub. Keep this Snack UNSAVED and share only the My Device QR with testers.'
-          : 'LINK 4.3 · ONE — Feed 4.0, Following/Discover timeline, Posts 2.0 replies/threads/reposts/quotes/bookmarks/pins, Discover search and hashtags, Profile 4.0 tabs, Activity 4.0, LINK Pulse, Create Hub, reliable messaging, Moments, Groups and LINK Official. Generated from GitHub.');
+          ? 'LINK 4.3 fresh shared test session. If a QR gets stuck on Connecting, generate a new session from the launcher. Testers must be signed in to Expo Go on iOS.'
+          : 'LINK 4.3 Artists + BACKSTAGE. Stable developer session generated from GitHub. Sign in to Expo/Snack and save once for long-running testing.');
         params.set('sdkVersion', SDK_VERSION);
         params.set('platform', 'mydevice');
         params.set('supportedPlatforms', 'ios,android,web');
@@ -279,6 +305,16 @@
 
         window.location.href = `https://snack.expo.dev/?${params.toString()}`;
       }
+
+
+      window.addEventListener('pageshow', () => {
+        createBtn.disabled = false;
+        testBtn.disabled = false;
+        createBtn.textContent = '💾 Stabilní Developer Session';
+        testBtn.textContent = '⚡ Nová Shared Test Session';
+        rawAppUrl = pagesSourceUrl(Date.now());
+        rawBtn.href = rawAppUrl;
+      });
 
       testBtn.addEventListener('click', () => openFreshSnack('shared'));
       createBtn.addEventListener('click', () => openFreshSnack('developer'));
