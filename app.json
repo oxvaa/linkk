@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "LINK",
+    "slug": "link",
+    "version": "4.4.0",
+    "plugins": [
+      "expo-notifications"
+    ],
+    "ios": {
+      "bundleIdentifier": "app.link.social"
+    },
+    "extra": {
+      "note": "Create/link an Expo EAS project and set extra.eas.projectId to enable remote push tokens."
+    }
+  }
+}

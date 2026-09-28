@@ -1,24 +1,44 @@
-LINK 4.3 · Build 433 — Backend Stability
-=========================================
+LINK 4.4 · RELIABILITY — Build 440
+===================================
 
-SERVER FIX ALREADY LIVE
-- Migration: link_433_fix_circle_rls_recursion
-- Removed recursive RLS loop between circles and circle_members.
-- Notes and LINK Now circle visibility now use non-recursive helper functions.
+MESSAGE DELIVERY 2.0
+- sender_id + client_nonce remains the server deduplication key.
+- Network failures display Queued.
+- Offline outbox stays persisted with the account cache.
+- Retries now use exponential backoff (up to 30 seconds).
+- Server-rejected messages still expose manual Retry.
+- Sent / Delivered / Read remains driven by message_receipts.
 
-CLIENT FIX
-- Full backend snapshots now have a hard refresh cooldown.
-- Realtime event bursts are merged before refreshing.
-- Backend errors use exponential backoff instead of creating a refresh loop.
-- LINK does not run a full backend refresh while backgrounded.
-- Realtime socket state changes no longer trigger a full 40+ query snapshot.
-- Inbox / LINK-request watchdog reduced from every 3.5 s to every 8 s.
-- A foreground catch-up still runs after returning to LINK.
-- Requests carry x-link-client=link-ios-433 and x-link-build=433 for log diagnostics.
+SERVER INBOX PROJECTION
+- New chat_inbox_state table.
+- Per user/chat: last message, last activity and unread_count.
+- New messages update chats.updated_at + inbox projection.
+- Seen/read receipts clear unread_count.
+- Projection is in Supabase Realtime.
+- LINK unread badge prefers server unread_count when available.
 
-BACKSTAGE
-- BACKSTAGE has been separated into its own standalone PWA build.
-- The standalone BACKSTAGE package contains no LINK Production URL, publishable key,
-  Supabase client, Auth refresh or Realtime integration.
+PUSH
+- New push_devices table with self-only RLS.
+- New push_message_dispatches server-only dedupe table.
+- Edge Function: link44-push-dispatch.
+- Push contains no encrypted message plaintext.
+- Push dispatch never blocks sending a message.
+- A configured development/production build registers Expo push tokens.
+- Settings shows Push notifications state.
 
-Launcher cache build: 433
+EXPO GO LIMITATION
+Remote push notifications are not supported in current Expo Go.
+Snack/Expo Go therefore shows “Dev Build required”.
+The server and client push infrastructure is ready for a later development/EAS build.
+
+MULTI-ACCOUNT
+- Removes old Realtime channels before Auth session replacement.
+- Pauses token auto-refresh while switching sessions, then resumes it.
+- LinkApp remounts for the new user, rebuilding timers/subscriptions cleanly.
+
+BACKEND
+- link_440_reliability_core
+- link44-push-dispatch
+- retains link_433 / link_434 / link_435 fixes
+
+Launcher build: 440

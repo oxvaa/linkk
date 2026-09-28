@@ -30,6 +30,8 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AESEncryptionKey, AESSealedData, aesDecryptAsync, aesEncryptAsync } from 'expo-crypto';
@@ -37,6 +39,18 @@ import { Ionicons } from '@expo/vector-icons';
 import Svg, { Path } from 'react-native-svg';
 import qrcodeGenerator from 'qrcode-generator';
 import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus, useAudioRecorder, useAudioRecorderState } from 'expo-audio';
+
+try {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowBanner: true,
+      shouldShowList: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    }),
+  });
+} catch {}
+
 
 const SYSTEM_LOCALE = (() => {
   try { return Intl.DateTimeFormat().resolvedOptions().locale || 'en-US'; }
@@ -627,7 +641,7 @@ async function signedChatUrl(path) {
 }
 
 async function loadLinkSnapshot(base, userId) {
-  const [profilesQ, settingsQ, entitlementsQ, tiersQ, moderationQ, connectionsQ, chatsQ, membersQ, keysQ, messagesQ, reactionsQ, receiptsQ, hidesQ, pinsQ, chatUserSettingsQ, momentsQ, momentReactionsQ, momentViewsQ, notesQ, favoritesQ, notificationsQ, profileViewsQ, benefitsQ, linkNowQ, joinRequestsQ, pollsQ, pollVotesQ, highlightsQ, blocksQ, devicesQ, viewOnceQ, staffAuditQ, reportsQ, presenceActivityQ, circlesQ, circleMembersQ, proStyleQ, officialQ, officialReadsQ, groupAdminNotesQ, profilePostsQ, profilePostLikesQ, profilePostBookmarksQ] = await Promise.all([
+  const [profilesQ, settingsQ, entitlementsQ, tiersQ, moderationQ, connectionsQ, chatsQ, membersQ, keysQ, messagesQ, reactionsQ, receiptsQ, hidesQ, pinsQ, chatUserSettingsQ, momentsQ, momentReactionsQ, momentViewsQ, notesQ, favoritesQ, notificationsQ, profileViewsQ, benefitsQ, linkNowQ, joinRequestsQ, pollsQ, pollVotesQ, highlightsQ, blocksQ, devicesQ, viewOnceQ, staffAuditQ, reportsQ, presenceActivityQ, circlesQ, circleMembersQ, proStyleQ, officialQ, officialReadsQ, groupAdminNotesQ, profilePostsQ, profilePostLikesQ, profilePostBookmarksQ, inboxStateQ] = await Promise.all([
     supabase.from('profiles').select('*'),
     supabase.from('user_settings').select('*').eq('user_id', userId).maybeSingle(),
     supabase.from('entitlements').select('*').eq('user_id', userId).maybeSingle(),
@@ -671,9 +685,10 @@ async function loadLinkSnapshot(base, userId) {
     supabase.from('profile_posts').select('*').order('created_at',{ascending:false}).limit(400),
     supabase.from('profile_post_likes').select('*').limit(5000),
     supabase.from('profile_post_bookmarks').select('*').eq('user_id',userId).limit(1000),
+    supabase.from('chat_inbox_state').select('*').eq('user_id',userId),
   ]);
   if (profilesQ.error) throw profilesQ.error;
-  const optionalQueries = { settingsQ,entitlementsQ,tiersQ,moderationQ,connectionsQ,chatsQ,membersQ,keysQ,messagesQ,reactionsQ,receiptsQ,hidesQ,pinsQ,chatUserSettingsQ,momentsQ,momentReactionsQ,momentViewsQ,notesQ,favoritesQ,notificationsQ,profileViewsQ,benefitsQ,linkNowQ,joinRequestsQ,pollsQ,pollVotesQ,highlightsQ,blocksQ,devicesQ,viewOnceQ,staffAuditQ,reportsQ,presenceActivityQ,circlesQ,circleMembersQ,proStyleQ,officialQ,officialReadsQ,groupAdminNotesQ,profilePostsQ,profilePostLikesQ,profilePostBookmarksQ };
+  const optionalQueries = { settingsQ,entitlementsQ,tiersQ,moderationQ,connectionsQ,chatsQ,membersQ,keysQ,messagesQ,reactionsQ,receiptsQ,hidesQ,pinsQ,chatUserSettingsQ,momentsQ,momentReactionsQ,momentViewsQ,notesQ,favoritesQ,notificationsQ,profileViewsQ,benefitsQ,linkNowQ,joinRequestsQ,pollsQ,pollVotesQ,highlightsQ,blocksQ,devicesQ,viewOnceQ,staffAuditQ,reportsQ,presenceActivityQ,circlesQ,circleMembersQ,proStyleQ,officialQ,officialReadsQ,groupAdminNotesQ,profilePostsQ,profilePostLikesQ,profilePostBookmarksQ,inboxStateQ };
   Object.entries(optionalQueries).forEach(([name,q])=>{ if(q?.error) console.warn(`LINK 3 optional query failed: ${name}`,q.error.message); });
 
   const profiles={};
@@ -779,7 +794,16 @@ async function loadLinkSnapshot(base, userId) {
   }
   const recentProfileVisitors=(profileViewsQ.data||[]).map(v=>({viewerId:v.viewer_id||null,viewedAt:toMs(v.viewed_at)})).filter(v=>v.viewerId).slice(-30).reverse();
 
-  return {...base,version:40,activeAccountId:userId,localAccountIds:[userId],profiles,relationships,requests,groups,conversations,backendChatIds,doubleTapReactions:{[userId]:settings.double_tap_emoji||'❤️'},moments,notes,notifications:{[userId]:notifications},favorites:{[userId]:(favoritesQ.data||[]).map(x=>x.favorite_user_id)},privacy:{[userId]:{showStatus:settings.show_status??true,showSocials:settings.show_socials??true,momentsToLinks:settings.moments_to_links??true,ghostMode:settings.ghost_mode??false,showActivityStatus:settings.show_activity_status??true,profileVisibility:settings.profile_visibility||'links',messagesFrom:settings.messages_from||'links',linkRequestsFrom:settings.link_requests_from||'everyone',readReceipts:settings.read_receipts??true,typingIndicators:settings.typing_indicators??true,profileViewsEnabled:settings.profile_views_enabled??true,discoverableByUsername:settings.discoverable_by_username??true,discoverableByEmail:settings.discoverable_by_email??false,notificationsMessages:settings.notifications_messages??true,notificationsRequests:settings.notifications_requests??true,notificationsMoments:settings.notifications_moments??true,notificationsProduct:settings.notifications_product??false,loginAlerts:settings.login_alerts??true,showLastActive:settings.show_last_active??true}},wallets:{[userId]:ent.coins??2200},ownedEffects:{[userId]:ent.owned_effects||[]},subscriptions,proSubscriptions,benefitClaims,moderation,chatKeys,silentChats,chatThemes,chatThemeScopes,chatUserSettings,profileViews:{[userId]:(profileViewsQ.data||[]).length},themeSetting:settings.theme_setting||base.themeSetting||'system',languageSetting:settings.language_setting||base.languageSetting||'system',onboardingComplete:settings.onboarding_complete!==false,linkNow,groupJoinRequests:(joinRequestsQ.data||[]).map(r=>({id:r.id,chatId:r.chat_id,userId:r.user_id,status:r.status,answer:r.answer||'',createdAt:toMs(r.created_at)})),groupPolls,profileHighlights,blockedUserIds,devices:(devicesQ.data||[]).map(d=>({id:d.id,label:d.device_label,platform:d.platform,version:d.app_version,lastSeenAt:toMs(d.last_seen_at),createdAt:toMs(d.created_at)})),viewOnceViewed:viewedOnce,staffAudit:(staffAuditQ.data||[]).map(a=>({id:a.id,actorId:a.actor_id,targetId:a.target_user_id,action:a.action,metadata:a.metadata||{},createdAt:toMs(a.created_at)})),safetyReports:(reportsQ.data||[]).map(r=>({id:r.id,reporterId:r.reporter_id,targetId:r.reported_user_id,category:r.category,details:r.details,status:r.status,createdAt:toMs(r.created_at)})),presenceActivity,circles,proStyle,officialAnnouncements,officialReads,groupAdminNotes,profilePosts,profilePostBookmarks:Array.from(profilePostBookmarkIds),linkRequestSyncCursor,recentProfileVisitors};
+  return {...base,version:40,activeAccountId:userId,localAccountIds:[userId],profiles,relationships,requests,groups,conversations,backendChatIds,doubleTapReactions:{[userId]:settings.double_tap_emoji||'❤️'},moments,notes,notifications:{[userId]:notifications},favorites:{[userId]:(favoritesQ.data||[]).map(x=>x.favorite_user_id)},privacy:{[userId]:{showStatus:settings.show_status??true,showSocials:settings.show_socials??true,momentsToLinks:settings.moments_to_links??true,ghostMode:settings.ghost_mode??false,showActivityStatus:settings.show_activity_status??true,profileVisibility:settings.profile_visibility||'links',messagesFrom:settings.messages_from||'links',linkRequestsFrom:settings.link_requests_from||'everyone',readReceipts:settings.read_receipts??true,typingIndicators:settings.typing_indicators??true,profileViewsEnabled:settings.profile_views_enabled??true,discoverableByUsername:settings.discoverable_by_username??true,discoverableByEmail:settings.discoverable_by_email??false,notificationsMessages:settings.notifications_messages??true,notificationsRequests:settings.notifications_requests??true,notificationsMoments:settings.notifications_moments??true,notificationsProduct:settings.notifications_product??false,loginAlerts:settings.login_alerts??true,showLastActive:settings.show_last_active??true}},wallets:{[userId]:ent.coins??2200},ownedEffects:{[userId]:ent.owned_effects||[]},subscriptions,proSubscriptions,benefitClaims,moderation,chatKeys,silentChats,chatThemes,chatThemeScopes,chatUserSettings,profileViews:{[userId]:(profileViewsQ.data||[]).length},themeSetting:settings.theme_setting||base.themeSetting||'system',languageSetting:settings.language_setting||base.languageSetting||'system',onboardingComplete:settings.onboarding_complete!==false,linkNow,groupJoinRequests:(joinRequestsQ.data||[]).map(r=>({id:r.id,chatId:r.chat_id,userId:r.user_id,status:r.status,answer:r.answer||'',createdAt:toMs(r.created_at)})),groupPolls,profileHighlights,blockedUserIds,devices:(devicesQ.data||[]).map(d=>({id:d.id,label:d.device_label,platform:d.platform,version:d.app_version,lastSeenAt:toMs(d.last_seen_at),createdAt:toMs(d.created_at)})),viewOnceViewed:viewedOnce,staffAudit:(staffAuditQ.data||[]).map(a=>({id:a.id,actorId:a.actor_id,targetId:a.target_user_id,action:a.action,metadata:a.metadata||{},createdAt:toMs(a.created_at)})),safetyReports:(reportsQ.data||[]).map(r=>({id:r.id,reporterId:r.reporter_id,targetId:r.reported_user_id,category:r.category,details:r.details,status:r.status,createdAt:toMs(r.created_at)})),presenceActivity,circles,proStyle,officialAnnouncements,officialReads,groupAdminNotes,profilePosts,profilePostBookmarks:Array.from(profilePostBookmarkIds),
+    inboxState:Object.fromEntries((inboxStateQ.data||[]).map(row=>[row.chat_id,{
+      chatId:row.chat_id,
+      lastMessageId:row.last_message_id||null,
+      lastMessageAt:toMs(row.last_message_at),
+      unreadCount:Number(row.unread_count||0),
+      updatedAt:toMs(row.updated_at),
+    }])),
+    inboxStateReady:!inboxStateQ.error,
+    linkRequestSyncCursor,recentProfileVisitors};
 }
 
 function subscribeLink(userId,onChange,onStatus){
@@ -819,6 +843,7 @@ function subscribeLink(userId,onChange,onStatus){
     .on('postgres_changes',{event:'*',schema:'public',table:'message_receipts'},slow)
     .on('postgres_changes',{event:'*',schema:'public',table:'message_pins'},slow)
     .on('postgres_changes',{event:'*',schema:'public',table:'chat_user_settings'},slow)
+    .on('postgres_changes',{event:'*',schema:'public',table:'chat_inbox_state'},messageFast)
     .on('postgres_changes',{event:'*',schema:'public',table:'moments'},fast)
     .on('postgres_changes',{event:'*',schema:'public',table:'moment_reactions'},slow)
     .on('postgres_changes',{event:'*',schema:'public',table:'moment_views'},slow)
@@ -913,6 +938,57 @@ async function reportUserRemote(personId, category='other', details='') {
   const { data:auth }=await supabase.auth.getUser(); const id=auth.user?.id; if(!id) throw new Error('Not signed in');
   const { error }=await supabase.from('safety_reports').insert({reporter_id:id,reported_user_id:personId,category,details:String(details||'').slice(0,1200)}); if(error) throw error;
 }
+
+async function registerPushDeviceRemote(userId, deviceId) {
+  if (!userId || Platform.OS === 'web') return { state:'unsupported' };
+  const projectId =
+    Constants?.expoConfig?.extra?.eas?.projectId ||
+    Constants?.easConfig?.projectId ||
+    null;
+
+  if (!projectId) return { state:'dev-build-required' };
+
+  try {
+    const current=await Notifications.getPermissionsAsync();
+    let status=current?.status;
+    if(status!=='granted'){
+      const requested=await Notifications.requestPermissionsAsync();
+      status=requested?.status;
+    }
+    if(status!=='granted') return { state:'denied' };
+
+    const token=(await Notifications.getExpoPushTokenAsync({projectId}))?.data;
+    if(!token) return { state:'token-unavailable' };
+
+    const {error}=await supabase.from('push_devices').upsert({
+      user_id:userId,
+      expo_push_token:token,
+      device_id:deviceId||null,
+      platform:Platform.OS,
+      app_build:BUILD,
+      enabled:true,
+      last_seen_at:new Date().toISOString(),
+      updated_at:new Date().toISOString(),
+    },{onConflict:'user_id,expo_push_token'});
+    if(error)throw error;
+    return {state:'registered',token};
+  } catch(error) {
+    const message=String(error?.message||error||'');
+    if(/development build|expo go|projectid/i.test(message)) return {state:'dev-build-required',error:message};
+    return {state:'error',error:message};
+  }
+}
+
+async function dispatchPushForMessageRemote(messageId) {
+  if(!messageId)return;
+  try{
+    const {error}=await supabase.functions.invoke('link44-push-dispatch',{body:{messageId}});
+    if(error)throw error;
+  }catch(error){
+    console.warn('LINK push dispatch skipped',error?.message||error);
+  }
+}
+
 async function touchDeviceRemote(deviceId,label,platform) {
   const { error }=await supabase.rpc('touch_link_device',{p_id:deviceId,p_label:label,p_platform:platform,p_version:BUILD}); if(error) throw error;
 }
@@ -1065,6 +1141,7 @@ async function sendMessageRemote(chatId, payload) {
     .upsert({message_id:data.id,user_id:userId,delivered_at:now,seen_at:now,read_at:now},{onConflict:'message_id,user_id'})
     .then(({error:receiptError}) => { if (receiptError) console.warn('LINK sender receipt failed', receiptError); })
     .catch(receiptError => console.warn('LINK sender receipt failed', receiptError));
+  dispatchPushForMessageRemote(data.id);
   return data;
 }
 
@@ -1473,6 +1550,7 @@ function BackendGate({ children }) {
   const addExistingAccount=async(email,password)=>{
     const {data:currentData}=await supabase.auth.getSession();
     if(currentData.session)await upsertMultiAccountSession(currentData.session);
+    try{await supabase.removeAllChannels();}catch{}
     const {data,error}=await supabase.auth.signInWithPassword({email,password});
     if(error)throw error;
     if(!data.session)throw new Error('No session returned');
@@ -1487,7 +1565,11 @@ function BackendGate({ children }) {
     const entry=vault.find(x=>x.userId===userId);
     if(!entry)throw new Error('Saved account not found');
     if(session)await upsertMultiAccountSession(session);
+    try{await supabase.removeAllChannels();}catch{}
+    try{await supabase.auth.stopAutoRefresh();}catch{}
+    await new Promise(resolve=>setTimeout(resolve,120));
     const {data,error}=await supabase.auth.setSession({access_token:entry.accessToken,refresh_token:entry.refreshToken});
+    try{await supabase.auth.startAutoRefresh();}catch{}
     if(error){
       const next=await removeMultiAccountSession(userId);
       setSavedAccounts(next);
@@ -1522,6 +1604,7 @@ function BackendGate({ children }) {
     setSavedAccounts(others);
     if(others.length){
       const target=others[0];
+      try{await supabase.removeAllChannels();}catch{}
       const {data,error}=await supabase.auth.setSession({access_token:target.accessToken,refresh_token:target.refreshToken});
       if(!error&&data.session){
         const next=await upsertMultiAccountSession(data.session,target.profile);
@@ -1628,7 +1711,7 @@ const DRAFT_PREFIX = '@link_chat_draft_v1';
 const DEVICE_ID_KEY = '@link_device_id_v3';
 const ACCENT = '#6C5CE7';
 const EMPTY_MESSAGES = Object.freeze([]);
-const BUILD = 'LINK 4.3 · Build 433';
+const BUILD = 'LINK 4.4 · Reliability';
 const VERIFIED_BADGE_DATA_URI = 'data:image/png;base64,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';
 
 function NetflixWordmark({ width = 112, height = 31, style }) {
@@ -2068,6 +2151,8 @@ function initialData(userId = null) {
     viewOnceViewed: {},
     staffAudit: [],
     offlineOutbox: [],
+    inboxState: {},
+    inboxStateReady: false,
     presenceActivity: {},
     circles: [],
     proStyle: {},
@@ -2077,7 +2162,7 @@ function initialData(userId = null) {
     profilePosts: [],
     profilePostBookmarks: [],
     recentProfileVisitors: [],
-    diagnostics: { realtimeState:'connecting', lastError:null, lastLatencyMs:null },
+    diagnostics: { realtimeState:'connecting', pushState:'checking', lastError:null, lastLatencyMs:null },
   };
 }
 
@@ -2792,7 +2877,7 @@ function SettingsHubModal({
   profileLayout,setProfileLayout,insights,doubleTapEmoji,
   onOpenPresence,onOpenCustomStatus,onOpenShop,onOpenPro,onOpenPlus,onOpenDoubleTap,
   onOpenAccountSwitcher,onOpenAdminConsole,onOpenAdminBadge,onOpenAdminCustomize,
-  onRefresh,onSignOut
+  onRefresh,onSignOut,pushState='checking'
 }) {
   if (!profile) return null;
   const cs=CURRENT_LANGUAGE==='cs';
@@ -2892,6 +2977,7 @@ function SettingsHubModal({
         </IOSSettingsSection>
 
         <IOSSettingsSection theme={theme} title={cs?'Oznámení':'Notifications'}>
+          <IOSSettingsRow theme={theme} icon="notifications-outline" title="Push notifications" value={pushState==='registered'?(cs?'Připraveno':'Ready'):pushState==='denied'?(cs?'Zakázáno':'Denied'):pushState==='dev-build-required'?(cs?'Vyžaduje Dev Build':'Dev Build required'):pushState==='error'?(cs?'Chyba':'Error'):(cs?'Kontroluji…':'Checking…')}/>
           <IOSSettingsRow theme={theme} icon="chatbubbles-outline" title="Messages" right={<Switch value={privacy.notificationsMessages!==false} onValueChange={v=>patch({notificationsMessages:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
           <IOSSettingsRow theme={theme} icon="person-add-outline" title="LINK requests" right={<Switch value={privacy.notificationsRequests!==false} onValueChange={v=>patch({notificationsRequests:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
           <IOSSettingsRow theme={theme} icon="aperture-outline" title="Moments" right={<Switch value={privacy.notificationsMoments!==false} onValueChange={v=>patch({notificationsMoments:v})} trackColor={{false:theme.soft,true:ACCENT}}/>}/>
@@ -3205,7 +3291,7 @@ function ProfilePostsEmpty({theme,own=false}) {
   return <View style={styles.profilePostsEmpty}><View style={[styles.profilePostsEmptyIcon,{backgroundColor:theme.soft}]}><Ionicons name="chatbubble-ellipses-outline" size={28} color={theme.sub}/></View><Text style={[styles.profilePostsEmptyTitle,{color:theme.text}]}>{own?(cs?'Zatím jsi nic nepřidal':'No posts yet'):(cs?'Zatím žádné příspěvky':'No posts yet')}</Text><Text style={[styles.profilePostsEmptyBody,{color:theme.sub}]}>{own?(cs?'Sdílej text nebo fotku přímo na svém LINK profilu.':'Share text or a photo directly on your LINK profile.'):(cs?'Až něco přidá, zobrazí se to tady.':'When they post something, it will appear here.')}</Text></View>;
 }
 
-function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setThemeSetting, languageSetting, setLanguageSetting, privacy, setPrivacy, openAccountSwitcher, openCustomStatus, openShop, openPlus, plusSubscription, openPro, proSubscription, insights, openAdminConsole, doubleTapEmoji = '❤️', openDoubleTapReaction, resetDemo, accountEmail, setPresenceMode, onSignOut, onSaveAdminBadge, profiles, onSaveStaffIdentity, openSafety, openPulseHub, highlights=[], onDeleteHighlight, profilePosts=[], allProfilePosts=[], onCreatePost, onTogglePostLike, onDeletePost, onReplyPost, onRepostPost, onQuotePost, onBookmarkPost, onPinPost, onOpenPostThread }) {
+function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setThemeSetting, languageSetting, setLanguageSetting, privacy, setPrivacy, openAccountSwitcher, openCustomStatus, openShop, openPlus, plusSubscription, openPro, proSubscription, insights, openAdminConsole, doubleTapEmoji = '❤️', openDoubleTapReaction, resetDemo, accountEmail, setPresenceMode, onSignOut, onSaveAdminBadge, profiles, onSaveStaffIdentity, openSafety, openPulseHub, highlights=[], onDeleteHighlight, profilePosts=[], allProfilePosts=[], onCreatePost, onTogglePostLike, onDeletePost, onReplyPost, onRepostPost, onQuotePost, onBookmarkPost, onPinPost, onOpenPostThread, pushState='checking' }) {
   const [editing, setEditing] = useState(false);
   const [adminCustomizeOpen, setAdminCustomizeOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -3310,7 +3396,7 @@ function ProfileScreen({ theme, activeProfile, updateProfile, themeSetting, setT
     <AdminCustomizationModal visible={adminCustomizeOpen} onClose={() => setAdminCustomizeOpen(false)} theme={theme} profile={activeProfile} onUpdate={updateProfile} onPickGif={pickProfileGif} />
     <AdminBadgeModal visible={adminBadgeOpen} onClose={() => setAdminBadgeOpen(false)} theme={theme} profile={activeProfile} profiles={profiles} onSave={onSaveAdminBadge} onSaveTarget={onSaveStaffIdentity} />
     <PresenceStatusModal visible={presenceOpen} onClose={() => setPresenceOpen(false)} theme={theme} profile={activeProfile} proActive={proActive} onSelect={setPresenceMode} />
-    <SettingsHubModal visible={settingsOpen} onClose={() => setSettingsOpen(false)} theme={theme} profile={activeProfile} accountEmail={accountEmail} privacy={privacy} setPrivacy={setPrivacy} themeSetting={themeSetting} setThemeSetting={setThemeSetting} languageSetting={languageSetting} setLanguageSetting={setLanguageSetting} proActive={proActive} plusActive={plusActive} proSubscription={proSubscription} plusSubscription={plusSubscription} profileLayout={profileLayout} setProfileLayout={setProfileLayout} insights={insights} doubleTapEmoji={doubleTapEmoji} onOpenPresence={()=>setPresenceOpen(true)} onOpenCustomStatus={openCustomStatus} onOpenShop={openShop} onOpenPro={openPro} onOpenPlus={openPlus} onOpenDoubleTap={openDoubleTapReaction} onOpenAccountSwitcher={openAccountSwitcher} onOpenAdminConsole={openAdminConsole} onOpenAdminBadge={()=>setAdminBadgeOpen(true)} onOpenAdminCustomize={()=>setAdminCustomizeOpen(true)} onRefresh={resetDemo} onSignOut={onSignOut} />
+    <SettingsHubModal visible={settingsOpen} onClose={() => setSettingsOpen(false)} theme={theme} profile={activeProfile} accountEmail={accountEmail} privacy={privacy} setPrivacy={setPrivacy} themeSetting={themeSetting} setThemeSetting={setThemeSetting} languageSetting={languageSetting} setLanguageSetting={setLanguageSetting} proActive={proActive} plusActive={plusActive} proSubscription={proSubscription} plusSubscription={plusSubscription} profileLayout={profileLayout} setProfileLayout={setProfileLayout} insights={insights} doubleTapEmoji={doubleTapEmoji} onOpenPresence={()=>setPresenceOpen(true)} onOpenCustomStatus={openCustomStatus} onOpenShop={openShop} onOpenPro={openPro} onOpenPlus={openPlus} onOpenDoubleTap={openDoubleTapReaction} onOpenAccountSwitcher={openAccountSwitcher} onOpenAdminConsole={openAdminConsole} onOpenAdminBadge={()=>setAdminBadgeOpen(true)} onOpenAdminCustomize={()=>setAdminCustomizeOpen(true)} onRefresh={resetDemo} onSignOut={onSignOut} pushState={pushState} />
   </>);
 }
 
@@ -3827,6 +3913,8 @@ function ChatMessage({ message, mine, theme, profiles, onLongPress, onSwipeReply
           <Text style={[styles.bubbleTime, { color: theme.sub }]}>{message.time}</Text>
           {mine ? message.sendState === 'sending'
             ? <><ActivityIndicator size={9} color={theme.sub} /><Text style={[styles.bubbleTime,{color:theme.sub}]}>Sending…</Text></>
+            : message.sendState === 'queued'
+              ? <><Ionicons name="cloud-offline-outline" size={12} color={theme.sub}/><Text style={[styles.bubbleTime,{color:theme.sub}]}>Queued</Text></>
             : message.sendState === 'failed'
               ? <Pressable onPress={onRetry} style={styles.messageRetry}><Ionicons name="refresh-circle" size={13} color={theme.danger} /><Text style={[styles.bubbleTime,{color:theme.danger,fontWeight:'900'}]}>Retry</Text></Pressable>
               : <><Ionicons name={(message.readBy?.length > 1 || message.deliveredBy?.length > 1) ? 'checkmark-done' : 'checkmark'} size={12} color={message.readBy?.length > 1 ? outgoingTheme.colors[0] : theme.sub} /><Text style={[styles.bubbleTime,{color:message.readBy?.length > 1 ? outgoingTheme.colors[0] : theme.sub}]}>{message.readBy?.length > 1 ? 'Read' : message.deliveredBy?.length > 1 ? 'Delivered' : 'Sent'}</Text></> : null}
@@ -4787,7 +4875,7 @@ function NextOnboardingModal({visible,theme,profile,onDone,onShowLink}){
     {icon:'compass-outline',title:'Discover',body:'Find people, posts and #topics across LINK from one place.'},
   ];
   const item=cards[step]||cards[0];
-  return <Modal visible={visible} animationType="fade" presentationStyle="fullScreen"><SafeAreaView style={[styles.flexOne,{backgroundColor:theme.bg}]}><View style={{flex:1,padding:26,justifyContent:'space-between'}}><View><View style={{width:58,height:58,borderRadius:20,backgroundColor:'#111318',alignItems:'center',justifyContent:'center'}}><Text style={{color:'#fff',fontSize:30,fontWeight:'900'}}>L</Text></View><Text style={[styles.bigTitle,{color:theme.text,fontSize:42,marginTop:28}]}>Welcome to LINK 4.3</Text><Text style={[styles.headerSub,{color:theme.sub,fontSize:15,lineHeight:22,marginTop:6}]}>ONE brings your social identity, posts, discovery and conversations together.</Text></View><View style={[styles.nextSheet,{backgroundColor:theme.card,borderWidth:StyleSheet.hairlineWidth,borderColor:theme.border,width:'100%'}]}><View style={{width:54,height:54,borderRadius:18,backgroundColor:theme.soft,alignItems:'center',justifyContent:'center'}}><Ionicons name={item.icon} size={26} color={ACCENT}/></View><Text style={[styles.sheetTitle,{color:theme.text,marginTop:18}]}>{item.title}</Text><Text style={[styles.sheetSub,{color:theme.sub,fontSize:14,lineHeight:21,marginTop:8}]}>{item.body}</Text>{step===2?<Pressable onPress={onShowLink} style={[styles.widePrimary,{backgroundColor:theme.soft,marginTop:18}]}><Ionicons name="qr-code" size={18} color={theme.text}/><Text style={{color:theme.text,fontWeight:'900'}}>Show my LINK</Text></Pressable>:null}</View><View><View style={{flexDirection:'row',justifyContent:'center',gap:7,marginBottom:16}}>{cards.map((_,i)=><View key={i} style={{width:i===step?22:7,height:7,borderRadius:99,backgroundColor:i===step?ACCENT:theme.border}}/>)}</View><Pressable onPress={()=>step<cards.length-1?setStep(step+1):onDone?.()} style={[styles.widePrimary,{backgroundColor:theme.inverse}]}><Text style={[styles.primaryButtonText,{color:theme.inverseText}]}>{step<cards.length-1?'Continue':'Enter LINK'}</Text></Pressable></View></View></SafeAreaView></Modal>;
+  return <Modal visible={visible} animationType="fade" presentationStyle="fullScreen"><SafeAreaView style={[styles.flexOne,{backgroundColor:theme.bg}]}><View style={{flex:1,padding:26,justifyContent:'space-between'}}><View><View style={{width:58,height:58,borderRadius:20,backgroundColor:'#111318',alignItems:'center',justifyContent:'center'}}><Text style={{color:'#fff',fontSize:30,fontWeight:'900'}}>L</Text></View><Text style={[styles.bigTitle,{color:theme.text,fontSize:42,marginTop:28}]}>Welcome to LINK 4.4</Text><Text style={[styles.headerSub,{color:theme.sub,fontSize:15,lineHeight:22,marginTop:6}]}>ONE brings your social identity, posts, discovery and conversations together.</Text></View><View style={[styles.nextSheet,{backgroundColor:theme.card,borderWidth:StyleSheet.hairlineWidth,borderColor:theme.border,width:'100%'}]}><View style={{width:54,height:54,borderRadius:18,backgroundColor:theme.soft,alignItems:'center',justifyContent:'center'}}><Ionicons name={item.icon} size={26} color={ACCENT}/></View><Text style={[styles.sheetTitle,{color:theme.text,marginTop:18}]}>{item.title}</Text><Text style={[styles.sheetSub,{color:theme.sub,fontSize:14,lineHeight:21,marginTop:8}]}>{item.body}</Text>{step===2?<Pressable onPress={onShowLink} style={[styles.widePrimary,{backgroundColor:theme.soft,marginTop:18}]}><Ionicons name="qr-code" size={18} color={theme.text}/><Text style={{color:theme.text,fontWeight:'900'}}>Show my LINK</Text></Pressable>:null}</View><View><View style={{flexDirection:'row',justifyContent:'center',gap:7,marginBottom:16}}>{cards.map((_,i)=><View key={i} style={{width:i===step?22:7,height:7,borderRadius:99,backgroundColor:i===step?ACCENT:theme.border}}/>)}</View><Pressable onPress={()=>step<cards.length-1?setStep(step+1):onDone?.()} style={[styles.widePrimary,{backgroundColor:theme.inverse}]}><Text style={[styles.primaryButtonText,{color:theme.inverseText}]}>{step<cards.length-1?'Continue':'Enter LINK'}</Text></Pressable></View></View></SafeAreaView></Modal>;
 }
 
 function ForegroundNotice({ notice, theme, onPress }) {
@@ -5156,7 +5244,13 @@ function LinkApp({ session, accountManager }) {
   const privacy = data.privacy[data.activeAccountId] || { showStatus: true, showSocials: true, momentsToLinks: true, ghostMode: false, showActivityStatus: true, profileVisibility: 'links', messagesFrom: 'links', linkRequestsFrom: 'everyone', readReceipts: true, typingIndicators: true, profileViewsEnabled: true, discoverableByUsername: true, discoverableByEmail: false, notificationsMessages: true, notificationsRequests: true, notificationsMoments: true, notificationsProduct: false, loginAlerts: true, showLastActive: true };
   const unreadActivityCount = useMemo(() => (data.notifications?.[data.activeAccountId] || []).filter(n=>!n.read&&!['message','group_message'].includes(n.type)).length,[data.notifications,data.activeAccountId]);
   const incomingLinkRequestCount = useMemo(() => (data.requests||[]).filter(r=>r.toId===data.activeAccountId).length,[data.requests,data.activeAccountId]);
-  const unreadChatCount = useMemo(() => Object.values(data.conversations || {}).reduce((total, list) => total + (list || []).filter(message => message.senderId !== data.activeAccountId && !(message.seenBy || message.readBy || []).includes(data.activeAccountId)).length, 0) + (data.officialAnnouncements||[]).filter(a=>!a.read).length, [data.conversations, data.activeAccountId, data.officialAnnouncements]);
+  const unreadChatCount = useMemo(() => {
+    const official=(data.officialAnnouncements||[]).filter(a=>!a.read).length;
+    if(data.inboxStateReady){
+      return Object.values(data.inboxState||{}).reduce((sum,row)=>sum+Number(row?.unreadCount||0),0)+official;
+    }
+    return Object.values(data.conversations||{}).reduce((total,list)=>total+(list||[]).filter(message=>message.senderId!==data.activeAccountId&&!(message.seenBy||message.readBy||[]).includes(data.activeAccountId)).length,0)+official;
+  },[data.inboxStateReady,data.inboxState,data.conversations,data.activeAccountId,data.officialAnnouncements]);
   const favoriteIds = data.favorites?.[data.activeAccountId] || [];
   const activeWallet = data.wallets?.[data.activeAccountId] ?? 0;
   const activeOwnedEffects = data.ownedEffects?.[data.activeAccountId] || [];
@@ -5403,8 +5497,40 @@ function LinkApp({ session, accountManager }) {
     const timer = setInterval(() => { if (alive && AppState.currentState === 'active') ping(true); }, 45000);
     return () => { alive = false; clearInterval(timer); sub.remove(); touchPresenceRemote(false).catch(() => {}); };
   }, [hydrated, liveUserId]);
-  useEffect(()=>{if(!hydrated||!liveUserId)return;let alive=true;(async()=>{try{let id=await AsyncStorage.getItem(DEVICE_ID_KEY);if(!id){id=`${Platform.OS}-${Date.now()}-${Math.random().toString(36).slice(2,10)}`;await AsyncStorage.setItem(DEVICE_ID_KEY,id);}if(alive)await touchDeviceRemote(id,Platform.OS==='ios'?'iPhone / iPad':'Android device',Platform.OS);}catch{}})();return()=>{alive=false};},[hydrated,liveUserId]);
+  useEffect(()=>{
+    if(!hydrated||!liveUserId)return;
+    let alive=true;
+    (async()=>{
+      try{
+        let id=await AsyncStorage.getItem(DEVICE_ID_KEY);
+        if(!id){
+          id=`${Platform.OS}-${Date.now()}-${Math.random().toString(36).slice(2,10)}`;
+          await AsyncStorage.setItem(DEVICE_ID_KEY,id);
+        }
+        if(!alive)return;
+        await touchDeviceRemote(id,Platform.OS==='ios'?'iPhone / iPad':'Android device',Platform.OS);
+        const push=await registerPushDeviceRemote(liveUserId,id);
+        if(alive)mutate(prev=>({...prev,diagnostics:{...(prev.diagnostics||{}),pushState:push?.state||'unknown'}}));
+      }catch{
+        if(alive)mutate(prev=>({...prev,diagnostics:{...(prev.diagnostics||{}),pushState:'error'}}));
+      }
+    })();
+    return()=>{alive=false};
+  },[hydrated,liveUserId]);
   useEffect(() => { chatKeyCacheRef.current = { ...(data.chatKeys || {}) }; }, [data.chatKeys]);
+  useEffect(()=>{
+    if(!hydrated||!liveUserId)return undefined;
+    let mounted=true;
+    const sub=Notifications.addNotificationResponseReceivedListener(()=>{
+      if(!mounted)return;
+      setTab('chats');
+      setActiveChatId(null);
+      setActiveGroupId(null);
+      setTimeout(()=>refreshRemote(),220);
+    });
+    return()=>{mounted=false;sub?.remove?.();};
+  },[hydrated,liveUserId]);
+
   useEffect(() => {
     if (!hydrated || !data.activeAccountId) return undefined;
     const newest=(data.notifications?.[data.activeAccountId] || []).find(item=>!item.read && !['message','group_message'].includes(item.type));
@@ -5485,7 +5611,31 @@ function LinkApp({ session, accountManager }) {
     return () => clearInterval(timer);
   }, [hydrated]);
 
-  useEffect(()=>{if(!hydrated||!data.offlineOutbox?.length)return;let stopped=false,running=false;const retry=async()=>{if(stopped||running||AppState.currentState!=='active')return;const item=data.offlineOutbox?.[0];if(!item)return;running=true;try{if(item.targetType==='direct')await sendMessage(item.targetId,{...item.payload,_fromOutbox:true});else await sendGroupMessage(item.targetId,{...item.payload,_fromOutbox:true});if(!stopped)mutate(prev=>({...prev,offlineOutbox:(prev.offlineOutbox||[]).filter(x=>x.id!==item.id)}));}catch{}finally{running=false;}};const first=setTimeout(retry,1800);const timer=setInterval(retry,5000);return()=>{stopped=true;clearTimeout(first);clearInterval(timer);};},[hydrated,data.offlineOutbox?.length]);
+  useEffect(()=>{
+    if(!hydrated||!data.offlineOutbox?.length)return;
+    let stopped=false,running=false;
+    const retry=async()=>{
+      if(stopped||running||AppState.currentState!=='active')return;
+      const item=(dataRef.current?.offlineOutbox||[])[0];
+      if(!item||Date.now()<Number(item.nextRetryAt||0))return;
+      running=true;
+      try{
+        if(item.targetType==='direct')await sendMessage(item.targetId,{...item.payload,_fromOutbox:true});
+        else await sendGroupMessage(item.targetId,{...item.payload,_fromOutbox:true});
+        if(!stopped)mutate(prev=>({...prev,offlineOutbox:(prev.offlineOutbox||[]).filter(x=>x.id!==item.id)}));
+      }catch{
+        if(!stopped)mutate(prev=>({...prev,offlineOutbox:(prev.offlineOutbox||[]).map(x=>{
+          if(x.id!==item.id)return x;
+          const attempts=Number(x.attempts||0)+1;
+          const delay=Math.min(30000,1800*Math.pow(2,Math.min(attempts,4)));
+          return {...x,attempts,nextRetryAt:Date.now()+delay};
+        })}));
+      }finally{running=false;}
+    };
+    const first=setTimeout(retry,900);
+    const timer=setInterval(retry,2500);
+    return()=>{stopped=true;clearTimeout(first);clearInterval(timer);};
+  },[hydrated,data.offlineOutbox?.length]);
 
   const switchAccount = async(id) => {
     if(id===data.activeAccountId){setAccountsOpen(false);return;}
@@ -5866,10 +6016,10 @@ function LinkApp({ session, accountManager }) {
       });
     } catch (error) {
       console.warn('LINK message send failed', error);
-      patchOptimisticMessage(key, tempId, { optimistic: false, sendState: 'failed',sendError:error?.message||String(error) });
       const networkError=isNetworkLikeError(error);
+      patchOptimisticMessage(key, tempId, { optimistic: false, sendState: networkError ? 'queued' : 'failed',sendError:error?.message||String(error) });
       mutate(prev=>({...prev,diagnostics:{...(prev.diagnostics||{}),lastError:error?.message||String(error)}}));
-      if(networkError&&!payload._fromOutbox) mutate(prev=>({...prev,offlineOutbox:[...(prev.offlineOutbox||[]).filter(x=>x.id!==clientNonce),{id:clientNonce,targetType:'direct',targetId:personId,payload:{...payload,clientNonce,_tempId:tempId},createdAt:Date.now()}].slice(-30)}));
+      if(networkError&&!payload._fromOutbox) mutate(prev=>({...prev,offlineOutbox:[...(prev.offlineOutbox||[]).filter(x=>x.id!==clientNonce),{id:clientNonce,targetType:'direct',targetId:personId,payload:{...payload,clientNonce,_tempId:tempId},createdAt:Date.now(),attempts:0,nextRetryAt:Date.now()+1800}].slice(-30)}));
       if(payload._fromOutbox) throw error;
       Alert.alert(networkError?'Queued offline':'Message not sent', networkError?'LINK will retry this message when the connection returns.':(error?.message||'The server rejected this message. Tap Retry under the message.'));
     }
@@ -5937,10 +6087,10 @@ function LinkApp({ session, accountManager }) {
       if(mentionedIds.length) Promise.all(mentionedIds.map(id=>notifyChatMentionRemote(chatId,id).catch(()=>{}))).catch(()=>{});
     } catch (error) {
       console.warn('LINK group message send failed', error);
-      patchOptimisticMessage(key, tempId, { optimistic: false, sendState: 'failed',sendError:error?.message||String(error) });
       const networkError=isNetworkLikeError(error);
+      patchOptimisticMessage(key, tempId, { optimistic: false, sendState: networkError ? 'queued' : 'failed',sendError:error?.message||String(error) });
       mutate(prev=>({...prev,diagnostics:{...(prev.diagnostics||{}),lastError:error?.message||String(error)}}));
-      if(networkError&&!payload._fromOutbox) mutate(prev=>({...prev,offlineOutbox:[...(prev.offlineOutbox||[]).filter(x=>x.id!==clientNonce),{id:clientNonce,targetType:'group',targetId:groupId,payload:{...payload,clientNonce,_tempId:tempId},createdAt:Date.now()}].slice(-30)}));
+      if(networkError&&!payload._fromOutbox) mutate(prev=>({...prev,offlineOutbox:[...(prev.offlineOutbox||[]).filter(x=>x.id!==clientNonce),{id:clientNonce,targetType:'group',targetId:groupId,payload:{...payload,clientNonce,_tempId:tempId},createdAt:Date.now(),attempts:0,nextRetryAt:Date.now()+1800}].slice(-30)}));
       if(payload._fromOutbox) throw error;
       Alert.alert(networkError?'Queued offline':'Message not sent', networkError?'LINK will retry this group message when the connection returns.':(error?.message||'The server rejected this message. Tap Retry under the message.'));
     }
@@ -6202,7 +6352,7 @@ ${text}` });
         {tab === 'feed' && <LinkFeedScreen theme={theme} activeProfile={activeProfile} profiles={data.profiles} posts={data.profilePosts||[]} connectedIds={connectedIds} officialAnnouncements={officialAnnouncements} linkNow={data.linkNow||{}} moments={data.moments||[]} notes={data.notes||[]} onCreatePost={()=>openSocialComposer()} onCreateMoment={()=>setMomentComposerOpen(true)} onOpenMoment={openMoment} onOpenNote={note=>setNoteReplyId(note.id)} onOpenProfile={openProfileModal} onOpenOfficial={()=>setOfficialProfileOpen(true)} onOpenActivity={()=>setNotificationsOpen(true)} onOpenWhatsNew={()=>setWhatsNewOpen(true)} activityCount={unreadActivityCount} onToggleLike={toggleProfilePostLikeHandler} onDelete={deleteProfilePostHandler} onReply={replyProfilePostHandler} onRepost={repostProfilePostHandler} onQuote={quoteProfilePostHandler} onBookmark={toggleProfilePostBookmarkHandler} onPin={pinProfilePostHandler} onOpenThread={openPostThreadHandler} />}
         {tab === 'discover' && <DiscoverScreen theme={theme} activeProfile={activeProfile} profiles={data.profiles} posts={data.profilePosts||[]} connectedIds={connectedIds} requests={data.requests||[]} onAcceptRequest={acceptRequest} onDeclineRequest={declineRequest} onOpenProfile={openProfileModal} onToggleLike={toggleProfilePostLikeHandler} onDelete={deleteProfilePostHandler} onReply={replyProfilePostHandler} onRepost={repostProfilePostHandler} onQuote={quoteProfilePostHandler} onBookmark={toggleProfilePostBookmarkHandler} onPin={pinProfilePostHandler} onOpenThread={openPostThreadHandler} />}
         {tab === 'chats' && <ChatsScreen theme={theme} activeId={data.activeAccountId} profiles={data.profiles} connectedIds={connectedIds} conversations={data.conversations} favoriteIds={favoriteIds} groups={data.groups || {}} chatUserSettings={data.chatUserSettings || {}} openChat={openChat} openGroup={openGroup} onCreateGroup={() => setGroupCreateOpen(true)} onJoinGroup={() => setGroupJoinOpen(true)} officialAnnouncements={officialAnnouncements} onOpenOfficial={()=>setOfficialOpen(true)} />}
-        {tab === 'profile' && <ProfileScreen theme={theme} activeProfile={activeProfile} updateProfile={updateActiveProfile} themeSetting={data.themeSetting} setThemeSetting={setThemeSetting} languageSetting={data.languageSetting || 'system'} setLanguageSetting={setLanguageSetting} privacy={privacy} setPrivacy={setPrivacy} openAccountSwitcher={() => setAccountsOpen(true)} openCustomStatus={() => setCustomStatusOpen(true)} openShop={() => setShopOpen(true)} openPlus={activePro ? () => setProOpen(true) : () => setPlusOpen(true)} plusSubscription={activeSubscription} openPro={() => setProOpen(true)} proSubscription={activeProSubscription} insights={proInsights} openAdminConsole={() => setAdminConsoleOpen(true)} doubleTapEmoji={activeDoubleTapEmoji} openDoubleTapReaction={() => setDoubleTapReactionOpen(true)} resetDemo={resetDemo} accountEmail={session?.user?.email || ''} setPresenceMode={setActivePresenceMode} onSignOut={()=>accountManager?.signOutCurrent?.()} onSaveAdminBadge={saveActiveAdminBadge} profiles={data.profiles} onSaveStaffIdentity={saveStaffIdentity} openSafety={()=>setSafetyOpen(true)} openPulseHub={()=>setPulseHubOpen(true)} highlights={activeHighlights} onDeleteHighlight={deleteHighlight} profilePosts={activeProfilePosts} allProfilePosts={data.profilePosts||[]} onCreatePost={createProfilePostHandler} onTogglePostLike={toggleProfilePostLikeHandler} onDeletePost={deleteProfilePostHandler} onReplyPost={replyProfilePostHandler} onRepostPost={repostProfilePostHandler} onQuotePost={quoteProfilePostHandler} onBookmarkPost={toggleProfilePostBookmarkHandler} onPinPost={pinProfilePostHandler} onOpenPostThread={openPostThreadHandler} />}
+        {tab === 'profile' && <ProfileScreen theme={theme} activeProfile={activeProfile} updateProfile={updateActiveProfile} themeSetting={data.themeSetting} setThemeSetting={setThemeSetting} languageSetting={data.languageSetting || 'system'} setLanguageSetting={setLanguageSetting} privacy={privacy} setPrivacy={setPrivacy} openAccountSwitcher={() => setAccountsOpen(true)} openCustomStatus={() => setCustomStatusOpen(true)} openShop={() => setShopOpen(true)} openPlus={activePro ? () => setProOpen(true) : () => setPlusOpen(true)} plusSubscription={activeSubscription} openPro={() => setProOpen(true)} proSubscription={activeProSubscription} insights={proInsights} openAdminConsole={() => setAdminConsoleOpen(true)} doubleTapEmoji={activeDoubleTapEmoji} openDoubleTapReaction={() => setDoubleTapReactionOpen(true)} resetDemo={resetDemo} accountEmail={session?.user?.email || ''} setPresenceMode={setActivePresenceMode} onSignOut={()=>accountManager?.signOutCurrent?.()} onSaveAdminBadge={saveActiveAdminBadge} profiles={data.profiles} onSaveStaffIdentity={saveStaffIdentity} openSafety={()=>setSafetyOpen(true)} openPulseHub={()=>setPulseHubOpen(true)} highlights={activeHighlights} onDeleteHighlight={deleteHighlight} profilePosts={activeProfilePosts} allProfilePosts={data.profilePosts||[]} onCreatePost={createProfilePostHandler} onTogglePostLike={toggleProfilePostLikeHandler} onDeletePost={deleteProfilePostHandler} onReplyPost={replyProfilePostHandler} onRepostPost={repostProfilePostHandler} onQuotePost={quoteProfilePostHandler} onBookmarkPost={toggleProfilePostBookmarkHandler} onPinPost={pinProfilePostHandler} onOpenPostThread={openPostThreadHandler} pushState={data.diagnostics?.pushState||'checking'} />}
       </View></SafeAreaView><TabBar tab={tab} setTab={setTab} theme={theme} darkMode={activeMode === 'dark'} unreadCount={unreadChatCount} requestCount={incomingLinkRequestCount} onCreate={()=>setCreateHubOpen(true)} /></EdgeSwipeBack>
       <ForegroundNotice notice={foregroundNotice} theme={theme} onPress={() => { const isRequest=foregroundNotice?.type==='request'; setForegroundNotice(null); if(isRequest)setTab('discover'); else setNotificationsOpen(true); }} />
 
