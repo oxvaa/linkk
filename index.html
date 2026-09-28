@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#f5f5f7" />
-  <title>LINK 4.4 · Reliability · Snack Fix · Artists & Celebrities + BACKSTAGE · Developer & Shared Test Launcher</title>
+  <title>LINK 4.4 · Shared Test · Artists & Celebrities + BACKSTAGE · Developer & Shared Test Launcher</title>
   <style>
     :root {
       color-scheme: light;
@@ -121,33 +121,42 @@
     <section class="card">
       <div class="brand">L</div>
       <h1>LINK</h1>
-      <p class="lead">GitHub → Expo Snack. Tohle je launcher pro vytvoření plného LINK buildu ze souboru <strong>App.snack.js</strong> uloženého v repozitáři.</p>
+      <p class="lead">GitHub → Expo Snack. <strong>Shared Test Session</strong> vytvoří vždy nový neuložený Snack pro testování s dalšími lidmi. Tester používá svůj vlastní Expo Go účet — <strong>ne tvůj</strong>.</p>
 
       <div class="meta">
         <div class="row"><span id="repoDot" class="dot wait"></span><span class="label">Repository</span><span class="value" id="repoValue">Zjišťuji…</span></div>
         <div class="row"><span class="dot"></span><span class="label">Expo SDK</span><span class="value">57</span></div>
-        <div class="row"><span class="dot"></span><span class="label">Build</span><span class="value">LINK 4.4 · Reliability · Snack Fix</span></div>
+        <div class="row"><span class="dot"></span><span class="label">Build</span><span class="value">LINK 4.4 · Shared Test</span></div>
+      </div>
+
+      <div style="margin:0 0 16px;padding:15px 16px;border-radius:20px;background:rgba(52,199,89,.10);border:1px solid rgba(52,199,89,.20);font-size:13px;line-height:1.5;color:#555b66">
+        <strong style="color:#101114">Shared Test Session</strong><br>
+        • session nech <strong>UNSAVED</strong><br>
+        • otevři <strong>My Device</strong><br>
+        • pošli testerovi pouze QR<br>
+        • tester se přihlásí v Expo Go <strong>svým vlastním účtem</strong><br>
+        • pokud se objeví <strong>Connecting…</strong>, vytvoř tady novou Shared Session a použij nový QR
       </div>
 
       <div class="actions">
-        <button id="testBtn" class="primary" type="button">👥 Testovat s kamarády</button>
-        <button id="createBtn" class="secondary" type="button">🛠 Developer mode</button>
+        <button id="testBtn" class="primary" type="button">👥 New Shared Test Session</button>
+        <button id="createBtn" class="secondary" type="button">🛠 Developer Session</button>
         <a id="rawBtn" class="action secondary" href="#" target="_blank" rel="noopener">Otevřít App.snack.js</a>
       </div>
 
-      <div id="testHint" style="display:none;margin-top:14px;padding:14px 15px;border-radius:16px;background:rgba(108,92,231,.09);border:1px solid rgba(108,92,231,.18);font-size:13px;line-height:1.45;color:#555b66;text-align:left">
+      <div id="testHint" class="hint" style="display:none">
         <strong style="color:#101114">Shared Test Session</strong><br>
-        Otevře se čerstvý neuložený Snack. <strong>Neklikej v něm na Save.</strong> Otevři <strong>My Device</strong> a pošli QR kamarádům. Oni se přihlásí do Expo Go svým vlastním účtem a jen QR naskenují.
+        Tenhle Snack <strong>neukládej</strong>. Počkej na načtení preview, otevři <strong>My Device</strong> a pošli QR testerům. Při starém nebo mrtvém QR vytvoř novou Shared Session.
       </div>
 
       <div id="status" class="status">Připravuji GitHub source URL…</div>
-      <div class="tiny">Developer mode můžeš normálně uložit. Shared Test Session nech neuloženou, aby QR nebyl svázaný s vlastníkem Expo účtu.</div>
+      <div class="tiny">Shared Test Session nech neuloženou a testerům posílej jen QR. Developer Session můžeš uložit pro svoje vlastní testování.</div>
     </section>
   </main>
 
   <script>
     (() => {
-      const BUILD = 'LINK 4.4 · Reliability · Snack Fix';
+      const BUILD = 'LINK 4.4 · Shared Test';
       const SDK_VERSION = '57.0.0';
       const DEFAULT_BRANCH = 'main';
       const DEPENDENCIES = [
@@ -200,15 +209,16 @@
         return;
       }
 
-      // LINK 4.4 Reliability launcher: use the same GitHub Pages origin as the launcher.
+      // LINK 4.4 Shared Test launcher: use the same GitHub Pages origin as the launcher.
       // This avoids browser CORS / network failures against raw.githubusercontent.com,
       // jsDelivr and the GitHub API while keeping App.snack.js public for Expo Snack.
-      function pagesSourceUrl(cacheBust = Date.now()) {
+      function pagesSourceUrl(cacheBust = Date.now(), sessionNonce = null) {
         const url = new URL('./App.snack.js', window.location.href);
         url.search = '';
         url.hash = '';
-        url.searchParams.set('build', '441');
+        url.searchParams.set('build', '443');
         url.searchParams.set('cb', String(cacheBust));
+        url.searchParams.set('session', sessionNonce || `${cacheBust}-${Math.random().toString(36).slice(2)}`);
         return url.toString();
       }
 
@@ -226,7 +236,7 @@
           if (!response.ok) return { ok: false, reason: `HTTP ${response.status}` };
           const source = await response.text();
           if (!source.includes('export default')) return { ok: false, reason: 'Expo entry nebyl nalezen' };
-          if (!source.includes('LINK 4.4 · Reliability · Snack Fix')) return { ok: false, reason: 'GitHub Pages ještě servíruje starší build' };
+          if (!source.includes('LINK 4.4 · Shared Test')) return { ok: false, reason: 'GitHub Pages ještě servíruje starší build' };
           return { ok: true };
         } catch (error) {
           return { ok: false, reason: error?.message || 'ověření nebylo dostupné' };
@@ -237,7 +247,7 @@
       verifySameOriginSource(rawAppUrl).then(result => {
         if (result.ok) {
           repoDot.className = 'dot';
-          status.textContent = 'Připraveno. LINK 4.4 Reliability source je dostupný přes GitHub Pages.';
+          status.textContent = 'Připraveno. LINK 4.4 Shared Test source je dostupný přes GitHub Pages.';
         } else {
           repoDot.className = 'dot wait';
           status.textContent = `Launcher je připraven. Ověření source bylo přeskočeno (${result.reason}).`;
@@ -246,27 +256,39 @@
 
       function openFreshSnack(mode) {
         const shared = mode === 'shared';
+
         createBtn.disabled = true;
         testBtn.disabled = true;
         testHint.style.display = shared ? 'block' : 'none';
-        if (shared) {
-          testBtn.textContent = 'Otevírám Shared Test Session…';
-          status.textContent = 'Vytvářím čerstvou NEULOŽENOU session pro společný QR…';
-        } else {
-          createBtn.textContent = 'Otevírám Developer mode…';
-          status.textContent = 'Připravuji čerstvý LINK 4.4 Reliability source…';
-        }
 
-        // A unique source URL forces a completely fresh Snack document every time.
-        // No Snack id / owner is supplied here — ownership is added only if the user later presses Save.
-        rawAppUrl = pagesSourceUrl(Date.now());
+        createBtn.textContent = shared ? 'Vytvářím Shared Session…' : 'Otevírám Developer Session…';
+        testBtn.textContent = shared ? 'Vytvářím Shared Session…' : 'Otevírám Developer Session…';
+
+        const now = Date.now();
+        const nonce = (globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function')
+          ? globalThis.crypto.randomUUID()
+          : `${now}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+
+        rawAppUrl = pagesSourceUrl(now, nonce);
         rawBtn.href = rawAppUrl;
 
+        status.textContent = shared
+          ? 'Vytvářím úplně novou neuloženou Shared Test Session…'
+          : 'Otevírám LINK Developer Session…';
+
         const params = new URLSearchParams();
-        params.set('name', shared ? 'LINK 4.4 Reliability · Shared Test Session' : BUILD);
-        params.set('description', shared
-          ? 'LINK 4.4 Reliability shared unsaved test session. Feed, Discover, Posts 2.0, Profile 4.0, Activity 4.0 and Create Hub. Keep this Snack UNSAVED and share only the My Device QR with testers.'
-          : 'LINK 4.4 · Reliability · Snack Fix — Feed 4.0, Following/Discover timeline, Posts 2.0 replies/threads/reposts/quotes/bookmarks/pins, Discover search and hashtags, Profile 4.0 tabs, Activity 4.0, LINK Pulse, Create Hub, reliable messaging, Moments, Groups and LINK Official. Generated from GitHub.');
+        params.set(
+          'name',
+          shared
+            ? `LINK 4.4 · Shared Test · ${String(now).slice(-6)}`
+            : 'LINK 4.4 · Developer'
+        );
+        params.set(
+          'description',
+          shared
+            ? 'LINK 4.4 shared unsaved test session. Keep this Snack UNSAVED. Open My Device and share only the QR with testers.'
+            : 'LINK 4.4 developer session. You may save this one to your Expo account.'
+        );
         params.set('sdkVersion', SDK_VERSION);
         params.set('platform', 'mydevice');
         params.set('supportedPlatforms', 'ios,android,web');
@@ -275,7 +297,6 @@
         params.set('waitForData', 'true');
         params.set('sourceUrl', rawAppUrl);
         params.set('dependencies', DEPENDENCIES.join(','));
-        // Deliberately DO NOT pass a saved Snack id. This must stay an anonymous fresh Snack until explicitly saved.
 
         window.location.href = `https://snack.expo.dev/?${params.toString()}`;
       }
