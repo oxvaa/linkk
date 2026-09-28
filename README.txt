@@ -1,44 +1,25 @@
-LINK 4.4 · RELIABILITY — Build 440
-===================================
+LINK 4.4 · Snack Fix — Build 441
+=================================
 
-MESSAGE DELIVERY 2.0
-- sender_id + client_nonce remains the server deduplication key.
-- Network failures display Queued.
-- Offline outbox stays persisted with the account cache.
-- Retries now use exponential backoff (up to 30 seconds).
-- Server-rejected messages still expose manual Retry.
-- Sent / Delivered / Read remains driven by message_receipts.
-
-SERVER INBOX PROJECTION
-- New chat_inbox_state table.
-- Per user/chat: last message, last activity and unread_count.
-- New messages update chats.updated_at + inbox projection.
-- Seen/read receipts clear unread_count.
-- Projection is in Supabase Realtime.
-- LINK unread badge prefers server unread_count when available.
+FIX
+- Removed static imports of expo-notifications and expo-constants from the Snack/Expo Go build.
+- Fixes: Unable to resolve module 'expo-notifications.js'.
+- LINK now bundles normally in Snack / Expo Go again.
 
 PUSH
-- New push_devices table with self-only RLS.
-- New push_message_dispatches server-only dedupe table.
-- Edge Function: link44-push-dispatch.
-- Push contains no encrypted message plaintext.
-- Push dispatch never blocks sending a message.
-- A configured development/production build registers Expo push tokens.
-- Settings shows Push notifications state.
+- Server-side push infrastructure remains deployed:
+  - push_devices
+  - push_message_dispatches
+  - link44-push-dispatch
+- Snack/Expo Go build reports "Dev Build required" for Push Notifications.
+- Actual Expo push-token registration will be enabled later in a native/development build where expo-notifications is installed and configured.
 
-EXPO GO LIMITATION
-Remote push notifications are not supported in current Expo Go.
-Snack/Expo Go therefore shows “Dev Build required”.
-The server and client push infrastructure is ready for a later development/EAS build.
+ALL LINK 4.4 RELIABILITY FEATURES REMAIN
+- Message Delivery 2.0
+- queued/offline messages + retry backoff
+- server inbox projection / unread counts
+- messaging backend fixes
+- multi-account Realtime cleanup
+- BACKSTAGE isolation
 
-MULTI-ACCOUNT
-- Removes old Realtime channels before Auth session replacement.
-- Pauses token auto-refresh while switching sessions, then resumes it.
-- LinkApp remounts for the new user, rebuilding timers/subscriptions cleanly.
-
-BACKEND
-- link_440_reliability_core
-- link44-push-dispatch
-- retains link_433 / link_434 / link_435 fixes
-
-Launcher build: 440
+Launcher build: 441
