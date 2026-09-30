@@ -1,40 +1,46 @@
-LINK 4.4 · Shared Test Session — Build 443
-============================================
+LINK V · 5.0 — BUILD 500
+==========================
 
-SHARED TESTING IS RESTORED
-- This build intentionally restores the anonymous / UNSAVED Snack workflow.
-- Shared Test Session is the primary tester mode.
-- The tester does NOT need the LINK owner's Expo account.
-- Testers use their own Expo Go accounts.
-- Share only the My Device QR.
+DESIGN
+- New compact visual system inspired by ChatGPT iOS, Apple and modern Instagram/TikTok messaging.
+- Neutral OpenAI-like white/black surfaces with iOS blue as functional accent.
+- Smaller navigation, tighter cards, smaller settings rows and less visual chrome.
+- Feed header is now LINK V.
+- Chats tab is now Inbox / Messages.
+- Chat bubbles, metadata, composer and top bar are substantially more compact.
+- Shared Test Session workflow is preserved: testers use their own Expo Go accounts.
 
-HOW TO USE
-1. Open build 443 index.html.
-2. Tap “New Shared Test Session”.
-3. Wait until Snack finishes importing LINK.
-4. DO NOT press Save.
-5. Open My Device.
-6. Send the QR to testers.
-7. Testers open/scan the QR from Expo Go on their own devices.
-8. If a QR later remains on Connecting, discard that QR and create a new Shared Test Session.
+CHAT STABILITY
+- Global Realtime no longer triggers a full application snapshot for every message, reaction or receipt.
+- Active chat gets its own filtered message Realtime channel.
+- Active chat also runs a lightweight link_v_chat_sync_cursor watchdog every 3.5 seconds.
+- Missed Realtime events, receipt updates and reactions are recovered without relying only on the socket event.
+- Full app inbox watchdog relaxed to 12 seconds.
+- Bootstrap only downloads receipts/reactions belonging to the recent 40 messages per chat.
+- Message sends use the newest dataRef state instead of a potentially stale render closure.
+- Existing client_nonce dedupe, offline queue, retries, inbox projection, delivery/read receipts and encryption remain.
 
-SESSION HARDENING
-- Every Shared Test click gets a fresh:
-  - cache bust
-  - random session nonce
-  - Snack name
-  - sourceUrl
-- Old QR/session state is never intentionally reused.
-- Safari back/forward restores the launcher buttons.
+CHAT SMOOTHNESS
+- Chat list no longer blindly scrolls to bottom on every content-size change.
+- It tracks whether the user is already near the bottom.
+- New messages auto-scroll only when appropriate.
+- Loading older content no longer forcibly jumps the conversation.
+- FlatList rendering is bounded with smaller window/batch sizes.
+- iOS keyboard uses interactive dismissal.
 
-DEVELOPER MODE
-- Separate Developer Session remains available.
-- That session may be saved to your own Expo account.
-- Saving is NOT required for Shared Test Session.
+BACKEND
+- Migration deployed: link_500_chat_core
+- Added recent_message_receipts_for_my_chats()
+- Added recent_message_reactions_for_my_chats()
+- Added link_v_chat_sync_cursor()
+- Added supporting message receipt/reaction indexes.
 
-APP
-- LINK app logic is unchanged from the fixed 4.4 Snack build.
-- Message Delivery 2.0 remains.
-- Backend reliability fixes remain.
-- No expo-notifications dependency in Snack.
-- Runtime build marker: 443.
+SHARED TESTING
+1. Open index.html from GitHub Pages.
+2. Tap New Shared Test Session.
+3. Leave the Snack UNSAVED.
+4. Open My Device.
+5. Share only the QR.
+6. Testers use their own Expo Go accounts.
+
+Launcher cache: 500

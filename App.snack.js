@@ -639,9 +639,9 @@ async function loadLinkSnapshot(base, userId) {
     supabase.from('chats').select('*').order('created_at'),
     supabase.from('chat_members').select('*'),
     supabase.from('chat_keys').select('*').eq('user_id', userId),
-    supabase.rpc('recent_messages_for_my_chats',{p_per_chat:50}),
-    supabase.from('message_reactions').select('*'),
-    supabase.from('message_receipts').select('*'),
+    supabase.rpc('recent_messages_for_my_chats',{p_per_chat:40}),
+    supabase.rpc('recent_message_reactions_for_my_chats',{p_per_chat:40}),
+    supabase.rpc('recent_message_receipts_for_my_chats',{p_per_chat:40}),
     supabase.from('message_hides').select('message_id').eq('user_id', userId),
     supabase.from('message_pins').select('*').order('created_at'),
     supabase.from('chat_user_settings').select('*').eq('user_id', userId),
@@ -677,7 +677,7 @@ async function loadLinkSnapshot(base, userId) {
   ]);
   if (profilesQ.error) throw profilesQ.error;
   const optionalQueries = { settingsQ,entitlementsQ,tiersQ,moderationQ,connectionsQ,chatsQ,membersQ,keysQ,messagesQ,reactionsQ,receiptsQ,hidesQ,pinsQ,chatUserSettingsQ,momentsQ,momentReactionsQ,momentViewsQ,notesQ,favoritesQ,notificationsQ,profileViewsQ,benefitsQ,linkNowQ,joinRequestsQ,pollsQ,pollVotesQ,highlightsQ,blocksQ,devicesQ,viewOnceQ,staffAuditQ,reportsQ,presenceActivityQ,circlesQ,circleMembersQ,proStyleQ,officialQ,officialReadsQ,groupAdminNotesQ,profilePostsQ,profilePostLikesQ,profilePostBookmarksQ,inboxStateQ };
-  Object.entries(optionalQueries).forEach(([name,q])=>{ if(q?.error) console.warn(`LINK 3 optional query failed: ${name}`,q.error.message); });
+  Object.entries(optionalQueries).forEach(([name,q])=>{ if(q?.error) console.warn(`LINK V optional query failed: ${name}`,q.error.message); });
 
   const profiles={};
   for(const row of profilesQ.data||[]) profiles[row.id]={
@@ -826,9 +826,6 @@ function subscribeLink(userId,onChange,onStatus){
     .on('postgres_changes',{event:'*',schema:'public',table:'connections'},requestFast)
     .on('postgres_changes',{event:'*',schema:'public',table:'chats'},fast)
     .on('postgres_changes',{event:'*',schema:'public',table:'chat_members'},fast)
-    .on('postgres_changes',{event:'*',schema:'public',table:'messages'},messageFast)
-    .on('postgres_changes',{event:'*',schema:'public',table:'message_reactions'},slow)
-    .on('postgres_changes',{event:'*',schema:'public',table:'message_receipts'},slow)
     .on('postgres_changes',{event:'*',schema:'public',table:'message_pins'},slow)
     .on('postgres_changes',{event:'*',schema:'public',table:'chat_user_settings'},slow)
     .on('postgres_changes',{event:'*',schema:'public',table:'chat_inbox_state'},messageFast)
@@ -1664,9 +1661,9 @@ const backendStyles = StyleSheet.create({
 const STORAGE_KEY = '@link_live_backend_v30';
 const DRAFT_PREFIX = '@link_chat_draft_v1';
 const DEVICE_ID_KEY = '@link_device_id_v3';
-const ACCENT = '#6C5CE7';
+const ACCENT = '#0A84FF';
 const EMPTY_MESSAGES = Object.freeze([]);
-const BUILD = 'LINK 4.4 · Reliability · 443';
+const BUILD = 'LINK V · 5.0 · 500';
 const VERIFIED_BADGE_DATA_URI = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAaPElEQVR42u19e3Sd1XXnb59zvvu+0pVlIxtLsqGkaTFpkjaTmax0Epukaya80gmR0mTSNOCHsGsgCe1KZ6ZZkpJO/2ExKS3YyMYhD0ITuU0KE5LpZIpNu5KWlDZhBidACGBLljGS9bjve7/v7D1/fN+VhTFIsu69upLvXgtY2PL1PWf/zn78zj57A01pSlOa0pSmNKUpTWlKU5rSlItI6KJarQjhMBTWgXAUgP8vAFuBrQDGIegBg0ia0FhNSu8Xg35RC/4z/aLQLwYi1LQAK/2095Kt/FL3UHaDaLwFJFcSy2aBrAUAUjQhoONC9FPlxP/vid+lU7OfMyx6NVuF1QmAYdEVxXfsy1wSCqsbifAhYftOCkVbyJgAJK/eBfE8iFtMg9Q/K6hvIZ/+1vG9HS+f+5lNADTyqR8AYZB40z2n13Ms8WkQblLh2DpYCy4XAOsxCPzq5UsFDAraKBWKAlqDi/kJEL6MbP6LI7euG0O/KAxAVpM1WD0A6BeFQWIA6L4/u1OM/rwKRdZLIQexrhesVYGI5gGRAGAAQtoYiibApeIrYHdgZHvL/nP/riYAGsjkXz70i1YvtOEghaM9UsxBPNcDoOdV+huDwZJxDEXi4GLhb2zupR1jt155ZrW4hJUPgOFhjd5eu/6esU1OrPURFYn9GmenPUA0SFVnfQEQVCJluFT4meQmbhjd2/38agDBygZAYIovvfdMl4lGjlIocjkX0i5ATm1iDPZUtMWwVxpBObttpK/jFyvdHagVq/wgR3/z/eNJHXYepVDkcs7PeDVTvp8vGi6kPWXCXXDij3YePLHGB2K/agKgWhbJJ24UhkVjWDREFPpFvYaUOQyFQeIc60MqnnwLF9IuSJnaf8MABJH4myHJr2KQGFsG6Dzkkzq7jmE9Zw3UWBu+7Ga8XwEDClsg8/pTP83T2AKFXip3HZj8hEq0fYVzMy4Ap84myFWJlMPpqT0jfWv2Y1hCOAYGwPO6hGHROAYCBhiDg3xxAmB4WAM9OFfpl381c4nnOmutLbVoIg1wEeHwZCGdHh/f25Gt/NymB6ZSbPWzpM1a8UoAqL7WTERgHAFLxgje/OLO5OnKb20YklgoVLwE1rYBNuJZsDaUMQ5NvPCJxDgwh0cYFg0cBnp77cUBgAonH5ySS7+U71LC7yfC1RB+GwRdgLSSDgFEAFuIdV0hmiBSPwepJ8gWHwb09RRv/SxnpiyU0ssCYmarkm2a8+l7mPCghvmgwP47sPyyQNYpbUJQGhCBeC4ApEnRiJD+iUAeY6jvj90cGznfvqxOAMxJmzoPpd+rlN4tIteocDwJAOKVIV4ZYOufMIJAQFCKSBnACYOMhhTyEOsGFN6yuzEBiEhrUDQOeNZfh/UAsXKWbiaC0iATApmQj59SLkOkv8ss+0e3xx4/d49WDwDmULSd+85chWj0TxSpD5ITBhcyAHsWpAQQBQG9lriRykayAEJLIXdquEgILFD5/kK+CTvHbRAEIIYwQRmtokmIWwKEH2Zr/3h0R/LpelLOVBflBwvpPDRzh1LOF8iJRLkww/6GkHrNRl00IgIRBhGpaKsSt1hgtp8b3Z6869y9W5kACBbQedeJKFKpB3Qs+RHOpQFrl89vN6owW2itVbwFNpcZxsz0J0fv6C7UGgRUU+UPgDZtfinE3P5dFU9u48y0C4FpPPPdMAZBQPBUMuVwLnNUpqevGU13lWrpDmqXOg0c1RgktuXWr6h4chunp3yKtqn8NziORAA5nJ5yVTy5FYkWn2g6XDs91UYZQSTbdd/Ep1Rr+xc5O+3WlKJdnebAJ5oy03eM7Gr7H7XKDqoPgCCCvfRg+k3amKcg7MB6qnnyL8AdaMNQ2lNl723H+5LPot/PpBrbBWw5TCASBb5ThWMRWBdN5V+gO/BcKCcSZnh3vYo9bFgLEJipjYdm/q3WoX8St2QBNKP9pZkCplBMoVz6zRM7W35QbVdQk+BCMX+KnIif5zZlyQkiGQcs/OnGtgBBvnrZwZc7PESeh9IJWE+a5n/pGwvSBEgeMG8a2REfqyY3UD0LMOCbeovQb6lYSwLWtU3lVycYAHtWRVtiAu8/zt3rhnQBzOp9AEnzeVVVMSAAhITf7wfakMYDwKB/EUKEt4vnElZyuVnjiRKvTCJ4G/pFNV4QKEIASfe+6RQgXWLLgKBp/qsWBoDEK4OAzvXdmfaze94oABjwlc0O2gG0gi2a6q8yJ8AWIEqEgHVz97yhYgAtkoA22q+jbwaAVU4GhEyIrCdJPw443HgAEAPl670Z/9UqIRBd0VlPVT6yumXUootgPxZsaqvaygeELYzlEgDgGBqJBxjw/+OpKYDzQSHkxWEGRAQQru16fTJIrOtSCJNVTS+qkwIOCACsQ3xCQKdJG/i1b6td+SzQDlEorsiECMK1qegVgLQBhMbL5fwrwZlrJAtAguFh/S995JLgZ2RCgKxyAAgzRRIE9kZQyvWIdUdUrFVB2KvB38ZkQiDIz0/1bcyjX1TjUcHregj9/UqAf4RWWNWRoDCTE1biedOK5IMndrX9lQBXc7n0jIqlTA1AIDAaQvRP6BeFrdXTW/UAcPSYwuAgu7bwIBfyLoj0KlW+kHZISBXhFW84vqPtx1fcLeHRnanni/nT22w5/6SKt1UXBERKigWmUuFrGCTGeCMBoPIQcvCqcse+U5eEIy23AMKrU/ki0A5DGyCf/cjIrjX/gCNinr+dShgWPb73spcjmeL7uJh7TCXaDCButSAgbBmx5K7O/RMb0Uvl8z6YrTsAKr5okLjzUHp7KJr6CYVjn4X1wlh9/YcESlsVimop5W4a2bPuERwRg23kn/ResugX9fzta9Ph7Ng1XMx+WyVSDkSqYQkIbI2KxG+jSOwnnfen92CQ/M5li2l/d/7s8gIl6Myx5u7nWhKJSw9QNP4RKeYhXtkDkVllRx8AeSreajgz/ZmRvrYvYuhJB33vcM97KAYhAKHzUPpLOp78JGdmqvOETcQj7RiKxsHFwrdlamLH6B3dk0upEqKlKP/Se0e7dGzNwyoSfTtnqtyWpbHEVYlWh7PTfzKys+1zrzr5r+cWBwYIg4PcdTB9JxznNnglA6mKy51tVyPFwjF4M9ef2LXhxQsFweK/UL8o9PbajQdGOnU09ZhyIm/n7LQLIrM6lS+uSrQ6NjO9f2Rn2+fQLwbbYOcJ2qTSNKI8/cIALE+SMlQVsoiIQGQ4O+VRKLxFTMtjm/af2lxxQbUFQBB0XDksCaVav6NCsSs4P+2t2pp/YU8lUo7NpL85uqttD4ZFYwB23grd/n6FHvCG/pOx0Jpf+j45znrxytUtjyNlOD/jKSeymZ3Eo5cPTbbO1VFtABC0ZUlPTR1S8eRbuTBdn7Ysy6b8NsO5zN+OnvzXj6Nf1IJaxooQtgwQBkCmMzmsool3STFrQar6BTKkDBdmPBVPXOkCD1zIK6KF/3Dltc+ByU/oZFsvZ2dcQK3ekx9LGS5mnyhP5W7EwFY7a9rf+A8SBo76+9Q582WVSF7L2SkPVMOHsKQMZ6dd1dL2nzoPTGxHL1m/60g1g8DArHTejzZC+hkyTvuytGWphzBbFUtqdss/89zp95zq2zix4FZwQXDYeWDqz3Qydbt/SOrRu0iYTAhi7ZSby/7qy7dtmFgYYBdqAQaOahAJJP0ZlWhZJ26RV6XyhS1F4prd0qjLpQ+c6ts4gWHRC1L+0JMOtpHXOTT5uUD5HurWuIqUuCVW8WS7icXuAJFg4KiujgUIatC79023iYOfQ5s18JbruVcNK42EmZyIAmiSC/n3ju5pf3rBqVXACXQOTe7RibZ7uZD2IKzrWhfhs5QQttNcxJvGbm09s5D3A/Of4qAGnR25UcVb2+GVeVmUXykzq8m9uzBph0BUQDF9w+ie9qfRL2ZByj8ixlf+K7+jool7uZC24Dorv5IeemXW8ZY2isiH5+puqS6Ag/jmI7Asy8LwMgsZhwCAnDDNfqfq6F6gjEAbsaVMz4ndHT9AvxgM0vwUbn/g8/ed/g8qnPyauCUG2+V7CU0EWCsE7n2V7i7YBQQmZP3dY+tMNPoL0k4S1q3vc69Z04wc2+I1JOo61dL6h5ye9oAlUs4Vfj8cM14u/bsnb1nz4Lws36zyjxgMbvM690+8kyKxx0g4Jp4b9DxarhhGBNoQrJcte8VfOr1nwyvzuQEzb94P2FAk9lZEYkkp5biuCxRmMmEFUI7LhWtH+9b8PYC/7zowFVXJ1F6/K/iFgkAAIquiSeNlp24/ecuaB4NAbv4bPD828DYMjf8KhWLfIVBcvDLXJNdfrBtgjymSSIRK9FYA36/o8MJcwDHfQgjJVWQcQMB1V76ivC1mrxvtW/P4bwyJg2HRI7vabuVc+h6VSBngAm/biFyVaDWcm/z8yb41f/66lzvnSs+wRi/Zzv0TG42Jfo+UWSduwS678s/imskYQGjLXB1emAWYpTdo8yJYgyoqX+VtKXvdyd3rjuKImH/ZRi5ECMOiR3rp1q77Z6ASF2QJXBVvdTgzfc/Irvb+wOzPr3yfD7Dd+463SSjyXRWKbOZ8urE6ntEsDi5byI/Ps2lH/c8UWVe3Aq+K8kkVvOzMDWN71x95lV8m8nvrXSgIhD2VbHM4m/n6yK62WzEset7LnbNkmGza/GLE8pqHdST+a5yb8qAakAoXgEi1z9Xh0oggUlIn5QuFokoUFb1C7oaxvev/7rxBGZE/4HFY9MiO1oW7g7P8/vdGWv/X70ECfh8L4PcDjt1y+zd1NPHvOTflrYZ7kHkAsDVYP0/U3vyLQDsCwRkpF357bM/a//OGEfliQVDh9wvZH3o282H09DAGsCh+v/PgzAM6lrwh4PcbV/kECGRirg6XFAOQyIsV01I7IJBVkYSx2TMHR/vW/u2mB16MHN9GxXkCuYW5A2arYi1GSvljwvb6U30b8xhbKL8PjW3bvM6D03fpROvvcXbGBTXwJZhUdEYvLd0CBI0ISNPT4rkA1fLNv2gupFlFErd1Dk1+7PhNlxUx9OT8Gz2fJZjl94snvGLpA6M7U5OL5fe7Dkz+Vx1v/Ux9+f0LPv1KPA8gOTZXhxcGgB4/7XOtfoqL+TSUo2r3BIoIzATrxVQ49mDn0JnfQd873KWAQETK5EQ0rD1DpeIHxn6/fWSx/H7XfeO3qHjqv3M+7Ze8NbKICJRRUsxmy27hqbk6vDAABFWnp/paJgB5QoWiUlUa9jxEhnhlEVsWFY4/tDQQZP7cpFIhEeS8cvr6E7vX/nSx/H730JkeirXu50J2efj9xQurUFSE6Een92x4ZSEviBYSAyhf6fqb0Oq3aj6jgRTBehBQBQQY7Wv/xoKImkpMIKJGiG7v+lIWXC4+PnbL+n9cML8fBJ7dQxPvl0js63BLDPbUiqh3FAG0JgGGX627eWmDeVKg2etg+Tm0U5/rYGGBNkI6RFzKfWzBIKisy788lDkEzvyWK+D3u+4bfwfC8SMkHPdr+ZRaAcqv0XUwkaD/iDmxJzUlgvtUNE6A1H6kiW8JSKy7eHeAoL16ZVzbQpQ/LBqD27xL/+KVX0Yo/igRJVaM8v0lWxWLE4kcHLu19Qz6j5iFVAQtsiRspo1A9S0JW5olWJgEIOn6i+OXUrz9H2BClweFnCvlfSOTcSDWTocJv/L8zckql4QRCQ5Dje5MTULsH1A4qoA6DTaatQTlC7EEC1b+5UOTrYiteZSc6OVSWFHKBwBLkZgS6372+e0t4ziMBT8fX/gJDqpNR3at+arNTA2rRKsDsFt3EESqCILAsl1x93NhVzsPq0jibVyY8VbUOBthz7/Ymvqb0b72+xf7QmhxJrwHjH5RLW3uds5lnlLRlFOjhgivDwKvSpagwu8PEpdiHd9QscR7Vxy/L+ypaKvhQvZnjuCTs28XFiGLA0BgVn7a25Hl3Mx1XM4/r2Kpaj6DrpM7CEbQ9pLtOjh9SCVafptzK+yRi7CnYq2G3eJxVfaueaFvzcxC/f6FAwDwJ1sOD+uTt3eN2sL01ewWfzz7DFpY6gqCSPyhzv1nPrpoEByBxiB5XQcm71SJ1pv9+v0V8rxNRCDiqUSbEbd0jIqZq4/vbntpwfT2kgEA+HNuh4f12O93juTSo1sln/umSqQMmTBV6T38wt1BLP5Q54FFgCDg9zcOTf6RSrT9wYrg988q3yPjkEqkDBcL3+bJifec2LP+hfo/Dz8nggaAzkPp7aScL6hwZAPnZuplBv0U0YQU53MfG93d/pdvmCIGv7fxwJmdJtZ2gIsZD8x6pbS1V/FWcKkwIdbrH93Rsm9RJFdNAFAJpoKxsB37Tl0SjrZ8Rpg/DbYO6jKZdIEgCCjejUMTN+pI8q/ELdllLeFe5CqhjSVS93Ixf+fo7rUnqzVetnqL7386hMGrypv2n9rM4ZbnYF2Dus0mngOCUu5jo7vOAUFwD7Bx3/jVKpb4Htgz8FxaQf0MmJwwbCH96yd3dzyFYQmhl8rV+ODqRb1btzDQr6yOflxHYw5npuvXKmb2AgmswvGHOg+cweiu9r/EETEYh6CXvO6hV35dQolvE3NIPJdXVDMLEaZwxCivvAMit2Ggejey1aNyxw8LBgeZgHfBMlDvJ0RnA0MfBPvPfBTbyPNLuU5fIU7iUSJqEa/EK4ffn7XTSsouwPJuEOA3qajWR1cHogSQ/MaQOKfVzLPKCV+2bC+IZ91BWMHNf9grqKMmrn8EE/Ip3pU4tLry4odt1qB4xYs715+u1uCo6iio3++HM47cWoJ0iPWWb2JIYAlgXbDg6yosPwoud3jFTiwnIlhPSDsJlyPdAIDDh6uiu+p2CzfcBqhYMN1i+XwsKRLPFSIVVk7YV/5KM/uvEwgq4g7/f6szL6C6m0I2Aq3REAMjiQjCIl5xNSg/WJMGiyQAAMeONt7EEPLAvu4bJcAmWm2dTEjpqh6uqm6OJcrCesHAyObY2OrHghYMygAAtmxtoHbxwfAC5eIMgBl/YkhTYVVPBd0itOaX/V843EAWgEgAoRN7UtMAjZAOXRwTQ+qZBiqHxHPTrps/4ceAPdw4AACAfvjRH/GPyTi1fT9w8R1/JicMAp451bdxojGHR1fACvwdIFStyZZN8U0AGQOAjgYutwGHRwf0ZDjs/G/OZzLQjr5oJofVPplRUi6Chb7lB4CNODyaSDAs+oVPJF8B+DsqkgAItqm9pYf+FI4Rlwv/enKs5Z8hQtUcHl2T2zpmdTe5xY82B0hWBQDwexiqu/zCDzEAqlZ1VX0FBcMkOg+ceVjH19zAuamVVmPfWKc/EtdcyP5kdKzt3wDgpVT/1CUIxLEegQgxzB9yKV+EdtCMBS7w6CslEIZSZi8GycOW6h/Y6gMg6Fk/tqv1OZQL/0XFEhoEr6nQRYunEi2Gi7k/PbGz5QdLKfysLwCAYILWETNyy9o/s9npYZVMOZA6vSJaFYefXX9Sycx3Rnet+WNf+bXhVWoXpAXFops2I8Sc+66Kx7dxZtqFwKyUKtxl0DwAuCqRcjiXe9yzM9ecGru0WI3iz/pagEpaOAA5fhMVZXryWs7lvqESKQdKEZib6eF5Aj6AWCVTji3kHilPZa491bcxP7uXtVJTHRY2S1t2HZz5NJnQFygUiXNuKqCLSV3UFsHvaCIUTWqwBVv3T0e3J/8bgCXX/DcGAOa4AwwSd++fuFKi8c8TcCM5EXAxC/8KGQJAQUD+t5oLChGAJMgmBITG69cTzPMDVdbwOt/Pn3vA/ppEUyRBpB1IufgjWy7+0cm+tiOzNHoNT359ATDLEZyNZLsfyL9bRHZD5FoViacAQLwyxHMBtph9Z0hEIAXSBmRCgNGQQg5ibQCMZa8+ERARaQcUjkJcF+KVAOu99kKMoKEMyImAjIGUihCRJ4j43hMv3fl1DA5yraL9xgBAxaxV0kUA3V+TDSgX3idkr4bg7RDphnCKtKNABGELYVsk0Dhp/SyDnhDX+59K4+Mq1rKXM1PLV+nLbFWyTXMufS8UfQPa9JC17xaRN5E2LWRCZwuShCFuEcwyRYRnCepxED1y4ubYD88l0eq5BFpGk6lwGK/htS/9ykw7gHZTliQDWqCLovWUmpqYGL2ju1D5ucsOvtzhUfwZUtQinkt1jyNEBMYRiGQM480v7kyenv1uD0mH5+a7yPU6RFQCCqJAGRi8XDbxkVP/mSbOYxkZy1BGs/x+VIJevFu2yrymz7ce/j+DVO4amu5TLa33cXZ6GZ53i5+uZWf2jOxM7cewhHAMvKBWdBL0J9hyWOp94hsPAK8XMG457H+3Yz3+qTg3Fw58ZeeBqYd1IlXfBs6VruPZ6UdHdrVd9xq/LUJ+3X7P2erdLVsFxyC1zOlXBwAWTTRNtzA7P1Sh6K9yYab2IBD2VLTFcLnwnLB91+ho6zQwAAwOrsgKqJVbMh2couM3tU1TLnMtu8XjKtZqatqzqKJ8rzQCL3/N6M7UpB/QDq7Y8reVT8AE5rf7wKnL4LQ+QuHoVX67eNFVewEc5Ph+Z478M5LPXj+6t+P5eqdsTQtwPgna153YteFFFMbfw8XcX/vtakJ+u5qlXEUH/XjIOKSSKSOl3MM2N/Wbq0X5q8MCzM0QKtzCodwuUfR5FYl2SCEH8co2WOr8tLMPGAYgpI2haAJcKo6L8MDozfGqtGVpAqDWGcQg8aZ7Tq+XeOJTInSTikQvgbXgcgFgj1/N0JGffktgEbVRKhQFtAYX82cAfFlKhS9Wsy1LEwB1igsAoGPfqUtCoZYPkZYPCfM7yYm2+iXWc2iXyqg1z4O4xTRAT5KibxHkr4/flHj53M9cTbJ6b+EqnUDnKG3TA9n1LPIWMK4UyGYSWQcApGhCQMeF6KfE9P9GdsTHXgWmHvBqOvUXl4gQ+sXM3kEsNJ7oF3MxPG6hiw4Mh6HOjlM9GvzGVn+62jikedqb0pSmNKUpTWlKU5rSlKY0pSmrWP4/oYd7obpyFeUAAAAASUVORK5CYII=';
 
 function NetflixWordmark({ width = 112, height = 31, style }) {
@@ -1871,9 +1868,9 @@ const migrateConversationEncryption = async (source) => {
 };
 
 const light = {
-  bg: '#F6F7FB', card: '#FFFFFF', elevated: '#FFFFFF', text: '#111318', sub: '#6F7582',
-  border: '#E8EAF0', soft: '#F0F1F6', input: '#F2F3F7', tab: 'rgba(255,255,255,0.97)', noteSurface: '#FFFFFF', noteBorder: '#DADDE6',
-  inverse: '#111318', inverseText: '#FFFFFF', danger: '#E5484D', success: '#1F9D66', warning: '#F59E0B',
+  bg: '#F7F7F8', card: '#FFFFFF', elevated: '#FFFFFF', text: '#101114', sub: '#6E6E73',
+  border: '#E7E7EA', soft: '#F1F1F3', input: '#F2F2F4', tab: 'rgba(250,250,251,0.94)', noteSurface: '#FFFFFF', noteBorder: '#E2E2E5',
+  inverse: '#111214', inverseText: '#FFFFFF', danger: '#E5484D', success: '#179B63', warning: '#F59E0B',
 };
 
 const STATUS_PRESETS = [
@@ -1944,9 +1941,9 @@ const getStatusMeta = (person = {}) => {
 };
 
 const dark = {
-  bg: '#0B0C0F', card: '#13151A', elevated: '#181A20', text: '#F6F7FA', sub: '#9EA3AF',
-  border: '#252832', soft: '#1A1D23', input: '#1B1E25', tab: 'rgba(16,17,21,0.97)', noteSurface: '#202228', noteBorder: '#343843',
-  inverse: '#F6F7FA', inverseText: '#111318', danger: '#FF6B6B', success: '#47C98A', warning: '#FFB84D',
+  bg: '#0D0D0F', card: '#171719', elevated: '#1C1C1F', text: '#F7F7F8', sub: '#A0A0A6',
+  border: '#2A2A2E', soft: '#202023', input: '#222226', tab: 'rgba(20,20,22,0.94)', noteSurface: '#1D1D20', noteBorder: '#303035',
+  inverse: '#F7F7F8', inverseText: '#111214', danger: '#FF6961', success: '#49C98A', warning: '#FFB84D',
 };
 
 const nowTime = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -2664,12 +2661,12 @@ function ChatsScreen({ theme, activeId, profiles, connectedIds, conversations, f
 
   return (
     <View style={styles.flexOne}>
-      <View style={styles.simpleHeader}><View style={{ flex: 1 }}><Text style={[styles.bigTitle, { color: theme.text }]}>{showArchived?'Archived':'Chats'}</Text><Text style={[styles.headerSub, { color: theme.sub }]}>Direct + group chats · encrypted by default.</Text></View>{archivedCount?<Pressable onPress={()=>setShowArchived(v=>!v)} style={[styles.newGroupButton,{backgroundColor:theme.soft,marginRight:7}]}><Ionicons name={showArchived?'chatbubbles':'archive'} size={15} color={theme.text}/><Text style={{color:theme.text,fontWeight:'900',fontSize:11}}>{showArchived?'Inbox':archivedCount}</Text></Pressable>:null}<Pressable onPress={onJoinGroup} style={[styles.newGroupButton,{backgroundColor:theme.soft,marginRight:7}]}><Ionicons name="enter-outline" size={15} color={theme.text}/><Text style={{color:theme.text,fontWeight:'900',fontSize:11}}>Join</Text></Pressable><Pressable onPress={onCreateGroup} style={[styles.newGroupButton, { backgroundColor: theme.inverse }]}><Ionicons name="people" size={16} color={theme.inverseText} /><Text style={{ color: theme.inverseText, fontWeight: '900', fontSize: 11 }}>New group</Text></Pressable></View>
+      <View style={styles.simpleHeader}><View style={{ flex: 1 }}><Text style={[styles.bigTitle, { color: theme.text }]}>{showArchived?'Archived':'Messages'}</Text><Text style={[styles.headerSub, { color: theme.sub }]}>Private · encrypted</Text></View>{archivedCount?<Pressable accessibilityLabel={showArchived?'Inbox':'Archived'} onPress={()=>setShowArchived(v=>!v)} style={[styles.newGroupButton,{backgroundColor:theme.soft,marginRight:6}]}><Ionicons name={showArchived?'chatbubbles-outline':'archive-outline'} size={17} color={theme.text}/>{!showArchived?<Text style={{color:theme.text,fontWeight:'900',fontSize:10}}>{archivedCount}</Text>:null}</Pressable>:null}<Pressable accessibilityLabel="Join group" onPress={onJoinGroup} style={[styles.newGroupButton,{backgroundColor:theme.soft,marginRight:6}]}><Ionicons name="link-outline" size={18} color={theme.text}/></Pressable><Pressable accessibilityLabel="New group" onPress={onCreateGroup} style={[styles.newGroupButton, { backgroundColor: theme.inverse }]}><Ionicons name="add" size={20} color={theme.inverseText} /></Pressable></View>
       <FlatList data={rows} keyExtractor={x => `${x.type}_${x.id}`} contentContainerStyle={styles.listPad} showsVerticalScrollIndicator={false}
-        ListHeaderComponent={!showArchived?<Pressable onPress={onOpenOfficial} style={({pressed})=>[styles.officialChatRow,{backgroundColor:theme.card,borderColor:theme.border,opacity:pressed ? .72 : 1}]}><View style={{position:'relative'}}><OfficialAvatar theme={theme} size={52}/>{officialUnread?<View style={styles.unreadDot}/>:null}</View><View style={{flex:1,minWidth:0}}><View style={styles.rowBetween}><View style={styles.inlineNameRow}><Text style={[styles.personName,{color:theme.text}]}>LINK Official</Text><GoldVerifiedBadge compact/></View><Text style={[styles.metaText,{color:theme.sub}]}>{officialLatest?.createdAt?new Date(officialLatest.createdAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):''}</Text></View><Text numberOfLines={1} style={[styles.chatPreview,{color:officialUnread?theme.text:theme.sub,fontWeight:officialUnread?'800':'400'}]}>{stripMarkdownForPreview(officialLatest?.body)||'Official product and safety updates from LINK.'}</Text></View>{officialUnread?<View style={styles.unreadCount}><Text style={styles.unreadCountText}>{officialUnread}</Text></View>:null}</Pressable>:null}
+        ListHeaderComponent={!showArchived?<Pressable onPress={onOpenOfficial} style={({pressed})=>[styles.officialChatRow,{backgroundColor:theme.card,borderColor:theme.border,opacity:pressed ? .72 : 1}]}><View style={{position:'relative'}}><OfficialAvatar theme={theme} size={46}/>{officialUnread?<View style={styles.unreadDot}/>:null}</View><View style={{flex:1,minWidth:0}}><View style={styles.rowBetween}><View style={styles.inlineNameRow}><Text style={[styles.personName,{color:theme.text}]}>LINK Official</Text><GoldVerifiedBadge compact/></View><Text style={[styles.metaText,{color:theme.sub}]}>{officialLatest?.createdAt?new Date(officialLatest.createdAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):''}</Text></View><Text numberOfLines={1} style={[styles.chatPreview,{color:officialUnread?theme.text:theme.sub,fontWeight:officialUnread?'800':'400'}]}>{stripMarkdownForPreview(officialLatest?.body)||'Official product and safety updates from LINK.'}</Text></View>{officialUnread?<View style={styles.unreadCount}><Text style={styles.unreadCountText}>{officialUnread}</Text></View>:null}</Pressable>:null}
         renderItem={({ item }) => (
           <Pressable onPress={() => item.type === 'group' ? openGroup(item.group) : openChat(item.person)} style={({ pressed }) => [styles.chatRow, { borderBottomColor: theme.border, opacity: pressed ? .72 : 1 }]}>
-            <View>{item.type === 'group' ? <GroupAvatar group={item.group} profiles={profiles} theme={theme} size={52} /> : <Avatar person={item.person} size={52} theme={theme} />}{item.unread ? <View style={styles.unreadDot} /> : null}</View>
+            <View>{item.type === 'group' ? <GroupAvatar group={item.group} profiles={profiles} theme={theme} size={46} /> : <Avatar person={item.person} size={46} theme={theme} />}{item.unread ? <View style={styles.unreadDot} /> : null}</View>
             <View style={{ flex: 1, minWidth: 0 }}><View style={styles.rowBetween}><View style={styles.inlineNameRow}><Text style={[styles.personName, { color: theme.text }]}>{item.type === 'group' ? item.group.name : item.person.name}</Text>{item.muted?<Ionicons name="notifications-off" size={12} color={theme.sub}/>:null}{item.type === 'group' ? <View style={[styles.groupPill, { backgroundColor: theme.soft }]}><Text style={[styles.groupPillText, { color: theme.sub }]}>{item.group.memberIds?.length || 0}</Text></View> : item.favorite ? <Ionicons name="star" size={13} color={ACCENT} /> : null}</View><Text style={[styles.metaText, { color: theme.sub }]}>{item.last?.time || ''}</Text></View><Text numberOfLines={1} style={[styles.chatPreview, { color: item.unread ? theme.text : theme.sub, fontWeight: item.unread ? '700' : '400' }]}>{preview(item)}</Text></View>
             {item.unread ? <View style={styles.unreadCount}><Text style={styles.unreadCountText}>{item.unread}</Text></View> : null}
           </Pressable>
@@ -3895,6 +3892,9 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
   const listRef = useRef(null);
   const composerRef = useRef(null);
   const signalRef = useRef(null);
+  const nearBottomRef = useRef(true);
+  const firstChatLayoutRef = useRef(false);
+  const lastRenderedMessageRef = useRef(null);
   const typingTimerRef = useRef(null);
   const remoteTypingTimersRef = useRef({});
   const chatTheme = chatThemeById(chatThemeId);
@@ -3904,12 +3904,27 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
   const activeTypingIds = Object.entries(typingUsers).filter(([, typing]) => typing).map(([id]) => id);
   const typingSignature = activeTypingIds.join('|');
   const latestIncomingId = [...messages].reverse().find(message => message.senderId !== activeProfile.id)?.id || null;
+  const latestMessageId = messages[messages.length-1]?.id || null;
 
   useEffect(() => {
     if (!latestIncomingId) return undefined;
     const timer = setTimeout(() => markRead(), 70);
     return () => clearTimeout(timer);
   }, [person.id, chatId, latestIncomingId]);
+  useEffect(()=>{
+    firstChatLayoutRef.current=false;
+    nearBottomRef.current=true;
+    lastRenderedMessageRef.current=null;
+  },[chatId,person.id]);
+  useEffect(()=>{
+    if(!latestMessageId || latestMessageId===lastRenderedMessageRef.current)return;
+    const hadPrevious=!!lastRenderedMessageRef.current;
+    lastRenderedMessageRef.current=latestMessageId;
+    if(hadPrevious && nearBottomRef.current){
+      const timer=setTimeout(()=>listRef.current?.scrollToEnd?.({animated:true}),55);
+      return()=>clearTimeout(timer);
+    }
+  },[latestMessageId]);
   useEffect(() => {
     let disposed = false;
     let localSignal = null;
@@ -4036,7 +4051,33 @@ function ChatScreen({ theme, activeProfile, person, messages, profiles, chatId, 
         {pinnedMessages.length ? <Pressable onPress={() => { const pin=pinnedMessages[pinnedMessages.length-1]; beginReply(pin); }} style={[styles.pinnedBanner,{backgroundColor:theme.card,borderBottomColor:theme.border}]}><Ionicons name="pin" size={14} color={chatAccent}/><View style={{flex:1}}><Text style={{color:theme.text,fontWeight:'900',fontSize:11}}>Pinned message</Text><Text numberOfLines={1} style={{color:theme.sub,fontSize:11}}>{pinnedMessages[pinnedMessages.length-1].text || pinnedMessages[pinnedMessages.length-1].type}</Text></View><Text style={{color:theme.sub,fontSize:10}}>{pinnedMessages.length}</Text></Pressable> : null}
         <View style={styles.chatBody}>
           {chatThemeScope === 'full' ? <LinearGradient pointerEvents="none" colors={[theme.bg, `${chatAccent}08`, theme.bg]} locations={[0, .56, 1]} style={StyleSheet.absoluteFill} /> : null}
-          <FlatList ref={listRef} data={messages} keyExtractor={m => m.id} contentContainerStyle={styles.messageList} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" onLayout={() => setTimeout(() => listRef.current?.scrollToEnd?.({ animated: false }), 20)} onContentSizeChange={() => listRef.current?.scrollToEnd?.({ animated: false })}
+          <FlatList
+            ref={listRef}
+            data={messages}
+            keyExtractor={m => m.id}
+            contentContainerStyle={styles.messageList}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode={Platform.OS==='ios'?'interactive':'on-drag'}
+            scrollEventThrottle={80}
+            initialNumToRender={18}
+            maxToRenderPerBatch={14}
+            windowSize={9}
+            updateCellsBatchingPeriod={35}
+            onScroll={({nativeEvent})=>{
+              const {contentOffset,layoutMeasurement,contentSize}=nativeEvent;
+              nearBottomRef.current=(contentOffset.y+layoutMeasurement.height)>=contentSize.height-96;
+            }}
+            onLayout={()=>{
+              if(firstChatLayoutRef.current)return;
+              firstChatLayoutRef.current=true;
+              setTimeout(()=>listRef.current?.scrollToEnd?.({animated:false}),25);
+            }}
+            onContentSizeChange={()=>{
+              if(!firstChatLayoutRef.current || nearBottomRef.current){
+                setTimeout(()=>listRef.current?.scrollToEnd?.({animated:false}),18);
+              }
+            }}
             renderItem={({ item, index }) => {
               const prev = messages[index - 1];
               const next = messages[index + 1];
@@ -4830,7 +4871,7 @@ function NextOnboardingModal({visible,theme,profile,onDone,onShowLink}){
     {icon:'compass-outline',title:'Discover',body:'Find people, posts and #topics across LINK from one place.'},
   ];
   const item=cards[step]||cards[0];
-  return <Modal visible={visible} animationType="fade" presentationStyle="fullScreen"><SafeAreaView style={[styles.flexOne,{backgroundColor:theme.bg}]}><View style={{flex:1,padding:26,justifyContent:'space-between'}}><View><View style={{width:58,height:58,borderRadius:20,backgroundColor:'#111318',alignItems:'center',justifyContent:'center'}}><Text style={{color:'#fff',fontSize:30,fontWeight:'900'}}>L</Text></View><Text style={[styles.bigTitle,{color:theme.text,fontSize:42,marginTop:28}]}>Welcome to LINK 4.4</Text><Text style={[styles.headerSub,{color:theme.sub,fontSize:15,lineHeight:22,marginTop:6}]}>ONE brings your social identity, posts, discovery and conversations together.</Text></View><View style={[styles.nextSheet,{backgroundColor:theme.card,borderWidth:StyleSheet.hairlineWidth,borderColor:theme.border,width:'100%'}]}><View style={{width:54,height:54,borderRadius:18,backgroundColor:theme.soft,alignItems:'center',justifyContent:'center'}}><Ionicons name={item.icon} size={26} color={ACCENT}/></View><Text style={[styles.sheetTitle,{color:theme.text,marginTop:18}]}>{item.title}</Text><Text style={[styles.sheetSub,{color:theme.sub,fontSize:14,lineHeight:21,marginTop:8}]}>{item.body}</Text>{step===2?<Pressable onPress={onShowLink} style={[styles.widePrimary,{backgroundColor:theme.soft,marginTop:18}]}><Ionicons name="qr-code" size={18} color={theme.text}/><Text style={{color:theme.text,fontWeight:'900'}}>Show my LINK</Text></Pressable>:null}</View><View><View style={{flexDirection:'row',justifyContent:'center',gap:7,marginBottom:16}}>{cards.map((_,i)=><View key={i} style={{width:i===step?22:7,height:7,borderRadius:99,backgroundColor:i===step?ACCENT:theme.border}}/>)}</View><Pressable onPress={()=>step<cards.length-1?setStep(step+1):onDone?.()} style={[styles.widePrimary,{backgroundColor:theme.inverse}]}><Text style={[styles.primaryButtonText,{color:theme.inverseText}]}>{step<cards.length-1?'Continue':'Enter LINK'}</Text></Pressable></View></View></SafeAreaView></Modal>;
+  return <Modal visible={visible} animationType="fade" presentationStyle="fullScreen"><SafeAreaView style={[styles.flexOne,{backgroundColor:theme.bg}]}><View style={{flex:1,padding:26,justifyContent:'space-between'}}><View><View style={{width:58,height:58,borderRadius:20,backgroundColor:'#111318',alignItems:'center',justifyContent:'center'}}><Text style={{color:'#fff',fontSize:30,fontWeight:'900'}}>L</Text></View><Text style={[styles.bigTitle,{color:theme.text,fontSize:42,marginTop:28}]}>Welcome to LINK V</Text><Text style={[styles.headerSub,{color:theme.sub,fontSize:15,lineHeight:22,marginTop:6}]}>ONE brings your social identity, posts, discovery and conversations together.</Text></View><View style={[styles.nextSheet,{backgroundColor:theme.card,borderWidth:StyleSheet.hairlineWidth,borderColor:theme.border,width:'100%'}]}><View style={{width:54,height:54,borderRadius:18,backgroundColor:theme.soft,alignItems:'center',justifyContent:'center'}}><Ionicons name={item.icon} size={26} color={ACCENT}/></View><Text style={[styles.sheetTitle,{color:theme.text,marginTop:18}]}>{item.title}</Text><Text style={[styles.sheetSub,{color:theme.sub,fontSize:14,lineHeight:21,marginTop:8}]}>{item.body}</Text>{step===2?<Pressable onPress={onShowLink} style={[styles.widePrimary,{backgroundColor:theme.soft,marginTop:18}]}><Ionicons name="qr-code" size={18} color={theme.text}/><Text style={{color:theme.text,fontWeight:'900'}}>Show my LINK</Text></Pressable>:null}</View><View><View style={{flexDirection:'row',justifyContent:'center',gap:7,marginBottom:16}}>{cards.map((_,i)=><View key={i} style={{width:i===step?22:7,height:7,borderRadius:99,backgroundColor:i===step?ACCENT:theme.border}}/>)}</View><Pressable onPress={()=>step<cards.length-1?setStep(step+1):onDone?.()} style={[styles.widePrimary,{backgroundColor:theme.inverse}]}><Text style={[styles.primaryButtonText,{color:theme.inverseText}]}>{step<cards.length-1?'Continue':'Enter LINK'}</Text></Pressable></View></View></SafeAreaView></Modal>;
 }
 
 function ForegroundNotice({ notice, theme, onPress }) {
@@ -5024,7 +5065,7 @@ function LinkFeedScreen({theme,activeProfile,profiles,posts=[],connectedIds=[],o
     return [...sorted,ad];
   },[socialPosts,officialAnnouncements]);
   return <View style={styles.flexOne}>
-    <View style={styles.oneHeader}><Pressable onPress={onOpenWhatsNew}><Text style={[styles.oneBrand,{color:theme.text}]}>LINK</Text><Text style={[styles.oneHeaderSub,{color:theme.sub}]}>4.0 · ONE</Text></Pressable><View style={styles.oneHeaderActions}><Pressable onPress={onOpenActivity} style={[styles.oneHeaderCircle,{backgroundColor:theme.card,borderColor:theme.border}]}><Ionicons name="notifications-outline" size={19} color={theme.text}/>{activityCount?<View style={styles.oneActivityDot}/>:null}</Pressable><Pressable onPress={onCreatePost} style={[styles.oneHeaderCreate,{backgroundColor:theme.inverse}]}><Ionicons name="add" size={20} color={theme.inverseText}/></Pressable></View></View>
+    <View style={styles.oneHeader}><Pressable onPress={onOpenWhatsNew}><Text style={[styles.oneBrand,{color:theme.text}]}>LINK V</Text><Text style={[styles.oneHeaderSub,{color:theme.sub}]}>5.0 · smooth social</Text></Pressable><View style={styles.oneHeaderActions}><Pressable onPress={onOpenActivity} style={[styles.oneHeaderCircle,{backgroundColor:theme.card,borderColor:theme.border}]}><Ionicons name="notifications-outline" size={19} color={theme.text}/>{activityCount?<View style={styles.oneActivityDot}/>:null}</Pressable><Pressable onPress={onCreatePost} style={[styles.oneHeaderCreate,{backgroundColor:theme.inverse}]}><Ionicons name="add" size={20} color={theme.inverseText}/></Pressable></View></View>
     <View style={[styles.oneSegment,{backgroundColor:theme.soft}]}>
       {[['following',cs?'Pro tebe':'Following'],['discover',cs?'Objevovat':'Discover']].map(([key,label])=><Pressable key={key} onPress={()=>setMode(key)} style={[styles.oneSegmentItem,mode===key&&{backgroundColor:theme.card,borderColor:theme.border}]}><Text style={[styles.oneSegmentText,{color:mode===key?theme.text:theme.sub}]}>{label}</Text></Pressable>)}
     </View>
@@ -5104,11 +5145,11 @@ function PostThreadModal({visible,onClose,theme,post,posts=[],profiles,activeUse
 
 function TabBar({ tab, setTab, theme, darkMode, unreadCount = 0, requestCount = 0, onCreate }) {
   const items = [
-    ['feed', 'newspaper-outline', 'Feed'],
-    ['discover', 'compass-outline', 'Discover'],
+    ['feed', 'home-outline', 'Home'],
+    ['discover', 'search-outline', 'Explore'],
     ['create', 'add', 'Create'],
-    ['chats', 'chatbubbles-outline', 'Chats'],
-    ['profile', 'person-circle-outline', 'Profile'],
+    ['chats', 'chatbubble-ellipses-outline', 'Inbox'],
+    ['profile', 'person-outline', 'You'],
   ];
   return <View style={styles.tabBarShell} pointerEvents="box-none">
     <View style={[styles.tabGlass, { borderColor: darkMode ? 'rgba(255,255,255,.16)' : 'rgba(255,255,255,.82)', shadowColor: '#000' }]}>
@@ -5119,7 +5160,7 @@ function TabBar({ tab, setTab, theme, darkMode, unreadCount = 0, requestCount = 
         const center = key === 'create';
         const badge = key === 'chats' ? Math.min(unreadCount, 99) : key === 'discover' ? Math.min(requestCount,99) : 0;
         return <Pressable key={key} onPress={() => center ? onCreate?.() : setTab(key)} style={styles.tabItem} hitSlop={5}>
-          {center ? <View style={[styles.centerTabGlass, { backgroundColor: active ? ACCENT : (darkMode ? 'rgba(255,255,255,.14)' : 'rgba(16,17,20,.92)'), borderColor: darkMode ? 'rgba(255,255,255,.22)' : 'rgba(255,255,255,.92)' }]}><Ionicons name="add" size={27} color="#fff" /></View> : <View style={[styles.tabActiveCapsule, active && { backgroundColor: darkMode ? 'rgba(255,255,255,.14)' : 'rgba(255,255,255,.66)', borderColor: darkMode ? 'rgba(255,255,255,.11)' : 'rgba(255,255,255,.92)' }]}><View style={styles.tabIconWrap}><Ionicons name={active ? icon.replace('-outline', '') : icon} size={active ? 23 : 22} color={active ? theme.text : theme.sub} />{badge ? <View style={styles.tabUnreadBadge}><Text style={styles.tabUnreadBadgeText}>{(key==='chats'?unreadCount:requestCount)>99?'99+':badge}</Text></View> : null}</View><Text style={[styles.tabLabel, { color: active ? theme.text : theme.sub, opacity: active ? 1 : .72 }]}>{label}</Text></View>}
+          {center ? <View style={[styles.centerTabGlass, { backgroundColor: active ? ACCENT : (darkMode ? 'rgba(255,255,255,.14)' : 'rgba(16,17,20,.92)'), borderColor: darkMode ? 'rgba(255,255,255,.22)' : 'rgba(255,255,255,.92)' }]}><Ionicons name="add" size={23} color="#fff" /></View> : <View style={[styles.tabActiveCapsule, active && { backgroundColor: darkMode ? 'rgba(255,255,255,.14)' : 'rgba(255,255,255,.66)', borderColor: darkMode ? 'rgba(255,255,255,.11)' : 'rgba(255,255,255,.92)' }]}><View style={styles.tabIconWrap}><Ionicons name={active ? icon.replace('-outline', '') : icon} size={active ? 21 : 20} color={active ? theme.text : theme.sub} />{badge ? <View style={styles.tabUnreadBadge}><Text style={styles.tabUnreadBadgeText}>{(key==='chats'?unreadCount:requestCount)>99?'99+':badge}</Text></View> : null}</View><Text style={[styles.tabLabel, { color: active ? theme.text : theme.sub, opacity: active ? 1 : .72 }]}>{label}</Text></View>}
         </Pressable>;
       })}</View>
       <View style={[styles.glassHighlight, { backgroundColor: darkMode ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.82)' }]} pointerEvents="none" />
@@ -5186,6 +5227,9 @@ function LinkApp({ session, accountManager }) {
   const inboxWatchBusyRef = useRef(false);
   const latestLocalMessageIdRef = useRef(null);
   const latestLocalRequestCursorRef = useRef('none|none|0|0');
+  const activeChatCursorRef = useRef(null);
+  const activeChatSyncBusyRef = useRef(false);
+  const activeChatRefreshTimerRef = useRef(null);
   useEffect(()=>{dataRef.current=data;},[data]);
 
   const activeMode = data.themeSetting === 'system' ? (systemScheme === 'dark' ? 'dark' : 'light') : data.themeSetting;
@@ -5220,6 +5264,14 @@ function LinkApp({ session, accountManager }) {
   const officialAnnouncements=data.officialAnnouncements||[];
   const activeProfilePosts=(data.profilePosts||[]).filter(post=>post.authorId===data.activeAccountId);
   const activeGroupPolls=activeGroupId?(data.groupPolls?.[activeGroupId]||[]):[];
+  const activeThreadKey = activeGroupId
+    ? groupThreadKey(activeGroupId)
+    : activeChatId
+      ? threadKey(data.activeAccountId,activeChatId)
+      : null;
+  const activeBackendChatId = activeThreadKey
+    ? (data.backendChatIds?.[activeThreadKey] || activeGroupId || null)
+    : null;
   const activePlus = !!activeProfile?.isAdmin || subscriptionIsActive(activeSubscription) || activePro;
   const activeRestriction = data.moderation?.[data.activeAccountId] || { banned: false, mutedUntil: null };
   const activeChatPerson = activeChatId ? data.profiles[activeChatId] : null;
@@ -5367,6 +5419,69 @@ function LinkApp({ session, accountManager }) {
       }
     );
   }, [hydrated, liveUserId]);
+  useEffect(() => {
+    if (!hydrated || !liveUserId || !activeBackendChatId) {
+      activeChatCursorRef.current=null;
+      return undefined;
+    }
+    let alive=true;
+    let debounce=null;
+
+    const cursorValue = row => [
+      row?.latest_message_id || 'none',
+      row?.latest_message_at || 'none',
+      row?.latest_receipt_at || 'none',
+      row?.latest_reaction_at || 'none',
+    ].join('|');
+
+    const check = async ({force=false}={}) => {
+      if(!alive || AppState.currentState!=='active' || activeChatSyncBusyRef.current) return;
+      activeChatSyncBusyRef.current=true;
+      try{
+        const {data:cursorData,error}=await supabase.rpc('link_v_chat_sync_cursor',{p_chat_id:activeBackendChatId});
+        if(error) throw error;
+        const row=Array.isArray(cursorData)?cursorData[0]:cursorData;
+        const next=cursorValue(row);
+        const changed=activeChatCursorRef.current!==next;
+        activeChatCursorRef.current=next;
+        if(force || changed) await refreshRemote();
+      }catch(error){
+        console.warn('LINK V active chat sync skipped',error?.message||error);
+      }finally{
+        activeChatSyncBusyRef.current=false;
+      }
+    };
+
+    const schedule = () => {
+      clearTimeout(debounce);
+      debounce=setTimeout(()=>check({force:true}),90);
+    };
+
+    const channel=supabase.channel(`link-v-active-chat-${liveUserId}-${activeBackendChatId}`)
+      .on('postgres_changes',{
+        event:'*',
+        schema:'public',
+        table:'messages',
+        filter:`chat_id=eq.${activeBackendChatId}`,
+      },schedule)
+      .subscribe();
+
+    const start=setTimeout(()=>check({force:true}),220);
+    const timer=setInterval(()=>check(),3500);
+    const stateSub=AppState.addEventListener('change',state=>{
+      if(state==='active') setTimeout(()=>check({force:true}),240);
+    });
+
+    return()=>{
+      alive=false;
+      clearTimeout(start);
+      clearTimeout(debounce);
+      clearInterval(timer);
+      stateSub.remove();
+      activeChatCursorRef.current=null;
+      supabase.removeChannel(channel);
+    };
+  },[hydrated,liveUserId,activeBackendChatId]);
   useEffect(()=>()=>{if(refreshCooldownTimerRef.current)clearTimeout(refreshCooldownTimerRef.current);},[]);
 
   useEffect(() => {
@@ -5430,7 +5545,7 @@ function LinkApp({ session, accountManager }) {
     };
 
     const startupTimer = setTimeout(() => checkInbox(), 700);
-    const interval = setInterval(() => checkInbox(), 8000);
+    const interval = setInterval(() => checkInbox(), 12000);
     const appStateSub = AppState.addEventListener('change', state => {
       if (state === 'active') setTimeout(() => checkInbox({ force:true }), 700);
     });
@@ -5925,7 +6040,7 @@ function LinkApp({ session, accountManager }) {
     const optimistic = {...makeOptimisticMessage(senderId, payload, tempId, optimisticExpiresAt),clientNonce,retryPayload:{...payload,clientNonce,_tempId:tempId},retryTargetId:personId,retryTargetType:'direct'};
     mutate(prev => appendOptimisticMessage(prev, key, optimistic));
     try {
-      let fresh = data;
+      let fresh = dataRef.current || data;
       let chatId = fresh.backendChatIds?.[key];
       if (!chatId) {
         chatId = await ensureDirectChat(personId);
@@ -5998,7 +6113,7 @@ function LinkApp({ session, accountManager }) {
     const optimistic = {...makeOptimisticMessage(senderId, payload, tempId, optimisticExpiresAt),clientNonce,retryPayload:{...payload,clientNonce,_tempId:tempId},retryTargetId:groupId,retryTargetType:'group'};
     mutate(prev => appendOptimisticMessage(prev, key, optimistic));
     try {
-      let fresh = data;
+      let fresh = dataRef.current || data;
       const chatId = fresh.backendChatIds?.[key] || groupId;
       let keyBase64 = fresh.chatKeys?.[key] || chatKeyCacheRef.current[key];
       if (!keyBase64) {
@@ -6979,5 +7094,107 @@ const styles = StyleSheet.create({
   officialChatEmptyTitle:{fontSize:24,lineHeight:30,fontWeight:'950',letterSpacing:-.6,textAlign:'center'},
   officialChatEmptyBody:{marginTop:8,maxWidth:320,fontSize:15,lineHeight:21,textAlign:'center',fontWeight:'500'},
   officialDisabledComposerInner:{flex:1,justifyContent:'center'},
+
+  // LINK V · 5.0 compact OpenAI × iOS × Instagram/TikTok polish
+  iconButton:{width:36,height:36,borderRadius:18,alignItems:'center',justifyContent:'center'},
+  simpleHeader:{paddingHorizontal:16,paddingTop:10,paddingBottom:8,flexDirection:'row',alignItems:'center'},
+  bigTitle:{fontSize:29,lineHeight:34,fontWeight:'950',letterSpacing:-1.1},
+  headerSub:{fontSize:10.5,lineHeight:14,fontWeight:'650',marginTop:1},
+  listPad:{paddingHorizontal:16,paddingTop:3,paddingBottom:94},
+  chatRow:{flexDirection:'row',gap:10,paddingVertical:9.5,alignItems:'center',borderBottomWidth:StyleSheet.hairlineWidth},
+  officialChatRow:{marginHorizontal:0,marginTop:5,marginBottom:3,borderRadius:18,borderWidth:StyleSheet.hairlineWidth,padding:10,flexDirection:'row',alignItems:'center',gap:10},
+  personName:{fontSize:14.5,fontWeight:'900',letterSpacing:-.15},
+  chatPreview:{fontSize:12.5,lineHeight:16,marginTop:2.5},
+  metaText:{fontSize:9.5,marginLeft:7,fontWeight:'650'},
+  newGroupButton:{minWidth:36,height:36,paddingHorizontal:9,borderRadius:18,flexDirection:'row',alignItems:'center',justifyContent:'center',gap:5},
+
+  chatHeader:{height:64,flexDirection:'row',alignItems:'center',paddingHorizontal:6,borderBottomWidth:StyleSheet.hairlineWidth,overflow:'hidden'},
+  chatHeaderSide:{width:112,flexDirection:'row',alignItems:'center'},
+  chatHeaderRight:{justifyContent:'flex-end',gap:1},
+  chatHeaderPersonCenter:{flex:1,alignItems:'center',justifyContent:'center',gap:2},
+  chatHeaderIdentity:{flexDirection:'row',alignItems:'center',gap:3,maxWidth:150},
+  chatHeaderName:{fontWeight:'900',fontSize:12.5,letterSpacing:-.22},
+  chatHeaderStatus:{fontSize:9.5,marginTop:1,fontWeight:'700'},
+  metContext:{alignSelf:'center',flexDirection:'row',alignItems:'center',gap:5,borderRadius:999,paddingHorizontal:9,paddingVertical:4,marginTop:4},
+  metContextText:{fontSize:9.5,fontWeight:'700'},
+
+  messageList:{paddingHorizontal:10,paddingTop:12,paddingBottom:12,flexGrow:1},
+  messageLine:{flexDirection:'row',marginVertical:1.2},
+  groupMessageLine:{alignItems:'flex-start',marginVertical:.6},
+  messageStack:{maxWidth:'82%'},
+  groupMessageStack:{maxWidth:'76%'},
+  bubble:{borderRadius:20,paddingHorizontal:13,paddingTop:8,paddingBottom:8,overflow:'hidden',minHeight:36,justifyContent:'center'},
+  outgoingBubble:{borderRadius:20},
+  incomingBubble:{borderRadius:20},
+  bubbleText:{fontSize:15.5,lineHeight:20.2,letterSpacing:-.15},
+  messageMetaOutside:{minHeight:13,flexDirection:'row',alignItems:'center',gap:3,marginTop:2,paddingHorizontal:8},
+  bubbleTime:{fontSize:9,fontWeight:'600'},
+  replyQuote:{borderLeftWidth:2,paddingLeft:6,marginBottom:5,maxWidth:205},
+  groupSenderName:{fontSize:10,fontWeight:'850',marginLeft:8,marginBottom:3,marginTop:6},
+  reactionBadge:{position:'absolute',bottom:-10,right:6,borderRadius:999,paddingHorizontal:6,paddingVertical:2.5,borderWidth:StyleSheet.hairlineWidth,shadowColor:'#000',shadowOpacity:.06,shadowRadius:5,shadowOffset:{width:0,height:2},elevation:1},
+
+  composerWrap:{flexDirection:'row',gap:6,alignItems:'flex-end',paddingHorizontal:8,paddingTop:5,paddingBottom:Platform.OS==='ios'?6:8},
+  plusButton:{width:36,height:36,borderRadius:18,borderWidth:StyleSheet.hairlineWidth,alignItems:'center',justifyContent:'center',marginBottom:1},
+  composer:{flex:1,minHeight:38,maxHeight:108,borderRadius:20,borderWidth:StyleSheet.hairlineWidth,flexDirection:'row',alignItems:'flex-end',paddingLeft:12,paddingRight:4,paddingVertical:3},
+  composerInput:{flex:1,fontSize:15,maxHeight:92,paddingTop:6,paddingBottom:6,letterSpacing:-.12},
+  sendButton:{width:30,height:30,borderRadius:15,alignItems:'center',justifyContent:'center',marginLeft:4,marginBottom:1},
+  typingLine:{minHeight:28,paddingHorizontal:13,paddingTop:3,flexDirection:'row',alignItems:'center',gap:7},
+  typingBubble:{minWidth:42,height:24,borderRadius:12,borderWidth:StyleSheet.hairlineWidth,alignItems:'center',justifyContent:'center'},
+  typingSpacer:{height:8},
+  replyComposerBar:{minHeight:42,paddingHorizontal:12,paddingVertical:6,flexDirection:'row',alignItems:'center',gap:8},
+  recordingBar:{minHeight:36,marginHorizontal:8,marginBottom:3,borderRadius:16,paddingHorizontal:11,flexDirection:'row',alignItems:'center',gap:7},
+
+  tabBarShell:{position:'absolute',left:0,right:0,bottom:Platform.OS==='ios'?12:8,height:62,paddingHorizontal:12,backgroundColor:'transparent',zIndex:120,elevation:30},
+  tabGlass:{flex:1,borderRadius:27,borderWidth:StyleSheet.hairlineWidth,overflow:'hidden',shadowOpacity:.14,shadowRadius:20,shadowOffset:{width:0,height:9},elevation:14},
+  tabInner:{flex:1,flexDirection:'row',alignItems:'center',paddingHorizontal:5,paddingVertical:4},
+  tabItem:{flex:1,height:52,alignItems:'center',justifyContent:'center'},
+  tabActiveCapsule:{minWidth:50,minHeight:43,borderRadius:18,borderWidth:StyleSheet.hairlineWidth,borderColor:'transparent',alignItems:'center',justifyContent:'center',gap:1,paddingHorizontal:6},
+  tabIconWrap:{position:'relative',minWidth:25,minHeight:22,alignItems:'center',justifyContent:'center'},
+  tabLabel:{fontSize:7.8,fontWeight:'800',letterSpacing:-.08},
+  centerTabGlass:{width:43,height:43,borderRadius:18,borderWidth:1,alignItems:'center',justifyContent:'center',shadowColor:'#000',shadowOpacity:.16,shadowRadius:11,shadowOffset:{width:0,height:5}},
+  tabUnreadBadge:{position:'absolute',right:-10,top:-7,minWidth:17,height:17,borderRadius:9,paddingHorizontal:4,backgroundColor:'#FF3B30',borderWidth:1.5,borderColor:'#fff',alignItems:'center',justifyContent:'center'},
+
+  oneHeader:{height:56,paddingHorizontal:16,flexDirection:'row',alignItems:'center',justifyContent:'space-between'},
+  oneBrand:{fontSize:22,fontWeight:'950',letterSpacing:-.85},
+  oneHeaderSub:{fontSize:9.5,fontWeight:'750',letterSpacing:.22,marginTop:-1},
+  oneHeaderActions:{flexDirection:'row',alignItems:'center',gap:6},
+  oneHeaderCircle:{width:34,height:34,borderRadius:17,borderWidth:StyleSheet.hairlineWidth,alignItems:'center',justifyContent:'center',position:'relative'},
+  oneHeaderCreate:{width:34,height:34,borderRadius:17,alignItems:'center',justifyContent:'center'},
+  oneSegment:{marginHorizontal:16,borderRadius:14,padding:3,flexDirection:'row',gap:3},
+  oneSegmentItem:{flex:1,minHeight:32,borderRadius:11,borderWidth:StyleSheet.hairlineWidth,borderColor:'transparent',alignItems:'center',justifyContent:'center'},
+  oneSegmentText:{fontSize:11.5,fontWeight:'850'},
+  oneFeedList:{paddingHorizontal:12,paddingTop:9,paddingBottom:96},
+  oneMomentsBlock:{marginBottom:12},
+  oneMomentItem:{width:56,alignItems:'center'},
+  oneMomentRing:{width:52,height:52,borderRadius:26,borderWidth:1.4,alignItems:'center',justifyContent:'center',position:'relative'},
+  onePulseCard:{width:185,minHeight:58,borderRadius:18,borderWidth:StyleSheet.hairlineWidth,padding:10,flexDirection:'row',alignItems:'center',gap:9},
+  oneComposePrompt:{marginBottom:11,borderRadius:18,borderWidth:StyleSheet.hairlineWidth,padding:10,flexDirection:'row',alignItems:'center',gap:9},
+  oneComposePromptText:{flex:1,fontSize:13,fontWeight:'600'},
+  oneComposePhoto:{width:32,height:32,borderRadius:16,alignItems:'center',justifyContent:'center'},
+
+  profileCard:{borderWidth:StyleSheet.hairlineWidth,borderRadius:22,padding:16,alignItems:'center',marginBottom:9},
+  profileCardSocial:{alignItems:'stretch',paddingHorizontal:15,paddingVertical:14},
+  profileName:{fontSize:21,fontWeight:'950',letterSpacing:-.55},
+  profileBio:{fontSize:12.5,lineHeight:18,marginTop:7,marginBottom:9,textAlign:'center'},
+  profileActionRow:{width:'100%',flexDirection:'row',gap:7,marginTop:13},
+  profilePrimaryAction:{flex:1,minHeight:43,borderRadius:14,alignItems:'center',justifyContent:'center',flexDirection:'row',gap:7},
+  profileSquareAction:{width:43,height:43,borderRadius:14,alignItems:'center',justifyContent:'center'},
+  profilePostsCard:{borderRadius:18,borderWidth:StyleSheet.hairlineWidth,paddingHorizontal:12,overflow:'hidden'},
+  profilePost:{paddingHorizontal:1,paddingVertical:12,borderBottomWidth:StyleSheet.hairlineWidth,flexDirection:'row',alignItems:'flex-start',gap:9},
+  profilePostBody:{fontSize:14.2,lineHeight:20.2,letterSpacing:-.1,marginTop:5},
+  profilePostMediaWrap:{marginTop:9,borderRadius:16,borderWidth:StyleSheet.hairlineWidth,overflow:'hidden',width:'100%',aspectRatio:1.18},
+
+  iosSettingsHeader:{paddingHorizontal:18,paddingTop:8,paddingBottom:9,flexDirection:'row',alignItems:'center',gap:11},
+  iosSettingsTitle:{fontSize:24,lineHeight:30,fontWeight:'950',letterSpacing:-.7},
+  iosSettingsSubtitle:{fontSize:10.5,fontWeight:'700',marginTop:0},
+  iosSettingsClose:{width:38,height:38,borderRadius:19,borderWidth:StyleSheet.hairlineWidth,alignItems:'center',justifyContent:'center'},
+  iosSettingsScroll:{paddingHorizontal:14,paddingBottom:38},
+  iosSettingsSection:{marginTop:14},
+  iosSettingsSectionTitle:{fontSize:15.5,fontWeight:'850',letterSpacing:-.25,marginLeft:13,marginBottom:7},
+  iosSettingsCard:{borderRadius:20,borderWidth:StyleSheet.hairlineWidth,overflow:'hidden'},
+  iosSettingsRow:{minHeight:52,paddingHorizontal:15,flexDirection:'row',alignItems:'center',gap:10},
+  iosSettingsRowTitle:{flex:1,minWidth:0,fontSize:14.5,lineHeight:19,fontWeight:'650',letterSpacing:-.18},
+  iosSettingsValue:{fontSize:13.5,lineHeight:18,fontWeight:'500',textAlign:'right'},
+
 
 });
