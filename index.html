@@ -1,309 +1,98 @@
 <!doctype html>
 <html lang="cs">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#f5f5f7" />
-  <title>LINK 4.4 · Shared Test · Artists & Celebrities + BACKSTAGE · Developer & Shared Test Launcher</title>
-  <style>
-    :root {
-      color-scheme: light;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", Inter, system-ui, sans-serif;
-      background: #f5f5f7;
-      color: #101114;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at 18% 5%, rgba(108,92,231,.14), transparent 28rem),
-        radial-gradient(circle at 90% 92%, rgba(0,122,255,.08), transparent 28rem),
-        #f5f5f7;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-    }
-    .shell { width: min(620px, 100%); }
-    .card {
-      background: rgba(255,255,255,.78);
-      border: 1px solid rgba(255,255,255,.9);
-      box-shadow: 0 28px 80px rgba(20,24,40,.12);
-      backdrop-filter: blur(30px) saturate(160%);
-      -webkit-backdrop-filter: blur(30px) saturate(160%);
-      border-radius: 32px;
-      padding: 28px;
-    }
-    .brand {
-      width: 58px;
-      height: 58px;
-      border-radius: 18px;
-      display: grid;
-      place-items: center;
-      background: #101114;
-      color: white;
-      font-size: 28px;
-      font-weight: 850;
-      letter-spacing: -1.5px;
-      margin-bottom: 22px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 10px 28px rgba(16,17,20,.18);
-    }
-    h1 {
-      margin: 0;
-      font-size: clamp(38px, 7vw, 56px);
-      line-height: .98;
-      letter-spacing: -2.6px;
-    }
-    .lead {
-      margin: 14px 0 24px;
-      color: #6f7582;
-      font-size: 17px;
-      line-height: 1.45;
-    }
-    .meta {
-      display: grid;
-      gap: 10px;
-      background: rgba(247,247,250,.82);
-      border: 1px solid rgba(20,24,40,.06);
-      border-radius: 20px;
-      padding: 15px;
-      margin: 0 0 18px;
-    }
-    .row { display: flex; align-items: center; gap: 10px; min-width: 0; }
-    .dot { width: 9px; height: 9px; border-radius: 999px; background: #34c759; flex: 0 0 auto; }
-    .dot.wait { background: #ff9f0a; }
-    .dot.bad { background: #ff3b30; }
-    .label { color: #858b96; font-size: 13px; width: 82px; flex: 0 0 auto; }
-    .value { font-size: 13px; font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .actions { display: grid; gap: 11px; }
-    button, a.action {
-      appearance: none;
-      border: 0;
-      width: 100%;
-      min-height: 56px;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 9px;
-      font: inherit;
-      font-weight: 760;
-      font-size: 16px;
-      text-decoration: none;
-      cursor: pointer;
-      transition: transform .16s ease, opacity .16s ease, box-shadow .16s ease;
-    }
-    button:active, a.action:active { transform: scale(.985); }
-    .primary {
-      color: white;
-      background: #101114;
-      box-shadow: 0 12px 28px rgba(16,17,20,.18);
-    }
-    .secondary { color: #101114; background: rgba(236,237,242,.88); }
-    button:disabled { opacity: .5; cursor: wait; }
-    .status {
-      min-height: 22px;
-      margin-top: 16px;
-      color: #6f7582;
-      font-size: 13px;
-      line-height: 1.4;
-      text-align: center;
-    }
-    .tiny { margin: 18px 3px 0; color: #9a9fa9; font-size: 12px; line-height: 1.45; text-align: center; }
-    @media (max-width: 520px) {
-      body { padding: 14px; }
-      .card { padding: 22px; border-radius: 27px; }
-    }
-  </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f6f4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="LINK">
+  <meta name="description" content="LINK — soukromé zprávy a lidé, na kterých záleží.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <title>LINK — Zprávy</title>
 </head>
 <body>
-  <main class="shell">
-    <section class="card">
-      <div class="brand">L</div>
-      <h1>LINK</h1>
-      <p class="lead">GitHub → Expo Snack. <strong>Shared Test Session</strong> vytvoří vždy nový neuložený Snack pro testování s dalšími lidmi. Tester používá svůj vlastní Expo Go účet — <strong>ne tvůj</strong>.</p>
-
-      <div class="meta">
-        <div class="row"><span id="repoDot" class="dot wait"></span><span class="label">Repository</span><span class="value" id="repoValue">Zjišťuji…</span></div>
-        <div class="row"><span class="dot"></span><span class="label">Expo SDK</span><span class="value">57</span></div>
-        <div class="row"><span class="dot"></span><span class="label">Build</span><span class="value">LINK 4.4 · Shared Test</span></div>
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="brand" aria-label="LINK — domů" data-action="home">
+        <span class="brand-mark" aria-hidden="true"><span></span><span></span></span>
+        <span>LINK</span>
+      </button>
+      <div class="top-actions">
+        <button class="icon-button" aria-label="Nainstalovat aplikaci" data-action="install-help" title="Přidat na plochu">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 17v3h14v-3"/></svg>
+        </button>
+        <button class="avatar avatar-self" aria-label="Otevřít profil" data-tab="profile">Š</button>
       </div>
+    </header>
 
-      <div style="margin:0 0 16px;padding:15px 16px;border-radius:20px;background:rgba(52,199,89,.10);border:1px solid rgba(52,199,89,.20);font-size:13px;line-height:1.5;color:#555b66">
-        <strong style="color:#101114">Shared Test Session</strong><br>
-        • session nech <strong>UNSAVED</strong><br>
-        • otevři <strong>My Device</strong><br>
-        • pošli testerovi pouze QR<br>
-        • tester se přihlásí v Expo Go <strong>svým vlastním účtem</strong><br>
-        • pokud se objeví <strong>Connecting…</strong>, vytvoř tady novou Shared Session a použij nový QR
-      </div>
+    <main id="main" tabindex="-1">
+      <section class="screen active" id="chats-screen" aria-labelledby="page-title">
+        <div class="page-heading">
+          <div><p class="eyebrow">VAŠE LIDÉ</p><h1 id="page-title">Zprávy</h1></div>
+          <button class="compose-button" aria-label="Nová zpráva" data-action="new-message"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+        </div>
 
-      <div class="actions">
-        <button id="testBtn" class="primary" type="button">👥 New Shared Test Session</button>
-        <button id="createBtn" class="secondary" type="button">🛠 Developer Session</button>
-        <a id="rawBtn" class="action secondary" href="#" target="_blank" rel="noopener">Otevřít App.snack.js</a>
-      </div>
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.2 4.2"/></svg>
+          <input id="search" type="search" placeholder="Hledat v LINKu" autocomplete="off" aria-label="Hledat konverzace">
+          <kbd>⌘ K</kbd>
+        </div>
 
-      <div id="testHint" class="hint" style="display:none">
-        <strong style="color:#101114">Shared Test Session</strong><br>
-        Tenhle Snack <strong>neukládej</strong>. Počkej na načtení preview, otevři <strong>My Device</strong> a pošli QR testerům. Při starém nebo mrtvém QR vytvoř novou Shared Session.
-      </div>
+        <section class="notes-block" aria-label="Poznámky">
+          <div class="section-label"><span>Poznámky</span><span class="muted">Sdílejte malý moment</span></div>
+          <div class="notes-row" id="notes-row">
+            <button class="note-card own-note" data-action="add-note">
+              <span class="note-avatar"><span>＋</span></span><span class="note-name">Vaše poznámka</span>
+            </button>
+            <button class="note-card" data-note="Na kafe? ☕"><span class="note-avatar note-photo tone-blue">E</span><span class="note-bubble">Na kafe? ☕</span><span class="note-name">Ema</span></button>
+            <button class="note-card" data-note="Nový track venku 🎧"><span class="note-avatar note-photo tone-purple">M</span><span class="note-bubble">Nový track venku 🎧</span><span class="note-name">Matěj</span></button>
+            <button class="note-card" data-note="Dneska mimo 🌿"><span class="note-avatar note-photo tone-orange">K</span><span class="note-bubble">Dneska mimo 🌿</span><span class="note-name">Klára</span></button>
+          </div>
+        </section>
 
-      <div id="status" class="status">Připravuji GitHub source URL…</div>
-      <div class="tiny">Shared Test Session nech neuloženou a testerům posílej jen QR. Developer Session můžeš uložit pro svoje vlastní testování.</div>
-    </section>
-  </main>
+        <div class="list-heading"><h2>Poslední</h2><button class="text-button" data-action="filter-unread">Všechny <span>⌄</span></button></div>
+        <div class="chat-list" id="chat-list" aria-live="polite"></div>
+        <div class="empty-state hidden" id="empty-state"><span class="empty-mark">⌕</span><strong>Nikoho jsme nenašli</strong><p>Zkuste jiné jméno nebo zprávu.</p></div>
+        <p class="end-note">Vaše konverzace, v klidu a na jednom místě.</p>
+      </section>
 
-  <script>
-    (() => {
-      const BUILD = 'LINK 4.4 · Shared Test';
-      const SDK_VERSION = '57.0.0';
-      const DEFAULT_BRANCH = 'main';
-      const DEPENDENCIES = [
-        '@expo/vector-icons@^15.0.3',
-        '@react-native-async-storage/async-storage@2.2.0',
-        'expo-camera@~57.0.5',
-        'expo-image-picker@~57.0.19',
-        'expo-blur@~57.0.3',
-        'expo-crypto@~57.0.3',
-        'expo-linear-gradient@~57.0.2',
-        'expo-audio@~57.0.5',
-        'qrcode-generator@^1.4.4',
-        'react-native-svg@15.15.4',
-        '@supabase/supabase-js@2.49.8'
-      ];
+      <section class="screen" id="moments-screen" aria-labelledby="moments-title">
+        <div class="page-heading"><div><p class="eyebrow">OD LIDÍ, KTERÉ ZNÁTE</p><h1 id="moments-title">Momenty</h1></div><button class="compose-button" data-action="add-moment" aria-label="Přidat moment"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button></div>
+        <div class="moments-intro"><div class="sparkle">✳</div><h2>Malé věci.<br>Blízcí lidé.</h2><p>Momentky od vašich přátel. Bez hluku, jen to, co stojí za sdílení.</p><button class="primary-button" data-action="add-moment">Přidat moment <span>↗</span></button></div>
+        <div class="moment-feed" id="moment-feed"></div>
+      </section>
 
-      const repoValue = document.getElementById('repoValue');
-      const repoDot = document.getElementById('repoDot');
-      const status = document.getElementById('status');
-      const createBtn = document.getElementById('createBtn');
-      const testBtn = document.getElementById('testBtn');
-      const testHint = document.getElementById('testHint');
-      const rawBtn = document.getElementById('rawBtn');
+      <section class="screen" id="profile-screen" aria-labelledby="profile-title">
+        <div class="profile-top"><p class="eyebrow">VÁŠ PROSTOR</p><div class="profile-avatar">Š</div><h1 id="profile-title">Šimi</h1><p class="handle">@simi</p><p class="profile-line">Tady jste vždycky doma.</p></div>
+        <div class="settings-card">
+          <button class="settings-row" data-action="edit-profile"><span class="setting-icon">✳</span><span><strong>Upravit profil</strong><small>Jméno, fotka a váš status</small></span><b>›</b></button>
+          <button class="settings-row" data-action="privacy"><span class="setting-icon">◉</span><span><strong>Soukromí</strong><small>Rozhodujete, kdo vás najde</small></span><b>›</b></button>
+          <button class="settings-row" data-action="install-help"><span class="setting-icon">⌂</span><span><strong>Přidat LINK na plochu</strong><small>Otevře se jako vlastní aplikace</small></span><b>›</b></button>
+          <button class="settings-row" data-action="about"><span class="setting-icon">∞</span><span><strong>O aplikaci LINK</strong><small>Jednoduše blíž</small></span><b>›</b></button>
+        </div>
+        <p class="version-label">LINK · PREVIEW 1.0</p>
+      </section>
+    </main>
 
-      function getRepoInfo() {
-        const params = new URLSearchParams(location.search);
-        const qOwner = params.get('owner');
-        const qRepo = params.get('repo');
-        const qBranch = params.get('branch') || DEFAULT_BRANCH;
-        if (qOwner && qRepo) return { owner: qOwner, repo: qRepo, branch: qBranch };
+    <nav class="tabbar" aria-label="Hlavní navigace">
+      <button class="tab active" data-tab="chats" aria-label="Zprávy"><svg viewBox="0 0 24 24"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H5l1.8-3.1A7.5 7.5 0 1 1 20 11.5Z"/><path d="M8 11.5h.01M12 11.5h.01M16 11.5h.01"/></svg><span>Zprávy</span></button>
+      <button class="tab" data-tab="moments" aria-label="Momenty"><svg viewBox="0 0 24 24"><path d="M12 3.5 14 9l5.5 2-5.5 2-2 5.5L10 13l-5.5-2L10 9l2-5.5Z"/><path d="m19 15 .9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15Z"/></svg><span>Momenty</span></button>
+      <button class="tab" data-tab="profile" aria-label="Profil"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20c.5-3.4 2.8-5 6.5-5s6 1.6 6.5 5"/></svg><span>Profil</span></button>
+    </nav>
+  </div>
 
-        const host = location.hostname.toLowerCase();
-        const parts = location.pathname.split('/').filter(Boolean);
-        if (host.endsWith('.github.io') && parts.length) {
-          return { owner: host.split('.')[0], repo: parts[0], branch: DEFAULT_BRANCH };
-        }
-        return null;
-      }
+  <div class="chat-overlay" id="chat-overlay" aria-hidden="true">
+    <header class="chat-header"><button class="back-button" data-action="close-chat" aria-label="Zpět"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><div class="chat-person"><span class="avatar" id="chat-avatar">E</span><span><strong id="chat-name">Ema</strong><small id="chat-status">Aktivní nyní</small></span></div><button class="icon-button" data-action="chat-info" aria-label="Informace o chatu"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></svg></button></header>
+    <div class="messages" id="messages"></div>
+    <form class="message-form" id="message-form"><button type="button" class="attach-button" data-action="attach" aria-label="Přidat přílohu">＋</button><label class="sr-only" for="message-input">Zpráva</label><input id="message-input" placeholder="Napište zprávu…" autocomplete="off"><button class="send-button" type="submit" aria-label="Odeslat"><svg viewBox="0 0 24 24"><path d="m4 11 16-7-7 16-2.5-6.5L4 11Z"/><path d="m10.5 13.5 4-4"/></svg></button></form>
+  </div>
 
-      const repo = getRepoInfo();
-
-      if (!repo) {
-        repoDot.className = 'dot bad';
-        repoValue.textContent = 'Nelze automaticky určit';
-        status.textContent = 'Otevři tuto stránku přes GitHub Pages, nebo přidej ?owner=TVUJ_GITHUB&repo=NAZEV_REPA do URL.';
-        createBtn.disabled = true;
-        testBtn.disabled = true;
-        rawBtn.style.pointerEvents = 'none';
-        rawBtn.style.opacity = '.5';
-        return;
-      }
-
-      // LINK 4.4 Shared Test launcher: use the same GitHub Pages origin as the launcher.
-      // This avoids browser CORS / network failures against raw.githubusercontent.com,
-      // jsDelivr and the GitHub API while keeping App.snack.js public for Expo Snack.
-      function pagesSourceUrl(cacheBust = Date.now(), sessionNonce = null) {
-        const url = new URL('./App.snack.js', window.location.href);
-        url.search = '';
-        url.hash = '';
-        url.searchParams.set('build', '443');
-        url.searchParams.set('cb', String(cacheBust));
-        url.searchParams.set('session', sessionNonce || `${cacheBust}-${Math.random().toString(36).slice(2)}`);
-        return url.toString();
-      }
-
-      let rawAppUrl = pagesSourceUrl();
-      repoDot.className = 'dot';
-      repoValue.textContent = `${repo.owner}/${repo.repo} · ${repo.branch}`;
-      rawBtn.href = rawAppUrl;
-      status.textContent = 'Připraveno. App.snack.js se načte přímo z GitHub Pages.';
-
-      async function verifySameOriginSource(url) {
-        // Same-origin verification is optional. A transient browser/service-worker
-        // fetch failure must never block creating the Snack.
-        try {
-          const response = await fetch(url, { cache: 'no-store' });
-          if (!response.ok) return { ok: false, reason: `HTTP ${response.status}` };
-          const source = await response.text();
-          if (!source.includes('export default')) return { ok: false, reason: 'Expo entry nebyl nalezen' };
-          if (!source.includes('LINK 4.4 · Shared Test')) return { ok: false, reason: 'GitHub Pages ještě servíruje starší build' };
-          return { ok: true };
-        } catch (error) {
-          return { ok: false, reason: error?.message || 'ověření nebylo dostupné' };
-        }
-      }
-
-      // Best-effort check only; it does not disable the Create button.
-      verifySameOriginSource(rawAppUrl).then(result => {
-        if (result.ok) {
-          repoDot.className = 'dot';
-          status.textContent = 'Připraveno. LINK 4.4 Shared Test source je dostupný přes GitHub Pages.';
-        } else {
-          repoDot.className = 'dot wait';
-          status.textContent = `Launcher je připraven. Ověření source bylo přeskočeno (${result.reason}).`;
-        }
-      });
-
-      function openFreshSnack(mode) {
-        const shared = mode === 'shared';
-
-        createBtn.disabled = true;
-        testBtn.disabled = true;
-        testHint.style.display = shared ? 'block' : 'none';
-
-        createBtn.textContent = shared ? 'Vytvářím Shared Session…' : 'Otevírám Developer Session…';
-        testBtn.textContent = shared ? 'Vytvářím Shared Session…' : 'Otevírám Developer Session…';
-
-        const now = Date.now();
-        const nonce = (globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function')
-          ? globalThis.crypto.randomUUID()
-          : `${now}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
-
-        rawAppUrl = pagesSourceUrl(now, nonce);
-        rawBtn.href = rawAppUrl;
-
-        status.textContent = shared
-          ? 'Vytvářím úplně novou neuloženou Shared Test Session…'
-          : 'Otevírám LINK Developer Session…';
-
-        const params = new URLSearchParams();
-        params.set(
-          'name',
-          shared
-            ? `LINK 4.4 · Shared Test · ${String(now).slice(-6)}`
-            : 'LINK 4.4 · Developer'
-        );
-        params.set(
-          'description',
-          shared
-            ? 'LINK 4.4 shared unsaved test session. Keep this Snack UNSAVED. Open My Device and share only the QR with testers.'
-            : 'LINK 4.4 developer session. You may save this one to your Expo account.'
-        );
-        params.set('sdkVersion', SDK_VERSION);
-        params.set('platform', 'mydevice');
-        params.set('supportedPlatforms', 'ios,android,web');
-        params.set('theme', 'light');
-        params.set('preview', 'true');
-        params.set('waitForData', 'true');
-        params.set('sourceUrl', rawAppUrl);
-        params.set('dependencies', DEPENDENCIES.join(','));
-
-        window.location.href = `https://snack.expo.dev/?${params.toString()}`;
-      }
-
-      testBtn.addEventListener('click', () => openFreshSnack('shared'));
-      createBtn.addEventListener('click', () => openFreshSnack('developer'));
-    })();
-  </script>
+  <div class="toast" id="toast" role="status"></div>
+  <dialog id="modal" class="modal"><form method="dialog"><button class="modal-close" aria-label="Zavřít">×</button></form><div class="modal-icon" id="modal-icon">✳</div><p class="eyebrow" id="modal-eyebrow">LINK</p><h2 id="modal-title">Buďte blíž.</h2><p id="modal-copy">Soukromý prostor pro lidi, na kterých záleží.</p><div id="modal-extra"></div><button class="primary-button modal-done" data-action="modal-close">Rozumím <span>↗</span></button></dialog>
+  <script src="app.js" defer></script>
 </body>
 </html>

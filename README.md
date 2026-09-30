@@ -1,25 +1,24 @@
-# LINK 3.0 — NEXT
+# LINK PWA
 
-Major LINK beta update for Expo Snack / Expo Go backed by LINK Production on Supabase.
+Minimalistická česká ukázka aplikace LINK, připravená pro GitHub Pages a instalaci na iPhone jako PWA.
 
-## Main changes
+## Publikování přes GitHub Pages
 
-- Home 3.0 with LINK Now, Active LINKs and Recent Chats
-- Chats 3.0 with real voice recording/playback, GIF/photo/video, stickers, link previews, View Once, smooth optimistic send and offline retry
-- Verified badge in direct-message headers and group-chat sender identity
-- Moments 3.0: fullscreen navigation, reactions, replies, Close LINKs, views, music stickers and Highlights
-- Groups 3.0: moderator role, description/theme, join approvals, expiring invites, polls and @everyone
-- Profile 3.0: backdrop, accent, layouts and Highlights
-- Unified Search, Activity Center and Account & Safety
-- Staff Center 3.0 and server-authorized staff tools
-- Latest-50-per-chat initial message loading with load-earlier pagination and coalesced realtime refresh
-- Czech + English support
+1. Na GitHubu založte veřejný repozitář s názvem **link-pwa**.
+2. Nahrajte obsah tohoto balíčku včetně složky `.github/workflows` a souboru `.nojekyll` do větve `main`.
+3. V repozitáři otevřete **Settings → Pages** a jako zdroj zvolte **GitHub Actions**.
+4. Otevřete kartu **Actions**. Po doběhnutí úlohy bude aplikace dostupná na `https://oxvaa.github.io/link-pwa/`.
 
-## Snack workflow
+Workflow nasazuje statický obsah při každém commitu do `main`. Pro GitHub Pages není potřeba build ani závislosti.
 
-Upload this repository to GitHub, enable GitHub Pages, open `index.html`, then choose **Vytvořit nový Snack**. The launcher loads `App.snack.js` from the same GitHub Pages origin and adds a cache-buster.
+## Přidání na plochu iPhonu
 
-Remote system push notifications still require a development / production build and are not simulated as real OS push inside Expo Go.
+Otevřete publikovanou adresu v Safari → **Sdílet** → **Přidat na plochu**. PWA má vlastní ikonu, režim standalone, safe-area odsazení pro iPhone a offline cache.
 
-## Shared Test Session
-The GitHub Pages launcher now includes **Testovat s kamarády**. This opens a fresh unsaved Snack session. Keep that Snack unsaved, open **My Device**, and share its QR with testers. Testers only need Expo Go and their own Expo login.
+## Co ukázka obsahuje
+
+- Zprávy, vyhledávání, poznámky, momenty a profil.
+- Odeslání ukázkové zprávy a uložení konverzací lokálně v zařízení.
+- Responzivní mobilní rozhraní, instalovatelné PWA a základní offline režim.
+
+Zprávy se ukládají jen v prohlížeči daného zařízení. Tato preview verze nemá serverový backend ani synchronizaci mezi uživateli.
